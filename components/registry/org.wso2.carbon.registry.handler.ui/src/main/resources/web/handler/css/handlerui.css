@@ -1,0 +1,105 @@
+.handlerGreen{
+    background-image:url(../images/boxGreen.gif);
+    background-position:0 0;
+    background-repeat:no-repeat;
+    width:149px;
+    height:43px;
+    line-height:43px;
+    text-align:center;
+}
+.handlerRed{
+    background-image:url(../images/boxRed.gif);
+    background-position:0 0;
+    background-repeat:no-repeat;
+    width:149px;
+    height:43px;
+    line-height:43px;
+    text-align:center;
+}
+.handlerRed{
+    background-image:url(../images/boxRed.gif);
+    background-position:0 0;
+    background-repeat:no-repeat;
+    width:149px;
+    height:43px;
+    line-height:43px;
+    text-align:center;
+}
+.handlerArrowtoRight{
+    background-image:url(../images/arrowRight.gif);
+    background-position:5px 15px;
+    background-repeat:no-repeat;
+    width:40px;
+    height:43px;
+    line-height:43px;
+}
+.handlerArrowtoLeft{
+    background-image:url(../images/arrowLeft.gif);
+    background-position:5px 15px;
+    background-repeat:no-repeat;
+    width:40px;
+    height:43px;
+    line-height:43px;
+}
+.handlerArrowDown{
+    background-image:url(../images/arrowDown.gif);
+    background-position:70px 5px;
+    background-repeat:no-repeat;
+    width:149px;
+    height:43px;
+    line-height:43px;
+}
+.handlerStartSymbol {
+    background-image:url(../images/startSymbol.gif);
+    background-position:5px 15px;
+    background-repeat:no-repeat;
+    height:43px;
+    line-height:43px;
+    width:40px;
+}
+.handlerEndSymbol {
+    background-image:url(../images/endSymbol.gif);
+    background-position:5px 15px;
+    background-repeat:no-repeat;
+    height:43px;
+    line-height:43px;
+    width:30px;
+}
+.handlerSpaceSymbol {
+    background-image:url(../images/spacerSymbol.gif);
+    background-position:5px 15px;
+    background-repeat:no-repeat;
+    height:43px;
+    line-height:43px;
+    width:40px;
+}
+.handlerEndSymbolSpecial {
+    background-image:url(../images/endSymbol.gif);
+    background-position:62px 5px;
+    background-repeat:no-repeat;
+    height:43px;
+    line-height:43px;
+    width:149px;
+}
+#simulationChart{
+    padding-top:30px;
+}
+.toLeft li,.toLeft{
+    float:left;    
+}
+.toRight li,.toRight{
+    float:right;    
+}
+.handlerDetails{
+    background-color:#f1efd7;
+    border:1px solid #CCCCCC;
+    margin-left:50px;
+    margin-top:-20px;
+    padding:3px;
+    position:absolute;
+    line-height:20px;
+}
+.handlerDetailsTitle{
+    font-weight:bold;
+}
+

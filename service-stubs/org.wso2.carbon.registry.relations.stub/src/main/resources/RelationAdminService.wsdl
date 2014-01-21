@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.relations.registry.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax2258="http://beans.relations.registry.carbon.wso2.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2254="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2255="http://api.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.relations.registry.carbon.wso2.org">
+    <wsdl:documentation>RelationAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax2259="http://beans.relations.registry.carbon.wso2.org/xsd" xmlns:ax2257="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.relations.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://beans.relations.registry.carbon.wso2.org/xsd" />
+            <xs:element name="getDependenciesRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2257:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDependencies">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDependenciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2258:DependenciesBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="getAssociationTreeRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2257:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAssociationTree">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAssociationTreeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2258:AssociationTreeBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAssociationRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2257:RegistryException" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAssociation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="associationPaths" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="todo" nillable="true" type="xs:string" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2256="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2256:RegistryException">
+
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.relations.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="DependenciesBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="associationBeans" nillable="true" type="ax2258:AssociationBean" />
+
+                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="loggedIn" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AssociationBean">
+                <xs:sequence>
+
+                    <xs:element minOccurs="0" name="associationType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="destinationPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="sourcePath" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AssociationTreeBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="assoIndex" type="xs:int" />
+                    <xs:element minOccurs="0" name="assoType" nillable="true" type="xs:string" />
+
+                    <xs:element minOccurs="0" name="associationTree" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="treeCache" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="addAssociationRequest">
+        <wsdl:part name="parameters" element="ns:addAssociation" />
+    </wsdl:message>
+    <wsdl:message name="addAssociationRegistryException">
+        <wsdl:part name="parameters" element="ns:addAssociationRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="getDependenciesRequest">
+        <wsdl:part name="parameters" element="ns:getDependencies" />
+    </wsdl:message>
+    <wsdl:message name="getDependenciesResponse">
+        <wsdl:part name="parameters" element="ns:getDependenciesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getDependenciesRegistryException">
+        <wsdl:part name="parameters" element="ns:getDependenciesRegistryException" />
+
+    </wsdl:message>
+    <wsdl:message name="getAssociationTreeRequest">
+        <wsdl:part name="parameters" element="ns:getAssociationTree" />
+    </wsdl:message>
+    <wsdl:message name="getAssociationTreeResponse">
+        <wsdl:part name="parameters" element="ns:getAssociationTreeResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAssociationTreeRegistryException">
+        <wsdl:part name="parameters" element="ns:getAssociationTreeRegistryException" />
+
+    </wsdl:message>
+    <wsdl:portType name="RelationAdminServicePortType">
+        <wsdl:operation name="addAssociation">
+            <wsdl:input message="ns:addAssociationRequest" wsaw:Action="urn:addAssociation" />
+            <wsdl:fault message="ns:addAssociationRegistryException" name="addAssociationRegistryException" wsaw:Action="urn:addAssociationaddAssociationRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getDependencies">
+            <wsdl:input message="ns:getDependenciesRequest" wsaw:Action="urn:getDependencies" />
+            <wsdl:output message="ns:getDependenciesResponse" wsaw:Action="urn:getDependenciesResponse" />
+
+            <wsdl:fault message="ns:getDependenciesRegistryException" name="getDependenciesRegistryException" wsaw:Action="urn:getDependenciesgetDependenciesRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAssociationTree">
+            <wsdl:input message="ns:getAssociationTreeRequest" wsaw:Action="urn:getAssociationTree" />
+            <wsdl:output message="ns:getAssociationTreeResponse" wsaw:Action="urn:getAssociationTreeResponse" />
+            <wsdl:fault message="ns:getAssociationTreeRegistryException" name="getAssociationTreeRegistryException" wsaw:Action="urn:getAssociationTreegetAssociationTreeRegistryException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RelationAdminServiceSoap11Binding" type="ns:RelationAdminServicePortType">
+
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="addAssociation">
+            <soap:operation soapAction="urn:addAssociation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="addAssociationRegistryException">
+                <soap:fault use="literal" name="addAssociationRegistryException" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDependencies">
+            <soap:operation soapAction="urn:getDependencies" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="getDependenciesRegistryException">
+                <soap:fault use="literal" name="getDependenciesRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAssociationTree">
+            <soap:operation soapAction="urn:getAssociationTree" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getAssociationTreeRegistryException">
+                <soap:fault use="literal" name="getAssociationTreeRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RelationAdminServiceSoap12Binding" type="ns:RelationAdminServicePortType">
+
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="addAssociation">
+            <soap12:operation soapAction="urn:addAssociation" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="addAssociationRegistryException">
+                <soap12:fault use="literal" name="addAssociationRegistryException" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getDependencies">
+            <soap12:operation soapAction="urn:getDependencies" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="getDependenciesRegistryException">
+                <soap12:fault use="literal" name="getDependenciesRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAssociationTree">
+            <soap12:operation soapAction="urn:getAssociationTree" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="getAssociationTreeRegistryException">
+                <soap12:fault use="literal" name="getAssociationTreeRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RelationAdminServiceHttpBinding" type="ns:RelationAdminServicePortType">
+
+        <http:binding verb="POST" />
+        <wsdl:operation name="addAssociation">
+            <http:operation location="addAssociation" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getDependencies">
+            <http:operation location="getDependencies" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAssociationTree">
+            <http:operation location="getAssociationTree" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RelationAdminService">
+
+        <wsdl:port name="RelationAdminServiceHttpsSoap11Endpoint" binding="ns:RelationAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.0.25:9443/services/RelationAdminService.RelationAdminServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="RelationAdminServiceHttpsSoap12Endpoint" binding="ns:RelationAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.0.25:9443/services/RelationAdminService.RelationAdminServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="RelationAdminServiceHttpsEndpoint" binding="ns:RelationAdminServiceHttpBinding">
+            <http:address location="https://10.100.0.25:9443/services/RelationAdminService.RelationAdminServiceHttpsEndpoint/" />
+        </wsdl:port>
+
+    </wsdl:service>
+</wsdl:definitions>

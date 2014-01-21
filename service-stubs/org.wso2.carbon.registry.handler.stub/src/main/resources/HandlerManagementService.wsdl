@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.handler.registry.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2136="http://beans.handler.registry.carbon.wso2.org/xsd" targetNamespace="http://services.handler.registry.carbon.wso2.org">
+    <wsdl:documentation>HandlerManagementService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.handler.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="SimulationRequest">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="operation" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="parameters" nillable="true" type="xs:string" />
+
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SimulationResponse">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="status" nillable="true" type="ax2136:HandlerExecutionStatus" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="HandlerExecutionStatus">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="executionStatus" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="handlerName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2137="http://beans.handler.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.handler.registry.carbon.wso2.org">
+            <xs:import namespace="http://beans.handler.registry.carbon.wso2.org/xsd" />
+
+            <xs:element name="Exception">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="updateHandler">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="oldName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateHandlerResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="simulate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="request" nillable="true" type="ax2137:SimulationRequest" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="simulateResponse">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2137:SimulationResponse" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setHandlerCollectionLocation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="location" nillable="true" type="xs:string" />
+
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHandlerListResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+
+            </xs:element>
+            <xs:element name="getHandlerConfiguration">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHandlerConfigurationResponse">
+
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHandlerCollectionLocationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteHandler">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteHandlerResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="createHandler">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createHandlerResponse">
+                <xs:complexType>
+
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="deleteHandlerRequest">
+        <wsdl:part name="parameters" element="ns:deleteHandler" />
+
+    </wsdl:message>
+    <wsdl:message name="deleteHandlerResponse">
+        <wsdl:part name="parameters" element="ns:deleteHandlerResponse" />
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception" />
+    </wsdl:message>
+    <wsdl:message name="getHandlerListRequest" />
+    <wsdl:message name="getHandlerListResponse">
+
+        <wsdl:part name="parameters" element="ns:getHandlerListResponse" />
+    </wsdl:message>
+    <wsdl:message name="simulateRequest">
+        <wsdl:part name="parameters" element="ns:simulate" />
+    </wsdl:message>
+    <wsdl:message name="simulateResponse">
+        <wsdl:part name="parameters" element="ns:simulateResponse" />
+    </wsdl:message>
+    <wsdl:message name="createHandlerRequest">
+
+        <wsdl:part name="parameters" element="ns:createHandler" />
+    </wsdl:message>
+    <wsdl:message name="createHandlerResponse">
+        <wsdl:part name="parameters" element="ns:createHandlerResponse" />
+    </wsdl:message>
+    <wsdl:message name="getHandlerCollectionLocationRequest" />
+    <wsdl:message name="getHandlerCollectionLocationResponse">
+        <wsdl:part name="parameters" element="ns:getHandlerCollectionLocationResponse" />
+    </wsdl:message>
+
+    <wsdl:message name="getHandlerConfigurationRequest">
+        <wsdl:part name="parameters" element="ns:getHandlerConfiguration" />
+    </wsdl:message>
+    <wsdl:message name="getHandlerConfigurationResponse">
+        <wsdl:part name="parameters" element="ns:getHandlerConfigurationResponse" />
+    </wsdl:message>
+    <wsdl:message name="setHandlerCollectionLocationRequest">
+        <wsdl:part name="parameters" element="ns:setHandlerCollectionLocation" />
+    </wsdl:message>
+
+    <wsdl:message name="updateHandlerRequest">
+        <wsdl:part name="parameters" element="ns:updateHandler" />
+    </wsdl:message>
+    <wsdl:message name="updateHandlerResponse">
+        <wsdl:part name="parameters" element="ns:updateHandlerResponse" />
+    </wsdl:message>
+    <wsdl:portType name="HandlerManagementServicePortType">
+        <wsdl:operation name="deleteHandler">
+            <wsdl:input message="ns:deleteHandlerRequest" wsaw:Action="urn:deleteHandler" />
+
+            <wsdl:output message="ns:deleteHandlerResponse" wsaw:Action="urn:deleteHandlerResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:deleteHandlerException" />
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerList">
+            <wsdl:input message="ns:getHandlerListRequest" wsaw:Action="urn:getHandlerList" />
+            <wsdl:output message="ns:getHandlerListResponse" wsaw:Action="urn:getHandlerListResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getHandlerListException" />
+        </wsdl:operation>
+        <wsdl:operation name="simulate">
+
+            <wsdl:input message="ns:simulateRequest" wsaw:Action="urn:simulate" />
+            <wsdl:output message="ns:simulateResponse" wsaw:Action="urn:simulateResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:simulateException" />
+        </wsdl:operation>
+        <wsdl:operation name="createHandler">
+            <wsdl:input message="ns:createHandlerRequest" wsaw:Action="urn:createHandler" />
+            <wsdl:output message="ns:createHandlerResponse" wsaw:Action="urn:createHandlerResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:createHandlerException" />
+        </wsdl:operation>
+
+        <wsdl:operation name="getHandlerCollectionLocation">
+            <wsdl:input message="ns:getHandlerCollectionLocationRequest" wsaw:Action="urn:getHandlerCollectionLocation" />
+            <wsdl:output message="ns:getHandlerCollectionLocationResponse" wsaw:Action="urn:getHandlerCollectionLocationResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getHandlerCollectionLocationException" />
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerConfiguration">
+            <wsdl:input message="ns:getHandlerConfigurationRequest" wsaw:Action="urn:getHandlerConfiguration" />
+            <wsdl:output message="ns:getHandlerConfigurationResponse" wsaw:Action="urn:getHandlerConfigurationResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getHandlerConfigurationException" />
+
+        </wsdl:operation>
+        <wsdl:operation name="setHandlerCollectionLocation">
+            <wsdl:input message="ns:setHandlerCollectionLocationRequest" wsaw:Action="urn:setHandlerCollectionLocation" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:setHandlerCollectionLocationException" />
+        </wsdl:operation>
+        <wsdl:operation name="updateHandler">
+            <wsdl:input message="ns:updateHandlerRequest" wsaw:Action="urn:updateHandler" />
+            <wsdl:output message="ns:updateHandlerResponse" wsaw:Action="urn:updateHandlerResponse" />
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:updateHandlerException" />
+
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="HandlerManagementServiceSoap11Binding" type="ns:HandlerManagementServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="deleteHandler">
+            <soap:operation soapAction="urn:deleteHandler" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerList">
+            <soap:operation soapAction="urn:getHandlerList" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="simulate">
+            <soap:operation soapAction="urn:simulate" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="createHandler">
+            <soap:operation soapAction="urn:createHandler" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerConfiguration">
+            <soap:operation soapAction="urn:getHandlerConfiguration" style="document" />
+
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerCollectionLocation">
+            <soap:operation soapAction="urn:getHandlerCollectionLocation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setHandlerCollectionLocation">
+            <soap:operation soapAction="urn:setHandlerCollectionLocation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateHandler">
+            <soap:operation soapAction="urn:updateHandler" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="HandlerManagementServiceSoap12Binding" type="ns:HandlerManagementServicePortType">
+
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="deleteHandler">
+            <soap12:operation soapAction="urn:deleteHandler" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerList">
+            <soap12:operation soapAction="urn:getHandlerList" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="simulate">
+            <soap12:operation soapAction="urn:simulate" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="createHandler">
+            <soap12:operation soapAction="urn:createHandler" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerConfiguration">
+            <soap12:operation soapAction="urn:getHandlerConfiguration" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerCollectionLocation">
+            <soap12:operation soapAction="urn:getHandlerCollectionLocation" style="document" />
+
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="setHandlerCollectionLocation">
+            <soap12:operation soapAction="urn:setHandlerCollectionLocation" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+
+        </wsdl:operation>
+        <wsdl:operation name="updateHandler">
+            <soap12:operation soapAction="urn:updateHandler" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="HandlerManagementServiceHttpBinding" type="ns:HandlerManagementServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="deleteHandler">
+            <http:operation location="deleteHandler" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerList">
+            <http:operation location="getHandlerList" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="simulate">
+            <http:operation location="simulate" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="createHandler">
+            <http:operation location="createHandler" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerConfiguration">
+            <http:operation location="getHandlerConfiguration" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHandlerCollectionLocation">
+            <http:operation location="getHandlerCollectionLocation" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setHandlerCollectionLocation">
+            <http:operation location="setHandlerCollectionLocation" />
+
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="updateHandler">
+            <http:operation location="updateHandler" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="HandlerManagementService">
+        <wsdl:port name="HandlerManagementServiceHttpsSoap11Endpoint" binding="ns:HandlerManagementServiceSoap11Binding">
+            <soap:address location="https://10.100.0.25:9443/services/HandlerManagementService.HandlerManagementServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+
+        <wsdl:port name="HandlerManagementServiceHttpsSoap12Endpoint" binding="ns:HandlerManagementServiceSoap12Binding">
+            <soap12:address location="https://10.100.0.25:9443/services/HandlerManagementService.HandlerManagementServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="HandlerManagementServiceHttpsEndpoint" binding="ns:HandlerManagementServiceHttpBinding">
+            <http:address location="https://10.100.0.25:9443/services/HandlerManagementService.HandlerManagementServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

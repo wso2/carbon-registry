@@ -1,0 +1,140 @@
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wso2registry>
+
+    <currentConfig>sample</currentConfig>
+
+    <dbconfig name="in-memory">
+        <url>jdbc:hsqldb:mem:aname</url>
+        <userName>sa</userName>
+        <password/>
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+    </dbconfig>
+
+    <dbconfig name="sample">
+        <url>jdbc:hsqldb:$basedir$/sample/sample-db;shutdown=true</url>
+        <userName>sa</userName>
+        <password/>
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+    </dbconfig>
+
+    <dbconfig name="derby-db">
+        <url>jdbc:derby://localhost:1527/derbyDB;create=true</url>
+        <userName>userName</userName>
+        <password>password</password>
+        <driverName>org.apache.derby.jdbc.ClientDriver</driverName>
+    </dbconfig>
+
+    <dbconfig name="mysql-db">
+        <url>jdbc:mysql://localhost:3306/regdb</url>
+        <userName>regadmin</userName>
+        <password>regadmin</password>
+        <driverName>com.mysql.jdbc.Driver</driverName>
+    </dbconfig>
+
+    <dbconfig name="oracle-db">
+        <url>jdbc:oracle:thin:@hostname:1521:registry</url>
+        <userName>username</userName>
+        <password>password</password>
+        <driverName>oracle.jdbc.driver.OracleDriver</driverName>
+    </dbconfig>
+
+    <dbconfig name="mssql-db">
+        <url>jdbc:jtds:sqlserver://localhost:1433/registry</url>
+        <userName>registry</userName>
+        <password>registry</password>
+        <driverName>net.sourceforge.jtds.jdbc.Driver</driverName>
+    </dbconfig>
+
+    <dbconfig name="registry-datasource">
+        <dataSource>dataSourceName</dataSource>
+    </dbconfig>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.WSDLValidationHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/wsdl+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.XSDValidationHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/x-xsd+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.WSDLMediaTypeHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/wsdl+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.WSIValidationHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/wsdl+xml</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.XSDMediaTypeHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/x-xsd+xml</property>
+        </filter>
+    </handler>
+
+    <handler class="org.wso2.carbon.registry.extensions.handlers.IndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">text/plain</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.XMLIndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/xml</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.PDFIndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/pdf</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSWordIndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/msword</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSExcelIndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.ms-excel</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MSPowerpointIndexingHandler" methods="PUT, DELETE, IMPORT">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.ms-powerpoint</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.extensions.handlers.MEXMediaTypeHandler">
+        <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher">
+            <property name="mediaType">application/vnd.wso2-mex+xml</property>
+        </filter>
+    </handler>
+    <handler class="org.wso2.carbon.registry.profiles.extension.handler.ProfilesHandler" methods="GET, PUT">
+            <filter class="org.wso2.carbon.registry.core.jdbc.handlers.filters.URLMatcher">
+<!--                <property name="mediaType">application/vnd.wso2-profiles+xml</property> -->
+                <property name="getPattern">/system/users/.*</property>
+                <property name="putPattern">/system/users/.*</property>
+            </filter>
+        </handler>
+
+</wso2registry>

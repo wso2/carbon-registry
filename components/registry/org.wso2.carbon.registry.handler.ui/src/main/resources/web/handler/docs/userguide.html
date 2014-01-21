@@ -1,0 +1,208 @@
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Handler Configuration - User Guide</title>
+  <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+
+<body>
+<h1>Configuring Handlers - View, Edit, Simulate, and Delete</h1>
+
+<h2>Viewing, Editing and Deleting Handlers</h2>
+
+<p>Select the <strong>Handlers</strong> menu option under the <strong>Extensions</strong> menu. You
+will then see something similar to what is seen below if no handlers have been added so far.</p>
+
+<p><img src="images/handlers_empty.png" width="492px" /></p>
+
+<p>Figure 1: Configure Handlers page</p>
+
+<p>You can then add a new handler by selecting the <strong>Add New Handler</strong> option. This
+will bring up the Handler Source view as seen below.</p>
+
+<p><img src="images/handlers_source.png" width="743px" /></p>
+
+<p>Figure 2: Handler Source view</p>
+
+<p>You can toggle the editor between the rich and plain modes by checking/un-checking the Toggle
+editor checkbox. A sample Handler configuration is presented (as seen above), which you can replace
+with the configuration of your custom handler. After adding the handler configuration, you have to
+click the <strong>Save</strong> button to add the new handler. If the handler has been added
+successfully, you should see a confirmation message stating that the configuration has been saved.
+</p>
+
+<p>After one or more handlers have been added, the Configure Handlers page will be similar to what
+is seen below.</p>
+
+<p><img src="images/handlers_non_empty.png" width="743px" /></p>
+
+<p>Figure 3: Configure Handlers page (with configured handlers)</p>
+
+<p>You can edit/delete the configured handlers by clicking on the respective links.</p>
+
+<br />
+
+<h2>Simulating Handlers</h2>
+
+<p>To simulate built-in and user defined handlers, you need to select the <strong>Simulate
+Handlers</strong> option on the Configure Handlers page. This will bring up the User Interface seen
+below.</p>
+
+<p><img src="images/handlers_simulate.png" width="743px" /></p>
+
+<p>Figure 4: Handler Simulator</p>
+
+<p>You need to select the operation name, fill at least the mandatory fields, and click on the
+<strong>Simulate</strong> button, to simulate the handlers that are executed as a result of invoking
+the selected operation along with the provided details. This will generate a graphical
+representation of the handlers invoked along with the status of each handler as seen below.</p>
+
+<p><img src="images/handlers_simulate_result.png" width="743px" /></p>
+
+<p>Figure 5: Handler Simulation Result</p>
+
+<br />
+
+<h2>Description of the various options available</h2>
+<pre>
+<strong>get</strong>
+    Path - The path from which the resource is fetched
+<br />
+<strong>put</strong>
+    Path          - The path to which the resource is added
+    Resource Path - The path of the existing resource (which will be put to the new path)
+
+    <strong><em>Optional Parameters:</em></strong>
+        Media Type - The media type of the resource
+<br />
+<strong>resourceExists</strong>
+    Path - The path at which the resource existence is checked
+<br />
+<strong>delete</strong>
+    Path - The path from which the resource is deleted
+<br />
+<strong>importResource</strong>
+    Path - The path to which the resource is imported
+    URL  - The source URL of the resource imported
+
+    <strong><em>Optional Parameters:</em></strong>
+        Media Type - The media type of the resource
+<br />
+<strong>copy</strong>
+    Path        - The source path
+    Target Path - The target path
+<br />
+<strong>move</strong>
+    Path        - The source path
+    Target Path - The target path
+<br />
+<strong>rename</strong>
+    Path        - The source path
+    Target Path - The target path
+<br />
+<strong>removeLink</strong>
+    Path - The path at which the link is removed
+<br />
+<strong>createLink</strong>
+    Path            - The path at which the link is created
+    Target Path     - The target path (or instance identifier) of the link
+    Target Sub-path - The target sub-path
+<br />
+<strong>invokeAspect</strong>
+    Path        - The path at which the aspect is invoked
+    Aspect Name - The name of the aspect
+    Action      - The invoked action
+<br />
+<strong>addAssociation</strong>
+    Path             - The path at which the association is added
+    Target Path      - The target path or URL
+    Association Type - The type of the created association
+<br />
+<strong>removeAssociation</strong>
+    Path             - The path at which the association is removed from
+    Target Path      - The target path or URL
+    Association Type - The type of the removed association
+<br />
+<strong>getAssociations</strong>
+    Path             - The path at which the associations are fetched
+    Association Type - The type of the fetched associations
+<br />
+<strong>getAllAssociations</strong>
+    Path - The path at which the associations are fetched
+<br />
+<strong>createVersion</strong>
+    Path - The path at which the version is created
+<br />
+<strong>restoreVersion</strong>
+    Path - The path at which the version is restored (should include the version details)
+<br />
+<strong>getVersions</strong>
+    Path - The path at which the versions are fetched from
+<br />
+<strong>applyTag</strong>
+    Path - The path at which the tag is applied
+    Tag  - The tag applied
+<br />
+<strong>removeTag</strong>
+    Path - The path at which the tag is removed
+    Tag  - The tag removed
+<br />
+<strong>getTags</strong>
+    Path - The path at which the tags are fetched
+<br />
+<strong>getResourcePathsWithTag</strong>
+    Tag - The tag for which the resource paths are obtained
+<br />
+<strong>rateResource</strong>
+    Path   - The path to which the rating is added
+    Rating - The rating added (must be a number)
+<br />
+<strong>getRating</strong>
+    Path     - The path from which the rating is fetched from
+    Username - The name of the user who rated the resource
+<br />
+<strong>getAverageRating</strong>
+    Path - The path from which the average rating is fetched from
+<br />
+<strong>addComment</strong>
+    Path    - The path to which the comment is added
+    Comment - The comment added
+<br />
+<strong>removeComment</strong>
+    Path - The path to which the comment is removed from
+<br />
+<strong>editComment</strong>
+    Path    - The path to which the edited comment is added
+    Comment - The edited comment
+<br />
+<strong>getComments</strong>
+    Path - The path from which the comments are fetched
+<br />
+<strong>searchContent</strong>
+    Keywords - The keywords used to search the content
+<br />
+<strong>executeQuery</strong>
+    Parameters - The query parameters (should be in the format, key1:val1,key2:val2,...)
+
+    <strong><em>Optional Parameters:</em></strong>
+        Path - The path at which the query is stored
+</pre>
+</body>
+</html>

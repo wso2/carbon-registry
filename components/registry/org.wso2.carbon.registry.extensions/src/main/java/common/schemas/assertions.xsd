@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<!--
+  Copyright (c) 2002-2003 by The Web Services-Interoperability Organization (WS-I) and 
+  Certain of its Members. All Rights Reserved.
+	
+  Notice
+  The material contained herein is not a license, either expressly or impliedly, to any 
+  intellectual property owned or controlled by any of the authors or developers of this 
+  material or WS-I. The material contained herein is provided on an "AS IS" basis and to 
+  the maximum extent permitted by applicable law, this material is provided AS IS AND WITH 
+  ALL FAULTS, and the authors and developers of this material and WS-I hereby disclaim all 
+  other warranties and conditions, either express, implied or statutory, including, but not 
+  limited to, any (if any) implied warranties, duties or conditions of  merchantability, 
+  of fitness for a particular purpose, of accuracy or completeness of responses, of results, 
+  of workmanlike effort, of lack of viruses, and of lack of negligence. ALSO, THERE IS NO 
+  WARRANTY OR CONDITION OF TITLE, QUIET ENJOYMENT, QUIET POSSESSION, CORRESPONDENCE TO 
+  DESCRIPTION OR NON-INFRINGEMENT WITH REGARD TO THIS MATERIAL.
+	
+  IN NO EVENT WILL ANY AUTHOR OR DEVELOPER OF THIS MATERIAL OR WS-I BE LIABLE TO ANY OTHER 
+  PARTY FOR THE COST OF PROCURING SUBSTITUTE GOODS OR SERVICES, LOST PROFITS, LOSS OF USE, 
+  LOSS OF DATA, OR ANY INCIDENTAL, CONSEQUENTIAL, DIRECT, INDIRECT, OR SPECIAL DAMAGES 
+  WHETHER UNDER CONTRACT, TORT, WARRANTY, OR OTHERWISE, ARISING IN ANY WAY OUT OF THIS OR 
+  ANY OTHER AGREEMENT RELATING TO THIS MATERIAL, WHETHER OR NOT SUCH PARTY HAD ADVANCE 
+  NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.
+	
+  WS-I License Information
+	Use of this WS-I Material is governed by the WS-I Test License and other licenses.  Information on these 
+	licenses are contained in the README.txt and ReleaseNotes.txt files.  By downloading this file, you agree 
+	to the terms of these licenses.
+	
+  How To Provide Feedback
+  The Web Services-Interoperability Organization (WS-I) would like to receive input, 
+  suggestions and other feedback ("Feedback") on this work from a wide variety of 
+  industry participants to improve its quality over time. 
+	
+  By sending email, or otherwise communicating with WS-I, you (on behalf of yourself if 
+  you are an individual, and your company if you are providing Feedback on behalf of the 
+  company) will be deemed to have granted to WS-I, the members of WS-I, and other parties 
+  that have access to your Feedback, a non-exclusive, non-transferable, worldwide, perpetual, 
+  irrevocable, royalty-free license to use, disclose, copy, license, modify, sublicense or 
+  otherwise distribute and exploit in any manner whatsoever the Feedback you provide regarding 
+  the work. You acknowledge that you have no expectation of confidentiality with respect to 
+  any Feedback you provide. You represent and warrant that you have rights to provide this 
+  Feedback, and if you are providing Feedback on behalf of a company, you represent and warrant 
+  that you have the rights to provide Feedback on behalf of your company. You also acknowledge 
+  that WS-I is not required to review, discuss, use, consider or in any way incorporate your 
+  Feedback into future versions of its work. If WS-I does incorporate some or all of your 
+  Feedback in a future version of the work, it may, but is not obligated to include your name 
+  (or, if you are identified as acting on behalf of your company, the name of your company) on 
+  a list of contributors to the work. If the foregoing is not acceptable to you and any company 
+  on whose behalf you are acting, please do not provide any Feedback.
+	
+  WS-I members should direct feedback on this document to wsi_testing@lists.ws-i.org; 
+  non-members should direct feedback to wsi-tools@ws-i.org.  
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.ws-i.org/testing/2003/03/assertions/"
+    xmlns:tns="http://www.ws-i.org/testing/2003/03/assertions/"
+    xmlns:wsi-common="http://www.ws-i.org/testing/2003/03/common/"
+    elementFormDefault="qualified">
+  
+  <xs:import namespace="http://www.ws-i.org/testing/2003/03/common/" />
+  
+  <xs:element name="profileAssertions" type="tns:profileAssertions"/>
+  
+  <xs:complexType name="profileAssertions">
+    <xs:sequence>
+      <xs:element name="description" type="wsi-common:description"/>
+      <xs:element name="profileList" type="tns:profileList"/>
+      <xs:element name="artifact" type="tns:artifact" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="profileList">
+    <xs:sequence>
+      <xs:element name="profile" type="tns:profile" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+    
+  <xs:complexType name="profile">
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="version" type="xs:string" use="required"/>
+    <xs:attribute name="revision" type="xs:string" use="required"/>
+    <xs:attribute name="location" type="xs:anyURI" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="artifact">
+    <xs:sequence>
+      <xs:element name="specificationReferenceList" type="tns:specificationReferenceList"/>
+      <xs:element name="description" type="wsi-common:description"/>
+      <xs:element name="testAssertion" type="tns:testAssertion" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="tns:artifactTypes" use="required"/>
+  </xs:complexType>
+        
+  <xs:complexType name="specificationReferenceList">
+    <xs:sequence>
+      <xs:element name="specification" type="tns:specification" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+    
+  <xs:complexType name="specification">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="location" type="xs:anyURI" use="required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="testAssertion">
+    <xs:sequence>
+      <xs:element name="context" type="xs:string"/>
+      <xs:element name="assertionDescription" type="xs:string"/>
+      <xs:element name="failureMessage" type="xs:string"/>
+      <xs:element name="failureDetailDescription" type="xs:string"/>
+      <xs:element name="additionalEntryTypeList" type="tns:additionalEntryTypeList"/>
+      <xs:element name="prereqList" type="tns:prereqList"/>
+      <xs:element name="referenceList" type="tns:referenceList"/>
+      <xs:element name="comments" type="xs:string"/>
+      <xs:element name="additionalInfo" type="tns:additionalInfo" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="entryType" type="tns:entryTypes" use="required"/>
+    <xs:attribute name="type" type="tns:testAssertionTypes" use="required"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+      
+  <xs:complexType name="additionalEntryTypeList">
+    <xs:sequence>
+      <xs:element name="messageInput" type="tns:messageInput" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="wsdlInput" type="tns:wsdlInput" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+        
+  <xs:complexType name="prereqList">
+    <xs:sequence>
+      <xs:element name="testAssertionID" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+    
+  <xs:complexType name="referenceList">
+    <xs:sequence>
+      <xs:element name="reference" type="tns:reference" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+    
+  <xs:complexType name="reference">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="profileID" type="xs:IDREF" use="required"/>
+        <xs:attribute name="role" type="tns:referenceRole" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+      
+  <xs:simpleType name="artifactTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="message"/>
+      <xs:enumeration value="description"/>
+      <xs:enumeration value="discovery"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="testAssertionTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="required"/>
+      <xs:enumeration value="recommended"/>
+      <xs:enumeration value="notTestable"/>
+      <xs:enumeration value="driverTestable"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="messageEntryTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="requestMessage"/>
+      <xs:enumeration value="responseMessage"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="wsdlEntryTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="definitions"/>
+      <xs:enumeration value="import"/>
+      <xs:enumeration value="types"/>
+      <xs:enumeration value="message"/>
+      <xs:enumeration value="operation"/>
+      <xs:enumeration value="portType"/>
+      <xs:enumeration value="binding"/>
+      <xs:enumeration value="port"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="uddiEntryTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bindingTemplate"/>
+      <xs:enumeration value="tModel"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="additionalEntryTypes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="anyMessage"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="entryTypes">
+    <xs:union memberTypes="tns:messageEntryTypes tns:wsdlEntryTypes tns:uddiEntryTypes tns:additionalEntryTypes"/>
+  </xs:simpleType>
+  
+  <xs:simpleType name="baseInput">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="messageInput">
+    <xs:union memberTypes="tns:messageEntryTypes tns:baseInput"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="wsdlInput">
+    <xs:union memberTypes="tns:wsdlEntryTypes tns:baseInput"/>
+  </xs:simpleType>
+  
+  <xs:simpleType name="referenceRole">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="target"/>
+      <xs:enumeration value="collateral"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="additionalInfo">
+    <xs:anyAttribute namespace="##any" processContents="lax"/>    
+  </xs:complexType>
+</xs:schema>
+

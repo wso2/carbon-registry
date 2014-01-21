@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<component xmlns="http://products.wso2.org/carbon">
+    <!-- sample menu configuration -->
+    <menus>
+        <menu>
+            <id>resource_browser_menu</id>
+            <i18n-key>registry.resources.menu</i18n-key>
+            <i18n-bundle>org.wso2.carbon.registry.resource.ui.i18n.Resources</i18n-bundle>
+            <parent-menu>registry_menu</parent-menu>
+            <link>../resources/resource.jsp</link>
+            <!-- Use the following to change the default view of the registry browser to the detail
+                 view -->
+            <!-- <url-params>viewType=std&amp;path=/</url-params> -->
+            <url-params>path=/</url-params>
+            <region>region3</region>
+            <order>5</order>
+            <style-class>manage</style-class>
+            <icon>../resources/images/resources.gif</icon>
+            <require-permission>/permission/admin/manage/resources/browse</require-permission>
+        </menu>
+    </menus>
+
+    <FileUploadConfig>
+        <Mapping>
+            <Actions>
+                <Action>resource</Action>
+            </Actions>
+            <Class>org.wso2.carbon.registry.resource.ui.processors.AddResourceProcessor</Class>
+        </Mapping>
+    </FileUploadConfig>
+
+    <servlets>
+        <servlet id="testservlet">
+            <servlet-name>ResourceContentServlet</servlet-name>
+            <url-pattern>/registry/resourceContent</url-pattern>
+            <display-name>Resource Content Servlet</display-name>
+
+            <servlet-class>org.wso2.carbon.registry.resource.ui.ResourceServlet</servlet-class>
+        </servlet>
+    </servlets>
+</component>

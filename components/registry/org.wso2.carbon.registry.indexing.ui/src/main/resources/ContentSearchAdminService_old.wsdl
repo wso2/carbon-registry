@@ -1,0 +1,139 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2110="http://common.registry.carbon.wso2.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2109="http://beans.search.ui.mgt.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://service.contentSearch.registry.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ax2106="http://exceptions.core.registry.carbon.wso2.org/xsd" targetNamespace="http://service.contentSearch.registry.carbon.wso2.org">
+    <wsdl:documentation>SearchAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="ResourceData">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="absent" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="authorUserName" nillable="true" type="xs:string"/>SearchResultsBean
+                    <xs:element minOccurs="0" name="averageRating" type="xs:float"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="averageStars" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="createdOn" nillable="true" type="xs:dateTime"/>
+                    <xs:element minOccurs="0" name="deleteAllowed" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="externalLink" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="formattedCreatedOn" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="getAllowed" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="link" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="mounted" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="realPath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="relativePath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resourceType" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tagCounts" nillable="true" type="ax2110:TagCount"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TagCount">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:long"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2108="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2112="http://beans.search.ui.mgt.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.contentSearch.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.search.ui.mgt.registry.carbon.wso2.org/xsd"/>
+            <xs:element name="getContentSearchResults">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="searchQuery" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentSearchResultsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2109:SearchResultsBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:ax2111="http://common.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.search.ui.mgt.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://common.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="SearchResultsBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="resourceDataList" nillable="true" type="ax2111:ResourceData"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getContentSearchResultsRequest">
+        <wsdl:part name="parameters" element="ns:getContentSearchResults"/>
+    </wsdl:message>
+    <wsdl:message name="getContentSearchResultsResponse">
+        <wsdl:part name="parameters" element="ns:getContentSearchResultsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="ContentSearchAdminServicePortType">
+        <wsdl:operation name="getContentSearchResults">
+            <wsdl:input message="ns:getContentSearchResultsRequest" wsaw:Action="urn:getSearchResults"/>
+            <wsdl:output message="ns:getContentSearchResultsResponse" wsaw:Action="urn:getSearchResultsResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SearchAdminServiceSoap11Binding" type="ns:ContentSearchAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getContentSearchResults">
+            <soap:operation soapAction="urn:getContentSearchResults" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="SearchAdminServiceSoap12Binding" type="ns:ContentSearchAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getContentSearchResults">
+            <soap12:operation soapAction="urn:getContentSearchResults" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="SearchAdminServiceHttpBinding" type="ns:ContentSearchAdminServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getContentSearchResults">
+            <http:operation location="getSearchResults"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getSearchResults"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getSearchResults"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ContentSearchAdminService">
+        <wsdl:port name="SearchAdminServiceHttpsSoap11Endpoint" binding="ns:SearchAdminServiceSoap11Binding">
+            <soap:address location="https://192.168.1.2:9443/services/SearchAdminService.SearchAdminServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="SearchAdminServiceHttpsSoap12Endpoint" binding="ns:SearchAdminServiceSoap12Binding">
+            <soap12:address location="https://192.168.1.2:9443/services/SearchAdminService.SearchAdminServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="SearchAdminServiceHttpsEndpoint" binding="ns:SearchAdminServiceHttpBinding">
+            <http:address location="https://192.168.1.2:9443/services/SearchAdminService.SearchAdminServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

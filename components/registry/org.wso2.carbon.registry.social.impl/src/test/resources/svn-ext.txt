@@ -1,0 +1,2 @@
+carbon-home https://svn.wso2.org/repos/wso2/trunk/carbon/core/distribution/carbon-home
+user-test https://svn.wso2.org/repos/wso2/trunk/carbon/core/org.wso2.carbon.user.core/src/test/resources

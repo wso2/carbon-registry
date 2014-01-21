@@ -1,0 +1,134 @@
+<!--
+ ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="http://services.topics.custom.samples.registry.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ax280="http://beans.topics.custom.samples.registry.carbon.wso2.org/xsd" targetNamespace="http://services.topics.custom.samples.registry.carbon.wso2.org">
+    <wsdl:documentation>RegistryTopicAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.topics.custom.samples.registry.carbon.wso2.org/xsd">
+    <xs:complexType name="TopicBean">
+        <xs:all>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="endpoints" nillable="true" type="ax280:MapEntry"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="subtopics" nillable="true" type="ax280:MapEntry"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="MapEntry">
+        <xs:all>
+            <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+            <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+</xs:schema>
+        <xs:schema xmlns:ax281="http://beans.topics.custom.samples.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.topics.custom.samples.registry.carbon.wso2.org">
+    <xs:import namespace="http://beans.topics.custom.samples.registry.carbon.wso2.org/xsd"/>
+    <xs:complexType name="Exception">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="Exception" nillable="true" type="xs:anyType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="Exception">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="Exception" nillable="true" type="ns:Exception"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getTopicBean">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getTopicBeanResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" name="return" nillable="true" type="ax280:TopicBean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getTopicBeanRequest">
+        <wsdl:part name="parameters" element="ns:getTopicBean"/>
+    </wsdl:message>
+    <wsdl:message name="getTopicBeanResponse">
+        <wsdl:part name="parameters" element="ns:getTopicBeanResponse"/>
+    </wsdl:message>
+    <wsdl:message name="Exception">
+        <wsdl:part name="parameters" element="ns:Exception"/>
+    </wsdl:message>
+    <wsdl:portType name="RegistryTopicAdminServicePortType">
+        <wsdl:operation name="getTopicBean">
+            <wsdl:input message="ns:getTopicBeanRequest" wsaw:Action="urn:getTopicBean"/>
+            <wsdl:output message="ns:getTopicBeanResponse" wsaw:Action="urn:getTopicBeanResponse"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getTopicBeanException"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RegistryTopicAdminServiceSoap11Binding" type="ns:RegistryTopicAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getTopicBean">
+            <soap:operation soapAction="urn:getTopicBean" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistryTopicAdminServiceSoap12Binding" type="ns:RegistryTopicAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getTopicBean">
+            <soap12:operation soapAction="urn:getTopicBean" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistryTopicAdminServiceHttpBinding" type="ns:RegistryTopicAdminServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getTopicBean">
+            <http:operation location="RegistryTopicAdminService/getTopicBean"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getTopicBean"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getTopicBean"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RegistryTopicAdminService">
+        <wsdl:port name="RegistryTopicAdminServiceHttpsSoap11Endpoint" binding="ns:RegistryTopicAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.1.120:9443/services/RegistryTopicAdminService.RegistryTopicAdminServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistryTopicAdminServiceHttpsSoap12Endpoint" binding="ns:RegistryTopicAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.120:9443/services/RegistryTopicAdminService.RegistryTopicAdminServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistryTopicAdminServiceHttpsEndpoint" binding="ns:RegistryTopicAdminServiceHttpBinding">
+            <http:address location="https://10.100.1.120:9443/services/RegistryTopicAdminService.RegistryTopicAdminServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

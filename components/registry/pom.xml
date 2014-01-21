@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ ~ Copyright (c) 2009-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.wso2.carbon</groupId>
+        <artifactId>carbon-component-registry</artifactId>
+        <version>4.3.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.wso2.carbon</groupId>
+    <artifactId>registry</artifactId>
+    <packaging>pom</packaging>
+    <name>WSO2 Carbon - Registry Aggregator Module</name>
+    <url>http://wso2.org</url>
+    
+            <modules>
+                <module>org.wso2.carbon.registry.admin.api</module>
+                <module>org.wso2.carbon.registry.common</module>
+                <module>org.wso2.carbon.registry.common.ui</module>
+                <module>org.wso2.carbon.registry.eventing</module>
+                <module>org.wso2.carbon.registry.indexing</module>
+		<module>org.wso2.carbon.registry.properties.ui</module>
+                <module>org.wso2.carbon.registry.properties</module>		
+                <module>org.wso2.carbon.registry.resource.ui</module>
+                <module>org.wso2.carbon.registry.resource</module>
+                <module>org.wso2.carbon.registry.search.ui</module>
+                <module>org.wso2.carbon.registry.search</module>
+                <module>org.wso2.carbon.registry.servlet</module>
+                <module>org.wso2.carbon.registry.profiles</module>
+                <module>org.wso2.carbon.registry.profiles.ui</module>
+
+<!--
+		<module>org.wso2.carbon.registry.uddi</module>
+                <module>org.wso2.carbon.registry.extensions</module>
+                <module>org.wso2.carbon.registry.extensions.ui</module>
+                <module>org.wso2.carbon.registry.handler.ui</module>
+                <module>org.wso2.carbon.registry.handler</module>
+                <module>org.wso2.carbon.registry.info.ui</module>
+                <module>org.wso2.carbon.registry.info</module>
+                <module>org.wso2.carbon.registry.activities.ui</module>
+                <module>org.wso2.carbon.registry.activities</module>
+                <module>org.wso2.carbon.registry.relations.ui</module>
+                <module>org.wso2.carbon.registry.relations</module>
+                <module>org.wso2.carbon.registry.ws.api</module>
+                <module>org.wso2.carbon.registry.ws.client</module>
+		<module>org.wso2.carbon.registry.indexing.ui</module>
+        	<module>org.wso2.carbon.registry.webdav</module>
+        	<module>org.wso2.carbon.registry.jcr</module>
+		<module>org.wso2.carbon.registry.social.api</module>
+                <module>org.wso2.carbon.registry.social.impl</module>
+                <module>org.wso2.carbon.registry.task</module>
+                <module>org.wso2.carbon.registry.reporting</module>
+                <module>org.wso2.carbon.registry.reporting.ui</module>
+                <module>org.wso2.carbon.registry.rest.api</module>  
+                <module>org.wso2.carbon.registry.cmis</module>  
+-->
+		<!--<module>org.wso2.carbon.registry.tests.concurrent</module>-->
+        </modules>
+</project>

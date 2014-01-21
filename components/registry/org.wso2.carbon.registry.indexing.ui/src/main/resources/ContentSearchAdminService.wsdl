@@ -1,0 +1,306 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2142="http://service.indexing.registry.carbon.wso2.org/xsd" xmlns:ax2143="http://common.registry.carbon.wso2.org/xsd" xmlns:ns="http://service.indexing.registry.carbon.wso2.org" xmlns:ax2140="http://io.java/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2138="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.indexing.registry.carbon.wso2.org">
+    <wsdl:documentation>ContentSearchAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="ResourceData">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="absent" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="authorUserName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="averageRating" type="xs:float" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="averageStars" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="createdOn" nillable="true" type="xs:dateTime" />
+                    <xs:element minOccurs="0" name="deleteAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="externalLink" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="formattedCreatedOn" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="getAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="link" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="mounted" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="realPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="relativePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourceType" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tagCounts" nillable="true" type="ax2143:TagCount" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TagCount">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:long" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2139="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2145="http://service.indexing.registry.carbon.wso2.org/xsd" xmlns:ax2141="http://io.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.indexing.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://io.java/xsd" />
+            <xs:import namespace="http://service.indexing.registry.carbon.wso2.org/xsd" />
+            <xs:element name="RegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2139:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="IOException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="IOException" nillable="true" type="ax2140:IOException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="FileNotFoundException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="FileNotFoundException" nillable="true" type="ax2140:FileNotFoundException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSolrUrl">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSolrUrlResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getLoggedInUserNameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentSearchResults">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="searchQuery" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentSearchResultsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2142:SearchResultsBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://io.java/xsd">
+            <xs:complexType name="IOException">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:complexType name="FileNotFoundException">
+                <xs:complexContent>
+                    <xs:extension base="ax2140:IOException">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2144="http://common.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.indexing.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://common.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="SearchResultsBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="resourceDataList" nillable="true" type="ax2143:ResourceData" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="restartIndexingRequest" />
+    <wsdl:message name="RegistryException">
+        <wsdl:part name="parameters" element="ns:RegistryException" />
+    </wsdl:message>
+    <wsdl:message name="getSolrUrlRequest">
+        <wsdl:part name="parameters" element="ns:getSolrUrl" />
+    </wsdl:message>
+    <wsdl:message name="getSolrUrlResponse">
+        <wsdl:part name="parameters" element="ns:getSolrUrlResponse" />
+    </wsdl:message>
+    <wsdl:message name="IOException">
+        <wsdl:part name="parameters" element="ns:IOException" />
+    </wsdl:message>
+    <wsdl:message name="FileNotFoundException">
+        <wsdl:part name="parameters" element="ns:FileNotFoundException" />
+    </wsdl:message>
+    <wsdl:message name="getLoggedInUserNameRequest" />
+    <wsdl:message name="getLoggedInUserNameResponse">
+        <wsdl:part name="parameters" element="ns:getLoggedInUserNameResponse" />
+    </wsdl:message>
+    <wsdl:message name="getContentSearchResultsRequest">
+        <wsdl:part name="parameters" element="ns:getContentSearchResults" />
+    </wsdl:message>
+    <wsdl:message name="getContentSearchResultsResponse">
+        <wsdl:part name="parameters" element="ns:getContentSearchResultsResponse" />
+    </wsdl:message>
+    <wsdl:portType name="ContentSearchAdminServicePortType">
+        <wsdl:operation name="restartIndexing">
+            <wsdl:input message="ns:restartIndexingRequest" wsaw:Action="urn:restartIndexing" />
+            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:restartIndexingRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getSolrUrl">
+            <wsdl:input message="ns:getSolrUrlRequest" wsaw:Action="urn:getSolrUrl" />
+            <wsdl:output message="ns:getSolrUrlResponse" wsaw:Action="urn:getSolrUrlResponse" />
+            <wsdl:fault message="ns:IOException" name="IOException" wsaw:Action="urn:getSolrUrlIOException" />
+            <wsdl:fault message="ns:FileNotFoundException" name="FileNotFoundException" wsaw:Action="urn:getSolrUrlFileNotFoundException" />
+        </wsdl:operation>
+        <wsdl:operation name="getLoggedInUserName">
+            <wsdl:input message="ns:getLoggedInUserNameRequest" wsaw:Action="urn:getLoggedInUserName" />
+            <wsdl:output message="ns:getLoggedInUserNameResponse" wsaw:Action="urn:getLoggedInUserNameResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getContentSearchResults">
+            <wsdl:input message="ns:getContentSearchResultsRequest" wsaw:Action="urn:getContentSearchResults" />
+            <wsdl:output message="ns:getContentSearchResultsResponse" wsaw:Action="urn:getContentSearchResultsResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ContentSearchAdminServiceSoap11Binding" type="ns:ContentSearchAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="restartIndexing">
+            <soap:operation soapAction="urn:restartIndexing" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="RegistryException">
+                <soap:fault use="literal" name="RegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSolrUrl">
+            <soap:operation soapAction="urn:getSolrUrl" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="IOException">
+                <soap:fault use="literal" name="IOException" />
+            </wsdl:fault>
+            <wsdl:fault name="FileNotFoundException">
+                <soap:fault use="literal" name="FileNotFoundException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentSearchResults">
+            <soap:operation soapAction="urn:getContentSearchResults" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getLoggedInUserName">
+            <soap:operation soapAction="urn:getLoggedInUserName" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ContentSearchAdminServiceSoap12Binding" type="ns:ContentSearchAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="restartIndexing">
+            <soap12:operation soapAction="urn:restartIndexing" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="RegistryException">
+                <soap12:fault use="literal" name="RegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSolrUrl">
+            <soap12:operation soapAction="urn:getSolrUrl" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="IOException">
+                <soap12:fault use="literal" name="IOException" />
+            </wsdl:fault>
+            <wsdl:fault name="FileNotFoundException">
+                <soap12:fault use="literal" name="FileNotFoundException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContentSearchResults">
+            <soap12:operation soapAction="urn:getContentSearchResults" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getLoggedInUserName">
+            <soap12:operation soapAction="urn:getLoggedInUserName" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ContentSearchAdminServiceHttpBinding" type="ns:ContentSearchAdminServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="restartIndexing">
+            <http:operation location="restartIndexing" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSolrUrl">
+            <http:operation location="getSolrUrl" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getContentSearchResults">
+            <http:operation location="getContentSearchResults" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getLoggedInUserName">
+            <http:operation location="getLoggedInUserName" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ContentSearchAdminService">
+        <wsdl:port name="ContentSearchAdminServiceHttpsSoap11Endpoint" binding="ns:ContentSearchAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.0.146:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ContentSearchAdminServiceHttpsSoap12Endpoint" binding="ns:ContentSearchAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.0.146:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ContentSearchAdminServiceHttpsEndpoint" binding="ns:ContentSearchAdminServiceHttpBinding">
+            <http:address location="https://10.100.0.146:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

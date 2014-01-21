@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+<html>
+<head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"/>
+    <title>Content Search - User Guide</title>
+    <link href="../../admin/css/documentation.css" rel="stylesheet" type="text/css" media="all"/>
+</head>
+
+<body>
+<h1>Content Search</h1>
+
+<p>
+    Text appearing in the resource content can be used to find the resource using Content
+    Search feature. Simply enter the text you are looking for and click <b>Search</b>;
+    resources that contain the text you entered will be listed as search results.
+</p>
+
+
+<p><img src="images/main.png" width="728"/></p>
+
+<p>Figure 1: Searching Resource by Content</p>
+
+<p>
+    Words entered by the user will be matched as whole words in the resource content. Resources
+    that have one or more words entered under <b>Search For</b> above will appear in search
+    results. WSO2 Governance Registry, by default, supports searching inside resources containing
+    plain text, XML content (including WSDLs, Schemas, Policies, etc.), PDF files, Word documents,
+    Excel documents and Power Point documents. Support for other media types can be added by adding
+    new indexers. Please refer WSO2 Governance Registry User Guide for details.
+</p>
+<p>
+    Newly added resources have to be indexed before they appear in Content Search results. This
+    automatic indexing process happens in the background and therefore newly added resources might
+    not be immediately available for Content Search. Indexing frequency and initial startup delay
+    for indexing are configurable as described in the User Guide.
+</p>
+</body>
+</html>
