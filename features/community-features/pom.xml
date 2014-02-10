@@ -78,9 +78,9 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.community.features>${wso2carbon.version}</wso2carbon.version.community.features>
-        <wso2carbon.version.email.verification>${wso2carbon.version}</wso2carbon.version.email.verification>
-        <wso2carbon.version.event>${wso2carbon.version}</wso2carbon.version.event>
+        <wso2carbon.version.community.features>${project.version}</wso2carbon.version.community.features>
+        <wso2carbon.version.email.verification>${project.version}</wso2carbon.version.email.verification>
+        <wso2carbon.version.event>${project.version}</wso2carbon.version.event>
     </properties>
 
 </project>

@@ -47,8 +47,8 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.registry.task>${wso2carbon.version}</wso2carbon.version.registry.task>
-        <wso2carbon.version.identity>${wso2carbon.version}</wso2carbon.version.identity>
+        <wso2carbon.version.registry.task>${project.version}</wso2carbon.version.registry.task>
+        <wso2carbon.version.identity>${project.version}</wso2carbon.version.identity>
     </properties>
 
 </project>

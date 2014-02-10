@@ -56,7 +56,7 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.ws.api>${wso2carbon.version}</wso2carbon.version.ws.api>
+        <wso2carbon.version.ws.api>${project.version}</wso2carbon.version.ws.api>
     </properties>
 
 </project>

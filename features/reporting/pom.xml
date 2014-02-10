@@ -58,7 +58,7 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.registry.reporting>${wso2carbon.version}</wso2carbon.version.registry.reporting>
+        <wso2carbon.version.registry.reporting>${project.version}</wso2carbon.version.registry.reporting>
     </properties>
 
 </project>

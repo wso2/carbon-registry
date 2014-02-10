@@ -63,7 +63,7 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.contentsearch>${wso2carbon.version}</wso2carbon.version.contentsearch>
+        <wso2carbon.version.contentsearch>${project.version}</wso2carbon.version.contentsearch>
 	<solr.version>1.4.1.wso2v1</solr.version>
     </properties>
 

@@ -63,8 +63,8 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.registry.profiles>${wso2carbon.version}</wso2carbon.version.registry.profiles>
-        <wso2carbon.version.identity>${wso2carbon.version}</wso2carbon.version.identity>
+        <wso2carbon.version.registry.profiles>${project.version}</wso2carbon.version.registry.profiles>
+        <wso2carbon.version.identity>${project.version}</wso2carbon.version.identity>
     </properties>
 
 </project>

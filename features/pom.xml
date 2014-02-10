@@ -47,15 +47,15 @@
         <module>webdav</module>
 	<module>jcr</module>
 	<module>uddi</module>
-        <module>people</module>
-        <module>processes</module>
     </modules>
     
     <properties>
         <rhino.version>1.7.0.R4.wso2v1</rhino.version>
+	<carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <commons.scxml.wso2.version>${scxml.version}</commons.scxml.wso2.version>
-        <mashup.version>${wso2carbon.version}</mashup.version>
-        <event.version>${wso2carbon.version}</event.version>
+        <mashup.version>${project.version}</mashup.version>
+        <event.version>${project.version}</event.version>
+	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
     </properties>
 </project>
 

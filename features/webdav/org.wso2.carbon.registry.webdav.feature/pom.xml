@@ -40,7 +40,7 @@
                <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.webdav</artifactId>
- 	    <version>${wso2carbon.version}</version>
+ 	    <version>${project.version}</version>
         </dependency>
     </dependencies>
 

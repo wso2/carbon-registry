@@ -107,7 +107,7 @@
     </dependencyManagement>
 
     <properties>
-        <wso2carbon.version.registry.core>${wso2carbon.version}</wso2carbon.version.registry.core>
+        <wso2carbon.version.registry.core>${project.version}</wso2carbon.version.registry.core>
     </properties>
 
 </project>
