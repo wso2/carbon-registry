@@ -1,0 +1,643 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://services.reporting.registry.carbon.wso2.org" xmlns:ax2434="http://beans.common.registry.carbon.wso2.org/xsd" xmlns:ax2436="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2437="http://api.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2442="http://common.ntask.carbon.wso2.org/xsd" xmlns:ax2440="http://util.core.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.reporting.registry.carbon.wso2.org">
+    <wsdl:documentation>ReportingAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.ntask.carbon.wso2.org/xsd">
+            <xs:complexType name="TaskException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="code" nillable="true" type="ax2442:TaskException_Code" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="TaskException_Code">
+                <xs:complexContent>
+                    <xs:extension base="xs:Enum">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.core.carbon.wso2.org/xsd">
+            <xs:complexType name="CryptoException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2438="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2437:RegistryException">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.common.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="ReportConfigurationBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="attributes" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="cronExpression" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="password" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="registryURL" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="reportClass" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="scheduled" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="template" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="username" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2443="http://common.ntask.carbon.wso2.org/xsd" xmlns:ax2435="http://beans.common.registry.carbon.wso2.org/xsd" xmlns:ax2441="http://util.core.carbon.wso2.org/xsd" xmlns:ax2439="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.reporting.registry.carbon.wso2.org">
+            <xs:import namespace="http://beans.common.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://util.core.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://common.ntask.carbon.wso2.org/xsd" />
+            <xs:element name="ReportingAdminServiceException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ReportingAdminServiceException" nillable="true" type="ns:Exception" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="Exception">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="stopScheduledReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="scheduleReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="configuration" nillable="true" type="ax2434:ReportConfigurationBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ReportingAdminServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2436:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ReportingAdminServiceCryptoException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CryptoException" nillable="true" type="ax2441:CryptoException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="saveReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="configuration" nillable="true" type="ax2434:ReportConfigurationBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ReportingAdminServiceTaskException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="TaskException" nillable="true" type="ax2443:TaskException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedReports">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedReportsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2434:ReportConfigurationBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedReportResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2434:ReportConfigurationBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getReportBytes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="configuration" nillable="true" type="ax2434:ReportConfigurationBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getReportBytesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:base64Binary" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMandatoryAttributeNames">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="className" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMandatoryAttributeNamesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAttributeNames">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="className" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAttributeNamesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteSavedReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="copySavedReport">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="newName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getReportBytesRequest">
+        <wsdl:part name="parameters" element="ns:getReportBytes" />
+    </wsdl:message>
+    <wsdl:message name="getReportBytesResponse">
+        <wsdl:part name="parameters" element="ns:getReportBytesResponse" />
+    </wsdl:message>
+    <wsdl:message name="ReportingAdminServiceException">
+        <wsdl:part name="parameters" element="ns:ReportingAdminServiceException" />
+    </wsdl:message>
+    <wsdl:message name="stopScheduledReportRequest">
+        <wsdl:part name="parameters" element="ns:stopScheduledReport" />
+    </wsdl:message>
+    <wsdl:message name="copySavedReportRequest">
+        <wsdl:part name="parameters" element="ns:copySavedReport" />
+    </wsdl:message>
+    <wsdl:message name="ReportingAdminServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:ReportingAdminServiceRegistryException" />
+    </wsdl:message>
+    <wsdl:message name="getAttributeNamesRequest">
+        <wsdl:part name="parameters" element="ns:getAttributeNames" />
+    </wsdl:message>
+    <wsdl:message name="getAttributeNamesResponse">
+        <wsdl:part name="parameters" element="ns:getAttributeNamesResponse" />
+    </wsdl:message>
+    <wsdl:message name="deleteSavedReportRequest">
+        <wsdl:part name="parameters" element="ns:deleteSavedReport" />
+    </wsdl:message>
+    <wsdl:message name="saveReportRequest">
+        <wsdl:part name="parameters" element="ns:saveReport" />
+    </wsdl:message>
+    <wsdl:message name="ReportingAdminServiceCryptoException">
+        <wsdl:part name="parameters" element="ns:ReportingAdminServiceCryptoException" />
+    </wsdl:message>
+    <wsdl:message name="getSavedReportRequest">
+        <wsdl:part name="parameters" element="ns:getSavedReport" />
+    </wsdl:message>
+    <wsdl:message name="getSavedReportResponse">
+        <wsdl:part name="parameters" element="ns:getSavedReportResponse" />
+    </wsdl:message>
+    <wsdl:message name="ReportingAdminServiceTaskException">
+        <wsdl:part name="parameters" element="ns:ReportingAdminServiceTaskException" />
+    </wsdl:message>
+    <wsdl:message name="getSavedReportsRequest">
+        <wsdl:part name="parameters" element="ns:getSavedReports" />
+    </wsdl:message>
+    <wsdl:message name="getSavedReportsResponse">
+        <wsdl:part name="parameters" element="ns:getSavedReportsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMandatoryAttributeNamesRequest">
+        <wsdl:part name="parameters" element="ns:getMandatoryAttributeNames" />
+    </wsdl:message>
+    <wsdl:message name="getMandatoryAttributeNamesResponse">
+        <wsdl:part name="parameters" element="ns:getMandatoryAttributeNamesResponse" />
+    </wsdl:message>
+    <wsdl:message name="scheduleReportRequest">
+        <wsdl:part name="parameters" element="ns:scheduleReport" />
+    </wsdl:message>
+    <wsdl:portType name="ReportingAdminServicePortType">
+        <wsdl:operation name="getReportBytes">
+            <wsdl:input message="ns:getReportBytesRequest" wsaw:Action="urn:getReportBytes" />
+            <wsdl:output message="ns:getReportBytesResponse" wsaw:Action="urn:getReportBytesResponse" />
+            <wsdl:fault message="ns:ReportingAdminServiceException" name="ReportingAdminServiceException" wsaw:Action="urn:getReportBytesReportingAdminServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="stopScheduledReport">
+            <wsdl:input message="ns:stopScheduledReportRequest" wsaw:Action="urn:stopScheduledReport" />
+            <wsdl:fault message="ns:ReportingAdminServiceException" name="ReportingAdminServiceException" wsaw:Action="urn:stopScheduledReportReportingAdminServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="copySavedReport">
+            <wsdl:input message="ns:copySavedReportRequest" wsaw:Action="urn:copySavedReport" />
+            <wsdl:fault message="ns:ReportingAdminServiceRegistryException" name="ReportingAdminServiceRegistryException" wsaw:Action="urn:copySavedReportReportingAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAttributeNames">
+            <wsdl:input message="ns:getAttributeNamesRequest" wsaw:Action="urn:getAttributeNames" />
+            <wsdl:output message="ns:getAttributeNamesResponse" wsaw:Action="urn:getAttributeNamesResponse" />
+            <wsdl:fault message="ns:ReportingAdminServiceException" name="ReportingAdminServiceException" wsaw:Action="urn:getAttributeNamesReportingAdminServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="deleteSavedReport">
+            <wsdl:input message="ns:deleteSavedReportRequest" wsaw:Action="urn:deleteSavedReport" />
+            <wsdl:fault message="ns:ReportingAdminServiceRegistryException" name="ReportingAdminServiceRegistryException" wsaw:Action="urn:deleteSavedReportReportingAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="saveReport">
+            <wsdl:input message="ns:saveReportRequest" wsaw:Action="urn:saveReport" />
+            <wsdl:fault message="ns:ReportingAdminServiceRegistryException" name="ReportingAdminServiceRegistryException" wsaw:Action="urn:saveReportReportingAdminServiceRegistryException" />
+            <wsdl:fault message="ns:ReportingAdminServiceCryptoException" name="ReportingAdminServiceCryptoException" wsaw:Action="urn:saveReportReportingAdminServiceCryptoException" />
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReport">
+            <wsdl:input message="ns:getSavedReportRequest" wsaw:Action="urn:getSavedReport" />
+            <wsdl:output message="ns:getSavedReportResponse" wsaw:Action="urn:getSavedReportResponse" />
+            <wsdl:fault message="ns:ReportingAdminServiceRegistryException" name="ReportingAdminServiceRegistryException" wsaw:Action="urn:getSavedReportReportingAdminServiceRegistryException" />
+            <wsdl:fault message="ns:ReportingAdminServiceCryptoException" name="ReportingAdminServiceCryptoException" wsaw:Action="urn:getSavedReportReportingAdminServiceCryptoException" />
+            <wsdl:fault message="ns:ReportingAdminServiceTaskException" name="ReportingAdminServiceTaskException" wsaw:Action="urn:getSavedReportReportingAdminServiceTaskException" />
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReports">
+            <wsdl:input message="ns:getSavedReportsRequest" wsaw:Action="urn:getSavedReports" />
+            <wsdl:output message="ns:getSavedReportsResponse" wsaw:Action="urn:getSavedReportsResponse" />
+            <wsdl:fault message="ns:ReportingAdminServiceRegistryException" name="ReportingAdminServiceRegistryException" wsaw:Action="urn:getSavedReportsReportingAdminServiceRegistryException" />
+            <wsdl:fault message="ns:ReportingAdminServiceCryptoException" name="ReportingAdminServiceCryptoException" wsaw:Action="urn:getSavedReportsReportingAdminServiceCryptoException" />
+            <wsdl:fault message="ns:ReportingAdminServiceTaskException" name="ReportingAdminServiceTaskException" wsaw:Action="urn:getSavedReportsReportingAdminServiceTaskException" />
+        </wsdl:operation>
+        <wsdl:operation name="getMandatoryAttributeNames">
+            <wsdl:input message="ns:getMandatoryAttributeNamesRequest" wsaw:Action="urn:getMandatoryAttributeNames" />
+            <wsdl:output message="ns:getMandatoryAttributeNamesResponse" wsaw:Action="urn:getMandatoryAttributeNamesResponse" />
+            <wsdl:fault message="ns:ReportingAdminServiceException" name="ReportingAdminServiceException" wsaw:Action="urn:getMandatoryAttributeNamesReportingAdminServiceException" />
+        </wsdl:operation>
+        <wsdl:operation name="scheduleReport">
+            <wsdl:input message="ns:scheduleReportRequest" wsaw:Action="urn:scheduleReport" />
+            <wsdl:fault message="ns:ReportingAdminServiceException" name="ReportingAdminServiceException" wsaw:Action="urn:scheduleReportReportingAdminServiceException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ReportingAdminServiceSoap11Binding" type="ns:ReportingAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="stopScheduledReport">
+            <soap:operation soapAction="urn:stopScheduledReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getReportBytes">
+            <soap:operation soapAction="urn:getReportBytes" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="copySavedReport">
+            <soap:operation soapAction="urn:copySavedReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAttributeNames">
+            <soap:operation soapAction="urn:getAttributeNames" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveReport">
+            <soap:operation soapAction="urn:saveReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deleteSavedReport">
+            <soap:operation soapAction="urn:deleteSavedReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReport">
+            <soap:operation soapAction="urn:getSavedReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceTaskException">
+                <soap:fault use="literal" name="ReportingAdminServiceTaskException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReports">
+            <soap:operation soapAction="urn:getSavedReports" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceTaskException">
+                <soap:fault use="literal" name="ReportingAdminServiceTaskException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleReport">
+            <soap:operation soapAction="urn:scheduleReport" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getMandatoryAttributeNames">
+            <soap:operation soapAction="urn:getMandatoryAttributeNames" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ReportingAdminServiceSoap12Binding" type="ns:ReportingAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="stopScheduledReport">
+            <soap12:operation soapAction="urn:stopScheduledReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap12:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getReportBytes">
+            <soap12:operation soapAction="urn:getReportBytes" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap12:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="copySavedReport">
+            <soap12:operation soapAction="urn:copySavedReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAttributeNames">
+            <soap12:operation soapAction="urn:getAttributeNames" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap12:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveReport">
+            <soap12:operation soapAction="urn:saveReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap12:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deleteSavedReport">
+            <soap12:operation soapAction="urn:deleteSavedReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReport">
+            <soap12:operation soapAction="urn:getSavedReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap12:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceTaskException">
+                <soap12:fault use="literal" name="ReportingAdminServiceTaskException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReports">
+            <soap12:operation soapAction="urn:getSavedReports" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ReportingAdminServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceCryptoException">
+                <soap12:fault use="literal" name="ReportingAdminServiceCryptoException" />
+            </wsdl:fault>
+            <wsdl:fault name="ReportingAdminServiceTaskException">
+                <soap12:fault use="literal" name="ReportingAdminServiceTaskException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleReport">
+            <soap12:operation soapAction="urn:scheduleReport" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap12:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getMandatoryAttributeNames">
+            <soap12:operation soapAction="urn:getMandatoryAttributeNames" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="ReportingAdminServiceException">
+                <soap12:fault use="literal" name="ReportingAdminServiceException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ReportingAdminServiceHttpBinding" type="ns:ReportingAdminServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="stopScheduledReport">
+            <http:operation location="stopScheduledReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getReportBytes">
+            <http:operation location="getReportBytes" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="copySavedReport">
+            <http:operation location="copySavedReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getAttributeNames">
+            <http:operation location="getAttributeNames" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveReport">
+            <http:operation location="saveReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="deleteSavedReport">
+            <http:operation location="deleteSavedReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReport">
+            <http:operation location="getSavedReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedReports">
+            <http:operation location="getSavedReports" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="scheduleReport">
+            <http:operation location="scheduleReport" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getMandatoryAttributeNames">
+            <http:operation location="getMandatoryAttributeNames" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ReportingAdminService">
+        <wsdl:port name="ReportingAdminServiceHttpsSoap11Endpoint" binding="ns:ReportingAdminServiceSoap11Binding">
+            <soap:address location="https://10.0.0.14:9443/services/ReportingAdminService.ReportingAdminServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ReportingAdminServiceHttpsSoap12Endpoint" binding="ns:ReportingAdminServiceSoap12Binding">
+            <soap12:address location="https://10.0.0.14:9443/services/ReportingAdminService.ReportingAdminServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="ReportingAdminServiceHttpsEndpoint" binding="ns:ReportingAdminServiceHttpBinding">
+            <http:address location="https://10.0.0.14:9443/services/ReportingAdminService.ReportingAdminServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

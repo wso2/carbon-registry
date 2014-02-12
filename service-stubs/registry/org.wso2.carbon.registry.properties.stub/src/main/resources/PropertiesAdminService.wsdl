@@ -1,0 +1,387 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://services.properties.registry.carbon.wso2.org" xmlns:ax2401="http://api.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2400="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2406="http://utils.properties.registry.carbon.wso2.org/xsd" xmlns:ax2404="http://beans.properties.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.properties.registry.carbon.wso2.org">
+    <wsdl:documentation>PropertiesAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://utils.properties.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2407="http://utils.properties.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.properties.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://utils.properties.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RetentionBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="deleteLocked" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="fromDate" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="readOnly" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="toDate" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="writeLocked" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PropertiesBean">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="deleteLocked" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="lifecycleProperties" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="loggedIn" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="pathWithVersion" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax2406:Property" />
+                    <xs:element minOccurs="0" name="putAllowed" type="xs:boolean" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="sysProperties" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="validationProperties" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="versionView" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="writeLocked" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2402="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2402:RegistryException">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2405="http://beans.properties.registry.carbon.wso2.org/xsd" xmlns:ax2403="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.properties.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://beans.properties.registry.carbon.wso2.org/xsd" />
+            <xs:element name="PropertiesAdminServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2400:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateProperty">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="oldName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setRetentionProperties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="bean" nillable="true" type="ax2405:RetentionBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setRetentionPropertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setProperty">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeProperty">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRetentionProperties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRetentionPropertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2405:RetentionBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getProperties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="viewProps" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPropertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2405:PropertiesBean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getRetentionPropertiesRequest">
+        <wsdl:part name="parameters" element="ns:getRetentionProperties" />
+    </wsdl:message>
+    <wsdl:message name="getRetentionPropertiesResponse">
+        <wsdl:part name="parameters" element="ns:getRetentionPropertiesResponse" />
+    </wsdl:message>
+    <wsdl:message name="PropertiesAdminServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:PropertiesAdminServiceRegistryException" />
+    </wsdl:message>
+    <wsdl:message name="getPropertiesRequest">
+        <wsdl:part name="parameters" element="ns:getProperties" />
+    </wsdl:message>
+    <wsdl:message name="getPropertiesResponse">
+        <wsdl:part name="parameters" element="ns:getPropertiesResponse" />
+    </wsdl:message>
+    <wsdl:message name="removePropertyRequest">
+        <wsdl:part name="parameters" element="ns:removeProperty" />
+    </wsdl:message>
+    <wsdl:message name="updatePropertyRequest">
+        <wsdl:part name="parameters" element="ns:updateProperty" />
+    </wsdl:message>
+    <wsdl:message name="setRetentionPropertiesRequest">
+        <wsdl:part name="parameters" element="ns:setRetentionProperties" />
+    </wsdl:message>
+    <wsdl:message name="setRetentionPropertiesResponse">
+        <wsdl:part name="parameters" element="ns:setRetentionPropertiesResponse" />
+    </wsdl:message>
+    <wsdl:message name="setPropertyRequest">
+        <wsdl:part name="parameters" element="ns:setProperty" />
+    </wsdl:message>
+    <wsdl:portType name="PropertiesAdminServicePortType">
+        <wsdl:operation name="getRetentionProperties">
+            <wsdl:input message="ns:getRetentionPropertiesRequest" wsaw:Action="urn:getRetentionProperties" />
+            <wsdl:output message="ns:getRetentionPropertiesResponse" wsaw:Action="urn:getRetentionPropertiesResponse" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:getRetentionPropertiesPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <wsdl:input message="ns:getPropertiesRequest" wsaw:Action="urn:getProperties" />
+            <wsdl:output message="ns:getPropertiesResponse" wsaw:Action="urn:getPropertiesResponse" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:getPropertiesPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeProperty">
+            <wsdl:input message="ns:removePropertyRequest" wsaw:Action="urn:removeProperty" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:removePropertyPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="updateProperty">
+            <wsdl:input message="ns:updatePropertyRequest" wsaw:Action="urn:updateProperty" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:updatePropertyPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="setRetentionProperties">
+            <wsdl:input message="ns:setRetentionPropertiesRequest" wsaw:Action="urn:setRetentionProperties" />
+            <wsdl:output message="ns:setRetentionPropertiesResponse" wsaw:Action="urn:setRetentionPropertiesResponse" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:setRetentionPropertiesPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="setProperty">
+            <wsdl:input message="ns:setPropertyRequest" wsaw:Action="urn:setProperty" />
+            <wsdl:fault message="ns:PropertiesAdminServiceRegistryException" name="PropertiesAdminServiceRegistryException" wsaw:Action="urn:setPropertyPropertiesAdminServiceRegistryException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="PropertiesAdminServiceSoap11Binding" type="ns:PropertiesAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getRetentionProperties">
+            <soap:operation soapAction="urn:getRetentionProperties" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap:operation soapAction="urn:getProperties" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateProperty">
+            <soap:operation soapAction="urn:updateProperty" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeProperty">
+            <soap:operation soapAction="urn:removeProperty" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setRetentionProperties">
+            <soap:operation soapAction="urn:setRetentionProperties" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setProperty">
+            <soap:operation soapAction="urn:setProperty" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PropertiesAdminServiceSoap12Binding" type="ns:PropertiesAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getRetentionProperties">
+            <soap12:operation soapAction="urn:getRetentionProperties" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap12:operation soapAction="urn:getProperties" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="updateProperty">
+            <soap12:operation soapAction="urn:updateProperty" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeProperty">
+            <soap12:operation soapAction="urn:removeProperty" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setRetentionProperties">
+            <soap12:operation soapAction="urn:setRetentionProperties" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setProperty">
+            <soap12:operation soapAction="urn:setProperty" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="PropertiesAdminServiceRegistryException">
+                <soap12:fault use="literal" name="PropertiesAdminServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="PropertiesAdminServiceHttpBinding" type="ns:PropertiesAdminServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="getRetentionProperties">
+            <http:operation location="getRetentionProperties" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <http:operation location="getProperties" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateProperty">
+            <http:operation location="updateProperty" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="removeProperty">
+            <http:operation location="removeProperty" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="setRetentionProperties">
+            <http:operation location="setRetentionProperties" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setProperty">
+            <http:operation location="setProperty" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="PropertiesAdminService">
+        <wsdl:port name="PropertiesAdminServiceHttpsSoap11Endpoint" binding="ns:PropertiesAdminServiceSoap11Binding">
+            <soap:address location="https://10.100.1.187:9443/services/PropertiesAdminService.PropertiesAdminServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="PropertiesAdminServiceHttpsSoap12Endpoint" binding="ns:PropertiesAdminServiceSoap12Binding">
+            <soap12:address location="https://10.100.1.187:9443/services/PropertiesAdminService.PropertiesAdminServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="PropertiesAdminServiceHttpsEndpoint" binding="ns:PropertiesAdminServiceHttpBinding">
+            <http:address location="https://10.100.1.187:9443/services/PropertiesAdminService.PropertiesAdminServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

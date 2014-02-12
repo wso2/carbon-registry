@@ -1,0 +1,2935 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.ws.registry.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax2463="http://api.ws.registry.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2460="http://api.registry.carbon.wso2.org/xsd" xmlns:ax2459="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2465="http://io.java/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.ws.registry.carbon.wso2.org">
+    <wsdl:documentation>WSRegistryService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.ws.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="WSResourceData">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="associations" nillable="true" type="ax2463:WSAssociation" />
+                    <xs:element minOccurs="0" name="averageRating" type="xs:float" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="comments" nillable="true" type="ax2463:WSComment" />
+                    <xs:element minOccurs="0" name="rating" type="xs:int" />
+                    <xs:element minOccurs="0" name="resource" nillable="true" type="ax2463:WSResource" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tags" nillable="true" type="ax2463:WSTag" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSAssociation">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="associationType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="destinationPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="sourcePath" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSComment">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="commentID" type="xs:long" />
+                    <xs:element minOccurs="0" name="commentPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="time" type="xs:long" />
+                    <xs:element minOccurs="0" name="user" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSResource">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="UUID" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="authorUserName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="collection" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="contentFile" nillable="true" type="xs:base64Binary" />
+                    <xs:element minOccurs="0" name="createdTime" type="xs:long" />
+                    <xs:element minOccurs="0" name="dbBasedContentID" type="xs:int" />
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="directory" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="lastModified" type="xs:long" />
+                    <xs:element minOccurs="0" name="lastUpdaterUserName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="matchingSnapshotID" type="xs:long" />
+                    <xs:element minOccurs="0" name="mediaType" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="parentPath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="pathID" type="xs:int" />
+                    <xs:element minOccurs="0" name="permanentPath" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax2463:WSProperty" />
+                    <xs:element minOccurs="0" name="propertiesModified" type="xs:boolean" />
+                    <xs:element minOccurs="0" name="snapshotID" type="xs:long" />
+                    <xs:element minOccurs="0" name="state" type="xs:int" />
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int" />
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="versionNumber" type="xs:long" />
+                    <xs:element minOccurs="0" name="versionableChange" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSProperty">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="values" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSTag">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="category" type="xs:int" />
+                    <xs:element minOccurs="0" name="tagCount" type="xs:long" />
+                    <xs:element minOccurs="0" name="tagName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSCollection">
+                <xs:complexContent>
+                    <xs:extension base="ax2463:WSResource">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="childCount" type="xs:int" />
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="children" nillable="true" type="xs:string" />
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="WSTaggedResourcePath">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="tagCount" type="xs:long" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="tagCounts" nillable="true" type="ax2463:WSMap" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSMap">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="WSLogEntry">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="action" type="xs:int" />
+                    <xs:element minOccurs="0" name="actionData" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="date" type="xs:long" />
+                    <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2461="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd" />
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2461:RegistryException">
+                        <xs:sequence />
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://io.java/xsd">
+            <xs:complexType name="IOException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2462="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2464="http://api.ws.registry.carbon.wso2.org/xsd" xmlns:ax2466="http://io.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.ws.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://api.ws.registry.carbon.wso2.org/xsd" />
+            <xs:import namespace="http://io.java/xsd" />
+            <xs:element name="WSRegistryServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2462:RegistryException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="wsRestore">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="dataHandler" nillable="true" type="xs:base64Binary" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="wsDump">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="wsDumpResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:base64Binary" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setTenantId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="setEventingServiceURL">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="eventingServiceURL" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="restoreVersion">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="versionPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="resourceExists">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="resourceExistsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rename">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="currentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="newName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="renameResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeVersionHistory">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="snapshotId" type="xs:long" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeVersionHistoryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeTag">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="tag" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeLink">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeComment">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="commentPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAssociation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="targetPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="associationType" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAspect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAspectResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rateResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="rating" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="move">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="currentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="newPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="moveResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="invokeAspectWithParam">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="aspectName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="action" nillable="true" type="xs:string" />
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="keys" nillable="true" type="xs:string" />
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="values" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="invokeAspectNoParam">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="aspectName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="action" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getVersions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getVersionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRating">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRatingResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getEventingServiceURL">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getEventingServiceURLResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:base64Binary" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCollectionContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCollectionContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getChildCount">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getChildCountResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAverageRating">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAverageRatingResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:float" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableAspects">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAvailableAspectsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAspectActions">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="aspectName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAspectActionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAll">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSResourceData" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="editComment">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="commentPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="text" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="delete">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createVersion">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createLinkWithSubTarget">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="target" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="subTargetPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="copy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="targetPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="copyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="associateAspect">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="aspect" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="applyTag">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="tag" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addAssociation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="targetPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="associationType" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSsearchContent">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="keywords" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSsearchContentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSCollection" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSRegistryServiceIOException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="IOException" nillable="true" type="ax2466:IOException" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSput">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="suggestedPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="wsResource" nillable="true" type="ax2464:WSResource" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSputResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSnewResource">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSnewResourceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSResource" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSnewCollection">
+                <xs:complexType>
+                    <xs:sequence />
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSnewCollectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSCollection" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSimportResource">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="suggestedPath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="sourceURL" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="metadata" nillable="true" type="ax2464:WSResource" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSimportResourceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetWithPageSize">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="start" type="xs:int" />
+                        <xs:element minOccurs="0" name="pageSize" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetWithPageSizeResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSCollection" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetTags">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetTagsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSTag" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetSingleComment">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="commentPath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetSingleCommentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSComment" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetResourcePathsWithTag">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="tag" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetResourcePathsWithTagResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSTaggedResourcePath" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetMetaData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetMetaDataResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSResource" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetLogs">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="action" type="xs:int" />
+                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="from" nillable="true" type="xs:date" />
+                        <xs:element minOccurs="0" name="to" nillable="true" type="xs:date" />
+                        <xs:element minOccurs="0" name="recentFirst" type="xs:boolean" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetLogsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSLogEntry" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetComments">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetCommentsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSComment" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetChildCollection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="start" type="xs:int" />
+                        <xs:element minOccurs="0" name="pageSize" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetChildCollectionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSCollection" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetAssociations">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="associationType" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetAssociationsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSAssociation" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetAllAssociations">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resoucePath" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetAllAssociationsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax2464:WSAssociation" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSget">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSgetResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSResource" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSexecuteQuery">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="key" nillable="true" type="xs:string" />
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="value" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSexecuteQueryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2464:WSCollection" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSaddComment">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
+                        <xs:element minOccurs="0" name="comment" nillable="true" type="ax2464:WSComment" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="WSaddCommentResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence />
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="deleteRequest">
+        <wsdl:part name="parameters" element="ns:delete" />
+    </wsdl:message>
+    <wsdl:message name="WSRegistryServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:WSRegistryServiceRegistryException" />
+    </wsdl:message>
+    <wsdl:message name="WSimportResourceRequest">
+        <wsdl:part name="parameters" element="ns:WSimportResource" />
+    </wsdl:message>
+    <wsdl:message name="WSimportResourceResponse">
+        <wsdl:part name="parameters" element="ns:WSimportResourceResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetAssociationsRequest">
+        <wsdl:part name="parameters" element="ns:WSgetAssociations" />
+    </wsdl:message>
+    <wsdl:message name="WSgetAssociationsResponse">
+        <wsdl:part name="parameters" element="ns:WSgetAssociationsResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetAllAssociationsRequest">
+        <wsdl:part name="parameters" element="ns:WSgetAllAssociations" />
+    </wsdl:message>
+    <wsdl:message name="WSgetAllAssociationsResponse">
+        <wsdl:part name="parameters" element="ns:WSgetAllAssociationsResponse" />
+    </wsdl:message>
+    <wsdl:message name="restoreVersionRequest">
+        <wsdl:part name="parameters" element="ns:restoreVersion" />
+    </wsdl:message>
+    <wsdl:message name="createLinkWithSubTargetRequest">
+        <wsdl:part name="parameters" element="ns:createLinkWithSubTarget" />
+    </wsdl:message>
+    <wsdl:message name="WSgetResourcePathsWithTagRequest">
+        <wsdl:part name="parameters" element="ns:WSgetResourcePathsWithTag" />
+    </wsdl:message>
+    <wsdl:message name="WSgetResourcePathsWithTagResponse">
+        <wsdl:part name="parameters" element="ns:WSgetResourcePathsWithTagResponse" />
+    </wsdl:message>
+    <wsdl:message name="setEventingServiceURLRequest">
+        <wsdl:part name="parameters" element="ns:setEventingServiceURL" />
+    </wsdl:message>
+    <wsdl:message name="wsRestoreRequest">
+        <wsdl:part name="parameters" element="ns:wsRestore" />
+    </wsdl:message>
+    <wsdl:message name="wsDumpRequest">
+        <wsdl:part name="parameters" element="ns:wsDump" />
+    </wsdl:message>
+    <wsdl:message name="wsDumpResponse">
+        <wsdl:part name="parameters" element="ns:wsDumpResponse" />
+    </wsdl:message>
+    <wsdl:message name="invokeAspectWithParamRequest">
+        <wsdl:part name="parameters" element="ns:invokeAspectWithParam" />
+    </wsdl:message>
+    <wsdl:message name="removeAspectRequest">
+        <wsdl:part name="parameters" element="ns:removeAspect" />
+    </wsdl:message>
+    <wsdl:message name="removeAspectResponse">
+        <wsdl:part name="parameters" element="ns:removeAspectResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAspectActionsRequest">
+        <wsdl:part name="parameters" element="ns:getAspectActions" />
+    </wsdl:message>
+    <wsdl:message name="getAspectActionsResponse">
+        <wsdl:part name="parameters" element="ns:getAspectActionsResponse" />
+    </wsdl:message>
+    <wsdl:message name="renameRequest">
+        <wsdl:part name="parameters" element="ns:rename" />
+    </wsdl:message>
+    <wsdl:message name="renameResponse">
+        <wsdl:part name="parameters" element="ns:renameResponse" />
+    </wsdl:message>
+    <wsdl:message name="getRatingRequest">
+        <wsdl:part name="parameters" element="ns:getRating" />
+    </wsdl:message>
+    <wsdl:message name="getRatingResponse">
+        <wsdl:part name="parameters" element="ns:getRatingResponse" />
+    </wsdl:message>
+    <wsdl:message name="moveRequest">
+        <wsdl:part name="parameters" element="ns:move" />
+    </wsdl:message>
+    <wsdl:message name="moveResponse">
+        <wsdl:part name="parameters" element="ns:moveResponse" />
+    </wsdl:message>
+    <wsdl:message name="copyRequest">
+        <wsdl:part name="parameters" element="ns:copy" />
+    </wsdl:message>
+    <wsdl:message name="copyResponse">
+        <wsdl:part name="parameters" element="ns:copyResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetRequest">
+        <wsdl:part name="parameters" element="ns:WSget" />
+    </wsdl:message>
+    <wsdl:message name="WSgetResponse">
+        <wsdl:part name="parameters" element="ns:WSgetResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSnewResourceRequest">
+        <wsdl:part name="parameters" element="ns:WSnewResource" />
+    </wsdl:message>
+    <wsdl:message name="WSnewResourceResponse">
+        <wsdl:part name="parameters" element="ns:WSnewResourceResponse" />
+    </wsdl:message>
+    <wsdl:message name="getEventingServiceURLRequest">
+        <wsdl:part name="parameters" element="ns:getEventingServiceURL" />
+    </wsdl:message>
+    <wsdl:message name="getEventingServiceURLResponse">
+        <wsdl:part name="parameters" element="ns:getEventingServiceURLResponse" />
+    </wsdl:message>
+    <wsdl:message name="addAssociationRequest">
+        <wsdl:part name="parameters" element="ns:addAssociation" />
+    </wsdl:message>
+    <wsdl:message name="WSgetTagsRequest">
+        <wsdl:part name="parameters" element="ns:WSgetTags" />
+    </wsdl:message>
+    <wsdl:message name="WSgetTagsResponse">
+        <wsdl:part name="parameters" element="ns:WSgetTagsResponse" />
+    </wsdl:message>
+    <wsdl:message name="resourceExistsRequest">
+        <wsdl:part name="parameters" element="ns:resourceExists" />
+    </wsdl:message>
+    <wsdl:message name="resourceExistsResponse">
+        <wsdl:part name="parameters" element="ns:resourceExistsResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetSingleCommentRequest">
+        <wsdl:part name="parameters" element="ns:WSgetSingleComment" />
+    </wsdl:message>
+    <wsdl:message name="WSgetSingleCommentResponse">
+        <wsdl:part name="parameters" element="ns:WSgetSingleCommentResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAvailableAspectsRequest">
+        <wsdl:part name="parameters" element="ns:getAvailableAspects" />
+    </wsdl:message>
+    <wsdl:message name="getAvailableAspectsResponse">
+        <wsdl:part name="parameters" element="ns:getAvailableAspectsResponse" />
+    </wsdl:message>
+    <wsdl:message name="rateResourceRequest">
+        <wsdl:part name="parameters" element="ns:rateResource" />
+    </wsdl:message>
+    <wsdl:message name="WSsearchContentRequest">
+        <wsdl:part name="parameters" element="ns:WSsearchContent" />
+    </wsdl:message>
+    <wsdl:message name="WSsearchContentResponse">
+        <wsdl:part name="parameters" element="ns:WSsearchContentResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeCommentRequest">
+        <wsdl:part name="parameters" element="ns:removeComment" />
+    </wsdl:message>
+    <wsdl:message name="WSexecuteQueryRequest">
+        <wsdl:part name="parameters" element="ns:WSexecuteQuery" />
+    </wsdl:message>
+    <wsdl:message name="WSexecuteQueryResponse">
+        <wsdl:part name="parameters" element="ns:WSexecuteQueryResponse" />
+    </wsdl:message>
+    <wsdl:message name="getChildCountRequest">
+        <wsdl:part name="parameters" element="ns:getChildCount" />
+    </wsdl:message>
+    <wsdl:message name="getChildCountResponse">
+        <wsdl:part name="parameters" element="ns:getChildCountResponse" />
+    </wsdl:message>
+    <wsdl:message name="applyTagRequest">
+        <wsdl:part name="parameters" element="ns:applyTag" />
+    </wsdl:message>
+    <wsdl:message name="createVersionRequest">
+        <wsdl:part name="parameters" element="ns:createVersion" />
+    </wsdl:message>
+    <wsdl:message name="removeVersionHistoryRequest">
+        <wsdl:part name="parameters" element="ns:removeVersionHistory" />
+    </wsdl:message>
+    <wsdl:message name="removeVersionHistoryResponse">
+        <wsdl:part name="parameters" element="ns:removeVersionHistoryResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSputRequest">
+        <wsdl:part name="parameters" element="ns:WSput" />
+    </wsdl:message>
+    <wsdl:message name="WSputResponse">
+        <wsdl:part name="parameters" element="ns:WSputResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSRegistryServiceIOException">
+        <wsdl:part name="parameters" element="ns:WSRegistryServiceIOException" />
+    </wsdl:message>
+    <wsdl:message name="getAllRequest">
+        <wsdl:part name="parameters" element="ns:getAll" />
+    </wsdl:message>
+    <wsdl:message name="getAllResponse">
+        <wsdl:part name="parameters" element="ns:getAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="associateAspectRequest">
+        <wsdl:part name="parameters" element="ns:associateAspect" />
+    </wsdl:message>
+    <wsdl:message name="getCollectionContentRequest">
+        <wsdl:part name="parameters" element="ns:getCollectionContent" />
+    </wsdl:message>
+    <wsdl:message name="getCollectionContentResponse">
+        <wsdl:part name="parameters" element="ns:getCollectionContentResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeAssociationRequest">
+        <wsdl:part name="parameters" element="ns:removeAssociation" />
+    </wsdl:message>
+    <wsdl:message name="removeTagRequest">
+        <wsdl:part name="parameters" element="ns:removeTag" />
+    </wsdl:message>
+    <wsdl:message name="WSgetCommentsRequest">
+        <wsdl:part name="parameters" element="ns:WSgetComments" />
+    </wsdl:message>
+    <wsdl:message name="WSgetCommentsResponse">
+        <wsdl:part name="parameters" element="ns:WSgetCommentsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getVersionsRequest">
+        <wsdl:part name="parameters" element="ns:getVersions" />
+    </wsdl:message>
+    <wsdl:message name="getVersionsResponse">
+        <wsdl:part name="parameters" element="ns:getVersionsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getContentRequest">
+        <wsdl:part name="parameters" element="ns:getContent" />
+    </wsdl:message>
+    <wsdl:message name="getContentResponse">
+        <wsdl:part name="parameters" element="ns:getContentResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeLinkRequest">
+        <wsdl:part name="parameters" element="ns:removeLink" />
+    </wsdl:message>
+    <wsdl:message name="WSnewCollectionRequest">
+        <wsdl:part name="parameters" element="ns:WSnewCollection" />
+    </wsdl:message>
+    <wsdl:message name="WSnewCollectionResponse">
+        <wsdl:part name="parameters" element="ns:WSnewCollectionResponse" />
+    </wsdl:message>
+    <wsdl:message name="invokeAspectNoParamRequest">
+        <wsdl:part name="parameters" element="ns:invokeAspectNoParam" />
+    </wsdl:message>
+    <wsdl:message name="WSgetMetaDataRequest">
+        <wsdl:part name="parameters" element="ns:WSgetMetaData" />
+    </wsdl:message>
+    <wsdl:message name="WSgetMetaDataResponse">
+        <wsdl:part name="parameters" element="ns:WSgetMetaDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAverageRatingRequest">
+        <wsdl:part name="parameters" element="ns:getAverageRating" />
+    </wsdl:message>
+    <wsdl:message name="getAverageRatingResponse">
+        <wsdl:part name="parameters" element="ns:getAverageRatingResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetChildCollectionRequest">
+        <wsdl:part name="parameters" element="ns:WSgetChildCollection" />
+    </wsdl:message>
+    <wsdl:message name="WSgetChildCollectionResponse">
+        <wsdl:part name="parameters" element="ns:WSgetChildCollectionResponse" />
+    </wsdl:message>
+    <wsdl:message name="editCommentRequest">
+        <wsdl:part name="parameters" element="ns:editComment" />
+    </wsdl:message>
+    <wsdl:message name="WSaddCommentRequest">
+        <wsdl:part name="parameters" element="ns:WSaddComment" />
+    </wsdl:message>
+    <wsdl:message name="WSaddCommentResponse">
+        <wsdl:part name="parameters" element="ns:WSaddCommentResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetWithPageSizeRequest">
+        <wsdl:part name="parameters" element="ns:WSgetWithPageSize" />
+    </wsdl:message>
+    <wsdl:message name="WSgetWithPageSizeResponse">
+        <wsdl:part name="parameters" element="ns:WSgetWithPageSizeResponse" />
+    </wsdl:message>
+    <wsdl:message name="WSgetLogsRequest">
+        <wsdl:part name="parameters" element="ns:WSgetLogs" />
+    </wsdl:message>
+    <wsdl:message name="WSgetLogsResponse">
+        <wsdl:part name="parameters" element="ns:WSgetLogsResponse" />
+    </wsdl:message>
+    <wsdl:message name="setTenantIdRequest">
+        <wsdl:part name="parameters" element="ns:setTenantId" />
+    </wsdl:message>
+    <wsdl:portType name="WSRegistryServicePortType">
+        <wsdl:operation name="delete">
+            <wsdl:input message="ns:deleteRequest" wsaw:Action="urn:delete" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:deleteWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSimportResource">
+            <wsdl:input message="ns:WSimportResourceRequest" wsaw:Action="urn:WSimportResource" />
+            <wsdl:output message="ns:WSimportResourceResponse" wsaw:Action="urn:WSimportResourceResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSimportResourceWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAssociations">
+            <wsdl:input message="ns:WSgetAssociationsRequest" wsaw:Action="urn:WSgetAssociations" />
+            <wsdl:output message="ns:WSgetAssociationsResponse" wsaw:Action="urn:WSgetAssociationsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetAssociationsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAllAssociations">
+            <wsdl:input message="ns:WSgetAllAssociationsRequest" wsaw:Action="urn:WSgetAllAssociations" />
+            <wsdl:output message="ns:WSgetAllAssociationsResponse" wsaw:Action="urn:WSgetAllAssociationsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetAllAssociationsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="restoreVersion">
+            <wsdl:input message="ns:restoreVersionRequest" wsaw:Action="urn:restoreVersion" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:restoreVersionWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="createLinkWithSubTarget">
+            <wsdl:input message="ns:createLinkWithSubTargetRequest" wsaw:Action="urn:createLinkWithSubTarget" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:createLinkWithSubTargetWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetResourcePathsWithTag">
+            <wsdl:input message="ns:WSgetResourcePathsWithTagRequest" wsaw:Action="urn:WSgetResourcePathsWithTag" />
+            <wsdl:output message="ns:WSgetResourcePathsWithTagResponse" wsaw:Action="urn:WSgetResourcePathsWithTagResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetResourcePathsWithTagWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="setEventingServiceURL">
+            <wsdl:input message="ns:setEventingServiceURLRequest" wsaw:Action="urn:setEventingServiceURL" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:setEventingServiceURLWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="wsRestore">
+            <wsdl:input message="ns:wsRestoreRequest" wsaw:Action="urn:wsRestore" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:wsRestoreWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="wsDump">
+            <wsdl:input message="ns:wsDumpRequest" wsaw:Action="urn:wsDump" />
+            <wsdl:output message="ns:wsDumpResponse" wsaw:Action="urn:wsDumpResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:wsDumpWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectWithParam">
+            <wsdl:input message="ns:invokeAspectWithParamRequest" wsaw:Action="urn:invokeAspectWithParam" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:invokeAspectWithParamWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <wsdl:input message="ns:removeAspectRequest" wsaw:Action="urn:removeAspect" />
+            <wsdl:output message="ns:removeAspectResponse" wsaw:Action="urn:removeAspectResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeAspectWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAspectActions">
+            <wsdl:input message="ns:getAspectActionsRequest" wsaw:Action="urn:getAspectActions" />
+            <wsdl:output message="ns:getAspectActionsResponse" wsaw:Action="urn:getAspectActionsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getAspectActionsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="rename">
+            <wsdl:input message="ns:renameRequest" wsaw:Action="urn:rename" />
+            <wsdl:output message="ns:renameResponse" wsaw:Action="urn:renameResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:renameWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getRating">
+            <wsdl:input message="ns:getRatingRequest" wsaw:Action="urn:getRating" />
+            <wsdl:output message="ns:getRatingResponse" wsaw:Action="urn:getRatingResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getRatingWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="move">
+            <wsdl:input message="ns:moveRequest" wsaw:Action="urn:move" />
+            <wsdl:output message="ns:moveResponse" wsaw:Action="urn:moveResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:moveWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="copy">
+            <wsdl:input message="ns:copyRequest" wsaw:Action="urn:copy" />
+            <wsdl:output message="ns:copyResponse" wsaw:Action="urn:copyResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:copyWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSget">
+            <wsdl:input message="ns:WSgetRequest" wsaw:Action="urn:WSget" />
+            <wsdl:output message="ns:WSgetResponse" wsaw:Action="urn:WSgetResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSnewResource">
+            <wsdl:input message="ns:WSnewResourceRequest" wsaw:Action="urn:WSnewResource" />
+            <wsdl:output message="ns:WSnewResourceResponse" wsaw:Action="urn:WSnewResourceResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSnewResourceWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getEventingServiceURL">
+            <wsdl:input message="ns:getEventingServiceURLRequest" wsaw:Action="urn:getEventingServiceURL" />
+            <wsdl:output message="ns:getEventingServiceURLResponse" wsaw:Action="urn:getEventingServiceURLResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getEventingServiceURLWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="addAssociation">
+            <wsdl:input message="ns:addAssociationRequest" wsaw:Action="urn:addAssociation" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:addAssociationWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetTags">
+            <wsdl:input message="ns:WSgetTagsRequest" wsaw:Action="urn:WSgetTags" />
+            <wsdl:output message="ns:WSgetTagsResponse" wsaw:Action="urn:WSgetTagsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetTagsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="resourceExists">
+            <wsdl:input message="ns:resourceExistsRequest" wsaw:Action="urn:resourceExists" />
+            <wsdl:output message="ns:resourceExistsResponse" wsaw:Action="urn:resourceExistsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:resourceExistsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetSingleComment">
+            <wsdl:input message="ns:WSgetSingleCommentRequest" wsaw:Action="urn:WSgetSingleComment" />
+            <wsdl:output message="ns:WSgetSingleCommentResponse" wsaw:Action="urn:WSgetSingleCommentResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetSingleCommentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <wsdl:input message="ns:getAvailableAspectsRequest" wsaw:Action="urn:getAvailableAspects" />
+            <wsdl:output message="ns:getAvailableAspectsResponse" wsaw:Action="urn:getAvailableAspectsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="rateResource">
+            <wsdl:input message="ns:rateResourceRequest" wsaw:Action="urn:rateResource" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:rateResourceWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSsearchContent">
+            <wsdl:input message="ns:WSsearchContentRequest" wsaw:Action="urn:WSsearchContent" />
+            <wsdl:output message="ns:WSsearchContentResponse" wsaw:Action="urn:WSsearchContentResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSsearchContentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeComment">
+            <wsdl:input message="ns:removeCommentRequest" wsaw:Action="urn:removeComment" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeCommentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSexecuteQuery">
+            <wsdl:input message="ns:WSexecuteQueryRequest" wsaw:Action="urn:WSexecuteQuery" />
+            <wsdl:output message="ns:WSexecuteQueryResponse" wsaw:Action="urn:WSexecuteQueryResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSexecuteQueryWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getChildCount">
+            <wsdl:input message="ns:getChildCountRequest" wsaw:Action="urn:getChildCount" />
+            <wsdl:output message="ns:getChildCountResponse" wsaw:Action="urn:getChildCountResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getChildCountWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="applyTag">
+            <wsdl:input message="ns:applyTagRequest" wsaw:Action="urn:applyTag" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:applyTagWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="createVersion">
+            <wsdl:input message="ns:createVersionRequest" wsaw:Action="urn:createVersion" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:createVersionWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeVersionHistory">
+            <wsdl:input message="ns:removeVersionHistoryRequest" wsaw:Action="urn:removeVersionHistory" />
+            <wsdl:output message="ns:removeVersionHistoryResponse" wsaw:Action="urn:removeVersionHistoryResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeVersionHistoryWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSput">
+            <wsdl:input message="ns:WSputRequest" wsaw:Action="urn:WSput" />
+            <wsdl:output message="ns:WSputResponse" wsaw:Action="urn:WSputResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSputWSRegistryServiceRegistryException" />
+            <wsdl:fault message="ns:WSRegistryServiceIOException" name="WSRegistryServiceIOException" wsaw:Action="urn:WSputWSRegistryServiceIOException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAll">
+            <wsdl:input message="ns:getAllRequest" wsaw:Action="urn:getAll" />
+            <wsdl:output message="ns:getAllResponse" wsaw:Action="urn:getAllResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getAllWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="associateAspect">
+            <wsdl:input message="ns:associateAspectRequest" wsaw:Action="urn:associateAspect" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:associateAspectWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <wsdl:input message="ns:getCollectionContentRequest" wsaw:Action="urn:getCollectionContent" />
+            <wsdl:output message="ns:getCollectionContentResponse" wsaw:Action="urn:getCollectionContentResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getCollectionContentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeAssociation">
+            <wsdl:input message="ns:removeAssociationRequest" wsaw:Action="urn:removeAssociation" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeAssociationWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeTag">
+            <wsdl:input message="ns:removeTagRequest" wsaw:Action="urn:removeTag" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeTagWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetComments">
+            <wsdl:input message="ns:WSgetCommentsRequest" wsaw:Action="urn:WSgetComments" />
+            <wsdl:output message="ns:WSgetCommentsResponse" wsaw:Action="urn:WSgetCommentsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetCommentsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getVersions">
+            <wsdl:input message="ns:getVersionsRequest" wsaw:Action="urn:getVersions" />
+            <wsdl:output message="ns:getVersionsResponse" wsaw:Action="urn:getVersionsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getVersionsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getContent">
+            <wsdl:input message="ns:getContentRequest" wsaw:Action="urn:getContent" />
+            <wsdl:output message="ns:getContentResponse" wsaw:Action="urn:getContentResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getContentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="removeLink">
+            <wsdl:input message="ns:removeLinkRequest" wsaw:Action="urn:removeLink" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:removeLinkWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSnewCollection">
+            <wsdl:input message="ns:WSnewCollectionRequest" wsaw:Action="urn:WSnewCollection" />
+            <wsdl:output message="ns:WSnewCollectionResponse" wsaw:Action="urn:WSnewCollectionResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSnewCollectionWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectNoParam">
+            <wsdl:input message="ns:invokeAspectNoParamRequest" wsaw:Action="urn:invokeAspectNoParam" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:invokeAspectNoParamWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetMetaData">
+            <wsdl:input message="ns:WSgetMetaDataRequest" wsaw:Action="urn:WSgetMetaData" />
+            <wsdl:output message="ns:WSgetMetaDataResponse" wsaw:Action="urn:WSgetMetaDataResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetMetaDataWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="getAverageRating">
+            <wsdl:input message="ns:getAverageRatingRequest" wsaw:Action="urn:getAverageRating" />
+            <wsdl:output message="ns:getAverageRatingResponse" wsaw:Action="urn:getAverageRatingResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:getAverageRatingWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetChildCollection">
+            <wsdl:input message="ns:WSgetChildCollectionRequest" wsaw:Action="urn:WSgetChildCollection" />
+            <wsdl:output message="ns:WSgetChildCollectionResponse" wsaw:Action="urn:WSgetChildCollectionResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetChildCollectionWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="editComment">
+            <wsdl:input message="ns:editCommentRequest" wsaw:Action="urn:editComment" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:editCommentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSaddComment">
+            <wsdl:input message="ns:WSaddCommentRequest" wsaw:Action="urn:WSaddComment" />
+            <wsdl:output message="ns:WSaddCommentResponse" wsaw:Action="urn:WSaddCommentResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSaddCommentWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetWithPageSize">
+            <wsdl:input message="ns:WSgetWithPageSizeRequest" wsaw:Action="urn:WSgetWithPageSize" />
+            <wsdl:output message="ns:WSgetWithPageSizeResponse" wsaw:Action="urn:WSgetWithPageSizeResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetWithPageSizeWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="WSgetLogs">
+            <wsdl:input message="ns:WSgetLogsRequest" wsaw:Action="urn:WSgetLogs" />
+            <wsdl:output message="ns:WSgetLogsResponse" wsaw:Action="urn:WSgetLogsResponse" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:WSgetLogsWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+        <wsdl:operation name="setTenantId">
+            <wsdl:input message="ns:setTenantIdRequest" wsaw:Action="urn:setTenantId" />
+            <wsdl:fault message="ns:WSRegistryServiceRegistryException" name="WSRegistryServiceRegistryException" wsaw:Action="urn:setTenantIdWSRegistryServiceRegistryException" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="WSRegistryServiceSoap11Binding" type="ns:WSRegistryServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="delete">
+            <soap:operation soapAction="urn:delete" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSimportResource">
+            <soap:operation soapAction="urn:WSimportResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAssociations">
+            <soap:operation soapAction="urn:WSgetAssociations" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="restoreVersion">
+            <soap:operation soapAction="urn:restoreVersion" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAllAssociations">
+            <soap:operation soapAction="urn:WSgetAllAssociations" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="createLinkWithSubTarget">
+            <soap:operation soapAction="urn:createLinkWithSubTarget" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetResourcePathsWithTag">
+            <soap:operation soapAction="urn:WSgetResourcePathsWithTag" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="wsRestore">
+            <soap:operation soapAction="urn:wsRestore" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setEventingServiceURL">
+            <soap:operation soapAction="urn:setEventingServiceURL" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="wsDump">
+            <soap:operation soapAction="urn:wsDump" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <soap:operation soapAction="urn:removeAspect" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectWithParam">
+            <soap:operation soapAction="urn:invokeAspectWithParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAspectActions">
+            <soap:operation soapAction="urn:getAspectActions" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="move">
+            <soap:operation soapAction="urn:move" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="rename">
+            <soap:operation soapAction="urn:rename" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getRating">
+            <soap:operation soapAction="urn:getRating" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="copy">
+            <soap:operation soapAction="urn:copy" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSget">
+            <soap:operation soapAction="urn:WSget" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewResource">
+            <soap:operation soapAction="urn:WSnewResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getEventingServiceURL">
+            <soap:operation soapAction="urn:getEventingServiceURL" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="resourceExists">
+            <soap:operation soapAction="urn:resourceExists" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetTags">
+            <soap:operation soapAction="urn:WSgetTags" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addAssociation">
+            <soap:operation soapAction="urn:addAssociation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="rateResource">
+            <soap:operation soapAction="urn:rateResource" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap:operation soapAction="urn:getAvailableAspects" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetSingleComment">
+            <soap:operation soapAction="urn:WSgetSingleComment" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSsearchContent">
+            <soap:operation soapAction="urn:WSsearchContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeComment">
+            <soap:operation soapAction="urn:removeComment" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSexecuteQuery">
+            <soap:operation soapAction="urn:WSexecuteQuery" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getChildCount">
+            <soap:operation soapAction="urn:getChildCount" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="applyTag">
+            <soap:operation soapAction="urn:applyTag" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="createVersion">
+            <soap:operation soapAction="urn:createVersion" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeVersionHistory">
+            <soap:operation soapAction="urn:removeVersionHistory" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSput">
+            <soap:operation soapAction="urn:WSput" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="WSRegistryServiceIOException">
+                <soap:fault use="literal" name="WSRegistryServiceIOException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAll">
+            <soap:operation soapAction="urn:getAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeTag">
+            <soap:operation soapAction="urn:removeTag" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAssociation">
+            <soap:operation soapAction="urn:removeAssociation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="associateAspect">
+            <soap:operation soapAction="urn:associateAspect" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <soap:operation soapAction="urn:getCollectionContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetComments">
+            <soap:operation soapAction="urn:WSgetComments" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getVersions">
+            <soap:operation soapAction="urn:getVersions" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContent">
+            <soap:operation soapAction="urn:getContent" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeLink">
+            <soap:operation soapAction="urn:removeLink" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewCollection">
+            <soap:operation soapAction="urn:WSnewCollection" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectNoParam">
+            <soap:operation soapAction="urn:invokeAspectNoParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAverageRating">
+            <soap:operation soapAction="urn:getAverageRating" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetMetaData">
+            <soap:operation soapAction="urn:WSgetMetaData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editComment">
+            <soap:operation soapAction="urn:editComment" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetChildCollection">
+            <soap:operation soapAction="urn:WSgetChildCollection" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetWithPageSize">
+            <soap:operation soapAction="urn:WSgetWithPageSize" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSaddComment">
+            <soap:operation soapAction="urn:WSaddComment" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setTenantId">
+            <soap:operation soapAction="urn:setTenantId" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetLogs">
+            <soap:operation soapAction="urn:WSgetLogs" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="WSRegistryServiceSoap12Binding" type="ns:WSRegistryServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="delete">
+            <soap12:operation soapAction="urn:delete" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSimportResource">
+            <soap12:operation soapAction="urn:WSimportResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAssociations">
+            <soap12:operation soapAction="urn:WSgetAssociations" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="restoreVersion">
+            <soap12:operation soapAction="urn:restoreVersion" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAllAssociations">
+            <soap12:operation soapAction="urn:WSgetAllAssociations" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="createLinkWithSubTarget">
+            <soap12:operation soapAction="urn:createLinkWithSubTarget" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetResourcePathsWithTag">
+            <soap12:operation soapAction="urn:WSgetResourcePathsWithTag" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="wsRestore">
+            <soap12:operation soapAction="urn:wsRestore" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setEventingServiceURL">
+            <soap12:operation soapAction="urn:setEventingServiceURL" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="wsDump">
+            <soap12:operation soapAction="urn:wsDump" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <soap12:operation soapAction="urn:removeAspect" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectWithParam">
+            <soap12:operation soapAction="urn:invokeAspectWithParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAspectActions">
+            <soap12:operation soapAction="urn:getAspectActions" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="move">
+            <soap12:operation soapAction="urn:move" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="rename">
+            <soap12:operation soapAction="urn:rename" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getRating">
+            <soap12:operation soapAction="urn:getRating" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="copy">
+            <soap12:operation soapAction="urn:copy" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSget">
+            <soap12:operation soapAction="urn:WSget" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewResource">
+            <soap12:operation soapAction="urn:WSnewResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getEventingServiceURL">
+            <soap12:operation soapAction="urn:getEventingServiceURL" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="resourceExists">
+            <soap12:operation soapAction="urn:resourceExists" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetTags">
+            <soap12:operation soapAction="urn:WSgetTags" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="addAssociation">
+            <soap12:operation soapAction="urn:addAssociation" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="rateResource">
+            <soap12:operation soapAction="urn:rateResource" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <soap12:operation soapAction="urn:getAvailableAspects" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetSingleComment">
+            <soap12:operation soapAction="urn:WSgetSingleComment" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSsearchContent">
+            <soap12:operation soapAction="urn:WSsearchContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeComment">
+            <soap12:operation soapAction="urn:removeComment" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSexecuteQuery">
+            <soap12:operation soapAction="urn:WSexecuteQuery" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getChildCount">
+            <soap12:operation soapAction="urn:getChildCount" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="applyTag">
+            <soap12:operation soapAction="urn:applyTag" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="createVersion">
+            <soap12:operation soapAction="urn:createVersion" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeVersionHistory">
+            <soap12:operation soapAction="urn:removeVersionHistory" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSput">
+            <soap12:operation soapAction="urn:WSput" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+            <wsdl:fault name="WSRegistryServiceIOException">
+                <soap12:fault use="literal" name="WSRegistryServiceIOException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAll">
+            <soap12:operation soapAction="urn:getAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeTag">
+            <soap12:operation soapAction="urn:removeTag" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeAssociation">
+            <soap12:operation soapAction="urn:removeAssociation" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="associateAspect">
+            <soap12:operation soapAction="urn:associateAspect" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <soap12:operation soapAction="urn:getCollectionContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetComments">
+            <soap12:operation soapAction="urn:WSgetComments" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getVersions">
+            <soap12:operation soapAction="urn:getVersions" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getContent">
+            <soap12:operation soapAction="urn:getContent" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="removeLink">
+            <soap12:operation soapAction="urn:removeLink" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewCollection">
+            <soap12:operation soapAction="urn:WSnewCollection" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectNoParam">
+            <soap12:operation soapAction="urn:invokeAspectNoParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAverageRating">
+            <soap12:operation soapAction="urn:getAverageRating" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetMetaData">
+            <soap12:operation soapAction="urn:WSgetMetaData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="editComment">
+            <soap12:operation soapAction="urn:editComment" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetChildCollection">
+            <soap12:operation soapAction="urn:WSgetChildCollection" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetWithPageSize">
+            <soap12:operation soapAction="urn:WSgetWithPageSize" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSaddComment">
+            <soap12:operation soapAction="urn:WSaddComment" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="setTenantId">
+            <soap12:operation soapAction="urn:setTenantId" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetLogs">
+            <soap12:operation soapAction="urn:WSgetLogs" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+            <wsdl:fault name="WSRegistryServiceRegistryException">
+                <soap12:fault use="literal" name="WSRegistryServiceRegistryException" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="WSRegistryServiceHttpBinding" type="ns:WSRegistryServicePortType">
+        <http:binding verb="POST" />
+        <wsdl:operation name="delete">
+            <http:operation location="delete" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSimportResource">
+            <http:operation location="WSimportResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAssociations">
+            <http:operation location="WSgetAssociations" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="restoreVersion">
+            <http:operation location="restoreVersion" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetAllAssociations">
+            <http:operation location="WSgetAllAssociations" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="createLinkWithSubTarget">
+            <http:operation location="createLinkWithSubTarget" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetResourcePathsWithTag">
+            <http:operation location="WSgetResourcePathsWithTag" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="wsRestore">
+            <http:operation location="wsRestore" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="setEventingServiceURL">
+            <http:operation location="setEventingServiceURL" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="wsDump">
+            <http:operation location="wsDump" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeAspect">
+            <http:operation location="removeAspect" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectWithParam">
+            <http:operation location="invokeAspectWithParam" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getAspectActions">
+            <http:operation location="getAspectActions" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="move">
+            <http:operation location="move" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="rename">
+            <http:operation location="rename" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getRating">
+            <http:operation location="getRating" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="copy">
+            <http:operation location="copy" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSget">
+            <http:operation location="WSget" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewResource">
+            <http:operation location="WSnewResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getEventingServiceURL">
+            <http:operation location="getEventingServiceURL" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="resourceExists">
+            <http:operation location="resourceExists" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetTags">
+            <http:operation location="WSgetTags" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addAssociation">
+            <http:operation location="addAssociation" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="rateResource">
+            <http:operation location="rateResource" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableAspects">
+            <http:operation location="getAvailableAspects" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetSingleComment">
+            <http:operation location="WSgetSingleComment" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSsearchContent">
+            <http:operation location="WSsearchContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeComment">
+            <http:operation location="removeComment" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSexecuteQuery">
+            <http:operation location="WSexecuteQuery" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getChildCount">
+            <http:operation location="getChildCount" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="applyTag">
+            <http:operation location="applyTag" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="createVersion">
+            <http:operation location="createVersion" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="removeVersionHistory">
+            <http:operation location="removeVersionHistory" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSput">
+            <http:operation location="WSput" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAll">
+            <http:operation location="getAll" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeTag">
+            <http:operation location="removeTag" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="removeAssociation">
+            <http:operation location="removeAssociation" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="associateAspect">
+            <http:operation location="associateAspect" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getCollectionContent">
+            <http:operation location="getCollectionContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetComments">
+            <http:operation location="WSgetComments" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getVersions">
+            <http:operation location="getVersions" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getContent">
+            <http:operation location="getContent" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeLink">
+            <http:operation location="removeLink" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSnewCollection">
+            <http:operation location="WSnewCollection" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="invokeAspectNoParam">
+            <http:operation location="invokeAspectNoParam" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getAverageRating">
+            <http:operation location="getAverageRating" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetMetaData">
+            <http:operation location="WSgetMetaData" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="editComment">
+            <http:operation location="editComment" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetChildCollection">
+            <http:operation location="WSgetChildCollection" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetWithPageSize">
+            <http:operation location="WSgetWithPageSize" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="WSaddComment">
+            <http:operation location="WSaddComment" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="setTenantId">
+            <http:operation location="setTenantId" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="WSgetLogs">
+            <http:operation location="WSgetLogs" />
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="WSRegistryService">
+        <wsdl:port name="WSRegistryServiceHttpsSoap11Endpoint" binding="ns:WSRegistryServiceSoap11Binding">
+            <soap:address location="https://10.0.0.14:9443/services/WSRegistryService.WSRegistryServiceHttpsSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WSRegistryServiceHttpSoap11Endpoint" binding="ns:WSRegistryServiceSoap11Binding">
+            <soap:address location="http://10.0.0.14:9763/services/WSRegistryService.WSRegistryServiceHttpSoap11Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WSRegistryServiceHttpsSoap12Endpoint" binding="ns:WSRegistryServiceSoap12Binding">
+            <soap12:address location="https://10.0.0.14:9443/services/WSRegistryService.WSRegistryServiceHttpsSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WSRegistryServiceHttpSoap12Endpoint" binding="ns:WSRegistryServiceSoap12Binding">
+            <soap12:address location="http://10.0.0.14:9763/services/WSRegistryService.WSRegistryServiceHttpSoap12Endpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WSRegistryServiceHttpEndpoint" binding="ns:WSRegistryServiceHttpBinding">
+            <http:address location="http://10.0.0.14:9763/services/WSRegistryService.WSRegistryServiceHttpEndpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WSRegistryServiceHttpsEndpoint" binding="ns:WSRegistryServiceHttpBinding">
+            <http:address location="https://10.0.0.14:9443/services/WSRegistryService.WSRegistryServiceHttpsEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
