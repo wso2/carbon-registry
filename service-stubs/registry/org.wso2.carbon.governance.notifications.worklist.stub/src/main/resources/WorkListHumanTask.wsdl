@@ -1,0 +1,43 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tschema="http://wso2.org/worklist/schema" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:tns="http://wso2.org/worklist/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://wso2.org/worklist/">
+    <wsdl:documentation>&#xd;
+        Humatask for Work List in WSO2 Carbon&#xd;
+    </wsdl:documentation>
+    <wsdl:types>
+        <xsd:schema xmlns:tns="http://wso2.org/worklist/schema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://wso2.org/worklist/schema">
+            <xsd:element name="TaskData" type="tschema:TaskDataType" />
+            <xsd:complexType name="TaskDataType">
+                <xsd:sequence>
+                    <xsd:element name="role" type="xsd:string" />
+                    <xsd:element name="description" type="xsd:string" />
+                    <xsd:element name="priority" type="xsd:int" />
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="WorkRequest">
+        <wsdl:part name="WorkRequest" element="tschema:TaskData" />
+    </wsdl:message>
+    <wsdl:portType name="WorkListServicePortType">
+        <wsdl:operation name="addTask">
+            <wsdl:input message="tns:WorkRequest" wsaw:Action="urn:addTask" />
+            <wsdl:output message="tns:null" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="WorkListSoapBinding" type="tns:WorkListServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="addTask">
+            <soap:operation soapAction="urn:addTask" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="WorkListService">
+        <wsdl:port name="WorkListServicehttpsWorkListSoapBindingEndpoint" binding="tns:WorkListSoapBinding">
+            <soap:address location="https://10.100.3.95:9443/services/WorkListService.WorkListServicehttpsWorkListSoapBindingEndpoint/" />
+        </wsdl:port>
+        <wsdl:port name="WorkListServicehttpWorkListSoapBindingEndpoint" binding="tns:WorkListSoapBinding">
+            <soap:address location="http://10.100.3.95:9763/services/WorkListService.WorkListServicehttpWorkListSoapBindingEndpoint/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
