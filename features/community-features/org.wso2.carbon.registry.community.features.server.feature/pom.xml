@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.info</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.email.verification</artifactId>
-	    <version>4.3.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

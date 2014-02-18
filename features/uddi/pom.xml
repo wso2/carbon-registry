@@ -36,23 +36,4 @@
         <module>org.wso2.carbon.registry.uddi.feature</module>
     </modules>
 
-    <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.juddi.wso2</groupId>
-            <artifactId>juddi</artifactId>
-            <version>${wso2carbon.version.juddi}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.uddi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    </dependencyManagement>
-
-    <properties>
-	<wso2carbon.version.juddi>3.1.5.wso2v1</wso2carbon.version.juddi>
-    </properties>
-
 </project>

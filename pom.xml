@@ -451,7 +451,57 @@
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.indexing.ui</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.registry.social.api</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.info</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.search</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.search.ui</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.info.ui</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.properties</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.properties.ui</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.activities</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.handler</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.registry.handler.ui</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    <dependency>
@@ -528,8 +578,19 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
-		<version>${project.version}</version>
+		<version>4.2.0</version>
 	    </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.identity.core</artifactId>
+		<version>4.2.0</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.identity.user.profile</artifactId>
+		<version>4.2.0</version>
+            </dependency>
+
 	    
 	    <!-- Event dependencies -->
 	    <dependency>
@@ -550,6 +611,16 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.event.ws</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.ui.menu.registry</artifactId>
+		<version>${project.version}</version>
+	    </dependency>
+	    <dependency>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.ui.menu.governance</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    
@@ -576,6 +647,11 @@
 		<artifactId>axis2</artifactId>
 		<version>${axis2.wso2.version}</version>
 	    </dependency>
+	    <dependency>
+           	<groupId>org.apache.axis2.wso2</groupId>
+                <artifactId>axis2-client</artifactId>
+                <version>${axis2.wso2.version}</version>
+            </dependency>
 	    <dependency>
 		<groupId>org.apache.axis2</groupId>
 		<artifactId>axis2-transport-mail</artifactId>
@@ -634,11 +710,11 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
-		<version>${project.version}</version>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.registry.profiles.ui</artifactId>
+		<artifactId>org.wso2.carbon.registry.profiles</artifactId>
 		<version>${project.version}</version>
 	    </dependency>
 	    <dependency>
@@ -671,11 +747,6 @@
 		<groupId>org.mortbay.jetty</groupId>
 		<artifactId>jetty-util</artifactId>
 		<version>${jetty.version}</version>
-	    </dependency>
-	    <dependency>
-		<groupId>org.apache.ws.commons.schema</groupId>
-		<artifactId>XmlSchema</artifactId>
-		<version>${xmlschema.version}</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.apache.ws.commons.schema</groupId>
@@ -788,17 +859,17 @@
 	    <dependency>
 		<groupId>org.wso2.carbon</groupId>
 		<artifactId>org.wso2.carbon.email.verification</artifactId>
-		<version>${project.version}</version>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
-		<groupId>org.apache.ws.commons.axiom</groupId>
-		<artifactId>axiom-api</artifactId>
-		<version>${axiom.version}</version>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.email.verification.ui</artifactId>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
-		<groupId>org.apache.ws.commons.axiom</groupId>
-		<artifactId>axiom-impl</artifactId>
-		<version>${axiom.version}</version>
+		<groupId>org.wso2.carbon</groupId>
+		<artifactId>org.wso2.carbon.email.verification.stub</artifactId>
+		<version>4.2.0</version>
 	    </dependency>
 	    <dependency>
 		<groupId>org.apache.ws.commons.axiom</groupId>
@@ -858,10 +929,20 @@
 	</dependencies>
     </dependencyManagement>
     <properties>
+	<!-- Carbon platform version comes here-->
+        <carbon.platform.version>4.3.0-SNAPSHOT</carbon.platform.version>
+        <carbon.platform.package.export.version>4.3.0-SNAPSHOT
+        </carbon.platform.package.export.version>
+        <carbon.platform.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
+        </carbon.platform.package.import.version.range>
+
 	<!-- Axis2 Version -->
+	<axis2.version>1.6.1-wso2v11-SNAPSHOT</axis2.version>
 	<axis2.wso2.version>1.6.1.wso2v11-SNAPSHOT</axis2.wso2.version>
+	<axis2.osgi.version>1.6.1.wso2v11-SNAPSHOT</axis2.osgi.version>
 	<orbit.version.axis2>1.6.1.wso2v11-SNAPSHOT</orbit.version.axis2>
-	<axis2-transports.version>1.6.1.wso2v11-SNAPSHOT</axis2-transports.version>
+	<axis2-transports.version>1.6.1-wso2v11-SNAPSHOT</axis2-transports.version>
+	<axis2.osgi.version.range>[1.6.1.wso2v11-SNAPSHOT, 1.7.0)</axis2.osgi.version.range>
 	<orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
 	<orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
 	<rampart.wso2.version>1.6.1.wso2v9</rampart.wso2.version>
@@ -869,9 +950,16 @@
 	<!-- Axiom Version -->
 	<axiom.version>1.2.11-wso2v5-SNAPSHOT</axiom.version>
 	<axiom.wso2.version>1.2.11.wso2v5-SNAPSHOT</axiom.wso2.version>
-	
+	<axiom.osgi.version>1.2.11.wso2v5-SNAPSHOT</axiom.osgi.version>
+	<orbit.version.axiom>1.2.11.wso2v5-SNAPSHOT</orbit.version.axiom>
+	<axiom.osgi.version.range>[1.2.11.wso2v5-SNAPSHOT, 1.3.0)</axiom.osgi.version.range>	
+
 	<!-- Servet Version -->
 	<version.javax.servlet.jsp>2.2.0.v201112011158</version.javax.servlet.jsp>
+
+	<!-- Servlet API -->
+	<exp.pkg.version.javax.servlet>2.6.0</exp.pkg.version.javax.servlet>
+        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 	
 	<!-- Misc -->
 	<google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
@@ -880,7 +968,7 @@
 	<derby.version>10.4.2.0</derby.version>
 	<activation.version>1.1</activation.version>
 	<javamail.version>1.4</javamail.version>
-	<wss4j.version>1.5.11.wso2v5-SNAPSHOT</wss4j.version>
+	<wss4j.version>1.5.11.wso2v1</wss4j.version>
 	<wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
 	<jetty.version>6.1.5</jetty.version>
 	<xml-apis.version>1.3.04</xml-apis.version>

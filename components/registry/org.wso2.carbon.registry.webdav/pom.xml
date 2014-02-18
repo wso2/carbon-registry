@@ -30,15 +30,16 @@
 	<url>http://wso2.org/</url>
 
     <build>
-		<plugins>
-			
-			<plugin>
+	<plugins>
+	    <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
+		<version>1.6.0</version>
             </plugin>			
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+		<version>1.4.0</version>
                 <extensions>true</extensions>
                 
                 <configuration>

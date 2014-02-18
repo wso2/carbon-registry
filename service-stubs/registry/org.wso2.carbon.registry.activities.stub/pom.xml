@@ -86,7 +86,7 @@
              <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                
+		<version>1.4.0</version>                
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -109,12 +109,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2</artifactId>
-        </dependency>
-    </dependencies>
 
 </project>

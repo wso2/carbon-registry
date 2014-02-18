@@ -41,6 +41,8 @@
                 <module>org.wso2.carbon.registry.indexing</module>
 		<module>org.wso2.carbon.registry.properties.ui</module>
                 <module>org.wso2.carbon.registry.properties</module>		
+                <module>org.wso2.carbon.registry.extensions</module>
+                <module>org.wso2.carbon.registry.extensions.ui</module>
                 <module>org.wso2.carbon.registry.resource.ui</module>
                 <module>org.wso2.carbon.registry.resource</module>
                 <module>org.wso2.carbon.registry.search.ui</module>
@@ -49,8 +51,6 @@
                 <module>org.wso2.carbon.registry.profiles</module>
                 <module>org.wso2.carbon.registry.profiles.ui</module>
 		<module>org.wso2.carbon.registry.uddi</module>
-                <module>org.wso2.carbon.registry.extensions</module>
-                <module>org.wso2.carbon.registry.extensions.ui</module>
                 <module>org.wso2.carbon.registry.handler.ui</module>
                 <module>org.wso2.carbon.registry.handler</module>
                 <module>org.wso2.carbon.registry.info.ui</module>

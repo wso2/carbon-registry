@@ -36,29 +36,5 @@
         <module>org.wso2.carbon.registry.ws.feature</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.ws.api</artifactId>
-                <version>${wso2carbon.version.ws.api}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
-                <version>${wso2carbon.version.ws.api}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
-                <version>${wso2carbon.version.ws.api}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.ws.api>${project.version}</wso2carbon.version.ws.api>
-    </properties>
-
 </project>
 

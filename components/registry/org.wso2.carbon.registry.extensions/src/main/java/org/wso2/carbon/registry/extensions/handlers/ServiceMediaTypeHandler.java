@@ -374,11 +374,10 @@ public class ServiceMediaTypeHandler extends Handler {
                 environment = currentRelativePath + endpointEnv;
             }
 */
-
-            if (servicePath.contains(registry.getRegistryContext().getServicePath())) {
-                EndpointUtils.saveEndpointsFromServices(servicePath, serviceInfoElement, registry,
+            
+            EndpointUtils.saveEndpointsFromServices(servicePath, serviceInfoElement, registry,
                         CommonUtil.getUnchrootedSystemRegistry(requestContext));
-            }
+            
 
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                     requestContext.getResource().getProperty(RegistryConstants.SYMLINK_PROPERTY_NAME));

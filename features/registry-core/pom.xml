@@ -32,84 +32,15 @@
     <name>WSO2 Carbon - Registry Core Feature Aggregator Module</name>
     <url>http://wso2.org</url>
 
-            <modules>
-                <module>org.wso2.carbon.registry.core.feature</module>
-                <module>org.wso2.carbon.registry.core.common.feature</module>
-                <module>org.wso2.carbon.registry.core.server.feature</module>
-                <module>org.wso2.carbon.registry.core.ui.feature</module>
-		<module>org.wso2.carbon.registry.search.ui.feature</module>
-                <module>org.wso2.carbon.registry.ui.menu.feature</module>
-                <module>org.wso2.carbon.registry.ui.menu.governance.feature</module>
-            </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.servlet</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.resource</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.resource.ui</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.search</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.search.ui</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.search.stub</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.common</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.ui.menu.registry</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.ui.menu.governance</artifactId>
-                <version>${wso2carbon.version.registry.core}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <wso2carbon.version.registry.core>${project.version}</wso2carbon.version.registry.core>
-    </properties>
+    <modules>
+        <module>org.wso2.carbon.registry.core.feature</module>
+        <module>org.wso2.carbon.registry.core.common.feature</module>
+        <module>org.wso2.carbon.registry.core.server.feature</module>
+        <module>org.wso2.carbon.registry.core.ui.feature</module>
+	<module>org.wso2.carbon.registry.search.ui.feature</module>
+        <module>org.wso2.carbon.registry.ui.menu.feature</module>
+        <module>org.wso2.carbon.registry.ui.menu.governance.feature</module>
+    </modules>
 
 </project>
 
