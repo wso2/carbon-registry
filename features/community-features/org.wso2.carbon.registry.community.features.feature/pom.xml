@@ -74,7 +74,7 @@
                             </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.community.features.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.community.features.ui.feature:4.2.0</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.community.features.ui.feature</includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
