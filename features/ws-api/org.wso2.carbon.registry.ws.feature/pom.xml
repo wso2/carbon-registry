@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
-        </dependency>
+        </dependency> 
     </dependencies>
 
     <build>
@@ -80,9 +80,10 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.ws.api</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.ws.client</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.ws.stub</bundleDef>
-                            </bundles>
+                                 <!--bundleDef>org.apache.rampart:rampart-policy</bundleDef-->
+			     </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.platform.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

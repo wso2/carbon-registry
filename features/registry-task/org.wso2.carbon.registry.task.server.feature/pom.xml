@@ -66,7 +66,7 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.task</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${project.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ntask</importFeatureDef>
                             </importFeatures>
                         </configuration>

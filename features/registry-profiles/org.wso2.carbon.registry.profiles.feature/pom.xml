@@ -69,9 +69,9 @@
                             <id>org.wso2.carbon.registry.profiles</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.common:${registry.core.feature.version}</importFeatureDef>
-								<importFeatureDef>org.wso2.carbon.registry.core.server:${registry.core.feature.version}</importFeatureDef>
-								<importFeatureDef>org.wso2.carbon.registry.core.ui:${registry.core.feature.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.common:${project.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.registry.core.server:${project.version}</importFeatureDef>
+								<importFeatureDef>org.wso2.carbon.registry.core.ui:${project.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
                                 <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.profiles.server.feature</includedFeatureDef>

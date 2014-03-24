@@ -33,7 +33,7 @@ public class PWCBHandler implements CallbackHandler {
 	throws IOException, UnsupportedCallbackException {
 		for (int i = 0; i < callbacks.length; i++) {
 			WSPasswordCallback pwcb = (WSPasswordCallback)callbacks[i];
-			String id = pwcb.getIdentifer();
+			String id = pwcb.getIdentifier();
 			if("wso2carbon".equals(id)) {
 				pwcb.setPassword("wso2carbon");
 			}
