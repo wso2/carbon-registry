@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,12 +36,12 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-		<version>1.6.0</version>
+                <version>1.6.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-		<version>1.4.0</version>
+                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -89,30 +89,13 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
-	<dependency>
-	    <groupId>org.apache.chemistry.opencmis</groupId>
-	    <artifactId>chemistry-opencmis-commons-api</artifactId>
-	    <version>0.7.0</version>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-commons-api</artifactId>
         </dependency>
-	<!--dependency>
-	    <groupId>org.apache.chemistry.opencmis</groupId>
-	    <artifactId>chemistry-opencmis-commons-impl</artifactId>
-	    <version>0.7.0</version>
-        </dependency-->
-	<!--dependency>
-	    <groupId>org.apache.opencmis</groupId>
-	    <artifactId>chemistry-opencmis-test-util</artifactId>
-	    <version>0.7.0</version>
-        </dependency-->
-	<!--dependency>
-	    <groupId>org.apache.chemistry.opencmis</groupId>
-	    <artifactId>chemistry-opencmis-server-bindings</artifactId>
-	    <version>0.7.0</version>
-        </dependency-->
-	<dependency>
-	    <groupId>org.apache.chemistry.opencmis</groupId>
-	    <artifactId>chemistry-opencmis-server-support</artifactId>
-	    <version>0.7.0</version>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-server-support</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -120,7 +103,7 @@
         </dependency>
 
 
-         <dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

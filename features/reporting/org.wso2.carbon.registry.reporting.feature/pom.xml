@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry.reporting-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -41,15 +41,15 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.reporting.server.feature</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-	    </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.reporting.ui.feature</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>zip</type>
-	    </dependency>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,8 +72,10 @@
                                 <importFeatureDef>org.wso2.carbon.registry.core:${project.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.reporting.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.reporting.ui.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.reporting.server.feature
+                                </includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.reporting.ui.feature
+                                </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>

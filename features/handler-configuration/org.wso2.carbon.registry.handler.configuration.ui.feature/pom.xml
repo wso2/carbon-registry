@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>handler.configuration-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -32,7 +32,8 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Handler Config UI Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Front-end Registry Handler Configuration functionality</description>
+    <description>This feature contains the bundles required for Front-end Registry Handler Configuration functionality
+    </description>
 
     <dependencies>
         <dependency>
@@ -72,8 +73,10 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.handler.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.platform.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.registry.extensions.ui:${carbon.platform.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.platform.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.extensions.ui:${carbon.platform.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

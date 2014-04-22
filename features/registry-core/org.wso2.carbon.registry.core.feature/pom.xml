@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry.core-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -35,7 +35,7 @@
         Adds resources, collections, symbolic and remote links to the registry. Also, supports
         copying, moving, renaming and deleting resources and collections. This pack also allows
         users to edit and download resource content, and also manage read, write, delete permissions
-        assigned to resources and collections. 
+        assigned to resources and collections.
     </description>
 
     <dependencies>
@@ -44,26 +44,26 @@
             <artifactId>org.wso2.carbon.registry.core.common.feature</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
-	    </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core.server.feature</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
-	    </dependency>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core.ui.feature</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
-	</dependency>
-	<dependency>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.search.ui.feature</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
-	    </dependency>
-        </dependencies>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -90,10 +90,14 @@
                                 <importFeatureDef>org.wso2.carbon.core:${project.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.common.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.server.feature</includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.ui.feature</includedFeatureDef>
-				<includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.search.ui.feature</includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.common.feature
+                                </includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.server.feature
+                                </includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.core.ui.feature
+                                </includedFeatureDef>
+                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.search.ui.feature
+                                </includedFeatureDef>
                             </includedFeatures>
                         </configuration>
                     </execution>
