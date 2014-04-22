@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry.profiles-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -71,7 +71,8 @@
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.ui:${project.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.identity.user.profile.ui:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.identity.user.profile.ui:${project.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

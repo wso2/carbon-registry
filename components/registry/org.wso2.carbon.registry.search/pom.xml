@@ -14,7 +14,7 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-        
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -22,7 +22,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -35,20 +35,20 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-		<version>1.6.0</version>
+                <version>1.6.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version> 
+                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Export-Package>
-		    	    		org.wso2.carbon.registry.search.*,
-						</Export-Package>
+                        <Export-Package>
+                            org.wso2.carbon.registry.search.*,
+                        </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.*;version="0.0.0",
                             org.wso2.carbon.registry.core.*;version="0.0.0",
@@ -72,7 +72,7 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
         </dependency>
@@ -113,5 +113,5 @@
             <artifactId>commons-digester</artifactId>
         </dependency>
     </dependencies>
-    
+
 </project>
