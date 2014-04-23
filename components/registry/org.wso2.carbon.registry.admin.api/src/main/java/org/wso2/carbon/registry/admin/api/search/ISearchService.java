@@ -81,7 +81,7 @@ public interface ISearchService <SearchResultsBean, AdvancedSearchResultsBean, C
 	/**
 	 * Returns the 
 	 * @param mediaType - String containing the media type. Ex: "application/xml"
-	 * @return
+	 * @return MediaTypeValueList
 	 * @throws RegistryException
 	 */
 	public abstract MediaTypeValueList getMediaTypeSearch(String mediaType)
