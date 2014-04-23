@@ -59,7 +59,7 @@ public class CommonUtil {
             throws RegistryException {
 
         UserRegistry userRegistry =
-                (UserRegistry)request.getSession().getAttribute(RegistryConstants.USER_REGISTRY);
+                (UserRegistry)request.getSession().getAttribute(RegistryConstants.REGISTRY_USER);
 
         if (userRegistry == null) {
             String msg = "User's Registry instance is not found. " +
