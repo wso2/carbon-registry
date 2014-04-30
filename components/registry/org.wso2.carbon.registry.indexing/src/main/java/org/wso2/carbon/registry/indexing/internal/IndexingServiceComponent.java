@@ -92,6 +92,15 @@ public class IndexingServiceComponent {
                 Axis2ConfigurationContextObserver.class.getName(), listener, null));
         registrations.push(context.getBundleContext().registerService(
                 TenantIndexingLoader.class.getName(), listener, null));
+        try {
+            if (Utils.isIndexingConfigAvailable()) {
+                IndexingManager.getInstance().startIndexing();
+            } else {
+                log.debug("<indexingConfiguration/> not available in registry.xml to start the resource indexing task");
+            }
+        } catch (RegistryException e) {
+            log.error("Failed to start resource indexing task");
+        }
         log.debug("Registry Indexing bundle is activated");
     }
 
@@ -104,16 +113,11 @@ public class IndexingServiceComponent {
 
     protected void setRegistryService(RegistryService registryService) {
         Utils.setRegistryService(registryService);
-        startIndexing();
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
         stopIndexing();
         Utils.setRegistryService(null);
-    }
-
-    private void startIndexing() {
-        IndexingManager.getInstance().startIndexing();
     }
 
     private void stopIndexing() {
