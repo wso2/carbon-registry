@@ -19,17 +19,27 @@
 
 package org.wso2.carbon.registry.indexing;
 
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.indexing.internal.IndexingServiceComponent;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -134,5 +144,40 @@ public class Utils {
 
     public static void setRemoteSubscriptionStoreContext(String remoteSubscriptionStoreContext) {
         Utils.remoteSubscriptionStoreContext = remoteSubscriptionStoreContext;
+    }
+
+    public static boolean isIndexingConfigAvailable() throws RegistryException {
+
+        String configPath = CarbonUtils.getRegistryXMLPath();
+        File registryXML = new File(configPath);
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = new FileInputStream(registryXML);
+        } catch (FileNotFoundException e) {
+            String msg = "Registry configuration file (registry.xml) file doesn't exist in the path " + configPath;
+            log.error(msg, e);
+            throw new RegistryException(msg);
+        }
+        StAXOMBuilder builder;
+        try {
+            builder = new StAXOMBuilder(
+                    CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
+            OMElement configElement = builder.getDocumentElement();
+            if (configElement != null) {
+                OMElement indexingConfig = configElement.getFirstChildWithName(
+                        new QName("indexingConfiguration"));
+                return indexingConfig != null;
+            }
+
+        } catch (XMLStreamException e) {
+            String msg = "Failed to read <indexingConfiguration/> from registry.xml";
+            log.error(msg, e);
+            throw new RegistryException(msg);
+        } catch (CarbonException e) {
+            String msg = "Failed to read <indexingConfiguration/> from registry.xml";
+            log.error(msg, e);
+            throw new RegistryException(msg);
+        }
+        return false;
     }
 }
