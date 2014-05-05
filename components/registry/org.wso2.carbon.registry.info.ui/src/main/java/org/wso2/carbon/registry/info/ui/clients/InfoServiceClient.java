@@ -278,6 +278,16 @@ public class InfoServiceClient implements IInfoService {
         String endpoint = (String) Utils.getParameter(request, "endpoint");
         String eventName = (String) Utils.getParameter(request, "eventName");
 
+        String topicDelimiter= (String) Utils.getParameter(request, "delimiter");
+
+       if (topicDelimiter.equals("#") || topicDelimiter.equals("*")) {
+            if (path.endsWith("/")) {
+                   path = path + topicDelimiter;
+            } else {
+                  path = path + "/" + topicDelimiter;
+            }
+       }
+
         try {
             return proxy.subscribeREST(path, endpoint, eventName, sessionId);
         } catch (Exception e) {
