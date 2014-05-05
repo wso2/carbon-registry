@@ -44,6 +44,12 @@ import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.wso2.carbon.registry.uddi.utils.UDDIUtil;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
+import javax.xml.stream.XMLStreamException;
+
 
 import javax.xml.namespace.QName;
 import java.io.*;
@@ -458,7 +464,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
-            WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
+            WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
             return wadlProcessor.importWADLToRegistry(requestContext,
                     getChrootedWADLLocation(requestContext.getRegistryContext()), disableWADLValidation);
 
@@ -508,22 +514,11 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             SchemaProcessor schemaProcessor =
                     buildSchemaProcessor(requestContext, validationInfo, this.useOriginalSchema);
 
-            String savedName = schemaProcessor
+            String addedPath = schemaProcessor
                     .importSchemaToRegistry(requestContext, path,
                             getChrootedSchemaLocation(requestContext.getRegistryContext()), true,disableSymlinkCreation);
 
-            String parentPath = RegistryUtils.getParentPath(requestContext.getResourcePath().getPath());
-
-            if (parentPath.startsWith("//")) {
-                parentPath = parentPath.substring(1);
-            }
-            if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
-                requestContext.setActualPath(parentPath + savedName);
-            } else {
-                requestContext.setActualPath(
-                        parentPath + RegistryConstants.PATH_SEPARATOR + savedName);
-            }
-            String addedPath = requestContext.getActualPath();
+            requestContext.setActualPath(addedPath);
             log.debug("XSD : " + addedPath);
             return addedPath;
         }
@@ -594,14 +589,46 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                   List<String> otherResources, RequestContext requestContext)
     //Final result printing in console.
             throws RegistryException {
+                Registry configRegistry = RegistryCoreServiceComponent.getRegistryService().getConfigSystemRegistry();
+                String resourceName = RegistryUtils.getResourceName(requestContext.getResourcePath().getPath());
+
+                        OMFactory factory = OMAbstractFactory.getOMFactory();
+                OMElement garElement = factory.createOMElement(
+                                    new QName(CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE));
+                garElement.addAttribute(factory.createOMAttribute(
+                                CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE_ATTR_PATH, null, requestContext.getResourcePath().getPath()));
+
         log.info("Total Number of Files Uploaded: " + addedResources.size());
         List<String> failures = new LinkedList<String>();
         for (Map.Entry<String, String> e : addedResources.entrySet()) {
             if (e.getValue() == null) {
                 failures.add(e.getKey());
                 log.info("Failure " + failures.size() + ": " + e.getKey());
+            }else {
+                 OMElement targetElement = factory.createOMElement(
+                                            new QName(CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE_TARGET));
+                 targetElement.setText(e.getValue());
+                 garElement.addChild(targetElement);
             }
         }
+
+        String pathMappingResourcePath = CommonConstants.REG_GAR_PATH_MAPPING +
+                                resourceName.substring(0, resourceName.lastIndexOf("."));
+                boolean garMappingExists = configRegistry.resourceExists(pathMappingResourcePath);
+                if (garMappingExists) {
+                        Resource pathMappingResource = configRegistry.get(pathMappingResourcePath);
+                        try {
+                                OMElement garMappingElement = AXIOMUtil.stringToOM(
+                                                new String((byte[]) pathMappingResource.getContent()));
+                                garMappingElement.addChild(garElement);
+                                pathMappingResource.setContent(garMappingElement.toString());
+                                configRegistry.put(pathMappingResourcePath, pathMappingResource);
+                            } catch (XMLStreamException e) {
+                                log.warn("Error occurred while retrieving the content of GAR mapping file ", e);
+                            }
+                    }
+
+
         log.info("Total Number of Files Failed to Upload: " + failures.size());
         if (otherResources.size() > 0) {
             log.info("Total Number of Files Not-Uploaded: " + otherResources.size());

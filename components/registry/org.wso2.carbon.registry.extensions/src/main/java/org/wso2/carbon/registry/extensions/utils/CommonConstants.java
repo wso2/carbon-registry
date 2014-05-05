@@ -108,4 +108,9 @@ public class CommonConstants {
 
     public static final String RXT_MEDIA_TYPE = "application/vnd.wso2.registry-ext-type+xml";
 
+    public static final String REG_GAR_PATH_MAPPING = "/repository/carbonapps/gar_mapping/";
+    public static final String REG_GAR_PATH_MAPPING_RESOURCE = "gar";
+    public static final String REG_GAR_PATH_MAPPING_RESOURCE_ATTR_PATH = "path";
+    public static final String REG_GAR_PATH_MAPPING_RESOURCE_TARGET = "target";
+
 }
