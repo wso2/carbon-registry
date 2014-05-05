@@ -536,8 +536,14 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                     options.setProperty(MessageContext.CLIENT_API_NON_BLOCKING, Boolean.TRUE);
                     options.setAction(RegistryEventingConstants.WSE_PUBLISH);
                     serviceClient.setOptions(options);
+                    if(log.isDebugEnabled()){
+                       log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                     }
                     serviceClient.fireAndForget(payload);
                 } else {
+                    if(log.isDebugEnabled()){
+                      log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                    }
                     super.sendNotification(topicEle, payload, endpoint);
                 }
             } catch (AxisFault e) {
