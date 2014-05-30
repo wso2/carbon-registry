@@ -18,6 +18,33 @@
  */
 package org.wso2.carbon.registry.extensions.handlers;
 
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Stack;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -41,22 +68,18 @@ import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.BusinessServiceInfo;
-import org.wso2.carbon.registry.extensions.handlers.utils.*;
+import org.wso2.carbon.registry.extensions.handlers.utils.SchemaProcessor;
+import org.wso2.carbon.registry.extensions.handlers.utils.SchemaValidator;
+import org.wso2.carbon.registry.extensions.handlers.utils.UDDIPublisher;
+import org.wso2.carbon.registry.extensions.handlers.utils.WADLProcessor;
+import org.wso2.carbon.registry.extensions.handlers.utils.WSDLInfo;
+import org.wso2.carbon.registry.extensions.handlers.utils.WSDLProcessor;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.wso2.carbon.registry.uddi.utils.UDDIUtil;
 import org.wso2.carbon.user.core.UserRealm;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.io.*;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @SuppressWarnings({"unused", "UnusedAssignment"})
 public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
@@ -462,7 +485,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
-            WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
+            WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
             return wadlProcessor.importWADLToRegistry(requestContext,
                     getChrootedWADLLocation(requestContext.getRegistryContext()), disableWADLValidation);
 
@@ -586,7 +609,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                   List<String> otherResources, RequestContext requestContext)
     //Final result printing in console.
             throws RegistryException {
-        Registry configRegistry = RegistryCoreServiceComponent.getRegistryService().getConfigSystemRegistry();
+
+    	Registry configRegistry = RegistryCoreServiceComponent.getRegistryService().getConfigSystemRegistry();
         String resourceName = RegistryUtils.getResourceName(requestContext.getResourcePath().getPath());
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -594,6 +618,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                     new QName(CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE));
         garElement.addAttribute(factory.createOMAttribute(
                 CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE_ATTR_PATH, null, requestContext.getResourcePath().getPath()));
+
 
         log.info("Total Number of Files Uploaded: " + addedResources.size());
         List<String> failures = new LinkedList<String>();
@@ -625,7 +650,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
         }
 
-        log.info("Total Number of Files Failed to Upload: " + failures.size());
+       log.info("Total Number of Files Failed to Upload: " + failures.size());
         if (otherResources.size() > 0) {
             log.info("Total Number of Files Not-Uploaded: " + otherResources.size());
         }

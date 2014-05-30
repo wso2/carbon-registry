@@ -14,34 +14,35 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-	<artifactId>org.wso2.carbon.registry.webdav</artifactId>
-	<packaging>bundle</packaging>
-	<name>WSO2 Carbon - Registry - WebDAV</name>
-	<url>http://wso2.org/</url>
+    <artifactId>org.wso2.carbon.registry.webdav</artifactId>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon - Registry - WebDAV</name>
+    <url>http://wso2.org/</url>
 
     <build>
-	<plugins>
-	    <plugin>
+        <plugins>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-		<version>1.6.0</version>
-            </plugin>			
+                <version>1.6.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-		<version>1.4.0</version>
+                <version>1.4.0</version>
                 <extensions>true</extensions>
-                
+
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
@@ -49,19 +50,21 @@
                             org.wso2.carbon.registry.webdav.*
                         </Export-Package>
                         <Import-Package>
-                        !org.slf4j.*,
-                        javax.servlet;version="${imp.pkg.version.javax.servlet}",
-                        javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
-                        org.wso2.carbon.registry.core.*,
-                        *;resolution:=optional
+                            !org.slf4j.*,
+                            javax.servlet;version="${imp.pkg.version.javax.servlet}",
+                            javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
+                            org.wso2.carbon.registry.core.*,
+                            *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
-                        <Embed-Dependency>jcr|tika-core|jackrabbit-api|jackrabbit-webdav|slf4j-api|jackrabbit-jcr-commons|jackrabbit-jcr-server|slf4j-log4j12;scope=compile|runtime;inline=false</Embed-Dependency>
+                        <Embed-Dependency>
+                            jcr|tika-core|jackrabbit-api|jackrabbit-webdav|slf4j-api|jackrabbit-jcr-commons|jackrabbit-jcr-server|slf4j-log4j12;scope=compile|runtime;inline=false
+                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
     <repositories>
         <repository>
             <id>wso2-nexus</id>
@@ -89,38 +92,31 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>0.6</version>
         </dependency>
         <dependency>
             <!-- temporarily added dependency, needed as long as JCR2 interfaces are contained in jackrabbit-api -->
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
-            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-commons</artifactId>
-            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-webdav</artifactId>
-            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
-            <version>2.1.2</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -131,23 +127,20 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.3</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
-    
+
     </dependencies>
 
     <properties>

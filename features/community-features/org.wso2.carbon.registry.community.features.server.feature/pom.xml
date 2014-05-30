@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>community.features-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,8 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Community Features Server Feature</name>
     <url>http://wso2.org</url>
-    <description>This feature contains the bundles required for Back-end Registry Community Features functionality</description>
+    <description>This feature contains the bundles required for Back-end Registry Community Features functionality
+    </description>
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -76,7 +77,8 @@
                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.email.verification</importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${project.version}
+                                </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.event.server:${project.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>

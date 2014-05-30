@@ -22,7 +22,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <version>4.3.0-SNAPSHOT</version>
@@ -36,12 +36,12 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
-		<version>1.6.0</version>
+                <!--<version>1.6.0</version>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version> 
+                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -51,14 +51,14 @@
                         <Export-Package>org.wso2.carbon.registry.uddi.persistance.*,
                             org.wso2.carbon.registry.uddi.servlet.*,
                             org.wso2.carbon.registry.uddi.utils.*,
-			    org.wso2.carbon.registry.uddi.uddiversionmodule.*,
-			    org.uddi.*			    
+                            org.wso2.carbon.registry.uddi.uddiversionmodule.*,
+                            org.uddi.*
                         </Export-Package>
                         <Import-Package>
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             javax.persistence.*;version="1.0",
                             org.wso2.carbon.common.*,
-			    org.apache.juddi.*;version="0.0.0",
+                            org.apache.juddi.*;version="0.0.0",
                             org.wso2.carbon.registry.core.*;version="0.0.0",
                             org.wso2.carbon.registry.resource.*,
                             !javax.xml.namespace,
@@ -93,12 +93,10 @@
         <dependency>
             <groupId>org.apache.juddi</groupId>
             <artifactId>juddi-core</artifactId>
-	    <version>3.1.5.wso2v1</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.apache.juddi</groupId>
             <artifactId>juddi-client</artifactId>
-            <version>3.1.5.wso2v1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -114,34 +112,32 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.common</artifactId>            
+            <artifactId>org.wso2.carbon.registry.common</artifactId>
         </dependency>
-	<dependency>
-	    <groupId>commons-lang.wso2</groupId>
-	    <artifactId>commons-lang</artifactId>
-	    <version>${commons-lang.wso2.version}</version>
-	</dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.wso2.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.neethi.wso2</groupId>
             <artifactId>neethi</artifactId>
-            <version>2.0.4.wso2v3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <version>${version.geronimo.specs.geronimo-jpa_2.0_spec}</version>
         </dependency>
         <dependency>
-                <groupId>org.apache.openjpa</groupId>
-                <artifactId>openjpa</artifactId>
-                <version>${openjpa.version}</version>
-		<exclusions>
-			<exclusion>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jpa_2.0_spec</artifactId>
-			</exclusion>
-		</exclusions>
-                <!-- We don't need an orbit bundle, since this is a bundle -->
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${openjpa.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                </exclusion>
+            </exclusions>
+            <!-- We don't need an orbit bundle, since this is a bundle -->
         </dependency>
     </dependencies>
 </project>

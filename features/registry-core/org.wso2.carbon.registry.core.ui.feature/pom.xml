@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>registry.core-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,7 +36,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.resource.stub</artifactId>
-            <version>4.3.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
@@ -73,11 +71,13 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.common.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.resource.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.resource.stub:4.3.0-SNAPSHOT</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.resource.stub:4.3.0-SNAPSHOT
+                                </bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.ui:${project.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.registry.core.common:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.common:${project.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

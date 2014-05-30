@@ -23,7 +23,7 @@
         <groupId>org.wso2.carbon</groupId>
         <artifactId>uddi-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -61,14 +61,14 @@
                         <configuration>
                             <id>org.wso2.carbon.registry.uddi</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
-			     <adviceFile>
+                            <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
                                 </properties>
                             </adviceFile>
-			    <bundles>
+                            <bundles>
                                 <bundleDef>org.apache.juddi.wso2:juddi</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.registry.uddi</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.uddi</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>

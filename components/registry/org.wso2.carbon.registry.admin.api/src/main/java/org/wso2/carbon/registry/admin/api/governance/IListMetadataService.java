@@ -77,8 +77,8 @@ public interface IListMetadataService<ServiceBean, WSDLBean, PolicyBean, SchemaB
     /**
      * Get all the states from the LC
      *
-     * @param LCName
-     * @return
+     * @param LCName   LC name
+     * @return array of LC states
      */
     String[] getAllLifeCycleState(String LCName);
 }

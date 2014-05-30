@@ -29,6 +29,7 @@ public class ArtifactCleanUpHandler extends Handler {
         }
         CommonUtil.acquireUpdateLock();
         try {
+
         
 	        Registry registry = requestContext.getRegistry();
 	        ResourcePath resourcePath = requestContext.getResourcePath();
