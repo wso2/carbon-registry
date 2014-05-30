@@ -16,6 +16,7 @@ import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 /**
  * ArtifactCleanUpHandler can be used to clean up Artifact and their associated resources.
  * Can be customized according to requirement.
+<<<<<<< HEAD
  *
  */
 public class ArtifactCleanUpHandler extends Handler {

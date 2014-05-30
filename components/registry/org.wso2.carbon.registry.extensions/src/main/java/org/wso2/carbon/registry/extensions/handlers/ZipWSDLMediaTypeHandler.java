@@ -48,6 +48,14 @@ import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.wso2.carbon.registry.uddi.utils.UDDIUtil;
 import org.wso2.carbon.user.core.UserRealm;
 
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
+import javax.xml.stream.XMLStreamException;
+
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
@@ -462,7 +470,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
-            WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
+            WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
             return wadlProcessor.importWADLToRegistry(requestContext,
                     getChrootedWADLLocation(requestContext.getRegistryContext()), disableWADLValidation);
 
@@ -586,7 +594,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                   List<String> otherResources, RequestContext requestContext)
     //Final result printing in console.
             throws RegistryException {
-        Registry configRegistry = RegistryCoreServiceComponent.getRegistryService().getConfigSystemRegistry();
+
+    	Registry configRegistry = RegistryCoreServiceComponent.getRegistryService().getConfigSystemRegistry();
         String resourceName = RegistryUtils.getResourceName(requestContext.getResourcePath().getPath());
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -601,6 +610,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             if (e.getValue() == null) {
                 failures.add(e.getKey());
                 log.info("Failure " + failures.size() + ": " + e.getKey());
+
             } else {
                 OMElement targetElement = factory.createOMElement(
                         new QName(CommonConstants.REG_GAR_PATH_MAPPING_RESOURCE_TARGET));
