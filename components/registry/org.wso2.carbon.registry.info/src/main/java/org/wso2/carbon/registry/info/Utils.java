@@ -17,6 +17,7 @@
 */
 package org.wso2.carbon.registry.info;
 
+import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -31,6 +32,8 @@ public class Utils {
     private static EventingService registryEventingService;
 
     private static SubscriptionEmailVerficationService subscriptionEmailVerficationService;
+
+    private static ConfigurationContext configurationContext;
 
     public static synchronized void setRegistryService(RegistryService service) {
         registryService = service;
@@ -54,5 +57,13 @@ public class Utils {
 
     public static void setSubscriptionEmailVerficationService(SubscriptionEmailVerficationService subscriptionEmailVerficationService) {
         Utils.subscriptionEmailVerficationService = subscriptionEmailVerficationService;
+    }
+
+    public static ConfigurationContext getConfigurationContext() {
+        return configurationContext;
+    }
+
+    public static void setConfigurationContext(ConfigurationContext configurationContext) {
+        Utils.configurationContext = configurationContext;
     }
 }

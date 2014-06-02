@@ -35,6 +35,7 @@ import org.wso2.carbon.registry.info.services.utils.CommentBeanPopulator;
 import org.wso2.carbon.registry.info.services.utils.RatingBeanPopulator;
 import org.wso2.carbon.registry.info.services.utils.SubscriptionBeanPopulator;
 import org.wso2.carbon.registry.info.services.utils.TagBeanPopulator;
+import org.wso2.carbon.registry.info.services.utils.ResourceUtil;
 import org.wso2.carbon.registry.common.IInfoService;
 import org.wso2.carbon.registry.common.beans.*;
 import org.wso2.carbon.user.core.UserCoreConstants;
@@ -261,7 +262,15 @@ public class InfoService extends RegistryAbstractAdmin implements IInfoService {
                     if (!realPath.contains("/registry/resourceContent?")) {
                         return null;
                     }
-                    return realPath.replace("/registry/resourceContent?", "/carbon/resources/resource.jsp?region=region3&item=resource_browser_menu&viewType=std&");
+                    boolean isLocalMount = false;
+                    try {
+                        isLocalMount = ResourceUtil.isLocalMount(realPath);
+                    } catch (RegistryException e) {
+                        log.error("Unable to check whether resource is locally mounted", e);
+                    }
+                    if(!isLocalMount) {
+                        return realPath.replace("/registry/resourceContent?", "/carbon/resources/resource.jsp?region=region3&item=resource_browser_menu&viewType=std&");
+                    }
                 }
             }
         }
@@ -301,7 +310,15 @@ public class InfoService extends RegistryAbstractAdmin implements IInfoService {
                     if (!realPath.contains("/registry/resourceContent?")) {
                         path = realPath;
                     } else {
-                        url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+                    	boolean isLocalMount = false;
+                    	try {
+                    		isLocalMount = ResourceUtil.isLocalMount(realPath);
+    					} catch (RegistryException e) {
+    						log.error("Unable to check whether resource is locally mounted", e);
+    					}
+                    	if(!isLocalMount) {
+                    		url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+                    	}
                     }
                 }
             }
