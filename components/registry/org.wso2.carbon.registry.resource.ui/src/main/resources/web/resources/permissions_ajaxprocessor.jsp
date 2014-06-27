@@ -291,6 +291,11 @@
                 </table>
             </div>
         </form>
+
+        <script>
+            $("#roleToAuthorize").select2();
+        </script>
+
         <h4 style="margin-top:10px;"><fmt:message key="defined.role.permissions"/></h4>
 
         <form name="rolePermissions" theme="simple">

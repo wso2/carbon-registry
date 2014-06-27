@@ -46,6 +46,10 @@
 <script type="text/javascript" src="../properties/js/properties.js"></script>
 <link rel="stylesheet" type="text/css" href="css/registry.css"/>
 
+<link href="css/select2.css" rel="stylesheet"/>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="js/select2.js"></script>
+
 <%
     // the error message is been set in <code>org.wso2.carbon.registry.resource.ui.processors.AddResourceProcessor</code>
     // and is been redirected by the java class. Previously, this was redirected to ../admin/error.jsp.
