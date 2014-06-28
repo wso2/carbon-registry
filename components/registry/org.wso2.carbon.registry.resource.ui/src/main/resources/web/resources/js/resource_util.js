@@ -2253,6 +2253,10 @@ function refreshPermissionsSection(path) {
                 var perDiv = $('permissionsDiv');
                 perDiv.innerHTML = transport.responseText;
                 YAHOO.util.Event.onAvailable('perExpanded', function() {
+
+                    //adding searchable drop-box component
+                    makeSelectRoleSearchable();
+
                     $('perIconExpanded').style.display = "";
                     $('perIconMinimized').style.display = "none";
                     $('perExpanded').style.display = "";
@@ -2266,6 +2270,11 @@ function refreshPermissionsSection(path) {
     //YAHOO.util.Event.onAvailable('perExpanded',function(){showHideCommon('perIconExpanded');showHideCommon('perIconMinimized');showHideCommon('perExpanded');showHideCommon('perMinimized');})
 
 
+}
+
+//function to make role drop-box component, searchable
+function makeSelectRoleSearchable(){
+    jQuery('#roleToAuthorize').select2();
 }
 
 function submitUserAddForm() {
