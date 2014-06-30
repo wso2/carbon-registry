@@ -399,7 +399,18 @@ public class CommonUtil {
     }
 
     public static void addService(OMElement service, RequestContext context)throws RegistryException{
-        Registry registry = context.getRegistry();
+        Registry registry = null ;
+
+        if(context.getSourceURL() != null) {
+            if(context.getSourceURL().startsWith("file://")) {
+                registry = getRootUserRegistry();
+            } else if(context.getSourceURL().startsWith("http://") || context.getSourceURL().startsWith("https://")) {
+                registry = context.getRegistry();
+            }
+        } else {
+            registry = context.getRegistry();
+        }
+
         Resource resource = registry.newResource();
         String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
                 CommonUtil.getServiceNamespace(service));
