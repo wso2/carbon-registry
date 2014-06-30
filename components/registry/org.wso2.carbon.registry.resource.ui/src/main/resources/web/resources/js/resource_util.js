@@ -2256,6 +2256,7 @@ function refreshPermissionsSection(path) {
 
                     //adding searchable drop-box component
                     makeSelectRoleSearchable();
+                    makeSelectActionSelect2styled();
 
                     $('perIconExpanded').style.display = "";
                     $('perIconMinimized').style.display = "none";
@@ -2274,7 +2275,19 @@ function refreshPermissionsSection(path) {
 
 //function to make role drop-box component, searchable
 function makeSelectRoleSearchable(){
-    jQuery('#roleToAuthorize').select2();
+    jQuery('#roleToAuthorize').select2({
+        width: "263px",
+        placeholder: "-Select-"
+    });
+}
+
+//function to make action drop-box component, select2 styled
+function makeSelectActionSelect2styled(){
+    jQuery('#roleActionToAuthorize').select2({
+        minimumResultsForSearch: -1,
+        width: "120px",
+        placeholder: "-Select-"
+    });
 }
 
 function submitUserAddForm() {

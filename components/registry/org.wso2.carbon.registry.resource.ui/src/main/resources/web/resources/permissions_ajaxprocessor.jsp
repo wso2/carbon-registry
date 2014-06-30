@@ -295,6 +295,7 @@
         <script>
             jQuery(document).ready(function() {
                 makeSelectRoleSearchable();
+                makeSelectActionSelect2styled();
             });
         </script>
 
