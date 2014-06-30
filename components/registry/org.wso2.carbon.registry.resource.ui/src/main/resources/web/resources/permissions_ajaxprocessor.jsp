@@ -293,7 +293,9 @@
         </form>
 
         <script>
-            jQuery('#roleToAuthorize').select2();
+            jQuery(document).ready(function() {
+                makeSelectRoleSearchable();
+            });
         </script>
 
         <h4 style="margin-top:10px;"><fmt:message key="defined.role.permissions"/></h4>
