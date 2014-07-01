@@ -109,9 +109,20 @@ public class WSDLProcessor {
     private boolean createService = true;
 
     public WSDLProcessor(RequestContext requestContext) {
-        this.registry = requestContext.getRegistry();
         try {
-            this.systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
+            if(requestContext.getSourceURL() != null) {
+                if(requestContext.getSourceURL().startsWith("file://")) {
+                    this.registry = CommonUtil.getRootUserRegistry();
+                    this.systemRegistry = CommonUtil.getRootSystemRegistry();
+                } else if(requestContext.getSourceURL().startsWith("http://") || requestContext.getSourceURL().startsWith("https://")) {
+                    this.registry = requestContext.getRegistry();
+                    this.systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
+                }
+            } else {
+                this.registry = requestContext.getRegistry();
+                this.systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
+            }
+
             if (!systemRegistry.resourceExists(
                     getChrootedSchemaLocation(requestContext.getRegistryContext()))) {
                 systemRegistry.put(getChrootedSchemaLocation(requestContext.getRegistryContext()),

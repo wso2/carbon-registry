@@ -90,6 +90,56 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return new SearchResultsBean();
     }
 
+    private String[] sortByDateIfRequired(String[] authorizedPaths, final UserRegistry registry, PaginationContext paginationContext) throws RegistryException {
+        if(paginationContext.getSortBy().equalsIgnoreCase("meta_created_date")) {
+            if(paginationContext.getSortOrder().equalsIgnoreCase("ASC")) {
+                Arrays.sort(authorizedPaths, new Comparator<String>() {
+                    public int compare(String path1, String path2) {
+                        try {
+                            return registry.getMetaData(path1).getCreatedTime().compareTo(registry.getMetaData(path2).getCreatedTime());
+                        } catch(RegistryException ex) {
+                            return 0 ;
+                        }
+                    }
+                });
+            } else if(paginationContext.getSortOrder().equalsIgnoreCase("DES")) {
+                Arrays.sort(authorizedPaths, new Comparator<String>() {
+                    public int compare(String path1, String path2) {
+                        try {
+                            return registry.getMetaData(path2).getCreatedTime().compareTo(registry.getMetaData(path1).getCreatedTime());
+                        } catch(RegistryException ex) {
+                            return 0 ;
+                        }
+                    }
+                });
+            }
+        } else if(paginationContext.getSortBy().equalsIgnoreCase("meta_last_updated_date")) {
+            if(paginationContext.getSortOrder().equalsIgnoreCase("ASC")) {
+                Arrays.sort(authorizedPaths, new Comparator<String>() {
+                    public int compare(String path1, String path2) {
+                        try {
+                            return registry.getMetaData(path1).getLastModified().compareTo(registry.getMetaData(path2).getLastModified());
+                        } catch(RegistryException ex) {
+                            return 0 ;
+                        }
+                    }
+                });
+            } else if(paginationContext.getSortOrder().equalsIgnoreCase("DES")) {
+                Arrays.sort(authorizedPaths, new Comparator<String>() {
+                    public int compare(String path1, String path2) {
+                        try {
+                            return registry.getMetaData(path2).getLastModified().compareTo(registry.getMetaData(path1).getLastModified());
+                        } catch(RegistryException ex) {
+                            return 0 ;
+                        }
+                    }
+                });
+            }
+        }
+
+        return authorizedPaths;
+    }
+
     private SearchResultsBean searchContentInternal(String searchQuery, Map<String, String> attributes,
                                            UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
@@ -130,6 +180,9 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     }
                 }
                 String[] authorizedPaths = authorizedPathList.toArray(new String[authorizedPathList.size()]);
+
+                sortByDateIfRequired(authorizedPaths, registry, paginationContext);
+
                 String[] paginatedPaths;
                 int start = paginationContext.getStart();
                 int count = paginationContext.getCount();
