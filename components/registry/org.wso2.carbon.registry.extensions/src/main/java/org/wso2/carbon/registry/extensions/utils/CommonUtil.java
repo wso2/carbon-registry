@@ -827,4 +827,12 @@ public class CommonUtil {
         return dependencies.toArray(new Association[dependencies.size()]);
     }
 
+    public static Registry getRootUserRegistry() throws RegistryException {
+        return  RegistryCoreServiceComponent.getRegistryService().getRegistry(CurrentSession.getUser(),CurrentSession.getTenantId());
+    }
+
+    public static Registry getRootSystemRegistry() throws RegistryException {
+        return  RegistryCoreServiceComponent.getRegistryService().getSystemRegistry(CurrentSession.getTenantId(),CarbonConstants.REGISTRY_SYSTEM_USERNAME);
+    }
+
 }
