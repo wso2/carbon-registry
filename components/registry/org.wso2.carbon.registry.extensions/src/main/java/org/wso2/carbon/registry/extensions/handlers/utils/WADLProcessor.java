@@ -30,10 +30,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class WADLProcessor {
 
@@ -83,6 +80,12 @@ public class WADLProcessor {
                                     String resourcePath,boolean skipValidation)
             throws RegistryException {
         String wadlName = RegistryUtils.getResourceName(resourcePath);
+        String version = requestContext.getResource().getProperty("version");
+
+        if (version == null){
+            version = CommonConstants.WADL_VERSION_DEFAULT_VALUE;
+        }
+
         OMElement wadlElement;
         String wadlContent;
         Object resourceContent = resource.getContent();
@@ -109,7 +112,7 @@ public class WADLProcessor {
         String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
                 wadlNamespace).replace("//", "/");
         String actualPath = getChrootedWadlLocation(requestContext.getRegistryContext()) +
-                namespaceSegment + wadlName;
+                namespaceSegment + version  + "/" + wadlName;
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
@@ -143,7 +146,7 @@ public class WADLProcessor {
         }
 
         if(grammarsElement != null){
-            grammarsElement = resolveImports(grammarsElement, null);
+            grammarsElement = resolveImports(grammarsElement, null, version);
             wadlElement.addChild(grammarsElement);
         }
 
@@ -152,7 +155,7 @@ public class WADLProcessor {
         addImportAssociations(actualPath);
         if(getCreateService()){
             OMElement serviceElement = getServiceElement(requestContext, wadlName.contains(".") ?
-                    wadlName.substring(0, wadlName.lastIndexOf(".")) : wadlName, wadlNamespace, actualPath);
+                    wadlName.substring(0, wadlName.lastIndexOf(".")) : wadlName, wadlNamespace, actualPath, version);
             CommonUtil.addService(serviceElement, requestContext);
         }
 
@@ -164,6 +167,11 @@ public class WADLProcessor {
 
         ResourcePath resourcePath = requestContext.getResourcePath();
         String wadlName = RegistryUtils.getResourceName(resourcePath.getPath());
+        String version = requestContext.getResource().getProperty("version");
+
+        if(version == null){
+            version = CommonConstants.WADL_VERSION_DEFAULT_VALUE;
+        }
 
         String uri = requestContext.getSourceURL();
         if(!skipValidation) {
@@ -176,6 +184,7 @@ public class WADLProcessor {
             resource.setUUID(UUID.randomUUID().toString());
         }
         resource.setMediaType(wadlMediaType);
+        resource.setProperties(requestContext.getResource().getProperties());
 
         ByteArrayOutputStream outputStream;
         OMElement wadlElement;
@@ -206,15 +215,15 @@ public class WADLProcessor {
         String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
         if(grammarsElement != null){
             grammarsElement.detach();
-            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri));
+            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version));
         }
 
         String actualPath;
         if(commonLocation != null){
-            actualPath = commonLocation + namespaceSegment + wadlName;
+            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
         } else {
             actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                    commonWADLLocation + namespaceSegment + wadlName;
+                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
         }
 
         resource.setContent(wadlElement.toString());
@@ -224,7 +233,7 @@ public class WADLProcessor {
         if(createService){
             OMElement serviceElement = getServiceElement(requestContext,
                     wadlName.contains(".") ? wadlName.substring(0, wadlName.
-                            lastIndexOf(".")) : wadlName, wadlNamespace, actualPath);
+                            lastIndexOf(".")) : wadlName, wadlNamespace, actualPath, version);
             CommonUtil.addService(serviceElement, requestContext);
         }
 
@@ -232,7 +241,7 @@ public class WADLProcessor {
     }
 
     private OMElement resolveImports(OMElement grammarsElement,
-                                String wadlBaseUri) throws RegistryException {
+                                String wadlBaseUri, String wadlVersion) throws RegistryException {
         String wadlNamespace = grammarsElement.getNamespace().getNamespaceURI();
         Iterator<OMElement> grammarElements = grammarsElement.
                 getChildrenWithName(new QName(wadlNamespace, "include"));
@@ -248,7 +257,7 @@ public class WADLProcessor {
                         importUrl = wadlBaseUri + importUrl;
                     }
                 }
-                String schemaPath = saveSchema(importUrl);
+                String schemaPath = saveSchema(importUrl, wadlVersion);
                 importedSchemas.add(schemaPath);
                 refAttr.setAttributeValue(schemaPath);
                 childElement.addAttribute(refAttr);
@@ -296,7 +305,7 @@ public class WADLProcessor {
         }
     }
 
-    private String saveSchema(String schemaUrl) throws RegistryException {
+    private String saveSchema(String schemaUrl, String version) throws RegistryException {
         if(schemaUrl != null){
             RequestContext requestContext =
                     new RequestContext(registry, repository, versionRepository);
@@ -333,7 +342,7 @@ public class WADLProcessor {
     }
 
     private OMElement getServiceElement(RequestContext requestContext,
-                                   String serviceName, String serviceNamespace, String wadlPath){
+                                   String serviceName, String serviceNamespace, String wadlPath, String version){
         OMFactory fac = OMAbstractFactory.getOMFactory();
         OMNamespace namespace = fac.
                 createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -342,13 +351,16 @@ public class WADLProcessor {
         OMElement overview = fac.createOMElement("overview", namespace);
         OMElement interfaceElement = fac.createOMElement("interface", namespace);
         OMElement name = fac.createOMElement("name", namespace);
+        OMElement versionElement = fac.createOMElement("version",namespace);
         name.setText(serviceName);
+        versionElement.setText(version);
         definitionURL.setText(RegistryUtils.
                 getRelativePath(requestContext.getRegistryContext(), wadlPath));
         OMElement namespaceElement = fac.createOMElement("namespace", namespace);
         namespaceElement.setText(serviceNamespace);
         interfaceElement.addChild(definitionURL);
         overview.addChild(name);
+        overview.addChild(versionElement);
         overview.addChild(namespaceElement);
         data.addChild(overview);
         data.addChild(interfaceElement);
