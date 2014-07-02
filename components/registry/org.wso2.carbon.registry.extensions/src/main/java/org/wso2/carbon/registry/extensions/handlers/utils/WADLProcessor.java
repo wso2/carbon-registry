@@ -30,10 +30,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class WADLProcessor {
 
@@ -115,7 +112,7 @@ public class WADLProcessor {
         String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
                 wadlNamespace).replace("//", "/");
         String actualPath = getChrootedWadlLocation(requestContext.getRegistryContext()) +
-                namespaceSegment + version+ wadlName;
+                namespaceSegment + version  + "/" + wadlName;
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
@@ -187,6 +184,7 @@ public class WADLProcessor {
             resource.setUUID(UUID.randomUUID().toString());
         }
         resource.setMediaType(wadlMediaType);
+        resource.setProperties(requestContext.getResource().getProperties());
 
         ByteArrayOutputStream outputStream;
         OMElement wadlElement;
@@ -222,10 +220,10 @@ public class WADLProcessor {
 
         String actualPath;
         if(commonLocation != null){
-            actualPath = commonLocation + namespaceSegment + "/" + version + "/" + wadlName;
+            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
         } else {
             actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                    commonWADLLocation + namespaceSegment + "/" + version + "/" + wadlName;
+                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
         }
 
         resource.setContent(wadlElement.toString());
