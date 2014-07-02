@@ -114,6 +114,28 @@ public class CommonUtil {
         }
         return "";
     }
+    /**
+     * Read service version that is input from the user. 
+     * 
+     * @param element
+     * @return
+     */
+    public static String getServiceVersion(OMElement element) {
+        OMElement overview = element.getFirstChildWithName(new QName("Overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName("Version")) != null) {
+                return overview.getFirstChildWithName(new QName("Version")).getText();
+            }
+        }
+
+        overview = element.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")) != null) {
+                return overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
+            }
+        }
+        return "";
+    }
 
 
     public static void setServiceName(OMElement element, String serviceName) {

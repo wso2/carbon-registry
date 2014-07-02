@@ -52,6 +52,8 @@ public class WSDLMediaTypeHandler extends Handler {
     private OMElement policyLocationConfiguration;
     private boolean disableSymlinkCreation = true;
 
+    private String defaultWsdlVersion = CommonConstants.WSDL_VERSION_DEFAULT_VALUE;
+
     public boolean getCreateService() {
         return createService;
     }
@@ -74,6 +76,10 @@ public class WSDLMediaTypeHandler extends Handler {
 
     public void setDisableSymlinkCreation(String disableSymlinkCreation) {
         this.disableSymlinkCreation = Boolean.toString(true).equals(disableSymlinkCreation);
+    }
+
+    public void setDefaultServiceVersion(String defaultWsdlVersion) {
+        this.defaultWsdlVersion = defaultWsdlVersion;
     }
 
     public void setWsdlLocationConfiguration(OMElement locationConfiguration) throws RegistryException {

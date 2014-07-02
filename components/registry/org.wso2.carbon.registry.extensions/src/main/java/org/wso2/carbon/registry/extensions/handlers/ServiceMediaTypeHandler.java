@@ -122,6 +122,15 @@ public class ServiceMediaTypeHandler extends Handler {
             // derive the service path that the service should be saved.
             String serviceName = CommonUtil.getServiceName(serviceInfoElement);
             String serviceNamespace = CommonUtil.getServiceNamespace(serviceInfoElement);
+            String serviceVersion = CommonUtil.getServiceVersion(
+                    serviceInfoElement);
+
+            if (serviceVersion.length() == 0) {
+                serviceVersion = defaultServiceVersion;
+                CommonUtil.setServiceVersion(serviceInfoElement, serviceVersion);
+                resource.setContent(serviceInfoElement.toString());
+            }
+
 
             String servicePath = "";
             if(serviceInfoElement.getChildrenWithLocalName("newServicePath").hasNext()){
@@ -142,19 +151,10 @@ public class ServiceMediaTypeHandler extends Handler {
                     servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
                             registry.getRegistryContext().getServicePath() +
                                     (serviceNamespace == null ? "" :
-                                            CommonUtil.derivePathFragmentFromNamespace(serviceNamespace)) +
+                                            CommonUtil.derivePathFragmentFromNamespace(serviceNamespace)) + serviceVersion + "/" +
                                     serviceName);
                 }
-            }
-            String serviceVersion =
-                    org.wso2.carbon.registry.common.utils.CommonUtil.getServiceVersion(
-                            serviceInfoElement);
-
-            if (serviceVersion.length() == 0) {
-                serviceVersion = defaultServiceVersion;
-                CommonUtil.setServiceVersion(serviceInfoElement, serviceVersion);
-                resource.setContent(serviceInfoElement.toString());
-            }
+            }             
             // saving the artifact id.
             String serviceId = resource.getUUID();
             if (serviceId == null) {
@@ -265,7 +265,10 @@ public class ServiceMediaTypeHandler extends Handler {
                             requestContext.getVersionRepository());
                     context.setResourcePath(new ResourcePath(RegistryConstants.PATH_SEPARATOR + serviceName + ".wsdl"));
                     context.setSourceURL(definitionURL);
-                    context.setResource(new ResourceImpl());
+                    Resource tmpResource = new ResourceImpl();
+                    tmpResource.setProperty("version", serviceVersion);
+                    context.setResource(tmpResource);
+                    
                     definitionPath = wsdl.addWSDLToRegistry(context, definitionURL, null, false, false,
                             disableWSDLValidation,disableSymlinkCreation);
 
@@ -276,7 +279,9 @@ public class ServiceMediaTypeHandler extends Handler {
                             requestContext.getVersionRepository());
                     context.setResourcePath(new ResourcePath(RegistryConstants.PATH_SEPARATOR + serviceName + ".wadl"));
                     context.setSourceURL(definitionURL);
-                    context.setResource(new ResourceImpl());
+                    Resource tmpResource = new ResourceImpl();
+                    tmpResource.setProperty("version", serviceVersion);
+                    context.setResource(tmpResource);
                     definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
                 } else {
                     throw new RegistryException("Invalid service definition found. " +
