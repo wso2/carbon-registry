@@ -202,6 +202,7 @@ public class WSDLMediaTypeHandler extends Handler {
                 // This is to distinguish operations on xsd and wsdl on remote mounting.
                 String remotePut = metadata.getProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
                 if (remotePut != null) {
+                    CommonUtil.releaseUpdateLock();
                     metadata.removeProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
                     registry.put(path, metadata);
                     requestContext.setProcessingComplete(true);
