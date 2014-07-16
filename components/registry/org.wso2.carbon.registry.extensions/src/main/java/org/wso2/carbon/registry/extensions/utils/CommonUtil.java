@@ -422,18 +422,7 @@ public class CommonUtil {
     }
 
     public static void addService(OMElement service, RequestContext context)throws RegistryException{
-        Registry registry = null ;
-
-        if(context.getSourceURL() != null) {
-            if(context.getSourceURL().startsWith("file://")) {
-                registry = getRootUserRegistry();
-            } else if(context.getSourceURL().startsWith("http://") || context.getSourceURL().startsWith("https://")) {
-                registry = context.getRegistry();
-            }
-        } else {
-            registry = context.getRegistry();
-        }
-
+        Registry registry = context.getRegistry();
         Resource resource = registry.newResource();
         String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
                 CommonUtil.getServiceNamespace(service));
@@ -848,14 +837,6 @@ public class CommonUtil {
             }
         }
         return dependencies.toArray(new Association[dependencies.size()]);
-    }
-
-    public static Registry getRootUserRegistry() throws RegistryException {
-        return  RegistryCoreServiceComponent.getRegistryService().getRegistry(CurrentSession.getUser(),CurrentSession.getTenantId());
-    }
-
-    public static Registry getRootSystemRegistry() throws RegistryException {
-        return  RegistryCoreServiceComponent.getRegistryService().getSystemRegistry(CurrentSession.getTenantId(),CarbonConstants.REGISTRY_SYSTEM_USERNAME);
     }
 
 }
