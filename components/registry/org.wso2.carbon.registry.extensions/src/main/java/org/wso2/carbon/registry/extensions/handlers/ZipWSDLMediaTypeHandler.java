@@ -640,8 +640,13 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
         }
 
+        String pathMappingResourceName = resourceName;
+        if (resourceName.contains(".")){
+           pathMappingResourceName = resourceName.substring(0, resourceName.lastIndexOf("."));
+        }
+
         String pathMappingResourcePath = CommonConstants.REG_GAR_PATH_MAPPING +
-                resourceName.substring(0, resourceName.lastIndexOf("."));
+                pathMappingResourceName;
         boolean garMappingExists = configRegistry.resourceExists(pathMappingResourcePath);
         if (garMappingExists) {
             Resource pathMappingResource = configRegistry.get(pathMappingResourcePath);
