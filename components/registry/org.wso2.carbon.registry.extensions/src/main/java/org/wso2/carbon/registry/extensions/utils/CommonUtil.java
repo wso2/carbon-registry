@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -109,6 +110,28 @@ public class CommonUtil {
         if (overview != null) {
             if (overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")) != null) {
                 return overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
+            }
+        }
+        return "";
+    }
+    /**
+     * Read service version that is input from the user. 
+     * 
+     * @param element
+     * @return
+     */
+    public static String getServiceVersion(OMElement element) {
+        OMElement overview = element.getFirstChildWithName(new QName("Overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName("Version")) != null) {
+                return overview.getFirstChildWithName(new QName("Version")).getText();
+            }
+        }
+
+        overview = element.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")) != null) {
+                return overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
             }
         }
         return "";

@@ -59,14 +59,20 @@ public class ImportResourceUtil {
                 metadataResource.setProperty(RegistryConstants.SYMLINK_PROPERTY_NAME, symlinkLocation);
             }
 
-            String path = userRegistry.importResource(resourcePath, fetchURL, metadataResource);
             if (properties != null && properties.length > 0) {
+                for (String[] p : properties) {
+                    metadataResource.setProperty(p[0], p[1]);
+                }
+            }
+
+            String path = userRegistry.importResource(resourcePath, fetchURL, metadataResource);
+           /* if (properties != null && properties.length > 0) {
                 Resource resource = userRegistry.get(path);
                 for (String[] p : properties) {
                     resource.setProperty(p[0], p[1]);
                 }
                 userRegistry.put(path, resource);
-            }
+            }*/
             metadataResource.discard();
 
         } catch (RegistryException e) {

@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.SchemaProcessor;
 import org.wso2.carbon.registry.extensions.handlers.utils.SchemaValidator;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
@@ -44,6 +45,7 @@ public class XSDMediaTypeHandler extends Handler {
     private String locationTag = "location";
     private boolean disableSchemaValidation = false;
     private boolean disableSymlinkCreation = true;
+    private String defaultSchemaVersion = CommonConstants.SCHEMA_VERSION_DEFAULT_VALUE;
 
     public OMElement getLocationConfiguration() {
         return locationConfiguration;
@@ -74,6 +76,10 @@ public class XSDMediaTypeHandler extends Handler {
         this.disableSymlinkCreation = Boolean.toString(true).equals(disableSymlinkCreation);
     }
 
+    public void setDefaultServiceVersion(String defaultSchemaVersion) {
+        this.defaultSchemaVersion = defaultSchemaVersion;
+    }
+
     private OMElement locationConfiguration;
 
     public void put(RequestContext requestContext) throws RegistryException {
@@ -91,6 +97,7 @@ public class XSDMediaTypeHandler extends Handler {
             // This is to distinguish operations on xsd and wsdl on remote mounting.
             String remotePut = resource.getProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
             if (remotePut != null) {
+                CommonUtil.releaseUpdateLock();
                 resource.removeProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
                 registry.put(resourcePath, resource);
                 requestContext.setProcessingComplete(true);

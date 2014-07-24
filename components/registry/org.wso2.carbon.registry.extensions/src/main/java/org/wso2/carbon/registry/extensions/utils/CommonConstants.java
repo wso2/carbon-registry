@@ -100,6 +100,12 @@ public class CommonConstants {
 
     public static final String SERVICE_VERSION_DEFAULT_VALUE = "1.0.0";
 
+    public static final String WSDL_VERSION_DEFAULT_VALUE = "1.0.0";
+
+    public static final String WADL_VERSION_DEFAULT_VALUE = "1.0.0";
+
+    public static final String SCHEMA_VERSION_DEFAULT_VALUE = "1.0.0";
+
     public static final String VERSION_CONTAINER_MEDIA_TYPE =
             "application/vnd.wso2.version-container";
 

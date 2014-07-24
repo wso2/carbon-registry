@@ -52,6 +52,8 @@ public class WSDLMediaTypeHandler extends Handler {
     private OMElement policyLocationConfiguration;
     private boolean disableSymlinkCreation = true;
 
+    private String defaultWsdlVersion = CommonConstants.WSDL_VERSION_DEFAULT_VALUE;
+
     public boolean getCreateService() {
         return createService;
     }
@@ -74,6 +76,10 @@ public class WSDLMediaTypeHandler extends Handler {
 
     public void setDisableSymlinkCreation(String disableSymlinkCreation) {
         this.disableSymlinkCreation = Boolean.toString(true).equals(disableSymlinkCreation);
+    }
+
+    public void setDefaultServiceVersion(String defaultWsdlVersion) {
+        this.defaultWsdlVersion = defaultWsdlVersion;
     }
 
     public void setWsdlLocationConfiguration(OMElement locationConfiguration) throws RegistryException {
@@ -196,6 +202,7 @@ public class WSDLMediaTypeHandler extends Handler {
                 // This is to distinguish operations on xsd and wsdl on remote mounting.
                 String remotePut = metadata.getProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
                 if (remotePut != null) {
+                    CommonUtil.releaseUpdateLock();
                     metadata.removeProperty(RegistryConstants.REMOTE_MOUNT_OPERATION);
                     registry.put(path, metadata);
                     requestContext.setProcessingComplete(true);
