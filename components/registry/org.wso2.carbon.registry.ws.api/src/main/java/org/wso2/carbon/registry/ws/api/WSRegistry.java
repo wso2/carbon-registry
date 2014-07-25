@@ -1132,6 +1132,11 @@ public class WSRegistry extends RegistryAbstractAdmin implements Registry {
     		throws RegistryException {
         return getRegistryForTenant().removeVersionHistory(path, snapshotId);
     }
+
+    @Override
+    public void dumpLite(String s, Writer writer) throws RegistryException {
+        // Implementation needs to be added
+    }
 }
 
 
