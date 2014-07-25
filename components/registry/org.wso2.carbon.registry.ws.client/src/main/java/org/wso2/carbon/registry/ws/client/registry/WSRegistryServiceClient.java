@@ -852,7 +852,12 @@ public class WSRegistryServiceClient implements Registry {
             throw new RegistryException(msg, e);
         }
     }
-    
+
+    @Override
+    public void dumpLite(String s, Writer writer) throws RegistryException {
+        // Implementation needs to be added
+    }
+
     public void beginTransaction() throws RegistryException {
     }
 
