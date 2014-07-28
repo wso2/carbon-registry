@@ -19,13 +19,12 @@ package org.wso2.carbon.registry.extensions.utils;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.core.Association;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.api.Collection;
+import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
@@ -38,6 +37,7 @@ import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -445,6 +445,9 @@ public class CommonUtil {
             }
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
+            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
+            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
+            registry.associateAspect(resource.getId(),defaultLifeCycle);
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -459,6 +462,63 @@ public class CommonUtil {
     private static String getChrootedServiceLocation(Registry registry, RegistryContext registryContext) {
         return  RegistryUtils.getAbsolutePath(registryContext,
                 registry.getRegistryContext().getServicePath());  // service path contains the base
+    }
+
+
+    private static List retrieveRXTs(Registry registry) throws RegistryException {
+
+        Collection rxtCollection = null;
+        List<String> configurations =
+                new Vector<String>();
+        try {
+            rxtCollection = (Collection) registry.get(CommonConstants.RXT_CONFIGS_PATH);
+
+            String[] rxtPaths = rxtCollection.getChildren();
+
+            for (String rxtpath : rxtPaths) {
+                Resource resource = registry.get(rxtpath);
+                Object content = resource.getContent();
+                String elementString;
+                if (content instanceof String) {
+                    elementString = (String) content;
+                } else {
+                    elementString = RegistryUtils.decodeBytes((byte[]) content);
+                }
+                configurations.add(elementString);
+            }
+
+        } catch (RegistryException e) {
+            throw new RegistryException("Error while retrieving RXTs for default location", e);
+        } catch (org.wso2.carbon.registry.api.RegistryException e) {
+            throw new RegistryException("Error while getting children of RXT collection", e);
+        }
+
+        return configurations;
+    }
+
+
+    private static String getDefaultServiceLifecycle(Registry registry) throws RegistryException {
+        List<String> rxtList = null;
+        String lifecycle = "";
+
+            rxtList = retrieveRXTs(registry);
+
+            for (String rxtcontent : rxtList) {
+                OMElement configElement = null;
+                try {
+                    configElement = AXIOMUtil.stringToOM(rxtcontent);
+                } catch (XMLStreamException e) {
+                    throw new RegistryException("Error while serializing to OM content from String", e);
+                }
+                if ("service".equals(configElement.getAttributeValue(new QName("shortName")))) {
+                    OMElement lifecycleElement = configElement.getFirstChildWithName(
+                            new QName("lifecycle"));
+                    if (lifecycleElement != null) {
+                        lifecycle = lifecycleElement.getText();
+                    }
+                }
+            }
+        return lifecycle;
     }
 
 /*

@@ -22,6 +22,13 @@ public class CommonConstants {
     public static final String GOVERNANCE_ARTIFACT_INDEX_PATH =
             "/repository/components/org.wso2.carbon.governance/artifacts";
 
+    /*
+     This is the path which save the rxt config files.
+     */
+    public static final String RXT_CONFIGS_PATH = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+            RegistryConstants.GOVERNANCE_COMPONENT_PATH + RegistryConstants.PATH_SEPARATOR + "types";
+
+
 //    public static final String ARTIFACT_ID_PROP_KEY = "registry.artifactId";
 
     public static final String SERVICE_NAME_ATTRIBUTE = "overview_name";
