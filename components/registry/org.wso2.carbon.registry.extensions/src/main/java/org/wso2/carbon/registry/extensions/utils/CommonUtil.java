@@ -20,6 +20,7 @@ package org.wso2.carbon.registry.extensions.utils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -29,8 +30,11 @@ import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.pagination.PaginationContext;
+import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.ServiceDocumentsBean;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
@@ -464,44 +468,11 @@ public class CommonUtil {
                 registry.getRegistryContext().getServicePath());  // service path contains the base
     }
 
-
-    private static List retrieveRXTs(Registry registry) throws RegistryException {
-
-        Collection rxtCollection = null;
-        List<String> configurations =
-                new Vector<String>();
-        try {
-            rxtCollection = (Collection) registry.get(CommonConstants.RXT_CONFIGS_PATH);
-
-            String[] rxtPaths = rxtCollection.getChildren();
-
-            for (String rxtpath : rxtPaths) {
-                Resource resource = registry.get(rxtpath);
-                Object content = resource.getContent();
-                String elementString;
-                if (content instanceof String) {
-                    elementString = (String) content;
-                } else {
-                    elementString = RegistryUtils.decodeBytes((byte[]) content);
-                }
-                configurations.add(elementString);
-            }
-
-        } catch (RegistryException e) {
-            throw new RegistryException("Error while retrieving RXTs for default location", e);
-        } catch (org.wso2.carbon.registry.api.RegistryException e) {
-            throw new RegistryException("Error while getting children of RXT collection", e);
-        }
-
-        return configurations;
-    }
-
-
     private static String getDefaultServiceLifecycle(Registry registry) throws RegistryException {
-        List<String> rxtList = null;
+        String[] rxtList = null;
         String lifecycle = "";
 
-            rxtList = retrieveRXTs(registry);
+            rxtList = MediaTypesUtils.getResultPaths(registry, CommonConstants.RXT_MEDIA_TYPE);
 
             for (String rxtcontent : rxtList) {
                 OMElement configElement = null;
