@@ -31,6 +31,16 @@ public class ServiceVersionV1 implements VersionV1 {
         this.version = version;
     }
 
+    @Override
+    public void setProperty(String key, String value) {
+
+    }
+
+    @Override
+    public void getProperty(String key) {
+
+    }
+
     public String getEndpointUrl() {
         return endpointUrl;
     }

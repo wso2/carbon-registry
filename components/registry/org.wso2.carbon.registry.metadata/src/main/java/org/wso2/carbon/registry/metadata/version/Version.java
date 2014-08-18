@@ -33,5 +33,18 @@ public interface Version {
      */
     public void setVersion(String value);
 
+    /**
+     *
+     * @param key name of the property
+     * @param value value of the property
+     */
+    public void setProperty(String key,String value);
+
+
+    /**
+     *
+     * @param key name of the property
+     */
+    public void getProperty(String key);
 
     }
