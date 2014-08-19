@@ -472,6 +472,10 @@ public class ContentUtil {
     }
 
     private static boolean isADependency(Association associationBean,UserRegistry registry,String scrPath,String COLLECTION) throws Exception {
+        if(associationBean.getDestinationPath() == null ||
+                (!registry.resourceExists(associationBean.getDestinationPath()))){
+            return false;
+        }
         ResourceData resourceData = ContentUtil.getResourceData(new String[]{associationBean.getDestinationPath()}, registry)[0];
           boolean isCollection = resourceData.getResourceType().equals(COLLECTION);
           return (associationBean.getAssociationType() != null && associationBean.getAssociationType().equals("depends")
