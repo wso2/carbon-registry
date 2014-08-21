@@ -18,6 +18,31 @@
  */
 package org.wso2.carbon.registry.metadata;
 
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.version.Version;
+
 public interface BaseV1 extends Base {
+
+    /**
+     * Creates a plain version instance
+     * @param value - version value
+     * @return
+     */
+    public Version newVersion(String value) throws RegistryException;
+
+    /**
+     *
+     * @return all meta data version instances created from this instance
+     */
+    public Version[] getVersions() throws RegistryException;
+
+    /**
+     * Returns the version that matches with given major,minor and patch values
+     * @param major
+     * @param minor
+     * @param patch
+     * @return
+     */
+    public Version getVersion (int major, int minor, int patch) throws RegistryException;
 
 }

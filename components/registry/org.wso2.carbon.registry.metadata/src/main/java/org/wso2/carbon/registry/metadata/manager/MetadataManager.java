@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.registry.metadata.manager;
 
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.BaseV1;
 import org.wso2.carbon.registry.metadata.version.Version;
@@ -31,69 +32,69 @@ public interface MetadataManager {
      * @param name Human readable name of the meta data instance
      * @return the plain meta data instance with the given name.
      */
-    public Base newInstance(String name);
+    public Base newInstance(String name) throws RegistryException ;
 
     /**
      * Deletes the meta data instance that represents from the given UUID
      * @param uuid  UUID of the instance
      */
-    public void delete(String uuid);
+    public void delete(String uuid) throws RegistryException;
 
     /**
      * Persisting the mata data instance details to the repository
      * @param metadata - meta data instance
      */
-    public void add(Base metadata);
+    public void add(Base metadata) throws RegistryException;
 
     /**
      * Update the meta data info with the given meta data instance
      * @param metadata - meta data insatnce
      */
-    public void update(Base metadata);
+    public void update(Base metadata) throws RegistryException ;
 
     /**
      *
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    public Base[] getAllMetadata();
+    public Base[] getAllMetadata() throws RegistryException ;
 
     /**
      *  Search all meta data instances of this particular type with the given search attributes
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public Base[] findMetadata(Map<String,String> criteria);
+    public Base[] findMetadata(Map<String,String> criteria) throws RegistryException ;
 
     /**
      * Returns the meta data instance that can be identified by the given UUID
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public Base getMetadata(String uuid);
+    public Base getMetadata(String uuid) throws RegistryException ;
 
     /**
      * Persisting the mata data version instance details to the repository
      * @param version - meta data instance
      */
-    public void add(Version version);
+    public void add(Version version) throws RegistryException ;
 
     /**
      * Update the meta data version info with the given meta data instance
      * @param version - meta data version insatnce
      */
-    public void update(Version version);
+    public void update(Version version) throws RegistryException ;
 
     /**
      * Returns the meta data version instance that can be identified by the given UUID
      * @param uuid - UUID of the metadata insatnce
      * @return meta data version from the UUID
      */
-    public Version getMetadataVersion(String uuid);
+    public Version getMetadataVersion(String uuid) throws RegistryException ;
 
     /**
      *  Search all meta data version instances of this particular type with the given search attributes
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public Version[] findMetadataVersions(Map<String,String> criteria);
+    public Version[] findMetadataVersions(Map<String,String> criteria)throws RegistryException ;
 }

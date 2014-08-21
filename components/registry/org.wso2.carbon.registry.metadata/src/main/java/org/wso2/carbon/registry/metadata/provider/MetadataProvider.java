@@ -18,27 +18,37 @@
  */
 package org.wso2.carbon.registry.metadata.provider;
 
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.metadata.Base;
 
 public interface MetadataProvider {
 
     /**
+     *
+     * @param name meta data name
+     * @return  Plain meta data instance with the given name
+     */
+    public Base createNewInstance(String name);
+
+    /**
      * Persists the metadata information in to the repository layer
      * @param metadata  the particular metadata object that needs to insert
+     * @return Resource with the new content
      */
-    public void insert(Base metadata);
+    public Resource buildResource(Base metadata, Resource resource);
 
     /**
      * Update the meta data information
-     * @param metadata  the particular metadata object that needs to update
+     * @param newMetadata  the particular metadata object that needs to update
+     * @return Resource with the updated content
      */
-    public void update(Base metadata);
+    public Resource updateResource(Base newMetadata,Resource resource);
 
     /**
-     * Obtain the metadata info from the repository and construct the Meta data instance
-     * @param uuid - UUID that represents the meta data instance
-     * @return
+     * Construct the Meta data instance
+     * @param resource - Resource instance that has metadata information stored in.
+     * @return Base type metadata instance constructed from the resource
      */
-    public Base get(String uuid);
+    public Base get(Resource resource);
 
 }

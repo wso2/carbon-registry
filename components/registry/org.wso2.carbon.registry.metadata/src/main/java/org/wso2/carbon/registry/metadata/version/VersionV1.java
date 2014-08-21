@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.registry.metadata.version;
 
-public interface VersionV1 extends Version{
+import org.wso2.carbon.registry.metadata.Base;
+
+public interface VersionV1 extends Base {
 
 }

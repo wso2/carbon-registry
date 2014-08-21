@@ -19,61 +19,40 @@
 package org.wso2.carbon.registry.metadata;
 
 
-import org.wso2.carbon.registry.metadata.version.Version;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 public interface Base {
-
-    /**
-     * Creates a plain version instance
-     * @param value - version value
-     * @return
-     */
-    public Version newVersion(String value);
-
-    /**
-     *
-     * @return all meta data version instances created from this instance
-     */
-    public Version[] getVersions();
-
-    /**
-     * Returns the version that matches with given major,minor and patch values
-     * @param major
-     * @param minor
-     * @param patch
-     * @return
-     */
-    public Version getVersion (int major, int minor, int patch);
 
     /**
      *
       * @return the UUID of the meta data instance
      */
-    public String getUUID();
+    public String getUUID() throws RegistryException;
 
     /**
      *
      * @return the human readable name that is given to the meta data instance
      */
-    public String getName();
+    public String getName() throws RegistryException;
 
     /**
      *
      * @return media type of the meta data instance that uniquely identifies the type of this instance
      */
-    public String getMediaType();
+    public String getMediaType() throws RegistryException;
 
     /**
      * This is the property bag
      * @param key - property name
      * @param value - property value
      */
-    public void setProperty(String key,String value);
+    public void setProperty(String key,String value) throws RegistryException;
 
     /**
      * Removes the property from this instance
      * @param key name of the property
      */
-    public void removeProperty(String key);
+    public void removeProperty(String key) throws RegistryException;
+
 
 }

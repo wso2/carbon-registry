@@ -1,28 +1,31 @@
 package org.wso2.carbon.metadata.test;
 
 
-import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.manager.BaseMetadataManager;
-import org.wso2.carbon.registry.metadata.manager.MetadataManager;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
-import org.wso2.carbon.registry.metadata.version.VersionV1;
+import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 
 public class JAXRSV1Client {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RegistryException {
 
-        MetadataManager httpServiceManager = new BaseMetadataManager("vnd.wso2.service/http+xml;version=1");
-        HTTPServiceV1 httpService = (HTTPServiceV1) httpServiceManager.newInstance("foo");
-        httpService.setOwner("foobar");
-        httpService.setProperty("isSecured","true");
-        httpServiceManager.add(httpService);
-        Base resultService = httpServiceManager.getMetadata(httpService.getUUID());
-        System.out.println(resultService.getUUID());
+        HTTPServiceV1 http1 = new HTTPServiceV1("foo");
+        http1.setOwner("serviceOwner");
+        http1.setProperty("createdDate","12-12-2012");
+        HTTPServiceV1.add(http1);
 
-        ServiceVersionV1 httpV1 = (ServiceVersionV1) resultService.newVersion("1.0.0");
-        httpV1.setEndpointUrl("http://com.rest/stockquote");
-        httpServiceManager.add(httpV1);
+        HTTPServiceV1[] services = (HTTPServiceV1[]) HTTPServiceV1.getAll();
+        for(HTTPServiceV1 ht:services){
+            ht.setProperty("newProp","newValue");
+            HTTPServiceV1.update(ht);
+        }
+
+        HTTPServiceVersionV1 httpV1 = (HTTPServiceVersionV1) http1.newVersion("1.0.0");
+        httpV1.setEndpointUrl("http://test.rest/stockquote");
+        httpV1.setProperty("isSecured","true");
+        HTTPServiceVersionV1.add(httpV1);
+
+        HTTPServiceV1.delete(http1.getUUID());
 
     }
 }
