@@ -24,8 +24,10 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.AbstractBase;
 import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.BaseV1;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
+import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 import org.wso2.carbon.registry.metadata.version.VersionV1;
 
 import java.util.Map;
@@ -43,17 +45,17 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     @Override
-    public VersionV1 newVersion(String key) {
+    public HTTPServiceVersionV1 newVersion(String key) {
         return null;
     }
 
     @Override
-    public VersionV1[] getVersions() {
-        return new VersionV1[0];
+    public HTTPServiceVersionV1[] getVersions() {
+        return new HTTPServiceVersionV1[0];
     }
 
     @Override
-    public VersionV1 getVersion(int major, int minor, int patch) {
+    public HTTPServiceVersionV1 getVersion(int major, int minor, int patch) {
         return null;
     }
 
@@ -112,8 +114,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
          *
          * @return all meta data instances and their children that denotes from this particular media type
          */
-    public static Base[] getAll() throws RegistryException {
-        return getAll(provider);
+    public static HTTPServiceV1[] getAll() throws RegistryException {
+        return (HTTPServiceV1[]) getAll(provider);
     }
 
     /**
@@ -121,8 +123,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static Base[] find(Map<String,String> criteria) throws RegistryException {
-        return find(criteria,provider);
+    public static HTTPServiceV1[] find(Map<String,String> criteria) throws RegistryException {
+        return (HTTPServiceV1[]) find(criteria,provider);
     }
 
     /**
@@ -130,8 +132,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static Base get(String uuid) throws RegistryException {
-        return get(uuid,provider);
+    public static HTTPServiceV1 get(String uuid) throws RegistryException {
+        return (HTTPServiceV1) get(uuid,provider);
     }
 
 

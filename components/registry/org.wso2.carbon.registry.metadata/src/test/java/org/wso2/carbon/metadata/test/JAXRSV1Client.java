@@ -3,6 +3,7 @@ package org.wso2.carbon.metadata.test;
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
+import org.wso2.carbon.registry.metadata.service.ServiceV1;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 
 public class JAXRSV1Client {
@@ -14,18 +15,19 @@ public class JAXRSV1Client {
         http1.setProperty("createdDate","12-12-2012");
         HTTPServiceV1.add(http1);
 
-        HTTPServiceV1[] services = (HTTPServiceV1[]) HTTPServiceV1.getAll();
+        HTTPServiceV1[] services = HTTPServiceV1.getAll();
         for(HTTPServiceV1 ht:services){
             ht.setProperty("newProp","newValue");
             HTTPServiceV1.update(ht);
         }
 
-        HTTPServiceVersionV1 httpV1 = (HTTPServiceVersionV1) http1.newVersion("1.0.0");
+        HTTPServiceVersionV1 httpV1 = http1.newVersion("1.0.0");
         httpV1.setEndpointUrl("http://test.rest/stockquote");
         httpV1.setProperty("isSecured","true");
         HTTPServiceVersionV1.add(httpV1);
 
-        HTTPServiceV1.delete(http1.getUUID());
+        HTTPServiceVersionV1 v1 = HTTPServiceVersionV1.get(httpV1.getUUID());
+        HTTPServiceV1.delete(v1.getUUID());
 
     }
 }
