@@ -26,7 +26,7 @@ import org.wso2.carbon.registry.metadata.AbstractBase;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
-import org.wso2.carbon.registry.metadata.version.Version;
+import org.wso2.carbon.registry.metadata.version.VersionV1;
 
 import java.util.Map;
 
@@ -43,17 +43,17 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     @Override
-    public Version newVersion(String key) {
+    public VersionV1 newVersion(String key) {
         return null;
     }
 
     @Override
-    public Version[] getVersions() {
-        return new Version[0];
+    public VersionV1[] getVersions() {
+        return new VersionV1[0];
     }
 
     @Override
-    public Version getVersion(int major, int minor, int patch) {
+    public VersionV1 getVersion(int major, int minor, int patch) {
         return null;
     }
 

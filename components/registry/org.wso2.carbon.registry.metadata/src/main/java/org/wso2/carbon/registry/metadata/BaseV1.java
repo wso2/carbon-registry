@@ -19,7 +19,7 @@
 package org.wso2.carbon.registry.metadata;
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.metadata.version.Version;
+import org.wso2.carbon.registry.metadata.version.VersionV1;
 
 public interface BaseV1 extends Base {
 
@@ -28,13 +28,13 @@ public interface BaseV1 extends Base {
      * @param value - version value
      * @return
      */
-    public Version newVersion(String value) throws RegistryException;
+    public VersionV1 newVersion(String value) throws RegistryException;
 
     /**
      *
      * @return all meta data version instances created from this instance
      */
-    public Version[] getVersions() throws RegistryException;
+    public VersionV1[] getVersions() throws RegistryException;
 
     /**
      * Returns the version that matches with given major,minor and patch values
@@ -43,6 +43,6 @@ public interface BaseV1 extends Base {
      * @param patch
      * @return
      */
-    public Version getVersion (int major, int minor, int patch) throws RegistryException;
+    public VersionV1 getVersion (int major, int minor, int patch) throws RegistryException;
 
 }
