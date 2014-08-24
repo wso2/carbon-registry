@@ -20,12 +20,11 @@ package org.wso2.carbon.registry.metadata.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.AbstractBase;
 import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.BaseV1;
 import org.wso2.carbon.registry.metadata.Util;
+import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 import org.wso2.carbon.registry.metadata.version.VersionV1;
@@ -36,17 +35,21 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     private String owner;
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
-    protected static String mediaType = "vnd.wso2.service/http+xml;version=1";
+    private static String mediaType = "vnd.wso2.service/http+xml;version=1";
     private static MetadataProvider provider;
 
-    public HTTPServiceV1(String name) throws RegistryException {
+    public HTTPServiceV1(String name,VersionV1 version) throws RegistryException {
         super(name);
         this.provider = Util.getProvider(mediaType);
+        version.setBaseName(name);
+        HTTPServiceVersionV1.add(version);
     }
 
     @Override
-    public HTTPServiceVersionV1 newVersion(String key) {
-        return null;
+    public HTTPServiceVersionV1 newVersion(String key) throws RegistryException {
+        HTTPServiceVersionV1 v = new HTTPServiceVersionV1(key);
+        v.setBaseName(name);
+        return v;
     }
 
     @Override
@@ -93,7 +96,6 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     public String getOwner() {
         return owner;
     }
-
 
     public static void add(Base metadata) throws RegistryException {
           add(metadata,provider);

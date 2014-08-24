@@ -20,6 +20,7 @@ package org.wso2.carbon.registry.metadata;
 
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 
 public interface Base {
 
@@ -53,6 +54,5 @@ public interface Base {
      * @param key name of the property
      */
     public void removeProperty(String key) throws RegistryException;
-
 
 }

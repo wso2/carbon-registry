@@ -22,4 +22,8 @@ import org.wso2.carbon.registry.metadata.Base;
 
 public interface VersionV1 extends Base {
 
+    public void setBaseName(String name);
+
+    public String getBaseName();
+
 }
