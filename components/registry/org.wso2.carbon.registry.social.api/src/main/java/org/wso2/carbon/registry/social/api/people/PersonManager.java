@@ -31,7 +31,7 @@ public interface PersonManager {
      *
      * @param userId The userId of the person whose details to be stored
      * @param user   The person details to be stored
-     * @return
+     * @return status
      * @throws SocialDataException
      */
     public boolean savePerson(String userId, Person user) throws SocialDataException;
@@ -41,7 +41,7 @@ public interface PersonManager {
      *
      * @param userId The userId of the person whose details to be modified
      * @param user   The person details to be modified
-     * @return
+     * @return status
      * @throws SocialDataException
      */
     public boolean updatePerson(String userId, Person user) throws SocialDataException;
@@ -50,7 +50,7 @@ public interface PersonManager {
      * Removes the person from the storage
      *
      * @param userId The userId of the person to be deleted
-     * @return
+     * @return status
      * @throws SocialDataException
      */
     public boolean removePerson(String userId) throws SocialDataException;

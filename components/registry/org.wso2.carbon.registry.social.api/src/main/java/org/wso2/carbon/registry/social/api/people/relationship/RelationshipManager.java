@@ -30,7 +30,7 @@ public interface RelationshipManager {
      *
      * @param viewer The userId of the person who is viewing the owner's profile
      * @param owner  The userId of the person whose profile is being viewed
-     * @return
+     * @return  status of the request
      * @throws org.wso2.carbon.registry.social.api.SocialDataException
      *
      */

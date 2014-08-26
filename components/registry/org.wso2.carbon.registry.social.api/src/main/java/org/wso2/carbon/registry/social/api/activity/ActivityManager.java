@@ -128,7 +128,6 @@ public interface ActivityManager {
      * @param appId      The appId of the activity
      * @param fields     Fields of the activity to be created
      * @param activity   The activity to create
-     * @return An Activity object for the given userId with given details
      * @throws org.wso2.carbon.registry.social.api.SocialDataException
      *
      */

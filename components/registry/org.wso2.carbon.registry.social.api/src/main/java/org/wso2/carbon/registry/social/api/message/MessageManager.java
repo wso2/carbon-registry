@@ -85,7 +85,7 @@ public interface MessageManager {
      * @param fields          The fields to fetch for the messages
      * @param msgIds          An explicit set of message ids to fetch
      * @param options         Options to control the fetch
-     * @return
+     * @return  an array of messages that correspond to the passed in data
      * @throws SocialMessageException
      */
 
@@ -100,7 +100,6 @@ public interface MessageManager {
      * @param userId          The user posting the message
      * @param msgCollectionId The message collection Id to post to, default @outbox
      * @param message         The message object
-     * @return 
      * @throws SocialMessageException
      */
     public void createMessage(String userId, String msgCollectionId, Message message)
@@ -114,7 +113,6 @@ public interface MessageManager {
      * @param appId           The app id
      * @param msgCollectionId The message collection Id to post to, default @outbox
      * @param message         The message to post
-     * @return 
      * @throws SocialMessageException
      */
     public void createMessage(String userId, String appId, String msgCollectionId, Message message)

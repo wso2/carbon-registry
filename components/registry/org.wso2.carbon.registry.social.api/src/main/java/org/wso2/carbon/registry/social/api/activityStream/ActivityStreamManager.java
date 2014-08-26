@@ -102,7 +102,6 @@ public interface ActivityStreamManager {
      * @param groupId     The group.
      * @param appId       The app id.
      * @param activityIds A list of activity ids to delete.
-     * @return a response item containing any errors
      * @throws SocialDataException if any.
      */
     public void deleteActivityEntries(String userId, String groupId, String appId,
@@ -113,7 +112,6 @@ public interface ActivityStreamManager {
      *
      * @param userId   The id of the person to update the activity for
      * @param activity The updated activity
-     * @return a response item containing any errors
      * @throws SocialDataException if any
      */
     public void updateActivityEntry(String userId, ActivityEntry activity)
