@@ -19,36 +19,32 @@
 package org.wso2.carbon.registry.metadata.provider;
 
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
 
-public interface MetadataProvider {
+import javax.xml.stream.XMLStreamException;
 
-    /**
-     *
-     * @param name meta data name
-     * @return  Plain meta data instance with the given name
-     */
-    public Base createNewInstance(String name);
+public interface MetadataProvider {
 
     /**
      * Persists the metadata information in to the repository layer
      * @param metadata  the particular metadata object that needs to insert
      * @return Resource with the new content
      */
-    public Resource buildResource(Base metadata, Resource resource);
+    public Resource buildResource(Base metadata, Resource resource) throws RegistryException;
 
     /**
      * Update the meta data information
      * @param newMetadata  the particular metadata object that needs to update
      * @return Resource with the updated content
      */
-    public Resource updateResource(Base newMetadata,Resource resource);
+    public Resource updateResource(Base newMetadata,Resource resource) throws RegistryException;
 
     /**
      * Construct the Meta data instance
      * @param resource - Resource instance that has metadata information stored in.
      * @return Base type metadata instance constructed from the resource
      */
-    public Base get(Resource resource);
+    public Base get(Resource resource) throws RegistryException;
 
 }

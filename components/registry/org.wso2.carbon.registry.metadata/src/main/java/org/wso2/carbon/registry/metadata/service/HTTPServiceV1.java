@@ -20,45 +20,68 @@ package org.wso2.carbon.registry.metadata.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.api.Association;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.AbstractBase;
 import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 import org.wso2.carbon.registry.metadata.version.VersionV1;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
-    private String owner;
+    // Service attributes defines here
+    private final String OWNER = "owner";
+
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
     private static String mediaType = "vnd.wso2.service/http+xml;version=1";
-    private static MetadataProvider provider;
+    private static String versionMediaType = "vnd.wso2.version/service.http+xml;version=1";
+    private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "service/http"; //TODO construct this
+    private Map<String,String> attributeMap = new HashMap<String, String>();
 
     public HTTPServiceV1(String name,VersionV1 version) throws RegistryException {
-        super(name);
-        this.provider = Util.getProvider(mediaType);
-        version.setBaseName(name);
+        super(name,false);
+        version.setBaseUUID(uuid);
         HTTPServiceVersionV1.add(version);
+    }
+
+    public HTTPServiceV1(String name, String uuid, Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
+        super(name,uuid,false,propertyBag);
+        this.attributeMap = attributeMap;
     }
 
     @Override
     public HTTPServiceVersionV1 newVersion(String key) throws RegistryException {
         HTTPServiceVersionV1 v = new HTTPServiceVersionV1(key);
-        v.setBaseName(name);
+        v.setBaseUUID(uuid);
         return v;
     }
 
     @Override
-    public HTTPServiceVersionV1[] getVersions() {
-        return new HTTPServiceVersionV1[0];
+    public HTTPServiceVersionV1[] getVersions() throws RegistryException {
+        return (HTTPServiceVersionV1[]) getAllVersions(uuid,versionMediaType);
     }
 
     @Override
-    public HTTPServiceVersionV1 getVersion(int major, int minor, int patch) {
+    public HTTPServiceVersionV1 getVersion(int major, int minor, int patch) throws RegistryException {
+        //        TODO return index search result
+        String version = String.valueOf(major) + "." + String.valueOf(minor) + "." + String.valueOf(patch);
+        for(Base v:getAllVersions(uuid,versionMediaType)) {
+            HTTPServiceVersionV1 http = (HTTPServiceVersionV1) v;
+            if(version.equals(http.getName())){
+                return http;
+            }
+
+        }
         return null;
     }
 
@@ -78,6 +101,11 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     @Override
+    public String getVersionMediaType() throws RegistryException {
+        return versionMediaType;
+    }
+
+    @Override
     public void setProperty(String key, String value) {
          propertyBag.put(key,value);
     }
@@ -88,28 +116,39 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     @Override
+    public String getProperty(String key) throws RegistryException {
+        return propertyBag.get(key);
+    }
+
+    @Override
+    public boolean isVersionType() {
+        return isVersionType;
+    }
+
+    @Override
     public void setOwner(String owner) {
-       this.owner = owner;
+         attributeMap.put(OWNER,owner);
     }
 
     @Override
     public String getOwner() {
-        return owner;
+        return attributeMap.get(OWNER);
     }
 
     public static void add(Base metadata) throws RegistryException {
-          add(metadata,provider);
-//        TODO add Index
+          add(metadata,Util.getProvider(mediaType));
 
+//        TODO add Index
     }
 
     public static void update(Base metadata) throws RegistryException {
-        update(metadata,provider);
+        update(metadata,Util.getProvider(mediaType));
 //        TODO update index
     }
 
-        public static void delete(String uuid) throws RegistryException {
-           delete(uuid);
+    public static void delete(String uuid) throws RegistryException {
+            deleteResource(uuid);
+//        TODO Need to remove the associations for this UUID from the association table
 //        TODO remove index
     }
         /**
@@ -117,7 +156,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
          * @return all meta data instances and their children that denotes from this particular media type
          */
     public static HTTPServiceV1[] getAll() throws RegistryException {
-        return (HTTPServiceV1[]) getAll(provider);
+        return (HTTPServiceV1[]) getAll(Util.getProvider(mediaType));
     }
 
     /**
@@ -126,7 +165,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @return
      */
     public static HTTPServiceV1[] find(Map<String,String> criteria) throws RegistryException {
-        return (HTTPServiceV1[]) find(criteria,provider);
+        return (HTTPServiceV1[]) find(criteria,Util.getProvider(mediaType));
     }
 
     /**
@@ -135,8 +174,14 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @return meta data from the UUID
      */
     public static HTTPServiceV1 get(String uuid) throws RegistryException {
-        return (HTTPServiceV1) get(uuid,provider);
+        return (HTTPServiceV1) get(uuid,Util.getProvider(mediaType));
     }
 
+    public Map<String, String> getAttributeMap() {
+        return attributeMap;
+    }
 
+    public void setAttributeMap(Map<String, String> attributeMap) {
+        this.attributeMap = attributeMap;
+    }
 }

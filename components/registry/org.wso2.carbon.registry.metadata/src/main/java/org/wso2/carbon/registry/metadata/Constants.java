@@ -19,10 +19,32 @@
 package org.wso2.carbon.registry.metadata;
 
 public class Constants {
+
     public static final String BASE_STORAGE_PATH="/metadata/";
+
     public static final String STORAGE_PATH="/<type>/<media-type-format>/<version>/<name>";
+
     public static final String HTTP_SERVICE_MEDIATYPE_V1 = "vnd.wso2.service/http+xml;version=1";
+
     public static final String HTTP_SERVICE_VERSION_MEDIATYPE_V1 = "vnd.wso2.version/service.http+xml;version=1";
+
+    public static final String CHILD_VERSION = "childVersion";
+
+    public static final String VERSION_OF = "versionOf";
+
+    public static final String METADATA_NAMESPACE = "wso2.metadata";
+
+    public static final String CONTENT_PROPERTY_EL_ROOT_NAME = "properties";
+
+    public static final String CONTENT_PROPERTY_EL_NAME = "property";
+
+    public static final String CONTENT_ATTRIBUTE_EL_ROOT_NAME = "attributes";
+
+    public static final String CONTENT_ATTRIBUTE_EL_NAME = "attribute";
+
+    public static final String CONTENT_ROOT_NAME = "metadata";
+
+
 
 }
 

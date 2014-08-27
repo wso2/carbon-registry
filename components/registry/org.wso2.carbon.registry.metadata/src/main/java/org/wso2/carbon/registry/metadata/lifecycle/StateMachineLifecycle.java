@@ -28,8 +28,8 @@ public class StateMachineLifecycle {
     }
 
     /**
-     * NOTE: This operation is heavy operation since the LC state always in the resource.
-     * To maintain the accuracy of the data, always fetch the resource to get the details.
+     * NOTE: This is a heavy operation since the LC state always in the resource.
+     * To maintain the accuracy of the data, always fetch the resource from registry to get the details.
      * @return the current state of this life cycle
      */
     public State getCurrentState() throws RegistryException {

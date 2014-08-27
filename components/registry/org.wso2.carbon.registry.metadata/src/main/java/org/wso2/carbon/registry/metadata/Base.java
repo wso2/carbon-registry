@@ -43,6 +43,12 @@ public interface Base {
     public String getMediaType() throws RegistryException;
 
     /**
+     *
+     * @return media type of the version meta data instance that uniquely identifies the type of version.
+     */
+    public String getVersionMediaType() throws RegistryException;
+
+    /**
      * This is the property bag
      * @param key - property name
      * @param value - property value
@@ -54,5 +60,19 @@ public interface Base {
      * @param key name of the property
      */
     public void removeProperty(String key) throws RegistryException;
+
+    /**
+     * Removes the property from this instance
+     * @param key name of the property
+     * @return value of the property
+     */
+    public String getProperty(String key) throws RegistryException;
+
+    /**
+     *
+     * @return true if the instance is a version type.
+     *         false if the instance type is NOT a version type but any meta data super/sub type
+     */
+    public boolean isVersionType();
 
 }
