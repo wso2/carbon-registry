@@ -21,6 +21,7 @@ package org.wso2.carbon.registry.metadata.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.api.Association;
+import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.AbstractBase;
@@ -48,20 +49,20 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "service/http"; //TODO construct this
     private Map<String,String> attributeMap = new HashMap<String, String>();
 
-    public HTTPServiceV1(String name,VersionV1 version) throws RegistryException {
-        super(name,false);
+    public HTTPServiceV1(Registry registry,String name,VersionV1 version) throws RegistryException {
+        super(name,false,registry);
         version.setBaseUUID(uuid);
-        HTTPServiceVersionV1.add(version);
+        HTTPServiceVersionV1.add(registry,version);
     }
 
-    public HTTPServiceV1(String name, String uuid, Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
-        super(name,uuid,false,propertyBag);
+    public HTTPServiceV1(Registry registry,String name, String uuid, Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
+        super(name,uuid,false,propertyBag,registry);
         this.attributeMap = attributeMap;
     }
 
     @Override
     public HTTPServiceVersionV1 newVersion(String key) throws RegistryException {
-        HTTPServiceVersionV1 v = new HTTPServiceVersionV1(key);
+        HTTPServiceVersionV1 v = new HTTPServiceVersionV1(key,registry);
         v.setBaseUUID(uuid);
         return v;
     }
@@ -135,19 +136,19 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
         return attributeMap.get(OWNER);
     }
 
-    public static void add(Base metadata) throws RegistryException {
-          add(metadata,Util.getProvider(mediaType));
+    public static void add(Registry registry,Base metadata) throws RegistryException {
+          add(registry,metadata,Util.getProvider(mediaType));
 
 //        TODO add Index
     }
 
-    public static void update(Base metadata) throws RegistryException {
-        update(metadata,Util.getProvider(mediaType));
+    public static void update(Registry registry,Base metadata) throws RegistryException {
+        update(registry,metadata,Util.getProvider(mediaType));
 //        TODO update index
     }
 
-    public static void delete(String uuid) throws RegistryException {
-            deleteResource(uuid);
+    public static void delete(Registry registry,String uuid) throws RegistryException {
+            deleteResource(registry,uuid);
 //        TODO Need to remove the associations for this UUID from the association table
 //        TODO remove index
     }
@@ -155,8 +156,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
          *
          * @return all meta data instances and their children that denotes from this particular media type
          */
-    public static HTTPServiceV1[] getAll() throws RegistryException {
-        return (HTTPServiceV1[]) getAll(Util.getProvider(mediaType));
+    public static HTTPServiceV1[] getAll(Registry registry) throws RegistryException {
+        return (HTTPServiceV1[]) getAll(registry,Util.getProvider(mediaType));
     }
 
     /**
@@ -164,8 +165,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static HTTPServiceV1[] find(Map<String,String> criteria) throws RegistryException {
-        return (HTTPServiceV1[]) find(criteria,Util.getProvider(mediaType));
+    public static HTTPServiceV1[] find(Registry registry,Map<String,String> criteria) throws RegistryException {
+        return (HTTPServiceV1[]) find(registry,criteria,Util.getProvider(mediaType));
     }
 
     /**
@@ -173,8 +174,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static HTTPServiceV1 get(String uuid) throws RegistryException {
-        return (HTTPServiceV1) get(uuid,Util.getProvider(mediaType));
+    public static HTTPServiceV1 get(Registry registry,String uuid) throws RegistryException {
+        return (HTTPServiceV1) get(registry,uuid,Util.getProvider(mediaType));
     }
 
     public Map<String, String> getAttributeMap() {

@@ -23,6 +23,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
@@ -41,6 +42,11 @@ import java.util.Map;
 public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceVersionProviderV1.class);
+    private Registry registry;
+
+    public HTTPServiceVersionProviderV1(Registry registry){
+        this.registry = registry;
+    }
 
     @Override
     public Resource buildResource(Base metadata, Resource resource) throws RegistryException {
@@ -94,7 +100,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
             String value = el.getText();
             attributeMap.put(key, value);
         }
-        HTTPServiceV1 s = new HTTPServiceV1(name,uuid,propBag,attributeMap);
+        HTTPServiceV1 s = new HTTPServiceV1(registry,name,uuid,propBag,attributeMap);
         return s;
     }
 
