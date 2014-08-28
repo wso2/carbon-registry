@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
-    private String name;
+//    private String name;
     private String endpointUrl;
     protected static String mediaType = "vnd.wso2.version/service.http+xml;version=1";
     private static final Log log = LogFactory.getLog(HTTPServiceVersionV1.class);

@@ -143,16 +143,19 @@ public abstract class AbstractBase {
         }
     }
 
-    protected Base [] getAllVersions(String uuid,String versionMediaType) throws RegistryException {
+    protected ArrayList<Base> getAllVersions(String uuid,String versionMediaType) throws RegistryException {
         //    Can do the same from the index search .
-        List<HTTPServiceVersionV1> list = new ArrayList<HTTPServiceVersionV1>();
+        ArrayList<Base> list = new ArrayList<Base>();
         for(Association as:getAssociations(registry,uuid,Constants.CHILD_VERSION)){
             if(registry.resourceExists(as.getDestinationPath())) {
                 Resource r = registry.get(as.getDestinationPath());
-                list.add((HTTPServiceVersionV1) Util.getProvider(versionMediaType).get(r,registry));
+                list.add(Util.getProvider(versionMediaType).get(r,registry));
             }
         }
-        return (HTTPServiceVersionV1[]) list.toArray();
+
+//        Base[] arr = new Base[list.size()];
+//        arr = list.toArray(arr);
+        return list;
     }
 
     protected  static Association [] getAssociations(Registry registry,String sourceUUID,String type) throws RegistryException {

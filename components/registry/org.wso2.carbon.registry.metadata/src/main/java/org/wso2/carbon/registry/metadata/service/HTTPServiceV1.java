@@ -77,7 +77,10 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     @Override
     public HTTPServiceVersionV1[] getVersions() throws RegistryException {
-        return (HTTPServiceVersionV1[]) getAllVersions(uuid,versionMediaType);
+        ArrayList<Base> list = getAllVersions(uuid,versionMediaType);
+        HTTPServiceVersionV1[] arr = new HTTPServiceVersionV1[list.size()];
+        arr = list.toArray(arr);
+        return arr;
     }
 
     @Override

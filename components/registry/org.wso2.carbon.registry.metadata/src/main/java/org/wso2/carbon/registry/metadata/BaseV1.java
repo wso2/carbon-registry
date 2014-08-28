@@ -34,7 +34,7 @@ public interface BaseV1 extends Base {
      *
      * @return all meta data version instances created from this instance
      */
-    public VersionV1[] getVersions() throws RegistryException;
+    public Base[] getVersions() throws RegistryException;
 
     /**
      * Returns the version that matches with given major,minor and patch values
