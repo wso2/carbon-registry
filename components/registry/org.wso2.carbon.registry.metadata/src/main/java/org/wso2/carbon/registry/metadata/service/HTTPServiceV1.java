@@ -48,11 +48,13 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     private static String versionMediaType = "vnd.wso2.version/service.http+xml;version=1";
     private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "service/http"; //TODO construct this
     private Map<String,String> attributeMap = new HashMap<String, String>();
+    private HTTPServiceVersionV1 baseVersion = null;
+
 
     public HTTPServiceV1(Registry registry,String name,VersionV1 version) throws RegistryException {
-        super(name,false,registry);
+        super(name, false, registry);
         version.setBaseUUID(uuid);
-        HTTPServiceVersionV1.add(registry,version);
+        baseVersion = (HTTPServiceVersionV1)version;
     }
 
     public HTTPServiceV1(Registry registry,String name, String uuid, Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
@@ -84,6 +86,10 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
         }
         return null;
+    }
+
+    private VersionV1 getBaseVersion() {
+        return baseVersion;
     }
 
     @Override
@@ -137,8 +143,12 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     public static void add(Registry registry,Base metadata) throws RegistryException {
-          add(registry,metadata,Util.getProvider(mediaType));
-
+        if(((HTTPServiceV1)metadata).getBaseVersion() == null) {
+            add(registry, metadata, Util.getProvider(mediaType));
+        } else {
+            add(registry, metadata, Util.getProvider(mediaType));
+            HTTPServiceVersionV1.add(registry,((HTTPServiceV1)metadata).getBaseVersion());
+        }
 //        TODO add Index
     }
 

@@ -42,11 +42,7 @@ import java.util.Map;
 public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceVersionProviderV1.class);
-    private Registry registry;
-
-    public HTTPServiceVersionProviderV1(Registry registry){
-        this.registry = registry;
-    }
+    private static final String rootStoragePath = "/metadata/version";
 
     @Override
     public Resource buildResource(Base metadata, Resource resource) throws RegistryException {
@@ -61,6 +57,8 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         try {
             String content = root.toStringWithConsume();
             resource.setContent(content);
+            resource.setMediaType(metadata.getMediaType());
+            resource.setUUID(metadata.getUUID());
         } catch (XMLStreamException e) {
             log.error("Xml stream exception occurred while building resource content " + e.getMessage());
             throw new RegistryException("Xml stream exception occurred while building resource content", e);
@@ -74,20 +72,25 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     }
 
     @Override
-    public Base get(Resource resource) throws RegistryException {
+    public Base get(Resource resource,Registry registry) throws RegistryException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
             Map<String, String> propBag = Util.getPropertyBag(root);
-            return getFilledBean(root, propBag);
+            return getFilledBean(root, propBag,registry);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    @Override
+    public String getRootStoragePath() {
+        return rootStoragePath;
+    }
 
-    private HTTPServiceV1 getFilledBean(OMElement root, Map<String, String> propBag) throws RegistryException {
+
+    private HTTPServiceV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
         Map<String, String> attributeMap = new HashMap<String, String>();
         OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         String uuid = properties.getFirstChildWithName(new QName("uuid")).getText();

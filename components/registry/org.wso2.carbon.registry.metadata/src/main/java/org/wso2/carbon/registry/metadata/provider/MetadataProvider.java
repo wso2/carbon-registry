@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.registry.metadata.provider;
 
+import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
@@ -45,6 +46,12 @@ public interface MetadataProvider {
      * @param resource - Resource instance that has metadata information stored in.
      * @return Base type metadata instance constructed from the resource
      */
-    public Base get(Resource resource) throws RegistryException;
+    public Base get(Resource resource,Registry registry) throws RegistryException;
+
+    /**
+     *
+     * @return base storage path of this type
+     */
+    public String getRootStoragePath();
 
 }

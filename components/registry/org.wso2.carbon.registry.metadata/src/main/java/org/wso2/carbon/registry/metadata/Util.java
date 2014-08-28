@@ -39,6 +39,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Util {
 
  private static ConcurrentHashMap<String,MetadataProvider> providerMap = null;
+
+    private static String providerMapFilePath = null;
+
+    public static String getProviderMapFilePath() {
+        return providerMapFilePath;
+    }
+
+    public static void setProviderMapFilePath(String providerMapFile) {
+        Util.providerMapFilePath = providerMapFile;
+    }
+
     /**
      *
      * @param classificationURI classificationURI of the meta data to which a provider is bound to
@@ -55,7 +66,12 @@ public class Util {
     }
 
     private static File getConfigFile() throws RegistryException {
-        String configPath = CarbonUtils.getRegistryXMLPath();
+        String configPath;
+        if(Util.getProviderMapFilePath() == null) {
+            configPath = CarbonUtils.getRegistryXMLPath();
+        } else {
+            configPath = Util.getProviderMapFilePath();
+        }
         if (configPath != null) {
             File registryXML = new File(configPath);
             if (!registryXML.exists()) {
@@ -89,9 +105,10 @@ public class Util {
         while (itr.hasNext()){
             OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
-                String classificationUri  = metadataProvider.getAttributeValue(new QName("classificationURI"));
+                String classificationUri  = metadataProvider.getAttributeValue(new QName("mediaType"));
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class<MetadataProvider> classObj = (Class<MetadataProvider>) Class.forName(providerClass, true, loader);
+
                 if(!providerMap.containsKey(classificationUri)) {
                     providerMap.put(classificationUri, classObj.newInstance());
                 } else {

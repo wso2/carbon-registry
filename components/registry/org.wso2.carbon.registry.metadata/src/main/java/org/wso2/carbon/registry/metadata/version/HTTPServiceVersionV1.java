@@ -36,7 +36,6 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     protected static String mediaType = "vnd.wso2.version/service.http+xml;version=1";
     private static final Log log = LogFactory.getLog(HTTPServiceVersionV1.class);
     private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "version";
-    private static MetadataProvider provider;
     private String baseUUID;
 
 
@@ -95,14 +94,14 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
 
     public static void add(Registry registry,Base metadata) throws RegistryException {
-        add(registry,metadata,provider);
+        add(registry,metadata,Util.getProvider(mediaType));
         Util.createAssociation(registry,((HTTPServiceVersionV1)metadata).getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
         Util.createAssociation(registry,metadata.getUUID(),((HTTPServiceVersionV1)metadata).getBaseUUID(), Constants.VERSION_OF);
 //      TODO add Index
     }
 
     public static void update(Registry registry,Base metadata) throws RegistryException {
-        update(registry,metadata,provider);
+        update(registry,metadata,Util.getProvider(mediaType));
 //      TODO update index
     }
 
@@ -115,7 +114,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
      * @return all meta data instances and their children that denotes from this particular media type
      */
     public static HTTPServiceVersionV1[] getAll(Registry registry) throws RegistryException {
-        return (HTTPServiceVersionV1[]) getAll(registry,provider);
+        return (HTTPServiceVersionV1[]) getAll(registry,Util.getProvider(mediaType));
     }
 
     /**
@@ -124,7 +123,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
      * @return
      */
     public static HTTPServiceVersionV1[] find(Registry registry,Map<String,String> criteria) throws RegistryException {
-        return (HTTPServiceVersionV1[]) find(registry,criteria,provider);
+        return (HTTPServiceVersionV1[]) find(registry,criteria,Util.getProvider(mediaType));
     }
 
     /**
@@ -133,7 +132,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
      * @return meta data from the UUID
      */
     public static HTTPServiceVersionV1 get(Registry registry,String uuid) throws RegistryException {
-        return (HTTPServiceVersionV1) get(registry,uuid,provider);
+        return (HTTPServiceVersionV1) get(registry,uuid,Util.getProvider(mediaType));
     }
 
     @Override

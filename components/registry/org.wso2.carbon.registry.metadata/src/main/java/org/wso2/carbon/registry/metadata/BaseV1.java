@@ -45,4 +45,10 @@ public interface BaseV1 extends Base {
      */
     public VersionV1 getVersion (int major, int minor, int patch) throws RegistryException;
 
+    /**
+     *
+     * @return Base version instance used to create this meta data type
+     */
+//    public VersionV1 getBaseVersion();
+
 }

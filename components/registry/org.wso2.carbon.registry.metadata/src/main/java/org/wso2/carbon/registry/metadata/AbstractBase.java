@@ -24,7 +24,6 @@ public abstract class AbstractBase {
     protected Map<String,String> propertyBag;
     protected Registry registry;
     private static final Log log = LogFactory.getLog(AbstractBase.class);
-    private static final String rootStoragePath = null; //TODO construct this
     protected StateMachineLifecycle lifecycle;
     protected boolean isVersionType;
 
@@ -36,6 +35,7 @@ public abstract class AbstractBase {
         this.uuid = Util.getNewUUID();
         this.isVersionType = isVersionType;
         this.registry = registry;
+        this.propertyBag = new HashMap<String, String>();
     }
 
     public AbstractBase(String name,String uuid,boolean isVersionType,Map<String,String> propertyBag,Registry registry) throws RegistryException {
@@ -48,12 +48,12 @@ public abstract class AbstractBase {
 
     protected static void add(Registry registry,Base metadata,MetadataProvider provider) throws RegistryException {
         Resource resource = provider.buildResource(metadata,registry.newResource());
-        putResource(registry,generateMetadataStoragePath(metadata.getUUID()), resource);
+        putResource(registry,generateMetadataStoragePath(metadata.getUUID(),provider.getRootStoragePath()), resource);
     }
 
     protected static void update(Registry registry,Base metadata,MetadataProvider provider) throws RegistryException {
         Resource resource = provider.buildResource(metadata,getResource(registry,metadata.getUUID()));
-        putResource(registry,generateMetadataStoragePath(metadata.getUUID()),resource);
+        putResource(registry,generateMetadataStoragePath(metadata.getUUID(),provider.getRootStoragePath()),resource);
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class AbstractBase {
      * @return meta data from the UUID
      */
     protected static Base get(Registry registry,String uuid,MetadataProvider provider) throws RegistryException {
-        return provider.get(getResource(registry,uuid));
+        return provider.get(getResource(registry,uuid),registry);
     }
 
     protected static Resource getResource(Registry registry,String uuid) throws RegistryException {
@@ -149,7 +149,7 @@ public abstract class AbstractBase {
         for(Association as:getAssociations(registry,uuid,Constants.CHILD_VERSION)){
             if(registry.resourceExists(as.getDestinationPath())) {
                 Resource r = registry.get(as.getDestinationPath());
-                list.add((HTTPServiceVersionV1) Util.getProvider(versionMediaType).get(r));
+                list.add((HTTPServiceVersionV1) Util.getProvider(versionMediaType).get(r,registry));
             }
         }
         return (HTTPServiceVersionV1[]) list.toArray();
@@ -160,7 +160,7 @@ public abstract class AbstractBase {
     }
 
 
-    protected static String generateMetadataStoragePath(String uuid) {
+    protected static String generateMetadataStoragePath(String uuid,String rootStoragePath) {
         return rootStoragePath + "/" + uuid;
     }
 

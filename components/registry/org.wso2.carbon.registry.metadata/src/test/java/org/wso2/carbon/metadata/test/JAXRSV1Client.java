@@ -16,7 +16,7 @@ public class JAXRSV1Client {
     public static void main(String[] args) throws RegistryException {
 
 // Create a service
-        Registry registry =null;
+        Registry registry =null ;// Obtain a remote/internal registry instance to start with
 
         HTTPServiceV1 http1 = new HTTPServiceV1(registry,"foo",new HTTPServiceVersionV1(registry,"1.0.0-SNAPSHOT"));
         http1.setOwner("serviceOwner");
@@ -55,7 +55,6 @@ public class JAXRSV1Client {
 //  Delete service version
         HTTPServiceVersionV1 v1 = HTTPServiceVersionV1.get(registry,httpV1.getUUID());
         HTTPServiceV1.delete(registry,v1.getUUID());
-
 
     }
 }
