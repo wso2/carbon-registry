@@ -40,7 +40,6 @@ import java.util.Map;
 public class HTTPServiceProviderV1 implements MetadataProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceProviderV1.class);
-    private static final String rootStoragePath = "/metadata/service/";
 
     @Override
     public Resource buildResource(Base metadata, Resource resource) throws RegistryException {
@@ -82,19 +81,14 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
         return null;
     }
 
-    @Override
-    public String getRootStoragePath() {
-        return rootStoragePath;
-    }
-
 
     private HTTPServiceV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
         Map<String, String> attributeMap = new HashMap<String, String>();
-        OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
-        String uuid = properties.getFirstChildWithName(new QName("uuid")).getText();
-        String name = properties.getFirstChildWithName(new QName("name")).getText();
+        OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
+        String uuid = attributes.getFirstChildWithName(new QName("uuid")).getText();
+        String name = attributes.getFirstChildWithName(new QName("name")).getText();
 
-        Iterator itr = properties.getChildren();
+        Iterator itr = attributes.getChildren();
         while (itr.hasNext()) {
             OMElement el = (OMElement) itr.next();
             String key = el.getLocalName();

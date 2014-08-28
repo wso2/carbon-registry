@@ -42,7 +42,6 @@ import java.util.Map;
 public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceVersionProviderV1.class);
-    private static final String rootStoragePath = "/metadata/version";
 
     @Override
     public Resource buildResource(Base metadata, Resource resource) throws RegistryException {
@@ -77,24 +76,21 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
             Map<String, String> propBag = Util.getPropertyBag(root);
-            return getFilledBean(root, propBag,registry);
+            return getFilledBean(root, propBag, registry);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    @Override
-    public String getRootStoragePath() {
-        return rootStoragePath;
-    }
-
-
-    private HTTPServiceV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
+    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
         Map<String, String> attributeMap = new HashMap<String, String>();
         OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         String uuid = properties.getFirstChildWithName(new QName("uuid")).getText();
         String name = properties.getFirstChildWithName(new QName("name")).getText();
+        String baseName = properties.getFirstChildWithName(new QName("baseName")).getText();
+        String baseUUID = properties.getFirstChildWithName(new QName("baseUUID")).getText();
+
 
         Iterator itr = properties.getChildren();
         while (itr.hasNext()) {
@@ -103,7 +99,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
             String value = el.getText();
             attributeMap.put(key, value);
         }
-        HTTPServiceV1 s = new HTTPServiceV1(registry,name,uuid,propBag,attributeMap);
+        HTTPServiceVersionV1 s = new HTTPServiceVersionV1(registry,name,uuid,baseName,baseUUID,propBag,attributeMap);
         return s;
     }
 
@@ -118,6 +114,12 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         OMElement name = factory.createOMElement(new QName("name"));
         name.setText(serviceV1.getName());
 
+        OMElement baseName = factory.createOMElement(new QName("baseName"));
+        baseName.setText(serviceV1.getBaseName());
+
+        OMElement baseUUID = factory.createOMElement(new QName("baseUUID"));
+        baseUUID.setText(serviceV1.getBaseUUID());
+
         OMElement mediaType = factory.createOMElement(new QName("mediaType"));
         mediaType.setText(serviceV1.getMediaType());
 
@@ -126,6 +128,8 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
         element.addChild(uuid);
         element.addChild(name);
+        element.addChild(baseName);
+        element.addChild(baseUUID);
         element.addChild(mediaType);
         element.addChild(endpointUrl);
 

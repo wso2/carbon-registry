@@ -48,10 +48,4 @@ public interface MetadataProvider {
      */
     public Base get(Resource resource,Registry registry) throws RegistryException;
 
-    /**
-     *
-     * @return base storage path of this type
-     */
-    public String getRootStoragePath();
-
 }

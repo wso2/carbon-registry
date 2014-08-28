@@ -40,20 +40,25 @@ import java.util.Map;
 
 public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
+
     // Service attributes defines here
     private final String OWNER = "owner";
 
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
     private static String mediaType = "vnd.wso2.service/http+xml;version=1";
     private static String versionMediaType = "vnd.wso2.version/service.http+xml;version=1";
-    private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "service/http"; //TODO construct this
+    private static String ROOT_STORAGE_PATH = Constants.BASE_STORAGE_PATH
+                            + mediaType.split(";")[0].replaceAll("\\+",".").replaceAll("\\.","/")
+                            + "/v"
+                            + mediaType.split(";")[1].split("=")[1];
+
     private Map<String,String> attributeMap = new HashMap<String, String>();
     private HTTPServiceVersionV1 baseVersion = null;
-
 
     public HTTPServiceV1(Registry registry,String name,VersionV1 version) throws RegistryException {
         super(name, false, registry);
         version.setBaseUUID(uuid);
+        version.setBaseName(name);
         baseVersion = (HTTPServiceVersionV1)version;
     }
 
@@ -66,6 +71,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     public HTTPServiceVersionV1 newVersion(String key) throws RegistryException {
         HTTPServiceVersionV1 v = new HTTPServiceVersionV1(registry,key);
         v.setBaseUUID(uuid);
+        v.setBaseName(name);
         return v;
     }
 
@@ -144,16 +150,19 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     public static void add(Registry registry,Base metadata) throws RegistryException {
         if(((HTTPServiceV1)metadata).getBaseVersion() == null) {
-            add(registry, metadata, Util.getProvider(mediaType));
+            add(registry, metadata, Util.getProvider(mediaType),
+                    generateMetadataStoragePath(metadata.getName(),ROOT_STORAGE_PATH));
         } else {
-            add(registry, metadata, Util.getProvider(mediaType));
+            add(registry, metadata, Util.getProvider(mediaType),
+                    generateMetadataStoragePath(metadata.getName(),ROOT_STORAGE_PATH));
             HTTPServiceVersionV1.add(registry,((HTTPServiceV1)metadata).getBaseVersion());
         }
 //        TODO add Index
     }
 
     public static void update(Registry registry,Base metadata) throws RegistryException {
-        update(registry,metadata,Util.getProvider(mediaType));
+        update(registry,metadata,Util.getProvider(mediaType),
+                generateMetadataStoragePath(metadata.getName(),ROOT_STORAGE_PATH));
 //        TODO update index
     }
 
@@ -194,5 +203,9 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     public void setAttributeMap(Map<String, String> attributeMap) {
         this.attributeMap = attributeMap;
+    }
+
+    private static String generateMetadataStoragePath(String name,String rootStoragePath) {
+        return rootStoragePath + "/" + name;
     }
 }

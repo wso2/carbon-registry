@@ -26,4 +26,8 @@ public interface VersionV1 extends Base {
 
     public String getBaseUUID();
 
+    void setBaseName(String name);
+
+    public String getBaseName();
+
 }

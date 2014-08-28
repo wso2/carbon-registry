@@ -46,14 +46,14 @@ public abstract class AbstractBase {
         this.registry = registry;
     }
 
-    protected static void add(Registry registry,Base metadata,MetadataProvider provider) throws RegistryException {
+    protected static void add(Registry registry,Base metadata,MetadataProvider provider,String path) throws RegistryException {
         Resource resource = provider.buildResource(metadata,registry.newResource());
-        putResource(registry,generateMetadataStoragePath(metadata.getUUID(),provider.getRootStoragePath()), resource);
+        putResource(registry,path, resource);
     }
 
-    protected static void update(Registry registry,Base metadata,MetadataProvider provider) throws RegistryException {
+    protected static void update(Registry registry,Base metadata,MetadataProvider provider,String path) throws RegistryException {
         Resource resource = provider.buildResource(metadata,getResource(registry,metadata.getUUID()));
-        putResource(registry,generateMetadataStoragePath(metadata.getUUID(),provider.getRootStoragePath()),resource);
+        putResource(registry,path,resource);
     }
 
     /**
@@ -157,11 +157,6 @@ public abstract class AbstractBase {
 
     protected  static Association [] getAssociations(Registry registry,String sourceUUID,String type) throws RegistryException {
      return registry.getAssociations(Util.getMetadataPath(sourceUUID, registry), type);
-    }
-
-
-    protected static String generateMetadataStoragePath(String uuid,String rootStoragePath) {
-        return rootStoragePath + "/" + uuid;
     }
 
     public void attachLifecycle(String name) throws RegistryException {
