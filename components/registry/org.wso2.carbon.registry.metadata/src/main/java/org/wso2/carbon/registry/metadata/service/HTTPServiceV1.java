@@ -62,7 +62,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     @Override
     public HTTPServiceVersionV1 newVersion(String key) throws RegistryException {
-        HTTPServiceVersionV1 v = new HTTPServiceVersionV1(key,registry);
+        HTTPServiceVersionV1 v = new HTTPServiceVersionV1(registry,key);
         v.setBaseUUID(uuid);
         return v;
     }

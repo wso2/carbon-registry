@@ -40,7 +40,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     private String baseUUID;
 
 
-    public HTTPServiceVersionV1(String name,Registry registry) throws RegistryException {
+    public HTTPServiceVersionV1(Registry registry,String name) throws RegistryException {
         super(name,true,registry);
         this.name = name;
     }
