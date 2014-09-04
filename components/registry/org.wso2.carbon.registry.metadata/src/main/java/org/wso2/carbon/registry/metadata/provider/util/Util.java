@@ -1,3 +1,22 @@
+/*
+ *  Copyright (c) 2005-2009, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+
 package org.wso2.carbon.registry.metadata.provider.util;
 
 import org.apache.axiom.om.OMAbstractFactory;
@@ -19,9 +38,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Util {
 
@@ -73,17 +90,34 @@ public class Util {
     }
 
 
-    public static Map<String,String> getPropertyBag(OMElement root){
-        Map<String,String> resultMap = new HashMap<String, String>();
+    public static Map<String,List<String>> getPropertyBag(OMElement root){
+        Map<String,List<String>> resultMap = new HashMap<String, List<String>>();
         OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_PROPERTY_EL_ROOT_NAME));
         Iterator itr = properties.getChildren();
         while (itr.hasNext()){
             OMElement el = (OMElement) itr.next();
             String key = el.getLocalName();
             String value = el.getText();
-            resultMap.put(key,value);
+            List<String> list = new ArrayList<String>();
+            list.add(value);
+            resultMap.put(key,list);
         }
         return resultMap;
+    }
+
+
+    public static Map<String, List<String>>  getAttributeMap(OMElement attributes){
+        Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
+        Iterator itr = attributes.getChildren();
+        while (itr.hasNext()) {
+            OMElement el = (OMElement) itr.next();
+            String key = el.getLocalName();
+            String value = el.getText();
+            List<String> valList = new ArrayList<String>();
+            valList.add(value);
+            attributeMap.put(key, valList);
+        }
+     return attributeMap;
     }
 
 }

@@ -82,28 +82,29 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.wso2.carbon.registry.core</Fragment-Host>
+                        <!--Fragment-Host>org.wso2.carbon.registry.core</Fragment-Host-->
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.metadata.manager.*,
-                            org.wso2.carbon.registry.metadata.provider.*,
-                            org.wso2.carbon.registry.metadata.service.*,
-                            org.wso2.carbon.registry.metadata.version.*,
                             org.wso2.carbon.registry.metadata.*,
                         </Export-Package>
-                        <!--<Private-Package>-->
+                        <Private-Package>
+                            org.wso2.carbon.registry.metadata.internal.*
                             <!--common.*,-->
                             <!--!org.wso2.carbon.registry.extensions.utils.*,-->
                             <!--org.wso2.carbon.registry.extensions.*,-->
-                        <!--</Private-Package>-->
+                        </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*,
+                            org.apache.axiom.om.*,
+                            org.apache.axiom.om.impl.builder.*,
+                            org.apache.axiom.om.util.*
                             org.apache.maven.scm.*,
                             org.codehaus.plexus.*,
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
+                            org.apache.solr.*,
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>
@@ -133,6 +134,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>solr.wso2</groupId>
+            <artifactId>solr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.indexing</artifactId>
+        </dependency>
+        <dependency>
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
@@ -147,10 +156,6 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

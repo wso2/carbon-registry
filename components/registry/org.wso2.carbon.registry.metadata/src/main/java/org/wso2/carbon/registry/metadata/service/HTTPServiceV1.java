@@ -52,7 +52,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
                             + "/v"
                             + mediaType.split(";")[1].split("=")[1];
 
-    private Map<String,String> attributeMap = new HashMap<String, String>();
+    private Map<String,List<String>> attributeMap = new HashMap<String, List<String>>();
     private HTTPServiceVersionV1 baseVersion = null;
 
     public HTTPServiceV1(Registry registry,String name,VersionV1 version) throws RegistryException {
@@ -62,7 +62,7 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
         baseVersion = (HTTPServiceVersionV1)version;
     }
 
-    public HTTPServiceV1(Registry registry,String name, String uuid, Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
+    public HTTPServiceV1(Registry registry,String name, String uuid, Map<String,List<String>> propertyBag,Map<String,List<String>> attributeMap) throws RegistryException {
         super(name,uuid,false,propertyBag,registry);
         this.attributeMap = attributeMap;
     }
@@ -122,33 +122,25 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
     }
 
     @Override
-    public void setProperty(String key, String value) {
-         propertyBag.put(key,value);
-    }
-
-    @Override
-    public void removeProperty(String key) {
-        propertyBag.remove(key);
-    }
-
-    @Override
-    public String getProperty(String key) throws RegistryException {
-        return propertyBag.get(key);
-    }
-
-    @Override
     public boolean isVersionType() {
         return isVersionType;
     }
 
     @Override
     public void setOwner(String owner) {
-         attributeMap.put(OWNER,owner);
+        if(attributeMap.get(OWNER) == null) {
+            List<String> value = new ArrayList<String>();
+            value.add(owner);
+            attributeMap.put(OWNER,value);
+        } else {
+            attributeMap.get(OWNER).add(owner);
+        }
     }
 
     @Override
     public String getOwner() {
-        return attributeMap.get(OWNER);
+        List<String> value = attributeMap.get(OWNER);
+        return value != null ? value.get(0):null;
     }
 
     public static void add(Registry registry,Base metadata) throws RegistryException {
@@ -160,13 +152,11 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
                     generateMetadataStoragePath(metadata.getName(),ROOT_STORAGE_PATH));
             HTTPServiceVersionV1.add(registry,((HTTPServiceV1)metadata).getBaseVersion());
         }
-//        TODO add Index
     }
 
     public static void update(Registry registry,Base metadata) throws RegistryException {
         update(registry,metadata,Util.getProvider(mediaType),
                 generateMetadataStoragePath(metadata.getName(),ROOT_STORAGE_PATH));
-//        TODO update index
     }
 
     public static void delete(Registry registry,String uuid) throws RegistryException {
@@ -179,7 +169,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
          * @return all meta data instances and their children that denotes from this particular media type
          */
     public static HTTPServiceV1[] getAll(Registry registry) throws RegistryException {
-        return (HTTPServiceV1[]) getAll(registry,Util.getProvider(mediaType));
+        List<Base> list = getAll(registry,Util.getProvider(mediaType),mediaType);
+        return list.toArray(new HTTPServiceV1[list.size()]);
     }
 
     /**
@@ -188,7 +179,8 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
      * @return
      */
     public static HTTPServiceV1[] find(Registry registry,Map<String,String> criteria) throws RegistryException {
-        return (HTTPServiceV1[]) find(registry,criteria,Util.getProvider(mediaType));
+        List<Base> list = find(registry,criteria,Util.getProvider(mediaType),mediaType);
+        return list.toArray(new HTTPServiceV1[list.size()]);
     }
 
     /**
@@ -200,11 +192,11 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
         return (HTTPServiceV1) get(registry,uuid,Util.getProvider(mediaType));
     }
 
-    public Map<String, String> getAttributeMap() {
+    public Map<String, List<String>> getAttributeMap() {
         return attributeMap;
     }
 
-    public void setAttributeMap(Map<String, String> attributeMap) {
+    public void setAttributeMap(Map<String, List<String>> attributeMap) {
         this.attributeMap = attributeMap;
     }
 

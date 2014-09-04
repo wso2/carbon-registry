@@ -28,19 +28,21 @@ import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
-//    private String name;
-    private String endpointUrl;
+    private final String ENDPOINT_URL = "endpointUrl";
+
     protected static String mediaType = "vnd.wso2.version/service.http+xml;version=1";
     private static final Log log = LogFactory.getLog(HTTPServiceVersionV1.class);
-    private static final String rootStoragePath = Constants.BASE_STORAGE_PATH + "version";
     private String baseUUID;
     private String baseName;
-    private Map<String,String> attributeMap = new HashMap<String, String>();
+    private Map<String,List<String>> attributeMap = new HashMap<String, List<String>>();
+
     private static String ROOT_STORAGE_PATH = Constants.BASE_STORAGE_PATH
             + mediaType.split(";")[0].replaceAll("\\+",".").replaceAll("\\.","/")
             + "/v"
@@ -52,7 +54,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
         this.name = name;
     }
 
-    public HTTPServiceVersionV1(Registry registry,String name, String uuid,String baseName,String baseUUID,Map<String,String> propertyBag,Map<String,String> attributeMap) throws RegistryException {
+    public HTTPServiceVersionV1(Registry registry,String name, String uuid,String baseName,String baseUUID,Map<String,List<String>> propertyBag,Map<String,List<String>> attributeMap) throws RegistryException {
         super(name,uuid,false,propertyBag,registry);
         this.attributeMap = attributeMap;
         this.baseName = baseName;
@@ -80,33 +82,25 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     }
 
     @Override
-    public void setProperty(String key, String value) throws RegistryException {
-       propertyBag.put(key,value);
-    }
-
-    @Override
-    public void removeProperty(String key) throws RegistryException {
-       propertyBag.remove(key);
-    }
-
-    @Override
-    public String getProperty(String key) throws RegistryException {
-        return propertyBag.get(key);
-    }
-
-    @Override
     public boolean isVersionType() {
         return isVersionType;
     }
 
     public String getEndpointUrl() {
-       return endpointUrl;
+       List<String> value =  attributeMap.get(ENDPOINT_URL);
+       return value != null?value.get(0):null;
     }
 
     public void setEndpointUrl(String endpointUrl) {
-        this.endpointUrl = endpointUrl;
+        List<String> value = attributeMap.get(ENDPOINT_URL);
+        if (value == null) {
+            List<String> valList = new ArrayList<String>();
+            valList.add(endpointUrl);
+            attributeMap.put(ENDPOINT_URL,valList);
+        } else {
+            attributeMap.get(ENDPOINT_URL).add(endpointUrl);
+        }
     }
-
 
     public static void add(Registry registry,Base metadata) throws RegistryException {
         add(registry,metadata,Util.getProvider(mediaType),generateMetadataStoragePath(
@@ -116,7 +110,6 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
         Util.createAssociation(registry,((HTTPServiceVersionV1)metadata).getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
         Util.createAssociation(registry,metadata.getUUID(),((HTTPServiceVersionV1)metadata).getBaseUUID(), Constants.VERSION_OF);
-//      TODO add Index
     }
 
     public static void update(Registry registry,Base metadata) throws RegistryException {
@@ -124,19 +117,18 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
                 ((HTTPServiceVersionV1)metadata).getBaseName()
                 ,metadata.getName()
                 , ROOT_STORAGE_PATH));
-//      TODO update index
     }
 
     public static void delete(Registry registry,String uuid) throws RegistryException {
         deleteResource(registry,uuid);
-//      TODO remove index
     }
     /**
      *
      * @return all meta data instances and their children that denotes from this particular media type
      */
     public static HTTPServiceVersionV1[] getAll(Registry registry) throws RegistryException {
-        return (HTTPServiceVersionV1[]) getAll(registry,Util.getProvider(mediaType));
+        List<Base> list = getAll(registry,Util.getProvider(mediaType),mediaType);
+        return list.toArray(new HTTPServiceVersionV1[list.size()]);
     }
 
     /**
@@ -145,7 +137,8 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
      * @return
      */
     public static HTTPServiceVersionV1[] find(Registry registry,Map<String,String> criteria) throws RegistryException {
-        return (HTTPServiceVersionV1[]) find(registry,criteria,Util.getProvider(mediaType));
+        List<Base> list = find(registry,criteria,Util.getProvider(mediaType),mediaType);
+        return list.toArray(new HTTPServiceVersionV1[list.size()]);
     }
 
     /**

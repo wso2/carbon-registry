@@ -33,9 +33,7 @@ import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class HTTPServiceProviderV1 implements MetadataProvider {
 
@@ -73,7 +71,7 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
-            Map<String, String> propBag = Util.getPropertyBag(root);
+            Map<String, List<String>> propBag = Util.getPropertyBag(root);
             return getFilledBean(root, propBag,registry);
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,8 +80,8 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
     }
 
 
-    private HTTPServiceV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
-        Map<String, String> attributeMap = new HashMap<String, String>();
+    private HTTPServiceV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws RegistryException {
+        Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         String uuid = attributes.getFirstChildWithName(new QName("uuid")).getText();
         String name = attributes.getFirstChildWithName(new QName("name")).getText();
@@ -93,7 +91,9 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
             OMElement el = (OMElement) itr.next();
             String key = el.getLocalName();
             String value = el.getText();
-            attributeMap.put(key, value);
+            List<String> valList = new ArrayList<String>();
+            valList.add(value);
+            attributeMap.put(key, valList);
         }
         HTTPServiceV1 s = new HTTPServiceV1(registry,name,uuid,propBag,attributeMap);
         return s;
@@ -130,9 +130,10 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
 
     private void createPropertiesContent(HTTPServiceV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        for (Map.Entry<String, String> entry : serviceV1.getPropertyBag().entrySet()) {
+        for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
+            if(entry.getValue() == null) continue;
             OMElement attribute = factory.createOMElement(new QName(entry.getKey()));
-            attribute.setText(entry.getValue());
+            attribute.setText(entry.getValue().get(0));
             element.addChild(attribute);
         }
 

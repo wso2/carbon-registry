@@ -1,12 +1,34 @@
+/*
+ *  Copyright (c) 2005-2009, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
+
 package org.wso2.carbon.registry.metadata;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.api.Association;
+import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
@@ -21,7 +43,7 @@ public abstract class AbstractBase {
 
     protected String name;
     protected String uuid;
-    protected Map<String,String> propertyBag;
+    protected Map<String,List<String>> propertyBag;
     protected Registry registry;
     private static final Log log = LogFactory.getLog(AbstractBase.class);
     protected StateMachineLifecycle lifecycle;
@@ -35,15 +57,36 @@ public abstract class AbstractBase {
         this.uuid = Util.getNewUUID();
         this.isVersionType = isVersionType;
         this.registry = registry;
-        this.propertyBag = new HashMap<String, String>();
+        this.propertyBag = new HashMap<String, List<String>>();
     }
 
-    public AbstractBase(String name,String uuid,boolean isVersionType,Map<String,String> propertyBag,Registry registry) throws RegistryException {
+    public AbstractBase(String name,String uuid,boolean isVersionType,Map<String,List<String>> propertyBag,Registry registry) throws RegistryException {
         this.name = name;
         this.uuid = uuid;
         this.propertyBag = propertyBag;
         this.isVersionType = isVersionType;
         this.registry = registry;
+    }
+
+
+    public void setProperty(String key, String value) {
+        if(propertyBag.get(key) == null) {
+            List<String> list = new ArrayList<String>();
+            list.add(value);
+            propertyBag.put(key,list);
+        } else {
+            propertyBag.get(key).add(value);
+        }
+
+    }
+
+    public void removeProperty(String key) {
+        propertyBag.remove(key);
+    }
+
+    public String getProperty(String key) throws RegistryException {
+        List<String> value = propertyBag.get(key);
+        return value != null?propertyBag.get(key).get(0):null;
     }
 
     protected static void add(Registry registry,Base metadata,MetadataProvider provider,String path) throws RegistryException {
@@ -74,9 +117,20 @@ public abstract class AbstractBase {
      *
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    protected static Base[] getAll(Registry registry,MetadataProvider provider) throws RegistryException {
-//        TODO get from index
-        return null;
+    protected static List<Base> getAll(Registry registry, MetadataProvider provider,String mt) throws RegistryException {
+        List<Base> baseResult = new ArrayList<Base>();
+        Map<String,String> criteria = new HashMap<String, String>();
+        criteria.put("mediaType",mt);
+
+        ResourceData[] results = Util.getAttributeSearchService().search(criteria);
+        for(ResourceData resourceData:results){
+           String path =  RegistryUtils.getRelativePathToOriginal(resourceData.getResourcePath(), RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
+           if(registry.resourceExists(path)){
+              Resource resource = registry.get(path);
+              baseResult.add(provider.get(resource,registry));
+           }
+        }
+        return baseResult;
     }
 
     /**
@@ -84,9 +138,20 @@ public abstract class AbstractBase {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    protected static Base[] find(Registry registry,Map<String,String> criteria,MetadataProvider provider) throws RegistryException {
-        // TODO get from index
-        return null;
+    protected static List<Base> find(Registry registry,Map<String,String> criteria,MetadataProvider provider,String mt) throws RegistryException {
+        if(criteria != null && criteria.get("mediaType") == null){
+             criteria.put("mediaType",mt);
+        }
+        List<Base> baseResult = new ArrayList<Base>();
+        ResourceData[] results = Util.getAttributeSearchService().search(criteria);
+        for(ResourceData resourceData:results){
+            String path =  RegistryUtils.getRelativePathToOriginal(resourceData.getResourcePath(), RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
+            if(registry.resourceExists(path)){
+                Resource resource = registry.get(path);
+                baseResult.add(provider.get(resource,registry));
+            }
+        }
+        return baseResult;
     }
 
     /**
@@ -175,7 +240,7 @@ public abstract class AbstractBase {
         return this.lifecycle;
     }
 
-    public Map<String, String> getPropertyBag() {
+    public Map<String, List<String>> getPropertyBag() {
         return propertyBag;
     }
 

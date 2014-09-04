@@ -37,6 +37,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class HTTPServiceVersionProviderV1 implements MetadataProvider {
@@ -75,7 +76,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
-            Map<String, String> propBag = Util.getPropertyBag(root);
+            Map<String, List<String>> propBag = Util.getPropertyBag(root);
             return getFilledBean(root, propBag, registry);
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,22 +84,14 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         return null;
     }
 
-    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, String> propBag, Registry registry) throws RegistryException {
-        Map<String, String> attributeMap = new HashMap<String, String>();
-        OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
-        String uuid = properties.getFirstChildWithName(new QName("uuid")).getText();
-        String name = properties.getFirstChildWithName(new QName("name")).getText();
-        String baseName = properties.getFirstChildWithName(new QName("baseName")).getText();
-        String baseUUID = properties.getFirstChildWithName(new QName("baseUUID")).getText();
-
-
-        Iterator itr = properties.getChildren();
-        while (itr.hasNext()) {
-            OMElement el = (OMElement) itr.next();
-            String key = el.getLocalName();
-            String value = el.getText();
-            attributeMap.put(key, value);
-        }
+    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws RegistryException {
+        Map<String, List<String>> attributeMap;
+        OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
+        attributeMap = Util.getAttributeMap(attributes);
+        String uuid = attributeMap.get("uuid").get(0);
+        String name = attributeMap.get(("name")).get(0);
+        String baseName = attributeMap.get("baseName").get(0);
+        String baseUUID = attributeMap.get("baseUUID").get(0);
         HTTPServiceVersionV1 s = new HTTPServiceVersionV1(registry,name,uuid,baseName,baseUUID,propBag,attributeMap);
         return s;
     }
@@ -138,9 +131,10 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
     private void createPropertiesContent(HTTPServiceVersionV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        for (Map.Entry<String, String> entry : serviceV1.getPropertyBag().entrySet()) {
+        for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
+            if(entry.getValue() == null) continue;
             OMElement attribute = factory.createOMElement(new QName(entry.getKey()));
-            attribute.setText(entry.getValue());
+            attribute.setText(entry.getValue().get(0));
             element.addChild(attribute);
         }
 

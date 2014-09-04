@@ -44,7 +44,5 @@ public class Constants {
 
     public static final String CONTENT_ROOT_NAME = "metadata";
 
-
-
 }
 

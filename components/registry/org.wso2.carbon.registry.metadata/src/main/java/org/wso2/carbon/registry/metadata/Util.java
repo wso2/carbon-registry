@@ -22,11 +22,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
-import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
-import org.wso2.carbon.utils.CarbonUtils;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,6 +40,12 @@ public class Util {
  private static ConcurrentHashMap<String,MetadataProvider> providerMap = null;
 
     private static String providerMapFilePath = null;
+
+    public static AttributeSearchService getAttributeSearchService() {
+        return attributeSearchService;
+    }
+
+    private static AttributeSearchService attributeSearchService;
 
     public static String getProviderMapFilePath() {
         return providerMapFilePath;
@@ -68,7 +73,9 @@ public class Util {
     private static File getConfigFile() throws RegistryException {
         String configPath;
         if(Util.getProviderMapFilePath() == null) {
-            configPath = CarbonUtils.getRegistryXMLPath();
+            configPath = new StringBuilder(System.getProperty("carbon.home")).append(File.separator).
+                    append("repository").append(File.separator).
+                    append("conf").append(File.separator).append("registry.xml").toString();
         } else {
             configPath = Util.getProviderMapFilePath();
         }
@@ -97,7 +104,7 @@ public class Util {
         try {
         FileInputStream fileInputStream = new FileInputStream(getConfigFile());
         StAXOMBuilder builder = new StAXOMBuilder(
-                CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
+                fileInputStream);
         OMElement configElement = builder.getDocumentElement();
         OMElement metadataProviders = configElement.getFirstChildWithName(
                 new QName("metadataProviders"));
@@ -152,4 +159,10 @@ public class Util {
                 Util.getMetadataPath(targetUUID,registry),
                 type);
     }
+
+    public static void setAttributeSearchService(AttributeSearchService attributeSearchService) {
+        Util.attributeSearchService = attributeSearchService;
+    }
+
+
 }
