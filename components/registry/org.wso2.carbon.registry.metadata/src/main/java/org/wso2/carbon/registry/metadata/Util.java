@@ -27,6 +27,7 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
+
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
 
- private static ConcurrentHashMap<String,MetadataProvider> providerMap = null;
+    private static ConcurrentHashMap<String, MetadataProvider> providerMap = null;
 
     private static String providerMapFilePath = null;
 
@@ -57,23 +58,22 @@ public class Util {
     }
 
     /**
-     *
      * @param classificationURI classificationURI of the meta data to which a provider is bound to
      * @return Corresponding Metadata provider that matches with the given classificationURI
      */
     private static final Log log = LogFactory.getLog(Util.class);
 
     public static MetadataProvider getProvider(String classificationURI) throws MetadataException {
-     return getProviderMap().get(classificationURI);
+        return getProviderMap().get(classificationURI);
     }
 
-    public static String getNewUUID(){
+    public static String getNewUUID() {
         return UUID.randomUUID().toString();
     }
 
     private static File getConfigFile() throws MetadataException {
         String configPath;
-        if(Util.getProviderMapFilePath() == null) {
+        if (Util.getProviderMapFilePath() == null) {
             configPath = new StringBuilder(System.getProperty("carbon.home")).append(File.separator).
                     append("repository").append(File.separator).
                     append("conf").append(File.separator).append("registry.xml").toString();
@@ -96,41 +96,41 @@ public class Util {
         }
     }
 
-    private static Map<String,MetadataProvider> getProviderMap() throws MetadataException {
-        if(providerMap != null) {
+    private static Map<String, MetadataProvider> getProviderMap() throws MetadataException {
+        if (providerMap != null) {
             return providerMap;
         }
 
-        ConcurrentHashMap<String,MetadataProvider> providerMap = new ConcurrentHashMap<String, MetadataProvider>();
+        ConcurrentHashMap<String, MetadataProvider> providerMap = new ConcurrentHashMap<String, MetadataProvider>();
         try {
-        FileInputStream fileInputStream = new FileInputStream(getConfigFile());
-        StAXOMBuilder builder = new StAXOMBuilder(
-                fileInputStream);
-        OMElement configElement = builder.getDocumentElement();
-        OMElement metadataProviders = configElement.getFirstChildWithName(
-                new QName("metadataProviders"));
-        Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
-        while (itr.hasNext()){
-            OMElement metadataProvider = itr.next();
+            FileInputStream fileInputStream = new FileInputStream(getConfigFile());
+            StAXOMBuilder builder = new StAXOMBuilder(
+                    fileInputStream);
+            OMElement configElement = builder.getDocumentElement();
+            OMElement metadataProviders = configElement.getFirstChildWithName(
+                    new QName("metadataProviders"));
+            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
+            while (itr.hasNext()) {
+                OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
-                String classificationUri  = metadataProvider.getAttributeValue(new QName("mediaType"));
+                String classificationUri = metadataProvider.getAttributeValue(new QName("mediaType"));
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class<MetadataProvider> classObj = (Class<MetadataProvider>) Class.forName(providerClass, true, loader);
 
-                if(!providerMap.containsKey(classificationUri)) {
+                if (!providerMap.containsKey(classificationUri)) {
                     providerMap.put(classificationUri, classObj.newInstance());
                 } else {
 //                    log.error("Classification URI already exists")
                 }
-        }
-        } catch (Exception e){
-          throw new MetadataException(e.getMessage(),e);
+            }
+        } catch (Exception e) {
+            throw new MetadataException(e.getMessage(), e);
         }
 
-      return Util.providerMap = providerMap;
+        return Util.providerMap = providerMap;
     }
 
-    public static String getMetadataPath(String uuid,Registry registry)
+    public static String getMetadataPath(String uuid, Registry registry)
             throws MetadataException {
 
         try {
@@ -155,14 +155,14 @@ public class Util {
     }
 
 
-    public static void createAssociation(Registry registry,String sourceUUID,String targetUUID,String type) throws MetadataException {
-       try {
-           registry.addAssociation(Util.getMetadataPath(sourceUUID, registry),
-                   Util.getMetadataPath(targetUUID, registry),
-                   type);
-       } catch (RegistryException e) {
-           throw new MetadataException(e.getMessage(),e);
-       }
+    public static void createAssociation(Registry registry, String sourceUUID, String targetUUID, String type) throws MetadataException {
+        try {
+            registry.addAssociation(Util.getMetadataPath(sourceUUID, registry),
+                    Util.getMetadataPath(targetUUID, registry),
+                    type);
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(), e);
+        }
     }
 
     public static void setAttributeSearchService(AttributeSearchService attributeSearchService) {

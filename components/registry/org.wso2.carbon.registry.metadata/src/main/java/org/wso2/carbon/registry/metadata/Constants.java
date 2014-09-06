@@ -20,7 +20,7 @@ package org.wso2.carbon.registry.metadata;
 
 public class Constants {
 
-    public static final String BASE_STORAGE_PATH="/metadata/";
+    public static final String BASE_STORAGE_PATH = "/metadata/";
 
     public static final String CHILD_VERSION = "childVersion";
 

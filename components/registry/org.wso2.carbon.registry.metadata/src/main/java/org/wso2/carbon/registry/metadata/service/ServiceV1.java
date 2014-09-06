@@ -21,16 +21,14 @@ package org.wso2.carbon.registry.metadata.service;
 import org.wso2.carbon.registry.metadata.BaseV1;
 
 
-public interface ServiceV1  extends BaseV1 {
+public interface ServiceV1 extends BaseV1 {
 
     /**
-     *
      * @param owner Owner name of this service instance
      */
     public void setOwner(String owner);
 
     /**
-     *
      * @return the owner name of this service
      */
     public String getOwner();

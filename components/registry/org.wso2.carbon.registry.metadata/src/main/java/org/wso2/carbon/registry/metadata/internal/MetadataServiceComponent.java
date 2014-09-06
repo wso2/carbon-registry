@@ -60,8 +60,7 @@ public class MetadataServiceComponent {
     }
 
 
-
-    protected void  setAttributeSearchService(AttributeSearchService searchService){
+    protected void setAttributeSearchService(AttributeSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting ContentBasedSearchService");
         }
@@ -69,7 +68,7 @@ public class MetadataServiceComponent {
 
     }
 
-    protected void  unsetAttributeSearchService(AttributeSearchService searchService){
+    protected void unsetAttributeSearchService(AttributeSearchService searchService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting ContentBasedSearchService");
         }

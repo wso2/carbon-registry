@@ -31,13 +31,10 @@ import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -75,14 +72,14 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     }
 
     @Override
-    public Base get(Resource resource,Registry registry) throws MetadataException {
+    public Base get(Resource resource, Registry registry) throws MetadataException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
             Map<String, List<String>> propBag = Util.getPropertyBag(root);
             return getFilledBean(root, propBag, registry);
         } catch (RegistryException e) {
-            throw new MetadataException("Error occurred while obtaining resource metadata content uuid = " + resource.getUUID(),e);
+            throw new MetadataException("Error occurred while obtaining resource metadata content uuid = " + resource.getUUID(), e);
         }
     }
 
@@ -94,7 +91,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         String name = attributeMap.get(("name")).get(0);
         String baseName = attributeMap.get("baseName").get(0);
         String baseUUID = attributeMap.get("baseUUID").get(0);
-        HTTPServiceVersionV1 s = new HTTPServiceVersionV1(registry,name,uuid,baseName,baseUUID,propBag,attributeMap);
+        HTTPServiceVersionV1 s = new HTTPServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
         return s;
     }
 
@@ -134,7 +131,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     private void createPropertiesContent(HTTPServiceVersionV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
-            if(entry.getValue() == null) continue;
+            if (entry.getValue() == null) continue;
             OMElement attribute = factory.createOMElement(new QName(entry.getKey()));
             attribute.setText(entry.getValue().get(0));
             element.addChild(attribute);

@@ -36,7 +36,7 @@ public class StateMachineLifecycle {
     private String name;
     private String uuid;
 
-    public StateMachineLifecycle(Registry registry, String name, String uuid){
+    public StateMachineLifecycle(Registry registry, String name, String uuid) {
         this.registry = registry;
         this.name = name;
         this.uuid = uuid;
@@ -44,17 +44,17 @@ public class StateMachineLifecycle {
 
     public void transfer(String action) throws MetadataException {
         try {
-        registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action);
+            registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action);
         } catch (RegistryException e) {
-            throw new MetadataException(e.getMessage(),e);
+            throw new MetadataException(e.getMessage(), e);
         }
     }
 
-    public void transfer(String action,Map<String,String> params) throws MetadataException {
+    public void transfer(String action, Map<String, String> params) throws MetadataException {
         try {
             registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action, params);
         } catch (RegistryException e) {
-            throw new MetadataException(e.getMessage(),e);
+            throw new MetadataException(e.getMessage(), e);
         }
     }
 
@@ -62,22 +62,23 @@ public class StateMachineLifecycle {
      * NOTE: This is a heavy operation since the LC state always in the resource.
      * To maintain the accuracy of the data, always fetch the resource from registry to get the details.
      * TODO improve this to get this from a cached value
+     *
      * @return the current state of this life cycle
      */
     public State getCurrentState() throws MetadataException {
-        String path = Util.getMetadataPath(uuid,registry);
+        String path = Util.getMetadataPath(uuid, registry);
         try {
-        if(registry.resourceExists(path)) {
-           Resource r = registry.get(path);
-            return new State(getLCState(r));
-        }
-        }catch (RegistryException e){
-           throw new MetadataException("Resource " + uuid + "does not exists");
+            if (registry.resourceExists(path)) {
+                Resource r = registry.get(path);
+                return new State(getLCState(r));
+            }
+        } catch (RegistryException e) {
+            throw new MetadataException("Resource " + uuid + "does not exists");
         }
         return null;
     }
 
-    private String getLCState(Resource resource){
+    private String getLCState(Resource resource) {
         return resource.getProperty("registry.lifecycle." + resource.getProperty("registry.LC.name") + ".state");
     }
 

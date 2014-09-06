@@ -19,60 +19,56 @@
 package org.wso2.carbon.registry.metadata;
 
 
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 
 public interface Base {
 
     /**
-     *
-      * @return the UUID of the meta data instance
+     * @return the UUID of the meta data instance
      */
     public String getUUID() throws MetadataException;
 
     /**
-     *
      * @return the human readable name that is given to the meta data instance
      */
     public String getName() throws MetadataException;
 
     /**
-     *
      * @return media type of the meta data instance that uniquely identifies the type of this instance
      */
     public String getMediaType() throws MetadataException;
 
     /**
-     *
      * @return media type of the version meta data instance that uniquely identifies the type of version.
      */
     public String getVersionMediaType() throws MetadataException;
 
     /**
      * This is the property bag
-     * @param key - property name
+     *
+     * @param key   - property name
      * @param value - property value
      */
-    public void setProperty(String key,String value) throws MetadataException;
+    public void setProperty(String key, String value) throws MetadataException;
 
     /**
      * Removes the property from this instance
+     *
      * @param key name of the property
      */
     public void removeProperty(String key) throws MetadataException;
 
     /**
      * Removes the property from this instance
+     *
      * @param key name of the property
      * @return value of the property
      */
     public String getProperty(String key) throws MetadataException;
 
     /**
-     *
      * @return true if the instance is a version type.
-     *         false if the instance type is NOT a version type but any meta data super/sub type
+     * false if the instance type is NOT a version type but any meta data super/sub type
      */
     public boolean isVersionType();
 

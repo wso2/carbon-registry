@@ -70,14 +70,14 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
     }
 
     @Override
-    public Base get(Resource resource,Registry registry) throws MetadataException {
+    public Base get(Resource resource, Registry registry) throws MetadataException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
             Map<String, List<String>> propBag = Util.getPropertyBag(root);
-            return getFilledBean(root, propBag,registry);
+            return getFilledBean(root, propBag, registry);
         } catch (RegistryException e) {
-            throw new MetadataException("Error occurred while obtaining resource metadata content uuid = " + resource.getUUID(),e);
+            throw new MetadataException("Error occurred while obtaining resource metadata content uuid = " + resource.getUUID(), e);
         }
     }
 
@@ -97,7 +97,7 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
             valList.add(value);
             attributeMap.put(key, valList);
         }
-        HTTPServiceV1 s = new HTTPServiceV1(registry,name,uuid,propBag,attributeMap);
+        HTTPServiceV1 s = new HTTPServiceV1(registry, name, uuid, propBag, attributeMap);
         return s;
     }
 
@@ -133,7 +133,7 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
     private void createPropertiesContent(HTTPServiceV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
-            if(entry.getValue() == null) continue;
+            if (entry.getValue() == null) continue;
             OMElement attribute = factory.createOMElement(new QName(entry.getKey()));
             attribute.setText(entry.getValue().get(0));
             element.addChild(attribute);

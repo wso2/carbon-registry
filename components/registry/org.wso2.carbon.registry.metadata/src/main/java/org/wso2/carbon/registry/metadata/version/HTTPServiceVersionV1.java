@@ -21,13 +21,11 @@ package org.wso2.carbon.registry.metadata.version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.AbstractBase;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,21 +40,21 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     private static final Log log = LogFactory.getLog(HTTPServiceVersionV1.class);
     private String baseUUID;
     private String baseName;
-    private Map<String,List<String>> attributeMap = new HashMap<String, List<String>>();
+    private Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
 
     private static String ROOT_STORAGE_PATH = Constants.BASE_STORAGE_PATH
-            + mediaType.split(";")[0].replaceAll("\\+",".").replaceAll("\\.","/")
+            + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
             + "/v"
             + mediaType.split(";")[1].split("=")[1];
 
 
-    public HTTPServiceVersionV1(Registry registry,String name) throws MetadataException {
-        super(name,true,registry);
+    public HTTPServiceVersionV1(Registry registry, String name) throws MetadataException {
+        super(name, true, registry);
         this.name = name;
     }
 
-    public HTTPServiceVersionV1(Registry registry,String name, String uuid,String baseName,String baseUUID,Map<String,List<String>> propertyBag,Map<String,List<String>> attributeMap) throws MetadataException {
-        super(name,uuid,false,propertyBag,registry);
+    public HTTPServiceVersionV1(Registry registry, String name, String uuid, String baseName, String baseUUID, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
+        super(name, uuid, false, propertyBag, registry);
         this.attributeMap = attributeMap;
         this.baseName = baseName;
         this.baseUUID = baseUUID;
@@ -68,7 +66,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     }
 
     @Override
-    public String getName()  {
+    public String getName() {
         return this.name;
     }
 
@@ -88,8 +86,8 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
     }
 
     public String getEndpointUrl() {
-       List<String> value =  attributeMap.get(ENDPOINT_URL);
-       return value != null?value.get(0):null;
+        List<String> value = attributeMap.get(ENDPOINT_URL);
+        return value != null ? value.get(0) : null;
     }
 
     public void setEndpointUrl(String endpointUrl) {
@@ -97,57 +95,59 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
         if (value == null) {
             List<String> valList = new ArrayList<String>();
             valList.add(endpointUrl);
-            attributeMap.put(ENDPOINT_URL,valList);
+            attributeMap.put(ENDPOINT_URL, valList);
         } else {
             attributeMap.get(ENDPOINT_URL).add(endpointUrl);
         }
     }
 
-    public static void add(Registry registry,Base metadata) throws MetadataException {
-        add(registry,metadata,Util.getProvider(mediaType),generateMetadataStoragePath(
-                ((HTTPServiceVersionV1)metadata).getBaseName()
-                ,metadata.getName()
+    public static void add(Registry registry, Base metadata) throws MetadataException {
+        add(registry, metadata, Util.getProvider(mediaType), generateMetadataStoragePath(
+                ((HTTPServiceVersionV1) metadata).getBaseName()
+                , metadata.getName()
                 , ROOT_STORAGE_PATH));
 
-        Util.createAssociation(registry,((HTTPServiceVersionV1)metadata).getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
-        Util.createAssociation(registry,metadata.getUUID(),((HTTPServiceVersionV1)metadata).getBaseUUID(), Constants.VERSION_OF);
+        Util.createAssociation(registry, ((HTTPServiceVersionV1) metadata).getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
+        Util.createAssociation(registry, metadata.getUUID(), ((HTTPServiceVersionV1) metadata).getBaseUUID(), Constants.VERSION_OF);
     }
 
-    public static void update(Registry registry,Base metadata) throws MetadataException {
-        update(registry,metadata,Util.getProvider(mediaType), generateMetadataStoragePath(
-                ((HTTPServiceVersionV1)metadata).getBaseName()
-                ,metadata.getName()
+    public static void update(Registry registry, Base metadata) throws MetadataException {
+        update(registry, metadata, Util.getProvider(mediaType), generateMetadataStoragePath(
+                ((HTTPServiceVersionV1) metadata).getBaseName()
+                , metadata.getName()
                 , ROOT_STORAGE_PATH));
     }
 
-    public static void delete(Registry registry,String uuid) throws MetadataException {
-        deleteResource(registry,uuid);
+    public static void delete(Registry registry, String uuid) throws MetadataException {
+        deleteResource(registry, uuid);
     }
+
     /**
-     *
      * @return all meta data instances and their children that denotes from this particular media type
      */
     public static HTTPServiceVersionV1[] getAll(Registry registry) throws MetadataException {
-        List<Base> list = getAll(registry,Util.getProvider(mediaType),mediaType);
+        List<Base> list = getAll(registry, Util.getProvider(mediaType), mediaType);
         return list.toArray(new HTTPServiceVersionV1[list.size()]);
     }
 
     /**
-     *  Search all meta data instances of this particular type with the given search attributes
+     * Search all meta data instances of this particular type with the given search attributes
+     *
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static HTTPServiceVersionV1[] find(Registry registry,Map<String,String> criteria) throws MetadataException {
-        List<Base> list = find(registry,criteria,Util.getProvider(mediaType),mediaType);
+    public static HTTPServiceVersionV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
+        List<Base> list = find(registry, criteria, Util.getProvider(mediaType), mediaType);
         return list.toArray(new HTTPServiceVersionV1[list.size()]);
     }
 
     /**
      * Returns the meta data instance that can be identified by the given UUID
+     *
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static HTTPServiceVersionV1 get(Registry registry,String uuid) throws MetadataException {
+    public static HTTPServiceVersionV1 get(Registry registry, String uuid) throws MetadataException {
         return (HTTPServiceVersionV1) get(registry, uuid, Util.getProvider(mediaType));
     }
 
@@ -163,7 +163,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
     @Override
     public void setBaseName(String name) {
-        this.baseName=name;
+        this.baseName = name;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
         return baseName;
     }
 
-    private static String generateMetadataStoragePath(String name,String version,String rootStoragePath) {
+    private static String generateMetadataStoragePath(String name, String version, String rootStoragePath) {
         return rootStoragePath + "/" + name + "/" + version;
     }
 }

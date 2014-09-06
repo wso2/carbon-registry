@@ -25,18 +25,12 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.api.RegistryException;
-import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
-import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.util.*;
@@ -45,7 +39,7 @@ public class Util {
 
     private static final Log log = LogFactory.getLog(Util.class);
 
-    public static OMElement getBaseContentElement(){
+    public static OMElement getBaseContentElement() {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement root = factory.createOMElement(new QName(Constants.CONTENT_ROOT_NAME));
         OMElement properties = factory.createOMElement(new QName(Constants.CONTENT_PROPERTY_EL_ROOT_NAME));
@@ -55,17 +49,17 @@ public class Util {
         return root;
     }
 
-    public static OMElement getAttributeRoot(){
+    public static OMElement getAttributeRoot() {
         OMFactory factory = OMAbstractFactory.getOMFactory();
-      return factory.createOMElement(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
+        return factory.createOMElement(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
     }
 
-    public static OMElement getPropertyRoot(){
+    public static OMElement getPropertyRoot() {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         return factory.createOMElement(new QName(Constants.CONTENT_PROPERTY_EL_ROOT_NAME));
     }
 
-    public static OMElement getContentRoot(){
+    public static OMElement getContentRoot() {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         return factory.createOMElement(new QName(Constants.CONTENT_ROOT_NAME));
     }
@@ -80,7 +74,7 @@ public class Util {
         } catch (Exception e) {
             String msg = "Error in initializing the parser to build the OMElement.";
             log.error(msg, e);
-            throw new MetadataException("",e);
+            throw new MetadataException("", e);
         }
 
         //create the builder
@@ -91,23 +85,23 @@ public class Util {
     }
 
 
-    public static Map<String,List<String>> getPropertyBag(OMElement root){
-        Map<String,List<String>> resultMap = new HashMap<String, List<String>>();
+    public static Map<String, List<String>> getPropertyBag(OMElement root) {
+        Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
         OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_PROPERTY_EL_ROOT_NAME));
         Iterator itr = properties.getChildren();
-        while (itr.hasNext()){
+        while (itr.hasNext()) {
             OMElement el = (OMElement) itr.next();
             String key = el.getLocalName();
             String value = el.getText();
             List<String> list = new ArrayList<String>();
             list.add(value);
-            resultMap.put(key,list);
+            resultMap.put(key, list);
         }
         return resultMap;
     }
 
 
-    public static Map<String, List<String>>  getAttributeMap(OMElement attributes){
+    public static Map<String, List<String>> getAttributeMap(OMElement attributes) {
         Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
         Iterator itr = attributes.getChildren();
         while (itr.hasNext()) {
@@ -118,7 +112,7 @@ public class Util {
             valList.add(value);
             attributeMap.put(key, valList);
         }
-     return attributeMap;
+        return attributeMap;
     }
 
 }

@@ -49,7 +49,7 @@ public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
         Registry registry;
         try {
 
-            registry = RegistryCoreServiceComponent.getRegistryService().getRegistry(CurrentSession.getUser(),tid);
+            registry = RegistryCoreServiceComponent.getRegistryService().getRegistry(CurrentSession.getUser(), tid);
             String xmlAsStr = RegistryUtils.decodeBytes(fileData.data);
             OMElement rootEl = AXIOMUtil.stringToOM(xmlAsStr);
 
@@ -60,7 +60,7 @@ public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
             setAttributesToLowerCase(fields);
 
             //Content artifact (policy, wsdl, schema ...etc) doesn't contains the attributes.
-            if (fileData.mediaType.matches("vnd.wso2.(.)+\\+xml;version=(.)+") && (propBag.size() > 0 || attributeMap.size() >0)) {
+            if (fileData.mediaType.matches("vnd.wso2.(.)+\\+xml;version=(.)+") && (propBag.size() > 0 || attributeMap.size() > 0)) {
                 setAttributesToLowerCase(attributeMap);
                 setAttributesToLowerCase(propBag);
                 fields.putAll(attributeMap);
@@ -75,7 +75,7 @@ public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
 
     }
 
-    private void setAttributesToLowerCase(Map<String, List<String>> attributes){
+    private void setAttributesToLowerCase(Map<String, List<String>> attributes) {
         for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {
             List<String> list = entry.getValue();
             if (list == null) continue;
