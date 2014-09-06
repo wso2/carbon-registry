@@ -38,7 +38,9 @@ import javax.xml.stream.XMLStreamException;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * This is the registry indexer registered through registry.xml to index all metadata object attributes
+ */
 public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
 
     public IndexDocument getIndexedDocument(AsyncIndexer.File2Index fileData) throws RegistryException {

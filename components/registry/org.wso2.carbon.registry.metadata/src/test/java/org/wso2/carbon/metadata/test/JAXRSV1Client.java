@@ -22,6 +22,7 @@ package org.wso2.carbon.metadata.test;
 
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
 import org.wso2.carbon.registry.metadata.service.ServiceV1;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 public class JAXRSV1Client {
 
-    public static void main(String[] args) throws RegistryException {
+    public static void main(String[] args) throws MetadataException {
 
 // Create a service
         Registry registry =null ;// Obtain a remote/internal registry instance to start with

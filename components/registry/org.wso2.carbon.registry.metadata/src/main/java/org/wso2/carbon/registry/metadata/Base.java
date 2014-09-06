@@ -20,6 +20,7 @@ package org.wso2.carbon.registry.metadata;
 
 
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 
 public interface Base {
@@ -28,45 +29,45 @@ public interface Base {
      *
       * @return the UUID of the meta data instance
      */
-    public String getUUID() throws RegistryException;
+    public String getUUID() throws MetadataException;
 
     /**
      *
      * @return the human readable name that is given to the meta data instance
      */
-    public String getName() throws RegistryException;
+    public String getName() throws MetadataException;
 
     /**
      *
      * @return media type of the meta data instance that uniquely identifies the type of this instance
      */
-    public String getMediaType() throws RegistryException;
+    public String getMediaType() throws MetadataException;
 
     /**
      *
      * @return media type of the version meta data instance that uniquely identifies the type of version.
      */
-    public String getVersionMediaType() throws RegistryException;
+    public String getVersionMediaType() throws MetadataException;
 
     /**
      * This is the property bag
      * @param key - property name
      * @param value - property value
      */
-    public void setProperty(String key,String value) throws RegistryException;
+    public void setProperty(String key,String value) throws MetadataException;
 
     /**
      * Removes the property from this instance
      * @param key name of the property
      */
-    public void removeProperty(String key) throws RegistryException;
+    public void removeProperty(String key) throws MetadataException;
 
     /**
      * Removes the property from this instance
      * @param key name of the property
      * @return value of the property
      */
-    public String getProperty(String key) throws RegistryException;
+    public String getProperty(String key) throws MetadataException;
 
     /**
      *

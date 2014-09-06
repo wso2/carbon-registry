@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
@@ -45,7 +46,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     private static final Log log = LogFactory.getLog(HTTPServiceVersionProviderV1.class);
 
     @Override
-    public Resource buildResource(Base metadata, Resource resource) throws RegistryException {
+    public Resource buildResource(Base metadata, Resource resource) throws MetadataException {
         OMElement root = Util.getContentRoot();
         OMElement attributes = Util.getAttributeRoot();
         OMElement properties = Util.getPropertyRoot();
@@ -61,30 +62,31 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
             resource.setUUID(metadata.getUUID());
         } catch (XMLStreamException e) {
             log.error("Xml stream exception occurred while building resource content " + e.getMessage());
-            throw new RegistryException("Xml stream exception occurred while building resource content", e);
+            throw new MetadataException("Xml stream exception occurred while building resource content", e);
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(), e);
         }
         return resource;
     }
 
     @Override
-    public Resource updateResource(Base newMetadata, Resource resource) throws RegistryException {
+    public Resource updateResource(Base newMetadata, Resource resource) throws MetadataException {
         return buildResource(newMetadata, resource);
     }
 
     @Override
-    public Base get(Resource resource,Registry registry) throws RegistryException {
+    public Base get(Resource resource,Registry registry) throws MetadataException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
             Map<String, List<String>> propBag = Util.getPropertyBag(root);
             return getFilledBean(root, propBag, registry);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RegistryException e) {
+            throw new MetadataException("Error occurred while obtaining resource metadata content uuid = " + resource.getUUID(),e);
         }
-        return null;
     }
 
-    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws RegistryException {
+    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
         Map<String, List<String>> attributeMap;
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         attributeMap = Util.getAttributeMap(attributes);
@@ -97,7 +99,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     }
 
 
-    private void createAttributesContent(HTTPServiceVersionV1 serviceV1, OMElement element) throws RegistryException {
+    private void createAttributesContent(HTTPServiceVersionV1 serviceV1, OMElement element) throws MetadataException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 

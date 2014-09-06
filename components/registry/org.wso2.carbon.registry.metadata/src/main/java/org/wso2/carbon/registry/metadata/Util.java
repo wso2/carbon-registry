@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -62,7 +63,7 @@ public class Util {
      */
     private static final Log log = LogFactory.getLog(Util.class);
 
-    public static MetadataProvider getProvider(String classificationURI) throws RegistryException {
+    public static MetadataProvider getProvider(String classificationURI) throws MetadataException {
      return getProviderMap().get(classificationURI);
     }
 
@@ -70,7 +71,7 @@ public class Util {
         return UUID.randomUUID().toString();
     }
 
-    private static File getConfigFile() throws RegistryException {
+    private static File getConfigFile() throws MetadataException {
         String configPath;
         if(Util.getProviderMapFilePath() == null) {
             configPath = new StringBuilder(System.getProperty("carbon.home")).append(File.separator).
@@ -85,17 +86,17 @@ public class Util {
                 String msg = "Registry configuration file (registry.xml) file does " +
                         "not exist in the path " + configPath;
 //                log.error(msg);
-                throw new RegistryException(msg);
+                throw new MetadataException(msg);
             }
             return registryXML;
         } else {
             String msg = "Cannot find registry.xml";
 //            log.error(msg);
-            throw new RegistryException(msg);
+            throw new MetadataException(msg);
         }
     }
 
-    private static Map<String,MetadataProvider> getProviderMap() throws RegistryException {
+    private static Map<String,MetadataProvider> getProviderMap() throws MetadataException {
         if(providerMap != null) {
             return providerMap;
         }
@@ -123,14 +124,14 @@ public class Util {
                 }
         }
         } catch (Exception e){
-          throw new RegistryException(e.getMessage(),e);
+          throw new MetadataException(e.getMessage(),e);
         }
 
       return Util.providerMap = providerMap;
     }
 
     public static String getMetadataPath(String uuid,Registry registry)
-            throws RegistryException {
+            throws MetadataException {
 
         try {
             String sql = "SELECT REG_PATH_ID, REG_NAME FROM REG_RESOURCE WHERE REG_UUID = ?";
@@ -149,15 +150,19 @@ public class Util {
             String msg = "Error in getting the path from the registry. Execute query failed with message : "
                     + e.getMessage();
             log.error(msg, e);
-            throw new RegistryException(msg, e);
+            throw new MetadataException(msg, e);
         }
     }
 
 
-    public static void createAssociation(Registry registry,String sourceUUID,String targetUUID,String type) throws RegistryException {
-        registry.addAssociation(Util.getMetadataPath(sourceUUID,registry),
-                Util.getMetadataPath(targetUUID,registry),
-                type);
+    public static void createAssociation(Registry registry,String sourceUUID,String targetUUID,String type) throws MetadataException {
+       try {
+           registry.addAssociation(Util.getMetadataPath(sourceUUID, registry),
+                   Util.getMetadataPath(targetUUID, registry),
+                   type);
+       } catch (RegistryException e) {
+           throw new MetadataException(e.getMessage(),e);
+       }
     }
 
     public static void setAttributeSearchService(AttributeSearchService attributeSearchService) {

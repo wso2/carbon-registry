@@ -23,9 +23,13 @@ import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Util;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 
 import java.util.Map;
 
+/**
+ * This class implemented to maintain the state of a particular meta data object's lifecycle
+ */
 public class StateMachineLifecycle {
 
     private Registry registry;
@@ -38,12 +42,20 @@ public class StateMachineLifecycle {
         this.uuid = uuid;
     }
 
-    public void transfer(String action) throws RegistryException {
+    public void transfer(String action) throws MetadataException {
+        try {
         registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action);
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(),e);
+        }
     }
 
-    public void transfer(String action,Map<String,String> params) throws RegistryException {
-        registry.invokeAspect(Util.getMetadataPath(uuid,registry),this.name,action,params);
+    public void transfer(String action,Map<String,String> params) throws MetadataException {
+        try {
+            registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action, params);
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(),e);
+        }
     }
 
     /**
@@ -52,20 +64,26 @@ public class StateMachineLifecycle {
      * TODO improve this to get this from a cached value
      * @return the current state of this life cycle
      */
-    public State getCurrentState() throws RegistryException {
+    public State getCurrentState() throws MetadataException {
         String path = Util.getMetadataPath(uuid,registry);
+        try {
         if(registry.resourceExists(path)) {
            Resource r = registry.get(path);
             return new State(getLCState(r));
-        } else {
-          throw new RegistryException("Resource " + uuid + "does not exists");
         }
+        }catch (RegistryException e){
+           throw new MetadataException("Resource " + uuid + "does not exists");
+        }
+        return null;
     }
 
     private String getLCState(Resource resource){
         return resource.getProperty("registry.lifecycle." + resource.getProperty("registry.LC.name") + ".state");
     }
 
+    /**
+     * Represents a particular lifecycle state
+     */
     public static class State {
 
         private String name;

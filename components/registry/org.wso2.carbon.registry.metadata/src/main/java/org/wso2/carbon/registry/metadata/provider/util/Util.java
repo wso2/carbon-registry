@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
 import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
 
@@ -69,7 +70,7 @@ public class Util {
         return factory.createOMElement(new QName(Constants.CONTENT_ROOT_NAME));
     }
 
-    public static OMElement buildOMElement(byte[] content) throws RegistryException {
+    public static OMElement buildOMElement(byte[] content) throws MetadataException {
         XMLStreamReader parser;
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -79,7 +80,7 @@ public class Util {
         } catch (Exception e) {
             String msg = "Error in initializing the parser to build the OMElement.";
             log.error(msg, e);
-            throw new RegistryException("",e);
+            throw new MetadataException("",e);
         }
 
         //create the builder
