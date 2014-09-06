@@ -120,7 +120,7 @@ public abstract class AbstractBase {
     protected static List<Base> getAll(Registry registry, MetadataProvider provider, String mt) throws MetadataException {
         List<Base> baseResult = new ArrayList<Base>();
         Map<String, String> criteria = new HashMap<String, String>();
-        criteria.put("mediaType", mt);
+        criteria.put(Constants.ATTRIBUTE_MEDIA_TYPE, mt);
         try {
             ResourceData[] results = Util.getAttributeSearchService().search(criteria);
             for (ResourceData resourceData : results) {
@@ -143,8 +143,8 @@ public abstract class AbstractBase {
      * @return
      */
     protected static List<Base> find(Registry registry, Map<String, String> criteria, MetadataProvider provider, String mt) throws MetadataException {
-        if (criteria != null && criteria.get("mediaType") == null) {
-            criteria.put("mediaType", mt);
+        if (criteria != null && criteria.get(Constants.ATTRIBUTE_MEDIA_TYPE) == null) {
+            criteria.put(Constants.ATTRIBUTE_MEDIA_TYPE, mt);
         }
         List<Base> baseResult = new ArrayList<Base>();
         try {

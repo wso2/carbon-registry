@@ -32,5 +32,21 @@ public class Constants {
 
     public static final String CONTENT_ROOT_NAME = "metadata";
 
+    public static final String ATTRIBUTE_UUID = "uuid";
+
+    public static final String ATTRIBUTE_METADATA_NAME = "name";
+
+    public static final String ATTRIBUTE_METADATA_BASE_NAME = "baseName";
+
+    public static final String ATTRIBUTE_BASE_UUID = "baseUUID";
+
+    public static final String ATTRIBUTE_MEDIA_TYPE = "mediaType";
+
+    public static final String ATTRIBUTE_VERSION_MEDIA_TYPE = "versionMediaType";
+
+
+
+
+
 }
 

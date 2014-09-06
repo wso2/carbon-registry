@@ -53,7 +53,7 @@ public class JAXRSV1Client {
 
 // Search services
         Map<String, String> criteria = new HashMap<String, String>();
-        criteria.put("owner", "newOwner");
+        criteria.put(HTTPServiceV1.OWNER, "newOwner");
         HTTPServiceV1[] results = HTTPServiceV1.find(registry, criteria);
 
 //  Create new Version of a service

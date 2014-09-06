@@ -35,7 +35,7 @@ import java.util.Map;
 public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
 //  Type specific attributes goes here
-    private final String ENDPOINT_URL = "endpointUrl";
+    public static final String ENDPOINT_URL = "endpointUrl";
 
 
 //  Variables defined for internal implementation purpose

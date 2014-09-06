@@ -36,7 +36,6 @@ public class MetadataServiceComponent {
 
     private static final Log log = LogFactory.getLog(MetadataServiceComponent.class);
 
-
     /**
      * Activates the Governance API bundle.
      *
@@ -44,9 +43,11 @@ public class MetadataServiceComponent {
      */
     protected void activate(ComponentContext context) {
         try {
-            log.debug("Governance API bundle is activated ");
+            if (log.isDebugEnabled()) {
+                log.debug("Governance API bundle is activated ");
+            }
         } catch (Exception e) {
-            log.debug("****** Failed to activate Governance API bundle *******");
+            log.error("Failed to activate Metadata API bundle");
         }
     }
 

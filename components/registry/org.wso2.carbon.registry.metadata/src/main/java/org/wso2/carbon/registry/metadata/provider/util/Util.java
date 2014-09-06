@@ -88,14 +88,16 @@ public class Util {
     public static Map<String, List<String>> getPropertyBag(OMElement root) {
         Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
         OMElement properties = root.getFirstChildWithName(new QName(Constants.CONTENT_PROPERTY_EL_ROOT_NAME));
-        Iterator itr = properties.getChildren();
-        while (itr.hasNext()) {
-            OMElement el = (OMElement) itr.next();
-            String key = el.getLocalName();
-            String value = el.getText();
-            List<String> list = new ArrayList<String>();
-            list.add(value);
-            resultMap.put(key, list);
+        if(properties != null) {
+            Iterator itr = properties.getChildren();
+            while (itr.hasNext()) {
+                OMElement el = (OMElement) itr.next();
+                String key = el.getLocalName();
+                String value = el.getText();
+                List<String> list = new ArrayList<String>();
+                list.add(value);
+                resultMap.put(key, list);
+            }
         }
         return resultMap;
     }
@@ -103,14 +105,16 @@ public class Util {
 
     public static Map<String, List<String>> getAttributeMap(OMElement attributes) {
         Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
-        Iterator itr = attributes.getChildren();
-        while (itr.hasNext()) {
-            OMElement el = (OMElement) itr.next();
-            String key = el.getLocalName();
-            String value = el.getText();
-            List<String> valList = new ArrayList<String>();
-            valList.add(value);
-            attributeMap.put(key, valList);
+        if(attributes != null) {
+            Iterator itr = attributes.getChildren();
+            while (itr.hasNext()) {
+                OMElement el = (OMElement) itr.next();
+                String key = el.getLocalName();
+                String value = el.getText();
+                List<String> valList = new ArrayList<String>();
+                valList.add(value);
+                attributeMap.put(key, valList);
+            }
         }
         return attributeMap;
     }

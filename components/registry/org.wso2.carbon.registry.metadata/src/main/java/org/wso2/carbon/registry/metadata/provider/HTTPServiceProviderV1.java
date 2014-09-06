@@ -85,40 +85,39 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
     private HTTPServiceV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
         Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
-        String uuid = attributes.getFirstChildWithName(new QName("uuid")).getText();
-        String name = attributes.getFirstChildWithName(new QName("name")).getText();
-
-        Iterator itr = attributes.getChildren();
-        while (itr.hasNext()) {
-            OMElement el = (OMElement) itr.next();
-            String key = el.getLocalName();
-            String value = el.getText();
-            List<String> valList = new ArrayList<String>();
-            valList.add(value);
-            attributeMap.put(key, valList);
-        }
-        HTTPServiceV1 s = new HTTPServiceV1(registry, name, uuid, propBag, attributeMap);
-        return s;
+        String uuid = attributes.getFirstChildWithName(new QName(Constants.ATTRIBUTE_UUID)).getText();
+        String name = attributes.getFirstChildWithName(new QName(Constants.ATTRIBUTE_METADATA_NAME)).getText();
+       if(attributeMap != null) {
+           Iterator itr = attributes.getChildren();
+           while (itr.hasNext()) {
+               OMElement el = (OMElement) itr.next();
+               String key = el.getLocalName();
+               String value = el.getText();
+               List<String> valList = new ArrayList<String>();
+               valList.add(value);
+               attributeMap.put(key, valList);
+           }
+       }
+        return new HTTPServiceV1(registry, name, uuid, propBag, attributeMap);
     }
-
 
     private void createAttributesContent(HTTPServiceV1 serviceV1, OMElement element) throws MetadataException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
-        OMElement uuid = factory.createOMElement(new QName("uuid"));
+        OMElement uuid = factory.createOMElement(new QName(Constants.ATTRIBUTE_UUID));
         uuid.setText(serviceV1.getUUID());
 
-        OMElement name = factory.createOMElement(new QName("name"));
+        OMElement name = factory.createOMElement(new QName(Constants.ATTRIBUTE_METADATA_NAME));
         name.setText(serviceV1.getName());
 
-        OMElement mediaType = factory.createOMElement(new QName("mediaType"));
+        OMElement mediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
         mediaType.setText(serviceV1.getMediaType());
 
-        OMElement versionMediaType = factory.createOMElement(new QName("versionMediaType"));
+        OMElement versionMediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_VERSION_MEDIA_TYPE));
         versionMediaType.setText(serviceV1.getVersionMediaType());
 
-        OMElement owner = factory.createOMElement(new QName("owner"));
+        OMElement owner = factory.createOMElement(new QName(HTTPServiceV1.OWNER));
         owner.setText(serviceV1.getOwner());
 
         element.addChild(uuid);

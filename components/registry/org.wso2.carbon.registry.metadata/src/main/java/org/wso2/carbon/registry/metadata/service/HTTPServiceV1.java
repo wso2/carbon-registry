@@ -37,7 +37,7 @@ import java.util.Map;
 public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
 //  Type specific attributes goes here
-    private final String OWNER = "owner";
+    public static final String OWNER = "owner";
 
 //  Variables defined for the internal implementation
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);

@@ -113,7 +113,7 @@ public class Util {
             while (itr.hasNext()) {
                 OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
-                String classificationUri = metadataProvider.getAttributeValue(new QName("mediaType"));
+                String classificationUri = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class<MetadataProvider> classObj = (Class<MetadataProvider>) Class.forName(providerClass, true, loader);
 

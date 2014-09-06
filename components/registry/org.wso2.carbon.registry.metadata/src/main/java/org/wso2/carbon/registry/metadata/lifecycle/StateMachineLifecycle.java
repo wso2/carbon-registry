@@ -19,6 +19,8 @@
 
 package org.wso2.carbon.registry.metadata.lifecycle;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -35,6 +37,8 @@ public class StateMachineLifecycle {
     private Registry registry;
     private String name;
     private String uuid;
+    private static final Log log = LogFactory.getLog(StateMachineLifecycle.class);
+
 
     public StateMachineLifecycle(Registry registry, String name, String uuid) {
         this.registry = registry;
@@ -46,6 +50,7 @@ public class StateMachineLifecycle {
         try {
             registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action);
         } catch (RegistryException e) {
+            log.error("Error occurred while invoking operation " + action + " for lifecycle "+ name);
             throw new MetadataException(e.getMessage(), e);
         }
     }
@@ -54,6 +59,7 @@ public class StateMachineLifecycle {
         try {
             registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action, params);
         } catch (RegistryException e) {
+            log.error("Error occurred while invoking operation " + action + " for lifecycle "+ name);
             throw new MetadataException(e.getMessage(), e);
         }
     }
@@ -73,6 +79,7 @@ public class StateMachineLifecycle {
                 return new State(getLCState(r));
             }
         } catch (RegistryException e) {
+            log.error("Error occurred while obtaining current state for lifecycle "+ name);
             throw new MetadataException("Resource " + uuid + "does not exists");
         }
         return null;

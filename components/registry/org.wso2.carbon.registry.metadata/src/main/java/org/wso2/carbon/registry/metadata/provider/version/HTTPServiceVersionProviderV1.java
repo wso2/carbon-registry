@@ -87,12 +87,11 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         Map<String, List<String>> attributeMap;
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         attributeMap = Util.getAttributeMap(attributes);
-        String uuid = attributeMap.get("uuid").get(0);
-        String name = attributeMap.get(("name")).get(0);
-        String baseName = attributeMap.get("baseName").get(0);
-        String baseUUID = attributeMap.get("baseUUID").get(0);
-        HTTPServiceVersionV1 s = new HTTPServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
-        return s;
+        String uuid = attributeMap.get(Constants.ATTRIBUTE_UUID).get(0);
+        String name = attributeMap.get((Constants.ATTRIBUTE_METADATA_NAME)).get(0);
+        String baseName = attributeMap.get(Constants.ATTRIBUTE_METADATA_BASE_NAME).get(0);
+        String baseUUID = attributeMap.get(Constants.ATTRIBUTE_BASE_UUID).get(0);
+        return new HTTPServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
     }
 
 
@@ -100,22 +99,22 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
-        OMElement uuid = factory.createOMElement(new QName("uuid"));
+        OMElement uuid = factory.createOMElement(new QName(Constants.ATTRIBUTE_UUID));
         uuid.setText(serviceV1.getUUID());
 
-        OMElement name = factory.createOMElement(new QName("name"));
+        OMElement name = factory.createOMElement(new QName(Constants.ATTRIBUTE_METADATA_NAME));
         name.setText(serviceV1.getName());
 
-        OMElement baseName = factory.createOMElement(new QName("baseName"));
+        OMElement baseName = factory.createOMElement(new QName(Constants.ATTRIBUTE_METADATA_BASE_NAME));
         baseName.setText(serviceV1.getBaseName());
 
-        OMElement baseUUID = factory.createOMElement(new QName("baseUUID"));
+        OMElement baseUUID = factory.createOMElement(new QName(Constants.ATTRIBUTE_BASE_UUID));
         baseUUID.setText(serviceV1.getBaseUUID());
 
-        OMElement mediaType = factory.createOMElement(new QName("mediaType"));
+        OMElement mediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
         mediaType.setText(serviceV1.getMediaType());
 
-        OMElement endpointUrl = factory.createOMElement(new QName("endpointUrl"));
+        OMElement endpointUrl = factory.createOMElement(new QName(HTTPServiceVersionV1.ENDPOINT_URL));
         endpointUrl.setText(serviceV1.getEndpointUrl());
 
         element.addChild(uuid);
@@ -124,8 +123,6 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         element.addChild(baseUUID);
         element.addChild(mediaType);
         element.addChild(endpointUrl);
-
-
     }
 
     private void createPropertiesContent(HTTPServiceVersionV1 serviceV1, OMElement element) {
