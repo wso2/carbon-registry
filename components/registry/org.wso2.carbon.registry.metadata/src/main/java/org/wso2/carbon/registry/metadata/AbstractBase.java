@@ -67,16 +67,10 @@ public abstract class AbstractBase {
         this.registry = registry;
     }
 
-
     public void setProperty(String key, String value) {
-        if (propertyBag.get(key) == null) {
             List<String> list = new ArrayList<String>();
             list.add(value);
             propertyBag.put(key, list);
-        } else {
-            propertyBag.get(key).add(value);
-        }
-
     }
 
     public void removeProperty(String key) {
@@ -275,6 +269,5 @@ public abstract class AbstractBase {
     public Map<String, List<String>> getPropertyBag() {
         return propertyBag;
     }
-
 
 }

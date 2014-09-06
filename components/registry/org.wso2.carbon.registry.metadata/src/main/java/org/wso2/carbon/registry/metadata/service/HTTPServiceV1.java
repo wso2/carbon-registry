@@ -36,10 +36,10 @@ import java.util.Map;
 
 public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
-
-    // Service attributes defines here
+//  Type specific attributes goes here
     private final String OWNER = "owner";
 
+//  Variables defined for the internal implementation
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
     private static String mediaType = "vnd.wso2.service/http+xml;version=1";
     private static String versionMediaType = "vnd.wso2.version/service.http+xml;version=1";
@@ -47,9 +47,9 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
             + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
             + "/v"
             + mediaType.split(";")[1].split("=")[1];
-
     private Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
     private HTTPServiceVersionV1 baseVersion = null;
+
 
     public HTTPServiceV1(Registry registry, String name, VersionV1 version) throws MetadataException {
         super(name, false, registry);
@@ -81,21 +81,16 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     @Override
     public HTTPServiceVersionV1 getVersion(int major, int minor, int patch) throws MetadataException {
-        //        TODO return index search result
         String version = String.valueOf(major) + "." + String.valueOf(minor) + "." + String.valueOf(patch);
         for (Base v : getAllVersions(uuid, versionMediaType)) {
             HTTPServiceVersionV1 http = (HTTPServiceVersionV1) v;
             if (version.equals(http.getName())) {
                 return http;
             }
-
         }
         return null;
     }
 
-    private VersionV1 getBaseVersion() {
-        return baseVersion;
-    }
 
     @Override
     public String getUUID() {
@@ -124,13 +119,9 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     @Override
     public void setOwner(String owner) {
-        if (attributeMap.get(OWNER) == null) {
-            List<String> value = new ArrayList<String>();
-            value.add(owner);
-            attributeMap.put(OWNER, value);
-        } else {
-            attributeMap.get(OWNER).add(owner);
-        }
+        List<String> value = new ArrayList<String>();
+        value.add(owner);
+        attributeMap.put(OWNER, value);
     }
 
     @Override
@@ -157,8 +148,6 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
 
     public static void delete(Registry registry, String uuid) throws MetadataException {
         deleteResource(registry, uuid);
-//        TODO Need to remove the associations for this UUID from the association table
-//        TODO remove index
     }
 
     /**
@@ -194,11 +183,12 @@ public class HTTPServiceV1 extends AbstractBase implements ServiceV1 {
         return attributeMap;
     }
 
-    public void setAttributeMap(Map<String, List<String>> attributeMap) {
-        this.attributeMap = attributeMap;
-    }
-
     private static String generateMetadataStoragePath(String name, String rootStoragePath) {
         return rootStoragePath + "/" + name;
     }
+
+    private VersionV1 getBaseVersion() {
+        return baseVersion;
+    }
+
 }

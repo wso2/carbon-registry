@@ -47,7 +47,7 @@ public interface Base {
      * This is the property bag
      *
      * @param key   - property name
-     * @param value - property value
+     * @param value - property value(single valued property)
      */
     public void setProperty(String key, String value) throws MetadataException;
 

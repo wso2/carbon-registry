@@ -34,18 +34,20 @@ import java.util.Map;
 
 public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
+//  Type specific attributes goes here
     private final String ENDPOINT_URL = "endpointUrl";
 
+
+//  Variables defined for internal implementation purpose
     protected static String mediaType = "vnd.wso2.version/service.http+xml;version=1";
     private static final Log log = LogFactory.getLog(HTTPServiceVersionV1.class);
     private String baseUUID;
     private String baseName;
-    private Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
-
     private static String ROOT_STORAGE_PATH = Constants.BASE_STORAGE_PATH
             + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
             + "/v"
             + mediaType.split(";")[1].split("=")[1];
+    private Map<String, List<String>> attributeMap = new HashMap<String, List<String>>();
 
 
     public HTTPServiceVersionV1(Registry registry, String name) throws MetadataException {
@@ -67,7 +69,7 @@ public class HTTPServiceVersionV1 extends AbstractBase implements VersionV1 {
 
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
