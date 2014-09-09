@@ -38,6 +38,11 @@ public class RegistryEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(RegistryEventingHandler.class);
 
     public void put(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -72,6 +77,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void delete(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -110,6 +120,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void createVersion(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -134,6 +149,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void applyTag(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -160,6 +180,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void removeTag(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -185,6 +210,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String addComment(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return null;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -214,6 +244,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void rateResource(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -245,6 +280,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void addAssociation(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = getPathWithoutVersion(requestContext.getSourcePath());
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -282,6 +322,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void removeAssociation(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = getPathWithoutVersion(requestContext.getSourcePath());
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -319,6 +364,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void createLink(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -341,6 +391,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void removeLink(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -358,6 +413,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void putChild(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
+    	
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -396,6 +456,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String move(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return null;
+    	}
+    	
         String path = requestContext.getSourcePath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -495,6 +560,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String copy(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return null;
+    	}
+    	
         String path = requestContext.getSourcePath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -565,6 +635,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String rename(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return null;
+    	}
+    	
         String path = requestContext.getSourcePath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -613,6 +688,10 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void restore(RequestContext requestContext) throws RegistryException {
+    	
+    	if(getRequestDepth(requestContext) != 1){
+    		return;
+    	}
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
@@ -664,5 +743,16 @@ public class RegistryEventingHandler extends Handler {
 
     private void handleException(String message, Exception e) {
         log.error(message, e);
+    }
+
+    /**
+     * Method to get the actual depth of the request
+     */
+    private int getRequestDepth(RequestContext requestContext){
+        int requestDepth = -1;
+        if(requestContext.getRegistry().getRegistryContext() != null && requestContext.getRegistry().getRegistryContext().getDataAccessManager() != null && requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction() != null){
+            requestDepth = requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction().getNestedDepth();
+        }
+        return requestDepth;
     }
 }
