@@ -72,82 +72,10 @@ public class RegistryConfigLoader {
             OMElement configElement = builder.getDocumentElement();
             OMElement indexingConfig = configElement.getFirstChildWithName(
                     new QName("indexingConfiguration"));
-            try {
-                startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
-                        new QName("startingDelayInSeconds")).getText());
-            } catch (Exception e) {
-                startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
-            }
-            try {
-                indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
-                        new QName("indexingFrequencyInSeconds")).getText());
-            } catch (Exception e) {
-                indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
-            }
-            try {
-                lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
-                        new QName("lastAccessTimeLocation")).getText();
-            } catch (OMException e) {
-                lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
+            if (indexingConfig != null) { //registry.xml need an <indexingConfiguration> </indexingConfiguration> entry to continue
+                 loadIndexingConfiguration(indexingConfig);
             }
 
-            batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
-            indexerPoolSize =  Integer.parseInt(indexingConfig.getFirstChildWithName(new QName("indexerPoolSize")).getText());
-
-            Iterator exclusions = indexingConfig.getFirstChildWithName(new QName("exclusions")).
-                    getChildrenWithName(new QName("exclusion"));
-            while (exclusions.hasNext()) {
-                OMElement indexerEl = (OMElement) exclusions.next();
-                String pathRegEx =
-                        indexerEl.getAttribute(new QName("pathRegEx")).getAttributeValue();
-                if (pathRegEx != null) {
-                    try {
-                        exclusionList.add(Pattern.compile(pathRegEx));
-                    } catch (PatternSyntaxException ignore) {
-                    }
-                }
-            }
-            Iterator indexers = indexingConfig.getFirstChildWithName(new QName("indexers")).
-                    getChildrenWithName(new QName("indexer"));
-            String currentProfile = System.getProperty("profile", "default");
-            while (indexers.hasNext()) {
-                OMElement indexerEl = (OMElement) indexers.next();
-                boolean isValidConfigurationForProfile = false;
-                String profileStr = indexerEl.getAttributeValue(new QName("profiles"));
-                if (profileStr != null) {
-                    String[] profiles = profileStr.split(",");
-                    for (String profile : profiles) {
-                        if (profile.trim().equals(currentProfile)) {
-                        isValidConfigurationForProfile = true;
-                        }
-                    }
-                } else {
-                    //when no profile is defined
-                    isValidConfigurationForProfile = true;
-                }
-
-                if(isValidConfigurationForProfile){
-                String clazz = indexerEl.getAttribute(new QName("class")).getAttributeValue();
-                try {
-                    Object indexerObj = this.getClass().getClassLoader().loadClass(clazz).newInstance();
-                    if (!(indexerObj instanceof Indexer)) {
-                        throw new RegistryException(clazz + " has not implemented Indexer interface");
-                    }
-                    String mediaPattern = indexerEl.getAttribute(
-                            new QName("mediaTypeRegEx")).getAttributeValue();
-                    indexerMap.put(mediaPattern, (Indexer) indexerObj);
-                } catch (InstantiationException e) {
-                    log.error(clazz + " cannot be instantiated.", e);
-                } catch (IllegalAccessException e) {
-                    log.error(clazz + " constructor cannot be accessed", e);
-                } catch (ClassNotFoundException e) {
-                    log.error(clazz + " is not found in classpath. Please check whether the class " +
-                            "is exported in your OSGI bundle.", e);
-                } catch (RegistryException e) {
-                    log.error(e.getMessage(), e);
-                }
-               }
-            }
         } catch (FileNotFoundException e) {
             // This virtually cannot happen as registry.xml is necessary to start up the registry
             log.error("registry.xml has not been found", e);
@@ -198,6 +126,85 @@ public class RegistryConfigLoader {
             String msg = "Cannot find registry.xml";
             log.error(msg);
             throw new RegistryException(msg);
+        }
+    }
+
+    private void loadIndexingConfiguration(OMElement indexingConfig){
+        try {
+            startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
+                    new QName("startingDelayInSeconds")).getText());
+        } catch (Exception e) {
+            startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+        }
+        try {
+            indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
+                    new QName("indexingFrequencyInSeconds")).getText());
+        } catch (Exception e) {
+            indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+        }
+        try {
+            lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
+                    new QName("lastAccessTimeLocation")).getText();
+        } catch (OMException e) {
+            lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
+        }
+
+        batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
+        indexerPoolSize =  Integer.parseInt(indexingConfig.getFirstChildWithName(new QName("indexerPoolSize")).getText());
+
+        Iterator exclusions = indexingConfig.getFirstChildWithName(new QName("exclusions")).
+                getChildrenWithName(new QName("exclusion"));
+        while (exclusions.hasNext()) {
+            OMElement indexerEl = (OMElement) exclusions.next();
+            String pathRegEx =
+                    indexerEl.getAttribute(new QName("pathRegEx")).getAttributeValue();
+            if (pathRegEx != null) {
+                try {
+                    exclusionList.add(Pattern.compile(pathRegEx));
+                } catch (PatternSyntaxException ignore) {
+                }
+            }
+        }
+        Iterator indexers = indexingConfig.getFirstChildWithName(new QName("indexers")).
+                getChildrenWithName(new QName("indexer"));
+        String currentProfile = System.getProperty("profile", "default");
+        while (indexers.hasNext()) {
+            OMElement indexerEl = (OMElement) indexers.next();
+            boolean isValidConfigurationForProfile = false;
+            String profileStr = indexerEl.getAttributeValue(new QName("profiles"));
+            if (profileStr != null) {
+                String[] profiles = profileStr.split(",");
+                for (String profile : profiles) {
+                    if (profile.trim().equals(currentProfile)) {
+                        isValidConfigurationForProfile = true;
+                    }
+                }
+            } else {
+                //when no profile is defined
+                isValidConfigurationForProfile = true;
+            }
+
+            if(isValidConfigurationForProfile){
+                String clazz = indexerEl.getAttribute(new QName("class")).getAttributeValue();
+                try {
+                    Object indexerObj = this.getClass().getClassLoader().loadClass(clazz).newInstance();
+                    if (!(indexerObj instanceof Indexer)) {
+                        throw new RegistryException(clazz + " has not implemented Indexer interface");
+                    }
+                    String mediaPattern = indexerEl.getAttribute(
+                            new QName("mediaTypeRegEx")).getAttributeValue();
+                    indexerMap.put(mediaPattern, (Indexer) indexerObj);
+                } catch (InstantiationException e) {
+                    log.error(clazz + " cannot be instantiated.", e);
+                } catch (IllegalAccessException e) {
+                    log.error(clazz + " constructor cannot be accessed", e);
+                } catch (ClassNotFoundException e) {
+                    log.error(clazz + " is not found in classpath. Please check whether the class " +
+                            "is exported in your OSGI bundle.", e);
+                } catch (RegistryException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
     }
 }
