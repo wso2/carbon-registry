@@ -27,29 +27,34 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.Base1;
+import org.wso2.carbon.registry.metadata.Base1;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
+import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
+import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
+import org.wso2.carbon.registry.metadata.version.VersionBase;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.List;
 import java.util.Map;
 
-public class HTTPServiceVersionProviderV1 implements MetadataProvider {
+public class HTTPServiceVersionProviderV1 implements VersionBaseProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceVersionProviderV1.class);
 
     @Override
-    public Resource buildResource(Base metadata, Resource resource) throws MetadataException {
+    public Resource buildResource(VersionBase metadata, Resource resource) throws MetadataException {
         OMElement root = Util.getContentRoot();
         OMElement attributes = Util.getAttributeRoot();
         OMElement properties = Util.getPropertyRoot();
 
-        createAttributesContent((HTTPServiceVersionV1) metadata, attributes);
-        createPropertiesContent((HTTPServiceVersionV1) metadata, properties);
+        createAttributesContent((ServiceVersionV1) metadata, attributes);
+        createPropertiesContent((ServiceVersionV1) metadata, properties);
         root.addChild(properties);
         root.addChild(attributes);
         try {
@@ -67,12 +72,12 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
     }
 
     @Override
-    public Resource updateResource(Base newMetadata, Resource resource) throws MetadataException {
+    public Resource updateResource(VersionBase newMetadata, Resource resource) throws MetadataException {
         return buildResource(newMetadata, resource);
     }
 
     @Override
-    public Base get(Resource resource, Registry registry) throws MetadataException {
+    public VersionBase get(Resource resource, Registry registry) throws MetadataException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
@@ -83,7 +88,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         }
     }
 
-    private HTTPServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
+    private ServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
         Map<String, List<String>> attributeMap;
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         attributeMap = Util.getAttributeMap(attributes);
@@ -91,11 +96,11 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         String name = attributeMap.get((Constants.ATTRIBUTE_METADATA_NAME)).get(0);
         String baseName = attributeMap.get(Constants.ATTRIBUTE_METADATA_BASE_NAME).get(0);
         String baseUUID = attributeMap.get(Constants.ATTRIBUTE_BASE_UUID).get(0);
-        return new HTTPServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
+        return new ServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
     }
 
 
-    private void createAttributesContent(HTTPServiceVersionV1 serviceV1, OMElement element) throws MetadataException {
+    private void createAttributesContent(ServiceVersionV1 serviceV1, OMElement element) throws MetadataException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
@@ -114,7 +119,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         OMElement mediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
         mediaType.setText(serviceV1.getMediaType());
 
-        OMElement endpointUrl = factory.createOMElement(new QName(HTTPServiceVersionV1.ENDPOINT_URL));
+        OMElement endpointUrl = factory.createOMElement(new QName(ServiceVersionV1.ENDPOINT_URL));
         endpointUrl.setText(serviceV1.getEndpointUrl());
 
         element.addChild(uuid);
@@ -125,7 +130,7 @@ public class HTTPServiceVersionProviderV1 implements MetadataProvider {
         element.addChild(endpointUrl);
     }
 
-    private void createPropertiesContent(HTTPServiceVersionV1 serviceV1, OMElement element) {
+    private void createPropertiesContent(ServiceVersionV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
             if (entry.getValue() == null) continue;

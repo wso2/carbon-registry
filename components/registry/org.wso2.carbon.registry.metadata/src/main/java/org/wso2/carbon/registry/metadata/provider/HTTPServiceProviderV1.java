@@ -27,6 +27,8 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.Base1;
+import org.wso2.carbon.registry.metadata.Base1;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
@@ -36,7 +38,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.*;
 
-public class HTTPServiceProviderV1 implements MetadataProvider {
+public class HTTPServiceProviderV1 implements BaseProvider {
 
     private static final Log log = LogFactory.getLog(HTTPServiceProviderV1.class);
 

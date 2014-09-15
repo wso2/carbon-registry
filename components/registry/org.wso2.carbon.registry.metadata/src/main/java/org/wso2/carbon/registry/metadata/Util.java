@@ -26,7 +26,9 @@ import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.provider.MetadataProvider;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
+import org.wso2.carbon.registry.metadata.provider.version.VersionBaseProvider;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -39,7 +41,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
 
-    private static ConcurrentHashMap<String, MetadataProvider> providerMap = null;
+    private static ConcurrentHashMap<String, BaseProvider> baseProviderMap = null;
+
+    private static ConcurrentHashMap<String, VersionBaseProvider> versionBaseProviderMap = null;
 
     private static String providerMapFilePath = null;
 
@@ -63,8 +67,12 @@ public class Util {
      */
     private static final Log log = LogFactory.getLog(Util.class);
 
-    public static MetadataProvider getProvider(String classificationURI) throws MetadataException {
-        return getProviderMap().get(classificationURI);
+    public static BaseProvider getBaseProvider(String mt) throws MetadataException {
+        return getBaseProviderMap().get(mt);
+    }
+
+    public static VersionBaseProvider getVersionBaseProvider(String mt) throws MetadataException {
+        return getVersionBaseProviderMap().get(mt);
     }
 
     public static String getNewUUID() {
@@ -96,26 +104,26 @@ public class Util {
         }
     }
 
-    private static Map<String, MetadataProvider> getProviderMap() throws MetadataException {
-        if (providerMap != null) {
-            return providerMap;
+    private static Map<String, BaseProvider> getBaseProviderMap() throws MetadataException {
+        if (baseProviderMap != null) {
+            return baseProviderMap;
         }
 
-        ConcurrentHashMap<String, MetadataProvider> providerMap = new ConcurrentHashMap<String, MetadataProvider>();
+        ConcurrentHashMap<String, BaseProvider> providerMap = new ConcurrentHashMap<String, BaseProvider>();
         try {
             FileInputStream fileInputStream = new FileInputStream(getConfigFile());
             StAXOMBuilder builder = new StAXOMBuilder(
                     fileInputStream);
             OMElement configElement = builder.getDocumentElement();
             OMElement metadataProviders = configElement.getFirstChildWithName(
-                    new QName("metadataProviders"));
+                    new QName("metadataProviders")).getFirstChildWithName(new QName("baseProviders"));
             Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
             while (itr.hasNext()) {
                 OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
                 String classificationUri = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                Class<MetadataProvider> classObj = (Class<MetadataProvider>) Class.forName(providerClass, true, loader);
+                Class<BaseProvider> classObj = (Class<BaseProvider>) Class.forName(providerClass, true, loader);
 
                 if (!providerMap.containsKey(classificationUri)) {
                     providerMap.put(classificationUri, classObj.newInstance());
@@ -127,7 +135,42 @@ public class Util {
             throw new MetadataException(e.getMessage(), e);
         }
 
-        return Util.providerMap = providerMap;
+        return Util.baseProviderMap = providerMap;
+    }
+
+
+    private static Map<String, VersionBaseProvider> getVersionBaseProviderMap() throws MetadataException {
+        if (versionBaseProviderMap != null) {
+            return versionBaseProviderMap;
+        }
+
+        ConcurrentHashMap<String, VersionBaseProvider> providerMap = new ConcurrentHashMap<String, VersionBaseProvider>();
+        try {
+            FileInputStream fileInputStream = new FileInputStream(getConfigFile());
+            StAXOMBuilder builder = new StAXOMBuilder(
+                    fileInputStream);
+            OMElement configElement = builder.getDocumentElement();
+            OMElement metadataProviders = configElement.getFirstChildWithName(
+                    new QName("metadataProviders")).getFirstChildWithName(new QName("versionBaseProviders"));
+            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
+            while (itr.hasNext()) {
+                OMElement metadataProvider = itr.next();
+                String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
+                String classificationUri = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                Class<VersionBaseProvider> classObj = (Class<VersionBaseProvider>) Class.forName(providerClass, true, loader);
+
+                if (!providerMap.containsKey(classificationUri)) {
+                    providerMap.put(classificationUri, classObj.newInstance());
+                } else {
+//                    log.error("Classification URI already exists")
+                }
+            }
+        } catch (Exception e) {
+            throw new MetadataException(e.getMessage(), e);
+        }
+
+        return Util.versionBaseProviderMap = providerMap;
     }
 
     public static String getMetadataPath(String uuid, Registry registry)

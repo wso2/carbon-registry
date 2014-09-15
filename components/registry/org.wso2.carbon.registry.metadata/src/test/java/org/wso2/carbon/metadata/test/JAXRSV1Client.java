@@ -24,7 +24,8 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
-import org.wso2.carbon.registry.metadata.version.HTTPServiceVersionV1;
+import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
+import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class JAXRSV1Client {
 // Create a service
         Registry registry = null;// Obtain a remote/internal registry instance to start with
 
-        HTTPServiceV1 http1 = new HTTPServiceV1(registry, "foo", new HTTPServiceVersionV1(registry, "1.0.0-SNAPSHOT"));
+        HTTPServiceV1 http1 = new HTTPServiceV1(registry, "foo", new ServiceVersionV1(registry, "1.0.0-SNAPSHOT"));
         http1.setOwner("serviceOwner");
         http1.setProperty("createdDate", "12-12-2012");
 
@@ -57,12 +58,12 @@ public class JAXRSV1Client {
         HTTPServiceV1[] results = HTTPServiceV1.find(registry, criteria);
 
 //  Create new Version of a service
-        HTTPServiceVersionV1 httpV1 = http1.newVersion("1.0.0");
+        ServiceVersionV1 httpV1 = http1.newVersion("1.0.0");
         httpV1.setEndpointUrl("http://test.rest/stockquote");
         httpV1.setProperty("isSecured", "true");
 
 //  Save a service version
-        HTTPServiceVersionV1.add(registry, httpV1);
+        ServiceVersionV1.add(registry, httpV1);
 
 //  Lifecycle operations fora service
         httpV1.attachLifecycle("HTTPServiceLifecycle");
@@ -71,7 +72,7 @@ public class JAXRSV1Client {
         StateMachineLifecycle.State currentState = lc.getCurrentState();
 
 //  Delete service version
-        HTTPServiceVersionV1 v1 = HTTPServiceVersionV1.get(registry, httpV1.getUUID());
+        ServiceVersionV1 v1 = ServiceVersionV1.get(registry, httpV1.getUUID());
         HTTPServiceV1.delete(registry, v1.getUUID());
 
     }
