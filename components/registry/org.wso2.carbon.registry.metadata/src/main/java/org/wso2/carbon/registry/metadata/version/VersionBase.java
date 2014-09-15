@@ -17,7 +17,7 @@
  *
  */
 
-package org.wso2.carbon.registry.metadata;
+package org.wso2.carbon.registry.metadata.version;
 
 
 import org.apache.commons.logging.Log;
@@ -29,18 +29,21 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.Base1;
+import org.wso2.carbon.registry.metadata.Constants;
+import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.BaseProvider;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
-import org.wso2.carbon.registry.metadata.version.VersionBase;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Base {
+public abstract class VersionBase {
 
     protected String name;
     protected String uuid;
@@ -49,29 +52,30 @@ public abstract class Base {
     protected Map<String, List<String>> propertyBag;
     protected Map<String, List<String>> attributeMap;
     protected Registry registry;
-    private static final Log log = LogFactory.getLog(Base.class);
+    private static final Log log = LogFactory.getLog(VersionBase.class);
     protected StateMachineLifecycle lifecycle;
-//    protected boolean isVersionType;
+    protected boolean isVersionType;
 
-    public Base(String mediaType,String versionMediaType, String name, boolean isVersionType, Registry registry) throws MetadataException {
+    private String baseUUID;
+    private String baseName;
+
+    public VersionBase(String mediaType, String name, Registry registry) throws MetadataException {
         this.mediaType = mediaType;
-        this.versionMediaType = versionMediaType;
         this.name = name;
         this.uuid = Util.getNewUUID();
-//        this.isVersionType = isVersionType;
         this.registry = registry;
         this.propertyBag = new HashMap<String, List<String>>();
         this.attributeMap = new HashMap<String, List<String>>();
     }
 
-    public Base(String mediaType, String versionMediaType, String name, String uuid, boolean isVersionType, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap, Registry registry) throws MetadataException {
+    public VersionBase(String mediaType, String name, String uuid, String baseName,String baseUUID, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap, Registry registry) throws MetadataException {
         this.mediaType = mediaType;
-        this.versionMediaType = versionMediaType;
         this.name = name;
         this.uuid = uuid;
+        this.baseName = baseName;
+        this.baseUUID = baseUUID;
         this.propertyBag = propertyBag;
         this.attributeMap=attributeMap;
-//        this.isVersionType = isVersionType;
         this.registry = registry;
     }
 
@@ -96,21 +100,22 @@ public abstract class Base {
        return mediaType;
     }
 
-    /**
-     * @return media type of the version meta data instance that uniquely identifies the type of version.
-     */
-    public String getVersionMediaType() throws MetadataException{
-       return versionMediaType;
+
+    public void setBaseUUID(String name) {
+        this.baseUUID = name;
     }
 
+    public String getBaseUUID() {
+        return baseUUID;
+    }
 
-//    /**
-//     * @return true if the instance is a version type.
-//     * false if the instance type is NOT a version type but any meta data super/sub type
-//     */
-//    public boolean isVersionType(){
-//        return isVersionType;
-//    }
+    public void setBaseName(String name) {
+        this.baseName = name;
+    }
+
+    public String getBaseName() {
+        return baseName;
+    }
 
     /**
      * This is the property bag
@@ -145,25 +150,6 @@ public abstract class Base {
     }
 
 
-    public ServiceVersionV1[] getVersions() throws MetadataException {
-        ArrayList<VersionBase> list = getAllVersions(uuid, versionMediaType);
-        ServiceVersionV1[] arr = new ServiceVersionV1[list.size()];
-        arr = list.toArray(arr);
-        return arr;
-    }
-
-
-    public ServiceVersionV1 getVersion(int major, int minor, int patch) throws MetadataException {
-        String version = String.valueOf(major) + "." + String.valueOf(minor) + "." + String.valueOf(patch);
-        for (VersionBase v : getAllVersions(uuid, versionMediaType)) {
-            ServiceVersionV1 http = (ServiceVersionV1) v;
-            if (version.equals(http.getName())) {
-                return http;
-            }
-        }
-        return null;
-    }
-
     /**
      * Deletes the meta data instance that represents from the given UUID
      *
@@ -182,28 +168,29 @@ public abstract class Base {
         }
     }
 
-    protected static void add(Registry registry, Base metadata, String path) throws MetadataException {
+    protected static void add(Registry registry, VersionBase metadata, String path) throws MetadataException {
         try {
-            Resource resource = Util.getBaseProvider(metadata.getMediaType()).buildResource(metadata, registry.newResource());
+            Resource resource = Util.getVersionBaseProvider(metadata.getMediaType()).buildResource(metadata, registry.newResource());
             putResource(registry, path, resource);
+
+            Util.createAssociation(registry, metadata.getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
+            Util.createAssociation(registry, metadata.getUUID(), metadata.getBaseUUID(), Constants.VERSION_OF);
+
         } catch (RegistryException e) {
             throw new MetadataException(e.getMessage(), e);
         }
     }
 
-    protected static void update(Registry registry, Base metadata, String path) throws MetadataException {
-        Resource resource = Util.getBaseProvider(metadata.getMediaType()).buildResource(metadata, getResource(registry, metadata.getUUID()));
+    protected static void update(Registry registry, VersionBase metadata, String path) throws MetadataException {
+        Resource resource = Util.getVersionBaseProvider(metadata.getMediaType()).buildResource(metadata, getResource(registry, metadata.getUUID()));
         putResource(registry, path, resource);
     }
-
-
 
     /**
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    protected static List<Base> getAll(Registry registry, String mt) throws MetadataException {
-        BaseProvider provider = Util.getBaseProvider(mt);
-        List<Base> baseResult = new ArrayList<Base>();
+    protected static List<VersionBase> getAll(Registry registry, String mt) throws MetadataException {
+        List<VersionBase> baseResult = new ArrayList<VersionBase>();
         Map<String, String> criteria = new HashMap<String, String>();
         criteria.put(Constants.ATTRIBUTE_MEDIA_TYPE, mt);
         try {
@@ -212,7 +199,7 @@ public abstract class Base {
                 String path = RegistryUtils.getRelativePathToOriginal(resourceData.getResourcePath(), RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
                 if (registry.resourceExists(path)) {
                     Resource resource = registry.get(path);
-                    baseResult.add(provider.get(resource, registry));
+                    baseResult.add(Util.getVersionBaseProvider(mt).get(resource, registry));
                 }
             }
         } catch (RegistryException e) {
@@ -227,19 +214,18 @@ public abstract class Base {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    protected static List<Base> find(Registry registry, Map<String, String> criteria, String mt) throws MetadataException {
-        BaseProvider provider = Util.getBaseProvider(mt);
+    protected static List<VersionBase> find(Registry registry, Map<String, String> criteria, String mt) throws MetadataException {
         if (criteria != null && criteria.get(Constants.ATTRIBUTE_MEDIA_TYPE) == null) {
             criteria.put(Constants.ATTRIBUTE_MEDIA_TYPE, mt);
         }
-        List<Base> baseResult = new ArrayList<Base>();
+        List<VersionBase> baseResult = new ArrayList<VersionBase>();
         try {
             ResourceData[] results = Util.getAttributeSearchService().search(criteria);
             for (ResourceData resourceData : results) {
                 String path = RegistryUtils.getRelativePathToOriginal(resourceData.getResourcePath(), RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
                 if (registry.resourceExists(path)) {
                     Resource resource = registry.get(path);
-                    baseResult.add(provider.get(resource, registry));
+                    baseResult.add(Util.getVersionBaseProvider(mt).get(resource, registry));
                 }
             }
         } catch (RegistryException e) {
@@ -254,34 +240,8 @@ public abstract class Base {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    protected static Base get(Registry registry, String uuid, String mt) throws MetadataException {
-        return  Util.getBaseProvider(mt).get(getResource(registry, uuid), registry);
-    }
-
-    protected ArrayList<VersionBase> getAllVersions(String uuid, String versionMediaType) throws MetadataException {
-        //    Can do the same from the index search .
-        ArrayList<VersionBase> list = new ArrayList<VersionBase>();
-        try {
-            for (Association as : getAssociations(registry, uuid, Constants.CHILD_VERSION)) {
-                if (registry.resourceExists(as.getDestinationPath())) {
-                    Resource r = registry.get(as.getDestinationPath());
-                    list.add(Util.getVersionBaseProvider(versionMediaType).get(r, registry));
-                }
-            }
-        } catch (RegistryException e) {
-            throw new MetadataException(e.getMessage(), e);
-        }
-        return list;
-    }
-
-    private static Association[] getAssociations(Registry registry, String sourceUUID, String type) throws MetadataException {
-        Association[] associations = null;
-        try {
-            associations = registry.getAssociations(Util.getMetadataPath(sourceUUID, registry), type);
-        } catch (RegistryException e) {
-            throw new MetadataException(e.getMessage(), e);
-        }
-        return associations;
+    protected static VersionBase get(Registry registry, String uuid, String mt) throws MetadataException {
+        return  Util.getVersionBaseProvider(mt).get(getResource(registry, uuid), registry);
     }
 
     public void attachLifecycle(String name) throws MetadataException {
