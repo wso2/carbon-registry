@@ -42,16 +42,9 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
 
     @Override
     public Resource buildResource(Base metadata, Resource resource) throws MetadataException {
-        OMElement root = Util.getContentRoot();
-        OMElement attributes = Util.getAttributeRoot();
-        OMElement properties = Util.getPropertyRoot();
 
-        createAttributesContent((HTTPServiceV1) metadata, attributes);
-        createPropertiesContent((HTTPServiceV1) metadata, properties);
-        root.addChild(properties);
-        root.addChild(attributes);
         try {
-            String content = root.toStringWithConsume();
+            String content = getGeneratedMetadataOMElement(metadata).toStringWithConsume();
             resource.setContent(content);
             resource.setMediaType(metadata.getMediaType());
             resource.setUUID(metadata.getUUID());
@@ -138,6 +131,17 @@ public class HTTPServiceProviderV1 implements MetadataProvider {
             element.addChild(attribute);
         }
 
+    }
+
+    private OMElement getGeneratedMetadataOMElement(Base metadata) throws MetadataException {
+        OMElement root = Util.getContentRoot();
+        OMElement attributes = Util.getAttributeRoot();
+        OMElement properties = Util.getPropertyRoot();
+        createAttributesContent((HTTPServiceV1) metadata, attributes);
+        createPropertiesContent((HTTPServiceV1) metadata, properties);
+        root.addChild(properties);
+        root.addChild(attributes);
+        return root;
     }
 
 }

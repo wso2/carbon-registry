@@ -74,7 +74,7 @@ public abstract class AbstractBase {
     }
 
     public void removeProperty(String key) {
-        propertyBag.remove(key);
+            propertyBag.remove(key);
     }
 
     public String getProperty(String key) {
