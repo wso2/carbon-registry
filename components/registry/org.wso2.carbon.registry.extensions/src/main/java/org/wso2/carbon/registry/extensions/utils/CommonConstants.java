@@ -22,6 +22,13 @@ public class CommonConstants {
     public static final String GOVERNANCE_ARTIFACT_INDEX_PATH =
             "/repository/components/org.wso2.carbon.governance/artifacts";
 
+    /*
+     This is the path which save the rxt config files.
+     */
+    public static final String RXT_CONFIGS_PATH = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+            RegistryConstants.GOVERNANCE_COMPONENT_PATH + RegistryConstants.PATH_SEPARATOR + "types";
+
+
 //    public static final String ARTIFACT_ID_PROP_KEY = "registry.artifactId";
 
     public static final String SERVICE_NAME_ATTRIBUTE = "overview_name";
@@ -99,6 +106,12 @@ public class CommonConstants {
     public static final String UDDI_SYSTEM_PROPERTY="uddi";
 
     public static final String SERVICE_VERSION_DEFAULT_VALUE = "1.0.0";
+
+    public static final String WSDL_VERSION_DEFAULT_VALUE = "1.0.0";
+
+    public static final String WADL_VERSION_DEFAULT_VALUE = "1.0.0";
+
+    public static final String SCHEMA_VERSION_DEFAULT_VALUE = "1.0.0";
 
     public static final String VERSION_CONTAINER_MEDIA_TYPE =
             "application/vnd.wso2.version-container";

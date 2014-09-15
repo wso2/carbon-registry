@@ -180,13 +180,17 @@ public class WSDLProcessor {
         boolean isDefaultEnvironment =true;
         String currentWsdlLocation = null;
         String currentSchemaLocation = null;
-        String currentPolicyLocation;
+        String currentPolicyLocation = null ;
         String currentEndpointLocation = null;
         String currentEnvironment = null;
         String masterVersion= null;
         
         List<String> dependeinciesList = new ArrayList<String>();
-        
+        String version = context.getResource().getProperty("version");
+
+        if(version == null){
+            version = CommonConstants.WSDL_VERSION_DEFAULT_VALUE;
+        }
 
         String resourcePath = context.getResourcePath().getPath();
         resourceName = resourcePath.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
@@ -208,7 +212,7 @@ public class WSDLProcessor {
                 wsdlPath = (getChrootedWSDLLocation(registryContext) + CommonUtil.
                         derivePathFragmentFromNamespace(wsdlDefinition.getTargetNamespace())).
                         replace("//", "/");
-                wsdlPath += wsdlResourceName;
+                wsdlPath += version + "/" + wsdlResourceName;
                 if(!resourcePath.contains(wsdlResourceName)){
                     wsdlInfo.setProposedRegistryURL(wsdlPath);
                     continue;
@@ -301,7 +305,7 @@ public class WSDLProcessor {
             saveAssociations();
         } else {
             schemaProcessor.saveSchemasToRegistry(context, getChrootedSchemaLocation(registryContext),
-                    null, null,disableSymLinkCreation);
+                    null, null, version, dependeinciesList, disableSymLinkCreation);
             updateWSDLSchemaLocations();
 
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
@@ -989,7 +993,9 @@ public class WSDLProcessor {
                 OMElement overview = fac.createOMElement("overview", namespace);
                 OMElement interfaceelement = fac.createOMElement("interface", namespace);
                 OMElement name = fac.createOMElement("name", namespace);
+                OMElement version = fac.createOMElement("version",namespace);
                 name.setText(qname.getLocalPart());
+                version.setText(metadata.getProperty("version"));
                 definitionURL.setText(RegistryUtils.getRelativePath(registry.getRegistryContext(), wsdlURL));
                 OMElement namespaceElement = fac.createOMElement("namespace", namespace);
                 OMElement descriptionelement = fac.createOMElement("description", namespace);
@@ -1036,6 +1042,7 @@ public class WSDLProcessor {
 //                        }
 //                }
                 overview.addChild(name);
+                overview.addChild(version);
                 overview.addChild(namespaceElement);
                 overview.addChild(descriptionelement);
                 interfaceelement.addChild(definitionURL);

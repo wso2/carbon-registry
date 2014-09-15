@@ -104,6 +104,11 @@ public class SchemaProcessor {
         InputSource inputSource = new InputSource(byteArrayInputStream);
         String url = "http://this.schema.needs/a/valid/source/url/to/proceed.xsd";
 
+        String version = requestContext.getResource().getProperty("version");
+        if(version == null){
+            version = CommonConstants.SCHEMA_VERSION_DEFAULT_VALUE;
+        }
+
         if(requestContext.getSourceURL() != null) {
             url = requestContext.getSourceURL();
         }
@@ -162,7 +167,7 @@ public class SchemaProcessor {
             persistAssociations(path);
 
         } else {
-            updateSchemaPaths(commonLocation);
+            updateSchemaPaths(commonLocation, version);
 
             updateSchemaInternalsAndAssociations();
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
@@ -185,6 +190,10 @@ public class SchemaProcessor {
                                        boolean processIncludes,boolean disableSymlinkCreation) throws RegistryException {
         resourceName = resourcePath.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
         String url = requestContext.getSourceURL();
+        String version = requestContext.getResource().getProperty("version");
+        if(version == null){
+            version = CommonConstants.SCHEMA_VERSION_DEFAULT_VALUE;
+        }
         XmlSchemaCollection xmlSchemaCollection = new XmlSchemaCollection();
         xmlSchemaCollection.setBaseUri(url);
         baseURI = url;
@@ -204,7 +213,7 @@ public class SchemaProcessor {
             }
             throw new RegistryException(msg, re);
         }
-        updateSchemaPaths(commonLocation);
+        updateSchemaPaths(commonLocation,version);
 
         updateSchemaInternalsAndAssociations();
 
@@ -358,7 +367,7 @@ public class SchemaProcessor {
      * @param commonSchemaLocation the location to store schemas
      * @throws RegistryException if the operation failed.
      */
-    private void updateSchemaPaths(String commonSchemaLocation) throws RegistryException {
+    private void updateSchemaPaths(String commonSchemaLocation, String version) throws RegistryException {
         /* i.e. ROOT/commonSchemaLocation */
         if (!systemRegistry.resourceExists(commonSchemaLocation)) {
             systemRegistry.put(commonSchemaLocation, systemRegistry.newCollection());
@@ -371,7 +380,7 @@ public class SchemaProcessor {
             }
             String schemaLocation = (commonSchemaLocation +
                     CommonUtil.derivePathFragmentFromNamespace(targetNamespace)).replace("//", "/");
-            schemaLocation += schemaInfo.getProposedResourceName();
+            schemaLocation += version +"/"+ schemaInfo.getProposedResourceName();
             schemaInfo.setProposedRegistryURL(schemaLocation);
         }
     }
@@ -454,7 +463,7 @@ public class SchemaProcessor {
     public String saveSchemasToRegistry(RequestContext requestContext, String commonSchemaLocation,
                                         String symlinkLocation, Resource metaResource,boolean disableSymlinkCreation)
             throws RegistryException {
-        updateSchemaPaths(commonSchemaLocation);
+        updateSchemaPaths(commonSchemaLocation,requestContext.getResource().getProperty("version"));
         updateSchemaInternalsAndAssociations();
         String path = saveSchemaToRegistry(requestContext, null, symlinkLocation, metaResource,disableSymlinkCreation);
         persistAssociations(path);

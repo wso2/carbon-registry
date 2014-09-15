@@ -19,24 +19,29 @@ package org.wso2.carbon.registry.extensions.utils;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.core.Association;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.api.Collection;
+import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.pagination.PaginationContext;
+import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.ServiceDocumentsBean;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -109,6 +114,28 @@ public class CommonUtil {
         if (overview != null) {
             if (overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")) != null) {
                 return overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
+            }
+        }
+        return "";
+    }
+    /**
+     * Read service version that is input from the user. 
+     * 
+     * @param element
+     * @return
+     */
+    public static String getServiceVersion(OMElement element) {
+        OMElement overview = element.getFirstChildWithName(new QName("Overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName("Version")) != null) {
+                return overview.getFirstChildWithName(new QName("Version")).getText();
+            }
+        }
+
+        overview = element.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+        if (overview != null) {
+            if (overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")) != null) {
+                return overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
             }
         }
         return "";
@@ -422,6 +449,9 @@ public class CommonUtil {
             }
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
+            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
+            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
+            registry.associateAspect(resource.getId(),defaultLifeCycle);
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -436,6 +466,30 @@ public class CommonUtil {
     private static String getChrootedServiceLocation(Registry registry, RegistryContext registryContext) {
         return  RegistryUtils.getAbsolutePath(registryContext,
                 registry.getRegistryContext().getServicePath());  // service path contains the base
+    }
+
+    private static String getDefaultServiceLifecycle(Registry registry) throws RegistryException {
+        String[] rxtList = null;
+        String lifecycle = "";
+
+            rxtList = MediaTypesUtils.getResultPaths(registry, CommonConstants.RXT_MEDIA_TYPE);
+
+            for (String rxtcontent : rxtList) {
+                OMElement configElement = null;
+                try {
+                    configElement = AXIOMUtil.stringToOM(rxtcontent);
+                } catch (XMLStreamException e) {
+                    throw new RegistryException("Error while serializing to OM content from String", e);
+                }
+                if ("service".equals(configElement.getAttributeValue(new QName("shortName")))) {
+                    OMElement lifecycleElement = configElement.getFirstChildWithName(
+                            new QName("lifecycle"));
+                    if (lifecycleElement != null) {
+                        lifecycle = lifecycleElement.getText();
+                    }
+                }
+            }
+        return lifecycle;
     }
 
 /*
