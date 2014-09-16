@@ -69,6 +69,7 @@ public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
             indexedDocument.setFields(fields);
         } catch (XMLStreamException e) {
             log.error("Unable to parse XML", e);
+            throw new RegistryException(e.getMessage(),e);
         }
 
         return indexedDocument;

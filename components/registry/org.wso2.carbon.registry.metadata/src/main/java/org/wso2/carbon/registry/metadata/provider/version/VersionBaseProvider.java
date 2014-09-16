@@ -26,6 +26,9 @@ import org.wso2.carbon.registry.metadata.version.VersionBase;
 
 public interface VersionBaseProvider {
 
+    public String getMediaType();
+
+
     /**
      * Persists the metadata information in to the repository layer
      *

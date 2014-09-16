@@ -30,13 +30,13 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.Base1;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.BaseProvider;
 import org.wso2.carbon.registry.metadata.provider.BaseProvider;
+import org.wso2.carbon.registry.metadata.provider.version.VersionBaseProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,24 +48,28 @@ public abstract class VersionBase {
     protected String name;
     protected String uuid;
     protected String mediaType;
-    protected String versionMediaType;
     protected Map<String, List<String>> propertyBag;
     protected Map<String, List<String>> attributeMap;
     protected Registry registry;
     private static final Log log = LogFactory.getLog(VersionBase.class);
     protected StateMachineLifecycle lifecycle;
-    protected boolean isVersionType;
-
+    protected final String rootStoragePath;
+    private VersionBaseProvider provider;
     private String baseUUID;
     private String baseName;
 
     public VersionBase(String mediaType, String name, Registry registry) throws MetadataException {
         this.mediaType = mediaType;
+        this.provider = Util.getVersionBaseProvider(mediaType);
         this.name = name;
         this.uuid = Util.getNewUUID();
         this.registry = registry;
         this.propertyBag = new HashMap<String, List<String>>();
         this.attributeMap = new HashMap<String, List<String>>();
+        this.rootStoragePath = Constants.BASE_STORAGE_PATH
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + "/v"
+                + mediaType.split(";")[1].split("=")[1];
     }
 
     public VersionBase(String mediaType, String name, String uuid, String baseName,String baseUUID, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap, Registry registry) throws MetadataException {
@@ -77,6 +81,10 @@ public abstract class VersionBase {
         this.propertyBag = propertyBag;
         this.attributeMap=attributeMap;
         this.registry = registry;
+        this.rootStoragePath = Constants.BASE_STORAGE_PATH
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + "/v"
+                + mediaType.split(";")[1].split("=")[1];
     }
 
     /**
@@ -115,6 +123,11 @@ public abstract class VersionBase {
 
     public String getBaseName() {
         return baseName;
+    }
+
+
+    public String getRootStoragePath() {
+        return rootStoragePath;
     }
 
     /**

@@ -22,15 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.Base1;
-import org.wso2.carbon.registry.metadata.Base1;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
+import org.wso2.carbon.registry.metadata.provider.BaseProvider;
 import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.version.VersionBase;
-import org.wso2.carbon.registry.metadata.version.VersionV1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,25 +42,21 @@ public class HTTPServiceV1 extends Base {
 
 //  Variables defined for the internal implementation
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
-    private static String mediaType = "vnd.wso2.service/http+xml;version=1";
-    private static String versionMediaType = "vnd.wso2.version/service.http+xml;version=1";
-    private ServiceVersionV1 baseVersion = null;
 
-    private static String ROOT_STORAGE_PATH = new StringBuilder(Constants.BASE_STORAGE_PATH)
-            .append(mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/"))
-            .append("/v")
-            .append(mediaType.split(";")[1].split("=")[1]).toString();
+    private static final String mediaType = "vnd.wso2.service/http+xml;version=1";
+
+    private ServiceVersionV1 baseVersion = null;
 
 
     public HTTPServiceV1(Registry registry, String name, VersionBase version) throws MetadataException {
-        super(mediaType,versionMediaType,name, false, registry);
+        super(mediaType, name, registry);
         version.setBaseUUID(uuid);
         version.setBaseName(name);
         baseVersion = (ServiceVersionV1) version;
     }
 
     public HTTPServiceV1(Registry registry, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
-        super(mediaType,versionMediaType,name, uuid, false, propertyBag,attributeMap, registry);
+        super(mediaType,name, uuid, propertyBag,attributeMap, registry);
     }
 
     public ServiceVersionV1 newVersion(String key) throws MetadataException {
@@ -86,17 +80,17 @@ public class HTTPServiceV1 extends Base {
     public static void add(Registry registry, Base metadata) throws MetadataException {
         if (((HTTPServiceV1) metadata).baseVersion == null) {
             add(registry, metadata,
-                    generateMetadataStoragePath(metadata.getName(), ROOT_STORAGE_PATH));
+                    generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
         } else {
             add(registry, metadata,
-                    generateMetadataStoragePath(metadata.getName(), ROOT_STORAGE_PATH));
+                    generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
             ServiceVersionV1.add(registry, ((HTTPServiceV1) metadata).baseVersion);
         }
     }
 
     public static void update(Registry registry, Base metadata) throws MetadataException {
         update(registry, metadata,
-                generateMetadataStoragePath(metadata.getName(), ROOT_STORAGE_PATH));
+                generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
     }
 
     /**

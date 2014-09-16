@@ -51,28 +51,39 @@ public abstract class Base {
     protected Registry registry;
     private static final Log log = LogFactory.getLog(Base.class);
     protected StateMachineLifecycle lifecycle;
-//    protected boolean isVersionType;
+    private BaseProvider provider;
+    protected final String rootStoragePath;
 
-    public Base(String mediaType,String versionMediaType, String name, boolean isVersionType, Registry registry) throws MetadataException {
-        this.mediaType = mediaType;
-        this.versionMediaType = versionMediaType;
+    public Base(String mediaType, String name, Registry registry) throws MetadataException {
+        this.provider = Util.getBaseProvider(mediaType);
+        this.versionMediaType = provider.getVersionMediaType();
+        this.mediaType = provider.getMediaType();
         this.name = name;
         this.uuid = Util.getNewUUID();
-//        this.isVersionType = isVersionType;
         this.registry = registry;
         this.propertyBag = new HashMap<String, List<String>>();
         this.attributeMap = new HashMap<String, List<String>>();
+        this.rootStoragePath = Constants.BASE_STORAGE_PATH
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + "/v"
+                + mediaType.split(";")[1].split("=")[1];
+
     }
 
-    public Base(String mediaType, String versionMediaType, String name, String uuid, boolean isVersionType, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap, Registry registry) throws MetadataException {
-        this.mediaType = mediaType;
-        this.versionMediaType = versionMediaType;
+    public Base(String mediaType, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap, Registry registry) throws MetadataException {
+        this.provider = Util.getBaseProvider(mediaType);
+        this.versionMediaType = provider.getVersionMediaType();
+        this.mediaType = provider.getMediaType();
         this.name = name;
         this.uuid = uuid;
         this.propertyBag = propertyBag;
         this.attributeMap=attributeMap;
-//        this.isVersionType = isVersionType;
         this.registry = registry;
+        this.rootStoragePath = Constants.BASE_STORAGE_PATH
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + "/v"
+                + mediaType.split(";")[1].split("=")[1];
+
     }
 
     /**
@@ -90,10 +101,11 @@ public abstract class Base {
     }
 
     /**
-     * @return media type of the meta data instance that uniquely identifies the type of this instance
+     *
+     * @return mediaType of the metadata type
      */
-    public String getMediaType() throws MetadataException{
-       return mediaType;
+    public String getMediaType() {
+        return mediaType;
     }
 
     /**
@@ -103,14 +115,13 @@ public abstract class Base {
        return versionMediaType;
     }
 
-
-//    /**
-//     * @return true if the instance is a version type.
-//     * false if the instance type is NOT a version type but any meta data super/sub type
-//     */
-//    public boolean isVersionType(){
-//        return isVersionType;
-//    }
+    /**
+     *
+     * @return Root registry storage absolute path for this metadata type
+     */
+    public String getRootStoragePath() {
+        return rootStoragePath;
+    }
 
     /**
      * This is the property bag
@@ -187,6 +198,7 @@ public abstract class Base {
             Resource resource = Util.getBaseProvider(metadata.getMediaType()).buildResource(metadata, registry.newResource());
             putResource(registry, path, resource);
         } catch (RegistryException e) {
+            log.error(e.getMessage());
             throw new MetadataException(e.getMessage(), e);
         }
     }
@@ -195,8 +207,6 @@ public abstract class Base {
         Resource resource = Util.getBaseProvider(metadata.getMediaType()).buildResource(metadata, getResource(registry, metadata.getUUID()));
         putResource(registry, path, resource);
     }
-
-
 
     /**
      * @return all meta data instances and their children that denotes from this particular media type
@@ -216,6 +226,7 @@ public abstract class Base {
                 }
             }
         } catch (RegistryException e) {
+            log.error(e.getMessage());
             throw new MetadataException(e.getMessage(), e);
         }
         return baseResult;
@@ -243,6 +254,7 @@ public abstract class Base {
                 }
             }
         } catch (RegistryException e) {
+            log.error(e.getMessage());
             throw new MetadataException(e.getMessage(), e);
         }
         return baseResult;

@@ -33,6 +33,7 @@ import org.wso2.carbon.registry.metadata.provider.version.VersionBaseProvider;
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -117,16 +118,18 @@ public class Util {
             OMElement configElement = builder.getDocumentElement();
             OMElement metadataProviders = configElement.getFirstChildWithName(
                     new QName("metadataProviders")).getFirstChildWithName(new QName("baseProviders"));
-            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
+            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("provider");
             while (itr.hasNext()) {
                 OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
-                String classificationUri = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
+                String mediaType = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
+                String versionMediaType = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_VERSION_MEDIA_TYPE));
+
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class<BaseProvider> classObj = (Class<BaseProvider>) Class.forName(providerClass, true, loader);
 
-                if (!providerMap.containsKey(classificationUri)) {
-                    providerMap.put(classificationUri, classObj.newInstance());
+                if (!providerMap.containsKey(mediaType)) {
+                    providerMap.put(mediaType, (BaseProvider)classObj.getConstructors()[0].newInstance(mediaType, versionMediaType));
                 } else {
 //                    log.error("Classification URI already exists")
                 }
@@ -152,16 +155,16 @@ public class Util {
             OMElement configElement = builder.getDocumentElement();
             OMElement metadataProviders = configElement.getFirstChildWithName(
                     new QName("metadataProviders")).getFirstChildWithName(new QName("versionBaseProviders"));
-            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("metadataProvider");
+            Iterator<OMElement> itr = metadataProviders.getChildrenWithLocalName("provider");
             while (itr.hasNext()) {
                 OMElement metadataProvider = itr.next();
                 String providerClass = metadataProvider.getAttributeValue(new QName("class")).trim();
-                String classificationUri = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
+                String mediaType = metadataProvider.getAttributeValue(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 Class<VersionBaseProvider> classObj = (Class<VersionBaseProvider>) Class.forName(providerClass, true, loader);
 
-                if (!providerMap.containsKey(classificationUri)) {
-                    providerMap.put(classificationUri, classObj.newInstance());
+                if (!providerMap.containsKey(mediaType)) {
+                    providerMap.put(mediaType, (VersionBaseProvider) classObj.getConstructors()[0].newInstance(mediaType));
                 } else {
 //                    log.error("Classification URI already exists")
                 }
