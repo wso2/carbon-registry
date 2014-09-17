@@ -45,8 +45,6 @@ public class Constants {
     public static final String ATTRIBUTE_VERSION_MEDIA_TYPE = "versionMediaType";
 
 
-
-
-
+    public static final String ENTRY_KEY = "entry";
 }
 
