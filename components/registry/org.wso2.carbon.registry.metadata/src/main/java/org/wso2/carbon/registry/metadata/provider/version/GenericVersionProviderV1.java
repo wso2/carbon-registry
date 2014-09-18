@@ -29,8 +29,8 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
-import org.wso2.carbon.registry.metadata.version.VersionBase;
+import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
+import org.wso2.carbon.registry.metadata.VersionBase;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -121,18 +121,10 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
         OMElement baseUUID = factory.createOMElement(new QName(Constants.ATTRIBUTE_BASE_UUID));
         baseUUID.setText(serviceV1.getBaseUUID());
 
-        OMElement mediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_MEDIA_TYPE));
-        mediaType.setText(serviceV1.getMediaType());
-
-        OMElement endpointUrl = factory.createOMElement(new QName(ServiceVersionV1.ENDPOINT_URL));
-        endpointUrl.setText(serviceV1.getEndpointUrl());
-
         element.addChild(uuid);
         element.addChild(name);
         element.addChild(baseName);
         element.addChild(baseUUID);
-        element.addChild(mediaType);
-        element.addChild(endpointUrl);
     }
 
     private void createPropertiesContent(ServiceVersionV1 serviceV1, OMElement element) {

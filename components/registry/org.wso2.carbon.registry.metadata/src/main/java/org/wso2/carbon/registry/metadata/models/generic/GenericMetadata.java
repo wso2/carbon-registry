@@ -16,7 +16,7 @@
  *  under the License.
  *
  */
-package org.wso2.carbon.registry.metadata.service;
+package org.wso2.carbon.registry.metadata.models.generic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,25 +26,24 @@ import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.VersionBase;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HTTPServiceV1 extends Base {
+public class GenericMetadata extends Base {
 
-//  Type specific attributes goes here
-    public static final String OWNER = "owner";
 
 //  Variables defined for the internal implementation
-    private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
+    private static final Log log = LogFactory.getLog(GenericMetadata.class);
 
-    private static final String mediaType = "vnd.wso2.service/http+xml;version=1";
+    private static final String mediaType = "vnd.wso2.generic/+xml;version=1";
 
-    public HTTPServiceV1(Registry registry, String name, VersionBase version) throws MetadataException {
+    private ServiceVersionV1 baseVersion = null;
+
+    public GenericMetadata(Registry registry, String name, VersionBase version) throws MetadataException {
         super(mediaType, name, registry,version);
     }
 
-    public HTTPServiceV1(Registry registry, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
+    public GenericMetadata(Registry registry, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
         super(mediaType,name, uuid, propertyBag,attributeMap, registry);
     }
 
@@ -55,25 +54,15 @@ public class HTTPServiceV1 extends Base {
         return v;
     }
 
-    public void setOwner(String owner) {
-        List<String> value = new ArrayList<String>();
-        value.add(owner);
-        attributeMap.put(OWNER, value);
-    }
-
-    public String getOwner() {
-        List<String> value = attributeMap.get(OWNER);
-        return value != null ? value.get(0) : null;
-    }
 
     public static void add(Registry registry, Base metadata) throws MetadataException {
-        if (((HTTPServiceV1) metadata).baseVersion == null) {
+        if (((GenericMetadata) metadata).baseVersion == null) {
             add(registry, metadata,
                     generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
         } else {
             add(registry, metadata,
                     generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
-            ServiceVersionV1.add(registry, ((HTTPServiceV1) metadata).baseVersion);
+            ServiceVersionV1.add(registry, ((GenericMetadata) metadata).baseVersion);
         }
     }
 
@@ -85,9 +74,9 @@ public class HTTPServiceV1 extends Base {
     /**
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    public static HTTPServiceV1[] getAll(Registry registry) throws MetadataException {
+    public static GenericMetadata[] getAll(Registry registry) throws MetadataException {
         List<Base> list = getAll(registry, mediaType);
-        return list.toArray(new HTTPServiceV1[list.size()]);
+        return list.toArray(new GenericMetadata[list.size()]);
     }
 
     /**
@@ -96,9 +85,9 @@ public class HTTPServiceV1 extends Base {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static HTTPServiceV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
+    public static GenericMetadata[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
         List<Base> list = find(registry, criteria, mediaType);
-        return list.toArray(new HTTPServiceV1[list.size()]);
+        return list.toArray(new GenericMetadata[list.size()]);
     }
 
     /**
@@ -107,8 +96,8 @@ public class HTTPServiceV1 extends Base {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static HTTPServiceV1 get(Registry registry, String uuid) throws MetadataException {
-        return (HTTPServiceV1) get(registry, uuid, mediaType);
+    public static GenericMetadata get(Registry registry, String uuid) throws MetadataException {
+        return (GenericMetadata) get(registry, uuid, mediaType);
     }
 
     private static String generateMetadataStoragePath(String name, String rootStoragePath) {

@@ -24,8 +24,7 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
+import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 
 import java.util.HashMap;
 import java.util.Map;

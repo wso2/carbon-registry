@@ -30,7 +30,7 @@ import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.generic.GenericMetadata;
+import org.wso2.carbon.registry.metadata.models.generic.GenericMetadata;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -42,15 +42,12 @@ public class GenericMetadataProviderV1 implements BaseProvider {
 
     private final String mediaType;
     private final String versionMediaType;
-    private final String rootStoragePath;
+
 
     public GenericMetadataProviderV1(String mediaType, String versionMediaType) {
         this.mediaType = mediaType;
         this.versionMediaType = versionMediaType;
-        rootStoragePath = new StringBuilder(Constants.BASE_STORAGE_PATH)
-                .append(mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/"))
-                .append("/v")
-                .append(mediaType.split(";")[1].split("=")[1]).toString();
+
     }
 
     public String getVersionMediaType() {

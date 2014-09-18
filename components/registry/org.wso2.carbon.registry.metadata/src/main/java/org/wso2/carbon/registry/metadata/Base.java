@@ -32,8 +32,7 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
 import org.wso2.carbon.registry.metadata.provider.BaseProvider;
-import org.wso2.carbon.registry.metadata.version.ServiceVersionV1;
-import org.wso2.carbon.registry.metadata.version.VersionBase;
+import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,8 +52,9 @@ public abstract class Base {
     protected StateMachineLifecycle lifecycle;
     private BaseProvider provider;
     protected final String rootStoragePath;
+    protected VersionBase baseVersion;
 
-    public Base(String mediaType, String name, Registry registry) throws MetadataException {
+    public Base(String mediaType, String name, Registry registry,VersionBase version) throws MetadataException {
         this.provider = Util.getBaseProvider(mediaType);
         this.versionMediaType = provider.getVersionMediaType();
         this.mediaType = provider.getMediaType();
@@ -64,9 +64,12 @@ public abstract class Base {
         this.propertyBag = new HashMap<String, List<String>>();
         this.attributeMap = new HashMap<String, List<String>>();
         this.rootStoragePath = Constants.BASE_STORAGE_PATH
-                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/").replaceAll("//","/")
                 + "/v"
                 + mediaType.split(";")[1].split("=")[1];
+        version.setBaseUUID(uuid);
+        version.setBaseName(name);
+        baseVersion = version;
 
     }
 
@@ -80,7 +83,7 @@ public abstract class Base {
         this.attributeMap=attributeMap;
         this.registry = registry;
         this.rootStoragePath = Constants.BASE_STORAGE_PATH
-                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/").replaceAll("//","/")
                 + "/v"
                 + mediaType.split(";")[1].split("=")[1];
 

@@ -16,14 +16,14 @@
  *  under the License.
  *
  */
-package org.wso2.carbon.registry.metadata.version;
+package org.wso2.carbon.registry.metadata.models.version;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.metadata.VersionBase;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

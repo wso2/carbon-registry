@@ -17,25 +17,19 @@
  *
  */
 
-package org.wso2.carbon.registry.metadata.version;
+package org.wso2.carbon.registry.metadata;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.api.Association;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.Constants;
-import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
-import org.wso2.carbon.registry.metadata.provider.BaseProvider;
-import org.wso2.carbon.registry.metadata.provider.BaseProvider;
 import org.wso2.carbon.registry.metadata.provider.version.VersionBaseProvider;
 
 import java.util.ArrayList;
@@ -67,7 +61,7 @@ public abstract class VersionBase {
         this.propertyBag = new HashMap<String, List<String>>();
         this.attributeMap = new HashMap<String, List<String>>();
         this.rootStoragePath = Constants.BASE_STORAGE_PATH
-                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/").replaceAll("//","/")
                 + "/v"
                 + mediaType.split(";")[1].split("=")[1];
     }
@@ -82,7 +76,7 @@ public abstract class VersionBase {
         this.attributeMap=attributeMap;
         this.registry = registry;
         this.rootStoragePath = Constants.BASE_STORAGE_PATH
-                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/")
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/").replaceAll("//","/")
                 + "/v"
                 + mediaType.split(";")[1].split("=")[1];
     }

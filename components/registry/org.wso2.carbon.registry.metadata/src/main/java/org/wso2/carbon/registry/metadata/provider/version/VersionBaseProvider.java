@@ -20,14 +20,12 @@ package org.wso2.carbon.registry.metadata.provider.version;
 
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.version.VersionBase;
+import org.wso2.carbon.registry.metadata.VersionBase;
 
 public interface VersionBaseProvider {
 
     public String getMediaType();
-
 
     /**
      * Persists the metadata information in to the repository layer

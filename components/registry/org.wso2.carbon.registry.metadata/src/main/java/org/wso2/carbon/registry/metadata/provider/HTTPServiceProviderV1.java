@@ -42,15 +42,10 @@ public class HTTPServiceProviderV1 implements BaseProvider {
 
     private final String mediaType;
     private final String versionMediaType;
-    private final String rootStoragePath;
 
     public HTTPServiceProviderV1(String mediaType, String versionMediaType) {
         this.mediaType = mediaType;
         this.versionMediaType = versionMediaType;
-        rootStoragePath = new StringBuilder(Constants.BASE_STORAGE_PATH)
-                .append(mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/"))
-                .append("/v")
-                .append(mediaType.split(";")[1].split("=")[1]).toString();
     }
 
     public String getVersionMediaType() {
