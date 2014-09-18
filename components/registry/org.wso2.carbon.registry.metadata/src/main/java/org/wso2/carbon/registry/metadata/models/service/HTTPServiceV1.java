@@ -78,7 +78,6 @@ public class HTTPServiceV1 extends Base {
         setAttribute(KEY_REPOSITORY_TYPE,type);
     }
 
-
     public String getOwner() {
        return getSingleValuedAttribute(KEY_OWNER);
     }
@@ -93,18 +92,6 @@ public class HTTPServiceV1 extends Base {
 
     public String getKeyRepositoryType() {
         return getSingleValuedAttribute(KEY_REPOSITORY_TYPE);
-    }
-
-    private void setAttribute(String key,String val){
-        List<String> value = new ArrayList<String>();
-        value.add(val);
-        attributeMap.put(key,value);
-    }
-
-
-    private String getSingleValuedAttribute(String key){
-        List<String> value = attributeMap.get(key);
-        return value != null ? value.get(0) : null;
     }
 
     public static void add(Registry registry, Base metadata) throws MetadataException {
@@ -154,6 +141,17 @@ public class HTTPServiceV1 extends Base {
 
     private static String generateMetadataStoragePath(String name, String rootStoragePath) {
         return rootStoragePath + "/" + name;
+    }
+
+    private void setAttribute(String key,String val){
+        List<String> value = new ArrayList<String>();
+        value.add(val);
+        attributeMap.put(key,value);
+    }
+
+    private String getSingleValuedAttribute(String key){
+        List<String> value = attributeMap.get(key);
+        return value != null ? value.get(0) : null;
     }
 
 }
