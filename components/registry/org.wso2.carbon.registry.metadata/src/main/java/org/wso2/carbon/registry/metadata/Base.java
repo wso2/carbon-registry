@@ -54,6 +54,36 @@ public abstract class Base {
     protected final String rootStoragePath;
     protected VersionBase baseVersion;
 
+    /**
+     * This is to create a Base type without a version
+     * @param mediaType media type of the sub type
+     * @param name  meta data name
+     * @param registry
+     * @throws MetadataException
+     */
+    public Base(String mediaType, String name, Registry registry) throws MetadataException {
+        this.provider = Util.getBaseProvider(mediaType);
+        this.versionMediaType = provider.getVersionMediaType();
+        this.mediaType = provider.getMediaType();
+        this.name = name;
+        this.uuid = Util.getNewUUID();
+        this.registry = registry;
+        this.propertyBag = new HashMap<String, List<String>>();
+        this.attributeMap = new HashMap<String, List<String>>();
+        this.rootStoragePath = Constants.BASE_STORAGE_PATH
+                + mediaType.split(";")[0].replaceAll("\\+", ".").replaceAll("\\.", "/").replaceAll("//","/")
+                + "/v"
+                + mediaType.split(";")[1].split("=")[1];
+    }
+
+    /**
+     * This is to define meta model with a initial version
+     * @param mediaType
+     * @param name
+     * @param registry
+     * @param version  initial version
+     * @throws MetadataException
+     */
     public Base(String mediaType, String name, Registry registry,VersionBase version) throws MetadataException {
         this.provider = Util.getBaseProvider(mediaType);
         this.versionMediaType = provider.getVersionMediaType();

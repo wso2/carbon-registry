@@ -34,10 +34,7 @@ import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Util {
@@ -214,6 +211,5 @@ public class Util {
     public static void setAttributeSearchService(AttributeSearchService attributeSearchService) {
         Util.attributeSearchService = attributeSearchService;
     }
-
 
 }

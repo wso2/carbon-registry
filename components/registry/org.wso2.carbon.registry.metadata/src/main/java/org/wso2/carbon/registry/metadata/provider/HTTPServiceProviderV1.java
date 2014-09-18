@@ -30,7 +30,7 @@ import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
+import org.wso2.carbon.registry.metadata.models.service.HTTPServiceV1;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -126,15 +126,27 @@ public class HTTPServiceProviderV1 implements BaseProvider {
         OMElement versionMediaType = factory.createOMElement(new QName(Constants.ATTRIBUTE_VERSION_MEDIA_TYPE));
         versionMediaType.setText(serviceV1.getVersionMediaType());
 
-        OMElement owner = factory.createOMElement(new QName(HTTPServiceV1.OWNER));
+        OMElement owner = factory.createOMElement(new QName(HTTPServiceV1.KEY_OWNER));
         owner.setText(serviceV1.getOwner());
+
+        OMElement desc = factory.createOMElement(new QName(HTTPServiceV1.KEY_DESCRIPTION));
+        desc.setText(serviceV1.getDescription());
+
+        OMElement type = factory.createOMElement(new QName(HTTPServiceV1.KEY_TYPE));
+        type.setText(serviceV1.getType());
+
+        OMElement repo = factory.createOMElement(new QName(HTTPServiceV1.KEY_REPOSITORY_TYPE));
+        repo.setText(serviceV1.getType());
+
 
         element.addChild(uuid);
         element.addChild(name);
         element.addChild(mediaType);
         element.addChild(versionMediaType);
         element.addChild(owner);
-
+        element.addChild(desc);
+        element.addChild(type);
+        element.addChild(owner);
 
     }
 

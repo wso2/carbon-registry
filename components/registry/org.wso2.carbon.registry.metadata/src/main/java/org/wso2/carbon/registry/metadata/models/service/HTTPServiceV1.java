@@ -33,12 +33,19 @@ import java.util.Map;
 public class HTTPServiceV1 extends Base {
 
 //  Type specific attributes goes here
-    public static final String OWNER = "owner";
+    public static final String KEY_OWNER = "owner";
+    public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_TYPE = "type";
+    public static final String KEY_REPOSITORY_TYPE = "repositoryType";
 
-//  Variables defined for the internal implementation
+
+    //  Variables defined for the internal implementation
     private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
-
     private static final String mediaType = "vnd.wso2.service/http+xml;version=1";
+
+    public HTTPServiceV1(Registry registry, String name) throws MetadataException {
+        super(mediaType, name, registry);
+    }
 
     public HTTPServiceV1(Registry registry, String name, VersionBase version) throws MetadataException {
         super(mediaType, name, registry,version);
@@ -56,13 +63,47 @@ public class HTTPServiceV1 extends Base {
     }
 
     public void setOwner(String owner) {
-        List<String> value = new ArrayList<String>();
-        value.add(owner);
-        attributeMap.put(OWNER, value);
+       setAttribute(KEY_OWNER,owner);
     }
 
+    public void setDescription(String decs) {
+        setAttribute(KEY_DESCRIPTION,decs);
+    }
+
+    public void setType(String type) {
+        setAttribute(KEY_TYPE,type);
+    }
+
+    public void setKeyRepositoryType(String type) {
+        setAttribute(KEY_REPOSITORY_TYPE,type);
+    }
+
+
     public String getOwner() {
-        List<String> value = attributeMap.get(OWNER);
+       return getSingleValuedAttribute(KEY_OWNER);
+    }
+
+    public String getDescription() {
+        return getSingleValuedAttribute(KEY_DESCRIPTION);
+    }
+
+    public String getType() {
+        return getSingleValuedAttribute(KEY_TYPE);
+    }
+
+    public String getKeyRepositoryType() {
+        return getSingleValuedAttribute(KEY_REPOSITORY_TYPE);
+    }
+
+    private void setAttribute(String key,String val){
+        List<String> value = new ArrayList<String>();
+        value.add(val);
+        attributeMap.put(key,value);
+    }
+
+
+    private String getSingleValuedAttribute(String key){
+        List<String> value = attributeMap.get(key);
         return value != null ? value.get(0) : null;
     }
 

@@ -23,7 +23,7 @@ package org.wso2.carbon.metadata.test;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
-import org.wso2.carbon.registry.metadata.service.HTTPServiceV1;
+import org.wso2.carbon.registry.metadata.models.service.HTTPServiceV1;
 import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class JAXRSV1Client {
 
 // Search services
         Map<String, String> criteria = new HashMap<String, String>();
-        criteria.put(HTTPServiceV1.OWNER, "newOwner");
+        criteria.put(HTTPServiceV1.KEY_OWNER, "newOwner");
         HTTPServiceV1[] results = HTTPServiceV1.find(registry, criteria);
 
 //  Create new Version of a service
