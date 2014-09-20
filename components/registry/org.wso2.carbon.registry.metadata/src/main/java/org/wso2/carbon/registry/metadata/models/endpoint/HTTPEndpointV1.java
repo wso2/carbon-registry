@@ -16,92 +16,64 @@
  *  under the License.
  *
  */
-package org.wso2.carbon.registry.metadata.models.service;
+package org.wso2.carbon.registry.metadata.models.endpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.Base;
-import org.wso2.carbon.registry.metadata.exception.MetadataException;
-import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.VersionBase;
+import org.wso2.carbon.registry.metadata.exception.MetadataException;
+import org.wso2.carbon.registry.metadata.models.version.EndpointVersionV1;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HTTPServiceV1 extends Base {
+public class HTTPEndpointV1 extends Base {
 
 //  Type specific attributes goes here
-    public static final String KEY_OWNER = "owner";
-    public static final String KEY_DESCRIPTION = "description";
-    public static final String KEY_TYPE = "type";
-    public static final String KEY_REPOSITORY_TYPE = "repositoryType";
-
+    public static final String KEY_URL = "url";
 
     //  Variables defined for the internal implementation
-    private static final Log log = LogFactory.getLog(HTTPServiceV1.class);
-    private static final String mediaType = "vnd.wso2.service/http+xml;version=1";
+    private static final Log log = LogFactory.getLog(HTTPEndpointV1.class);
+    private static final String mediaType = "vnd.wso2.endpoint/http+xml;version=1";
 
-    public HTTPServiceV1(Registry registry, String name) throws MetadataException {
+    public HTTPEndpointV1(Registry registry, String name) throws MetadataException {
         super(mediaType, name, registry);
     }
 
-    public HTTPServiceV1(Registry registry, String name, VersionBase version) throws MetadataException {
+    public HTTPEndpointV1(Registry registry, String name, VersionBase version) throws MetadataException {
         super(mediaType, name, registry,version);
     }
 
-    public HTTPServiceV1(Registry registry, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
+    public HTTPEndpointV1(Registry registry, String name, String uuid, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
         super(mediaType,name, uuid, propertyBag,attributeMap, registry);
     }
 
-    public ServiceVersionV1 newVersion(String key) throws MetadataException {
-        ServiceVersionV1 v = new ServiceVersionV1(registry, key);
+    public EndpointVersionV1 newVersion(String key) throws MetadataException {
+        EndpointVersionV1 v = new EndpointVersionV1(registry, key);
         v.setBaseUUID(uuid);
         v.setBaseName(name);
         return v;
     }
 
-    public void setOwner(String owner) {
-       setAttribute(KEY_OWNER,owner);
+    public void setUrl(String url) {
+        setAttribute(KEY_URL,url);
     }
 
-    public void setDescription(String decs) {
-        setAttribute(KEY_DESCRIPTION,decs);
-    }
-
-    public void setType(String type) {
-        setAttribute(KEY_TYPE,type);
-    }
-
-    public void setRepositoryType(String type) {
-        setAttribute(KEY_REPOSITORY_TYPE,type);
-    }
-
-    public String getOwner() {
-       return getSingleValuedAttribute(KEY_OWNER);
-    }
-
-    public String getDescription() {
-        return getSingleValuedAttribute(KEY_DESCRIPTION);
-    }
-
-    public String getType() {
-        return getSingleValuedAttribute(KEY_TYPE);
-    }
-
-    public String getRepositoryType() {
-        return getSingleValuedAttribute(KEY_REPOSITORY_TYPE);
+    public String getUrl() {
+       return getSingleValuedAttribute(KEY_URL);
     }
 
     public static void add(Registry registry, Base metadata) throws MetadataException {
-        if (((HTTPServiceV1) metadata).baseVersion == null) {
+        if (((HTTPEndpointV1) metadata).baseVersion == null) {
             add(registry, metadata,
                     generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
         } else {
             add(registry, metadata,
                     generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
-            ServiceVersionV1.add(registry, ((HTTPServiceV1) metadata).baseVersion);
+            EndpointVersionV1.add(registry, ((HTTPEndpointV1) metadata).baseVersion);
         }
     }
 
@@ -113,9 +85,9 @@ public class HTTPServiceV1 extends Base {
     /**
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    public static HTTPServiceV1[] getAll(Registry registry) throws MetadataException {
+    public static HTTPEndpointV1[] getAll(Registry registry) throws MetadataException {
         List<Base> list = getAll(registry, mediaType);
-        return list.toArray(new HTTPServiceV1[list.size()]);
+        return list.toArray(new HTTPEndpointV1[list.size()]);
     }
 
     /**
@@ -124,9 +96,9 @@ public class HTTPServiceV1 extends Base {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static HTTPServiceV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
+    public static HTTPEndpointV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
         List<Base> list = find(registry, criteria, mediaType);
-        return list.toArray(new HTTPServiceV1[list.size()]);
+        return list.toArray(new HTTPEndpointV1[list.size()]);
     }
 
     /**
@@ -135,8 +107,8 @@ public class HTTPServiceV1 extends Base {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static HTTPServiceV1 get(Registry registry, String uuid) throws MetadataException {
-        return (HTTPServiceV1) get(registry, uuid, mediaType);
+    public static HTTPEndpointV1 get(Registry registry, String uuid) throws MetadataException {
+        return (HTTPEndpointV1) get(registry, uuid, mediaType);
     }
 
     private void setAttribute(String key,String val){

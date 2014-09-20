@@ -30,7 +30,7 @@ import java.util.Map;
 public class GenericVersionV1 extends VersionBase {
 
 //  Variables defined for internal implementation purpose
-    protected static String mediaType = "vnd.wso2.version/generic+xml;version=1";
+    private static String mediaType = "vnd.wso2.version/generic+xml;version=1";
     private static final Log log = LogFactory.getLog(GenericVersionV1.class);
 
     public GenericVersionV1(Registry registry, String name) throws MetadataException {
@@ -58,7 +58,7 @@ public class GenericVersionV1 extends VersionBase {
 
     public static void add(Registry registry, VersionBase metadata) throws MetadataException {
         add(registry, metadata, generateMetadataStoragePath(
-                ((GenericVersionV1) metadata).getBaseName()
+                 metadata.getBaseName()
                 , metadata.getName()
                 , metadata.getRootStoragePath()));
 
@@ -66,7 +66,7 @@ public class GenericVersionV1 extends VersionBase {
 
     public static void update(Registry registry, VersionBase metadata) throws MetadataException {
         update(registry, metadata, generateMetadataStoragePath(
-                ((GenericVersionV1) metadata).getBaseName()
+                 metadata.getBaseName()
                 , metadata.getName()
                 , metadata.getRootStoragePath()));
     }
@@ -101,9 +101,4 @@ public class GenericVersionV1 extends VersionBase {
         return (GenericVersionV1) get(registry, uuid, mediaType);
     }
 
-
-
-    private static String generateMetadataStoragePath(String name, String version, String rootStoragePath) {
-        return rootStoragePath + "/" + name + "/" + version;
-    }
 }

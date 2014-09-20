@@ -156,6 +156,9 @@ public abstract class VersionBase {
         return value != null ? propertyBag.get(key).get(0) : null;
     }
 
+    protected static String generateMetadataStoragePath(String name, String version, String rootStoragePath) {
+        return rootStoragePath + "/" + name + "/" + version;
+    }
 
     /**
      * Deletes the meta data instance that represents from the given UUID

@@ -28,10 +28,9 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.metadata.Constants;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
+import org.wso2.carbon.registry.metadata.models.version.GenericVersionV1;
 import org.wso2.carbon.registry.metadata.provider.util.Util;
-import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.VersionBase;
-
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.List;
@@ -58,8 +57,8 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
         OMElement attributes = Util.getAttributeRoot();
         OMElement properties = Util.getPropertyRoot();
 
-        createAttributesContent((ServiceVersionV1) metadata, attributes);
-        createPropertiesContent((ServiceVersionV1) metadata, properties);
+        createAttributesContent((GenericVersionV1) metadata, attributes);
+        createPropertiesContent((GenericVersionV1) metadata, properties);
         root.addChild(properties);
         root.addChild(attributes);
         try {
@@ -82,7 +81,7 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
     }
 
     @Override
-    public VersionBase get(Resource resource, Registry registry) throws MetadataException {
+    public GenericVersionV1 get(Resource resource, Registry registry) throws MetadataException {
         try {
             byte[] contentBytes = (byte[]) resource.getContent();
             OMElement root = Util.buildOMElement(contentBytes);
@@ -93,7 +92,7 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
         }
     }
 
-    private ServiceVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
+    private GenericVersionV1 getFilledBean(OMElement root, Map<String, List<String>> propBag, Registry registry) throws MetadataException {
         Map<String, List<String>> attributeMap;
         OMElement attributes = root.getFirstChildWithName(new QName(Constants.CONTENT_ATTRIBUTE_EL_ROOT_NAME));
         attributeMap = Util.getAttributeMap(attributes);
@@ -101,25 +100,25 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
         String name = attributeMap.get((Constants.ATTRIBUTE_METADATA_NAME)).get(0);
         String baseName = attributeMap.get(Constants.ATTRIBUTE_METADATA_BASE_NAME).get(0);
         String baseUUID = attributeMap.get(Constants.ATTRIBUTE_BASE_UUID).get(0);
-        return new ServiceVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
+        return new GenericVersionV1(registry, name, uuid, baseName, baseUUID, propBag, attributeMap);
     }
 
 
-    private void createAttributesContent(ServiceVersionV1 serviceV1, OMElement element) throws MetadataException {
+    private void createAttributesContent(GenericVersionV1 genericVersionV1, OMElement element) throws MetadataException {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
         OMElement uuid = factory.createOMElement(new QName(Constants.ATTRIBUTE_UUID));
-        uuid.setText(serviceV1.getUUID());
+        uuid.setText(genericVersionV1.getUUID());
 
         OMElement name = factory.createOMElement(new QName(Constants.ATTRIBUTE_METADATA_NAME));
-        name.setText(serviceV1.getName());
+        name.setText(genericVersionV1.getName());
 
         OMElement baseName = factory.createOMElement(new QName(Constants.ATTRIBUTE_METADATA_BASE_NAME));
-        baseName.setText(serviceV1.getBaseName());
+        baseName.setText(genericVersionV1.getBaseName());
 
         OMElement baseUUID = factory.createOMElement(new QName(Constants.ATTRIBUTE_BASE_UUID));
-        baseUUID.setText(serviceV1.getBaseUUID());
+        baseUUID.setText(genericVersionV1.getBaseUUID());
 
         element.addChild(uuid);
         element.addChild(name);
@@ -127,7 +126,7 @@ public class GenericVersionProviderV1 implements VersionBaseProvider {
         element.addChild(baseUUID);
     }
 
-    private void createPropertiesContent(ServiceVersionV1 serviceV1, OMElement element) {
+    private void createPropertiesContent(GenericVersionV1 serviceV1, OMElement element) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         for (Map.Entry<String, List<String>> entry : serviceV1.getPropertyBag().entrySet()) {
             if (entry.getValue() == null) continue;

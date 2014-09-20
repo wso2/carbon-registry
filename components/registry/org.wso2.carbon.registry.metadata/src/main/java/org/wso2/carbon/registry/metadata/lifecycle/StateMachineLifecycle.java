@@ -46,6 +46,24 @@ public class StateMachineLifecycle {
         this.uuid = uuid;
     }
 
+    public void checkItem(Map<String,String> map) throws MetadataException {
+        try {
+            registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, "itemClick",map);
+        } catch (RegistryException e) {
+            log.error("Error occurred while invoking check item for lifecycle "+ name);
+            throw new MetadataException(e.getMessage(), e);
+        }
+    }
+
+    public void vote(Map<String,String> map) throws MetadataException {
+        try {
+            registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, "voteClick",map);
+        } catch (RegistryException e) {
+            log.error("Error occurred while invoking approval vote for lifecycle "+ name);
+            throw new MetadataException(e.getMessage(), e);
+        }
+    }
+
     public void transfer(String action) throws MetadataException {
         try {
             registry.invokeAspect(Util.getMetadataPath(uuid, registry), this.name, action);

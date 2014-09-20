@@ -47,7 +47,6 @@ public class GenericMetadataProviderV1 implements BaseProvider {
     public GenericMetadataProviderV1(String mediaType, String versionMediaType) {
         this.mediaType = mediaType;
         this.versionMediaType = versionMediaType;
-
     }
 
     public String getVersionMediaType() {

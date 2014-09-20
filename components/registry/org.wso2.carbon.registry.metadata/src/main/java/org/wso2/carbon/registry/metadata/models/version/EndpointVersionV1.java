@@ -28,21 +28,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceVersionV1 extends VersionBase {
-
-//  Type specific attributes goes here
-
+public class EndpointVersionV1 extends VersionBase {
 
 //  Variables defined for internal implementation purpose
-    private static String mediaType = "vnd.wso2.version/service+xml;version=1";
-    private static final Log log = LogFactory.getLog(ServiceVersionV1.class);
+    private static String mediaType = "vnd.wso2.version/endpoint+xml;version=1";
+    private static final Log log = LogFactory.getLog(EndpointVersionV1.class);
 
-    public ServiceVersionV1(Registry registry, String name) throws MetadataException {
+    public EndpointVersionV1(Registry registry, String name) throws MetadataException {
         super(mediaType,name,registry);
         this.name = name;
     }
 
-    public ServiceVersionV1(Registry registry, String name, String uuid, String baseName, String baseUUID, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
+    public EndpointVersionV1(Registry registry, String name, String uuid, String baseName, String baseUUID, Map<String, List<String>> propertyBag, Map<String, List<String>> attributeMap) throws MetadataException {
         super(mediaType,name, uuid, baseName,baseUUID,propertyBag,attributeMap, registry);
     }
 
@@ -62,7 +59,7 @@ public class ServiceVersionV1 extends VersionBase {
 
     public static void add(Registry registry, VersionBase metadata) throws MetadataException {
         add(registry, metadata, generateMetadataStoragePath(
-                 metadata.getBaseName()
+                metadata.getBaseName()
                 , metadata.getName()
                 , metadata.getRootStoragePath()));
 
@@ -79,9 +76,9 @@ public class ServiceVersionV1 extends VersionBase {
     /**
      * @return all meta data instances and their children that denotes from this particular media type
      */
-    public static ServiceVersionV1[] getAll(Registry registry) throws MetadataException {
+    public static EndpointVersionV1[] getAll(Registry registry) throws MetadataException {
         List<VersionBase> list = getAll(registry, mediaType);
-        return list.toArray(new ServiceVersionV1[list.size()]);
+        return list.toArray(new EndpointVersionV1[list.size()]);
     }
 
     /**
@@ -90,9 +87,9 @@ public class ServiceVersionV1 extends VersionBase {
      * @param criteria Key value map that has search attributes
      * @return
      */
-    public static ServiceVersionV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
+    public static EndpointVersionV1[] find(Registry registry, Map<String, String> criteria) throws MetadataException {
         List<VersionBase> list = find(registry, criteria, mediaType);
-        return list.toArray(new ServiceVersionV1[list.size()]);
+        return list.toArray(new EndpointVersionV1[list.size()]);
     }
 
     /**
@@ -101,8 +98,19 @@ public class ServiceVersionV1 extends VersionBase {
      * @param uuid - UUID of the metadata insatnce
      * @return meta data from the UUID
      */
-    public static ServiceVersionV1 get(Registry registry, String uuid) throws MetadataException {
-        return (ServiceVersionV1) get(registry, uuid, mediaType);
+    public static EndpointVersionV1 get(Registry registry, String uuid) throws MetadataException {
+        return (EndpointVersionV1) get(registry, uuid, mediaType);
     }
 
+
+    private void setAttribute(String key,String val){
+        List<String> value = new ArrayList<String>();
+        value.add(val);
+        attributeMap.put(key,value);
+    }
+
+    private String getSingleValuedAttribute(String key){
+        List<String> value = attributeMap.get(key);
+        return value != null ? value.get(0) : null;
+    }
 }

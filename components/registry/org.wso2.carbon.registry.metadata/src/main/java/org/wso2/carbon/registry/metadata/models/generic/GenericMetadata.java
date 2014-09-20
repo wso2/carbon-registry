@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.Base;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
+import org.wso2.carbon.registry.metadata.models.version.GenericVersionV1;
 import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 import org.wso2.carbon.registry.metadata.VersionBase;
 
@@ -37,7 +38,7 @@ public class GenericMetadata extends Base {
 
     private static final String mediaType = "vnd.wso2.generic/+xml;version=1";
 
-    private ServiceVersionV1 baseVersion = null;
+    private GenericVersionV1 baseVersion = null;
 
     public GenericMetadata(Registry registry, String name, VersionBase version) throws MetadataException {
         super(mediaType, name, registry,version);
@@ -47,8 +48,8 @@ public class GenericMetadata extends Base {
         super(mediaType,name, uuid, propertyBag,attributeMap, registry);
     }
 
-    public ServiceVersionV1 newVersion(String key) throws MetadataException {
-        ServiceVersionV1 v = new ServiceVersionV1(registry, key);
+    public GenericVersionV1 newVersion(String key) throws MetadataException {
+        GenericVersionV1 v = new GenericVersionV1(registry, key);
         v.setBaseUUID(uuid);
         v.setBaseName(name);
         return v;
@@ -62,7 +63,7 @@ public class GenericMetadata extends Base {
         } else {
             add(registry, metadata,
                     generateMetadataStoragePath(metadata.getName(), metadata.getRootStoragePath()));
-            ServiceVersionV1.add(registry, ((GenericMetadata) metadata).baseVersion);
+            GenericVersionV1.add(registry, ((GenericMetadata) metadata).baseVersion);
         }
     }
 
@@ -98,10 +99,6 @@ public class GenericMetadata extends Base {
      */
     public static GenericMetadata get(Registry registry, String uuid) throws MetadataException {
         return (GenericMetadata) get(registry, uuid, mediaType);
-    }
-
-    private static String generateMetadataStoragePath(String name, String rootStoragePath) {
-        return rootStoragePath + "/" + name;
     }
 
 }

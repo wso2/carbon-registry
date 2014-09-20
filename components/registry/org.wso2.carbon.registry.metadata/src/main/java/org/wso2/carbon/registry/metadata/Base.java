@@ -208,6 +208,10 @@ public abstract class Base {
         return null;
     }
 
+    protected static String generateMetadataStoragePath(String name, String rootStoragePath) {
+        return rootStoragePath + "/" + name;
+    }
+
     /**
      * Deletes the meta data instance that represents from the given UUID
      *
