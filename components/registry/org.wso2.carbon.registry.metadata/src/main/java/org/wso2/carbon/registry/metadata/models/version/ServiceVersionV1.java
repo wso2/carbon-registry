@@ -68,8 +68,8 @@ public class ServiceVersionV1 extends VersionBase {
 
     public void addEndpoint(HTTPEndpointV1 httpEndpointV1) throws MetadataException {
         HTTPEndpointV1.add(registry,httpEndpointV1);
-        Util.createAssociation(registry, this.getBaseUUID(), httpEndpointV1.getUUID(), Constants.ASSOCIATION_ENDPOINT);
-        Util.createAssociation(registry, httpEndpointV1.getUUID(), this.getBaseUUID(), Constants.ASSOCIATION_ENDPOINT_OF);
+        Util.createAssociation(registry, uuid, httpEndpointV1.getUUID(), Constants.ASSOCIATION_ENDPOINT);
+        Util.createAssociation(registry, httpEndpointV1.getUUID(), uuid, Constants.ASSOCIATION_ENDPOINT_OF);
     }
 
     public HTTPEndpointV1[] getEndpoints(HTTPEndpointV1 httpEndpointV1) throws MetadataException {
