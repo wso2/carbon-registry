@@ -183,8 +183,8 @@ public abstract class VersionBase {
             Resource resource = Util.getVersionBaseProvider(metadata.getMediaType()).buildResource(metadata, registry.newResource());
             putResource(registry, path, resource);
 
-            Util.createAssociation(registry, metadata.getBaseUUID(), metadata.getUUID(), Constants.CHILD_VERSION);
-            Util.createAssociation(registry, metadata.getUUID(), metadata.getBaseUUID(), Constants.VERSION_OF);
+            Util.createAssociation(registry, metadata.getBaseUUID(), metadata.getUUID(), Constants.ASSOCIATION_CHILD_VERSION);
+            Util.createAssociation(registry, metadata.getUUID(), metadata.getBaseUUID(), Constants.ASSOCIATION_VERSION_OF);
 
         } catch (RegistryException e) {
             throw new MetadataException(e.getMessage(), e);

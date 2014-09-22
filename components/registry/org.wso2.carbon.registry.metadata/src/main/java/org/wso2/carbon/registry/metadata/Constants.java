@@ -22,9 +22,13 @@ public class Constants {
 
     public static final String BASE_STORAGE_PATH = "/metadata/";
 
-    public static final String CHILD_VERSION = "childVersion";
+    public static final String ASSOCIATION_CHILD_VERSION = "childVersion";
 
-    public static final String VERSION_OF = "versionOf";
+    public static final String ASSOCIATION_VERSION_OF = "versionOf";
+
+    public static final String ASSOCIATION_ENDPOINT_OF = "endpointOf";
+
+    public static final String ASSOCIATION_ENDPOINT = "endpoint";
 
     public static final String CONTENT_PROPERTY_EL_ROOT_NAME = "properties";
 
@@ -43,7 +47,6 @@ public class Constants {
     public static final String ATTRIBUTE_MEDIA_TYPE = "mediaType";
 
     public static final String ATTRIBUTE_VERSION_MEDIA_TYPE = "versionMediaType";
-
 
     public static final String ENTRY_KEY = "entry";
 }

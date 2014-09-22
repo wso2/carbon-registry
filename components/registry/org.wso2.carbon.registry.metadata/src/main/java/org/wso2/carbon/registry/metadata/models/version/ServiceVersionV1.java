@@ -20,17 +20,22 @@ package org.wso2.carbon.registry.metadata.models.version;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.api.Association;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.metadata.Base;
+import org.wso2.carbon.registry.metadata.Constants;
+import org.wso2.carbon.registry.metadata.Util;
 import org.wso2.carbon.registry.metadata.VersionBase;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
+import org.wso2.carbon.registry.metadata.models.endpoint.HTTPEndpointV1;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ServiceVersionV1 extends VersionBase {
-
-//  Type specific attributes goes here
 
 
 //  Variables defined for internal implementation purpose
@@ -60,9 +65,42 @@ public class ServiceVersionV1 extends VersionBase {
         return mediaType;
     }
 
+
+    public void addEndpoint(HTTPEndpointV1 httpEndpointV1) throws MetadataException {
+        HTTPEndpointV1.add(registry,httpEndpointV1);
+        Util.createAssociation(registry, this.getBaseUUID(), httpEndpointV1.getUUID(), Constants.ASSOCIATION_ENDPOINT);
+        Util.createAssociation(registry, httpEndpointV1.getUUID(), this.getBaseUUID(), Constants.ASSOCIATION_ENDPOINT_OF);
+    }
+
+    public HTTPEndpointV1[] getEndpoints(HTTPEndpointV1 httpEndpointV1) throws MetadataException {
+        ArrayList<HTTPEndpointV1> list = new ArrayList<HTTPEndpointV1>();
+        try {
+            for (Association as : Util.getAssociations(registry, uuid, Constants.ASSOCIATION_ENDPOINT)) {
+                if (registry.resourceExists(as.getDestinationPath())) {
+                    Resource r = registry.get(as.getDestinationPath());
+                    list.add((HTTPEndpointV1)Util.getBaseProvider(httpEndpointV1.getMediaType()).get(r, registry));
+                }
+            }
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(), e);
+        }
+        return list.toArray(new HTTPEndpointV1[list.size()]);
+    }
+
+    public void removeEndpoint(String uuid) throws MetadataException {
+        try {
+            registry.removeAssociation(Util.getMetadataPath(this.uuid,registry),Util.getMetadataPath(uuid,registry),Constants.ASSOCIATION_ENDPOINT);
+            registry.removeAssociation(Util.getMetadataPath(uuid,registry), Util.getMetadataPath(this.uuid,registry),Constants.ASSOCIATION_ENDPOINT_OF);
+
+        } catch (RegistryException e) {
+            log.error("Error occurred while removing associated endpoints from service " + this.uuid);
+            throw new MetadataException(e.getMessage(),e);
+        }
+    }
+
     public static void add(Registry registry, VersionBase metadata) throws MetadataException {
         add(registry, metadata, generateMetadataStoragePath(
-                 metadata.getBaseName()
+                metadata.getBaseName()
                 , metadata.getName()
                 , metadata.getRootStoragePath()));
 

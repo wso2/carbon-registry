@@ -45,11 +45,8 @@ public class GenericMetadataIndexer extends XMLIndexer implements Indexer {
 
     public IndexDocument getIndexedDocument(AsyncIndexer.File2Index fileData) throws RegistryException {
         IndexDocument indexedDocument = super.getIndexedDocument(fileData);
-        int tid = fileData.tenantId;
-//        Registry registry;
         try {
 
-//            registry = RegistryCoreServiceComponent.getRegistryService().getRegistry(CurrentSession.getUser(), tid);
             String xmlAsStr = RegistryUtils.decodeBytes(fileData.data);
             OMElement rootEl = AXIOMUtil.stringToOM(xmlAsStr);
 

@@ -311,7 +311,7 @@ public abstract class Base {
         //    Can do the same from the index search .
         ArrayList<VersionBase> list = new ArrayList<VersionBase>();
         try {
-            for (Association as : getAssociations(registry, uuid, Constants.CHILD_VERSION)) {
+            for (Association as : Util.getAssociations(registry, uuid, Constants.ASSOCIATION_CHILD_VERSION)) {
                 if (registry.resourceExists(as.getDestinationPath())) {
                     Resource r = registry.get(as.getDestinationPath());
                     list.add(Util.getVersionBaseProvider(versionMediaType).get(r, registry));
@@ -323,15 +323,7 @@ public abstract class Base {
         return list;
     }
 
-    private static Association[] getAssociations(Registry registry, String sourceUUID, String type) throws MetadataException {
-        Association[] associations = null;
-        try {
-            associations = registry.getAssociations(Util.getMetadataPath(sourceUUID, registry), type);
-        } catch (RegistryException e) {
-            throw new MetadataException(e.getMessage(), e);
-        }
-        return associations;
-    }
+
 
     public void attachLifecycle(String name) throws MetadataException {
         try {

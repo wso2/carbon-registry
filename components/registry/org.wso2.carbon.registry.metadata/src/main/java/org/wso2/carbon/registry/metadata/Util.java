@@ -22,6 +22,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.api.Association;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -206,6 +207,16 @@ public class Util {
         } catch (RegistryException e) {
             throw new MetadataException(e.getMessage(), e);
         }
+    }
+
+    public static Association[] getAssociations(Registry registry, String sourceUUID, String type) throws MetadataException {
+        Association[] associations = null;
+        try {
+            associations = registry.getAssociations(Util.getMetadataPath(sourceUUID, registry), type);
+        } catch (RegistryException e) {
+            throw new MetadataException(e.getMessage(), e);
+        }
+        return associations;
     }
 
     public static void setAttributeSearchService(AttributeSearchService attributeSearchService) {
