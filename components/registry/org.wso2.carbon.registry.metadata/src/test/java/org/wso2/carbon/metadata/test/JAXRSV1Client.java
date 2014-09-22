@@ -23,6 +23,7 @@ package org.wso2.carbon.metadata.test;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.metadata.exception.MetadataException;
 import org.wso2.carbon.registry.metadata.lifecycle.StateMachineLifecycle;
+import org.wso2.carbon.registry.metadata.models.endpoint.HTTPEndpointV1;
 import org.wso2.carbon.registry.metadata.models.service.HTTPServiceV1;
 import org.wso2.carbon.registry.metadata.models.version.ServiceVersionV1;
 
@@ -58,7 +59,9 @@ public class JAXRSV1Client {
 
 //  Create new Version of a service
         ServiceVersionV1 httpV1 = http1.newVersion("1.0.0");
-        httpV1.setEndpointUrl("http://test.rest/stockquote");
+        HTTPEndpointV1 ep = new HTTPEndpointV1(registry,"myep1");
+        ep.setUrl("http://test.rest/stockquote");
+        httpV1.addEndpoint(ep);
         httpV1.setProperty("isSecured", "true");
 
 //  Save a service version

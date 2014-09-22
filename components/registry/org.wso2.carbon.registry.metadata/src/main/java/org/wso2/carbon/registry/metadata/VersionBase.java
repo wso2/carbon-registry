@@ -193,7 +193,7 @@ public abstract class VersionBase {
 
     protected static void update(Registry registry, VersionBase metadata, String path) throws MetadataException {
         Resource resource = Util.getVersionBaseProvider(metadata.getMediaType()).buildResource(metadata, getResource(registry, metadata.getUUID()));
-        putResource(registry, path, resource);
+        updateResource(registry, path, resource);
     }
 
     /**
@@ -297,6 +297,36 @@ public abstract class VersionBase {
             }
         } catch (RegistryException e) {
             throw new MetadataException(e.getMessage(), e);
+        }
+    }
+
+
+    private static void updateResource(Registry registry, String path, Resource resource) throws MetadataException {
+        boolean succeeded = false;
+        try {
+            registry.beginTransaction();
+            if (!registry.resourceExists(path)) {
+                throw new MetadataException("Metadata instance " + resource.getUUID() + " does not exists at " + path +" for update");
+            }
+            registry.put(path, resource);
+            succeeded = true;
+        } catch (RegistryException e) {
+            throw new MetadataException("Failed to update the resource");
+        } finally {
+            if (succeeded) {
+                try {
+                    registry.commitTransaction();
+                } catch (RegistryException e) {
+                    log.error("Error in commiting transaction for the meta data instance " + resource.getUUID(), e);
+                }
+            } else {
+                try {
+                    registry.rollbackTransaction();
+                } catch (RegistryException e) {
+                    log.error("Error in rollbacking transaction for the meta data instance " + resource.getUUID(), e);
+
+                }
+            }
         }
     }
 

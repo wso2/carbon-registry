@@ -85,14 +85,14 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.metadata.*,
+                            org.wso2.carbon.registry.metadata.*;version="1.0.0-SNAPSHOT",
                         </Export-Package>
                         <Private-Package>
-                            org.wso2.carbon.registry.metadata.internal.*
+                            org.wso2.carbon.registry.metadata.internal.*;version="1.0.0-SNAPSHOT",
                         </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*,
-                            org.apache.axiom.om.*,
+                            org.apache.axiom.om.*;version="1.2.11.wso2v4",
                             org.apache.axiom.om.impl.builder.*,
                             org.apache.axiom.om.util.*
                             !javax.xml.namespace,
