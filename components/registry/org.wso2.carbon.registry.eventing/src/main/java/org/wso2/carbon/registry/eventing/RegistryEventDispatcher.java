@@ -433,9 +433,9 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             } catch (RemoteException e) {
                 log.error("Failed Sending Notification to work-list", e);
             } catch (UserStoreException e) {
-                log.error("Failed to send Notifications",e);
+                log.error("Failed to send Notifications", e);
             } catch (RegistryException e) {
-                log.error("Failed to send notifiacations",e);
+                log.error("Failed to send notifiacations", e);
             }
         } else {
             log.debug("Sending Notification to: " + endpoint);
