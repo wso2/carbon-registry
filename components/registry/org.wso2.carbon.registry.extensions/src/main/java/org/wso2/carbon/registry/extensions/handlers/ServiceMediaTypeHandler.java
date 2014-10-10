@@ -241,8 +241,9 @@ public class ServiceMediaTypeHandler extends Handler {
 //                    serviceId, servicePath);
 
             String definitionURL = CommonUtil.getDefinitionURL(serviceInfoElement);
+            String oldDefinition =  null;
             if (previousServiceInfoElement != null) {
-                String oldDefinition = CommonUtil.getDefinitionURL(previousServiceInfoElement);
+                oldDefinition = CommonUtil.getDefinitionURL(previousServiceInfoElement);
                 if ((!"".equals(oldDefinition) && "".equals(definitionURL))
                         || (!"".endsWith(oldDefinition) && !oldDefinition.equals(definitionURL))) {
                     try {
@@ -380,8 +381,15 @@ public class ServiceMediaTypeHandler extends Handler {
             }
 */
             
-            EndpointUtils.saveEndpointsFromServices(servicePath, serviceInfoElement, registry,
-                        CommonUtil.getUnchrootedSystemRegistry(requestContext));
+            if (definitionURL != null) {
+                if (oldDefinition == null) {
+                    EndpointUtils.saveEndpointsFromServices(servicePath,serviceInfoElement,
+    				                                        registry,CommonUtil.getUnchrootedSystemRegistry(requestContext));
+                } else if (oldDefinition != null && !definitionURL.equals(oldDefinition)){
+                    EndpointUtils.saveEndpointsFromServices(servicePath,serviceInfoElement,
+    				                                        registry,CommonUtil.getUnchrootedSystemRegistry(requestContext));
+                }
+            }
             
 
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
