@@ -32,6 +32,7 @@ import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourcePath;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -164,7 +165,15 @@ public class SubscriptionBeanPopulator {
                 if (!realPath.contains("/registry/resourceContent?")) {
                     path = realPath;
                 } else {
-                    url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+                	boolean isLocalMount = false;
+                	try {
+                		isLocalMount = ResourceUtil.isLocalMount(realPath);
+					} catch (RegistryException e) {
+						log.error("Unable to check whether resource is locally mounted", e);
+					}
+                	if(!isLocalMount) {
+						url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+					}
                 }
             }
         }
@@ -423,7 +432,15 @@ public class SubscriptionBeanPopulator {
                 if (!realPath.contains("/registry/resourceContent?")) {
                     path = realPath;
                 } else {
-                    url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+                	boolean isLocalMount = false;
+                	try {
+                		isLocalMount = ResourceUtil.isLocalMount(realPath);
+					} catch (RegistryException e) {
+						log.error("Unable to check whether resource is locally mounted", e);
+					}
+                	if(!isLocalMount) {
+						url = realPath.substring(0, realPath.indexOf("/resourceContent?path="));
+					}
                 }
             }
         }
