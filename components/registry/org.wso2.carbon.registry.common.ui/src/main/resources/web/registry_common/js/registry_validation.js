@@ -120,8 +120,9 @@ function validateDate(fld,fldName){
 }
 function validateUsername(fld) {
     var error = "";
-    var illegalChars = /\W/; // allow letters, numbers, and underscores
-
+    // var illegalChars = /\W/; // allow letters, numbers, and underscores
+    // allow all charactors other than illegal characters  ~!@#$;%^*+={}|\<>"' validating in validateIllegal
+    var illegalChars = /([~!@#;%^*+={}\|\\<>\"\',])/;
     if (fld.value == "") {
         error = org_wso2_carbon_registry_common_ui_jsi18n["no.username"] + "<br />";
     } else if ((fld.value.length < 3) || (fld.value.length > 30)) {
