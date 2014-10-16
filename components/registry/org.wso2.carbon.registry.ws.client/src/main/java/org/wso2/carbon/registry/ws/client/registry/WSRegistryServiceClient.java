@@ -853,7 +853,6 @@ public class WSRegistryServiceClient implements Registry {
         }
     }
 
-    @Override
     public void dumpLite(String s, Writer writer) throws RegistryException {
         // Implementation needs to be added
     }

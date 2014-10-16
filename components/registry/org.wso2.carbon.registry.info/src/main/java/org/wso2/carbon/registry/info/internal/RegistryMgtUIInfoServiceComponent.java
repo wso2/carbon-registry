@@ -35,6 +35,7 @@ import org.wso2.carbon.registry.eventing.services.SubscriptionEmailVerficationSe
 import org.wso2.carbon.registry.extensions.jmx.Subscriptions;
 import org.wso2.carbon.registry.info.Utils;
 import org.wso2.carbon.registry.info.services.utils.SubscriptionBeanPopulator;
+import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.*;
@@ -53,6 +54,9 @@ import java.util.*;
  * @scr.reference name="registry.subscriptions.jmx.service"
  * interface="org.wso2.carbon.registry.extensions.jmx.Subscriptions" cardinality="0..1"
  * policy="dynamic" bind="setSubscriptions" unbind="unsetSubscriptions"
+ * @scr.reference name="configuration.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
+ * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class RegistryMgtUIInfoServiceComponent {
 
@@ -191,5 +195,16 @@ public class RegistryMgtUIInfoServiceComponent {
     protected void unsetSubscriptionEmailVerficationService(SubscriptionEmailVerficationService
             subscriptionEmailVerficationService) {
         Utils.setSubscriptionEmailVerficationService(null);
+    }
+
+    protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        log.debug("The Configuration Context Service was set");
+        if (configurationContextService != null) {
+            Utils.setConfigurationContext(configurationContextService.getServerConfigContext());
+        }
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
+        Utils.setConfigurationContext(null);
     }
 }

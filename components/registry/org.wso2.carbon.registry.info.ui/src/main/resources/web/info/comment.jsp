@@ -87,7 +87,7 @@
         String url = UIUtil.getAtomURL(config, request, request.getParameter("path")) + ";comments"; %>
     <a
             style="float:right;background-image:url(images/icon-feed-small.gif);"
-            href="<%=url%>"
+            href="../../registry/atom<%=request.getParameter("path")%>;comments"
             target="_blank"
             class="icon-link"
             title="<fmt:message key="subscribe.to.the.comment.feed"/>">
