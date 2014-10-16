@@ -475,9 +475,17 @@ public class CommonUtil {
             rxtList = MediaTypesUtils.getResultPaths(registry, CommonConstants.RXT_MEDIA_TYPE);
 
             for (String rxtcontent : rxtList) {
+            	Resource resource = registry.get(rxtcontent);
+            	Object content = resource.getContent();
+            	String elementString;
+            	if (content instanceof String) {
+            		elementString = (String) content;
+            	} else {
+            		elementString = RegistryUtils.decodeBytes((byte[]) content);
+            	}
                 OMElement configElement = null;
                 try {
-                    configElement = AXIOMUtil.stringToOM(rxtcontent);
+                    configElement = AXIOMUtil.stringToOM(elementString);
                 } catch (XMLStreamException e) {
                     throw new RegistryException("Error while serializing to OM content from String", e);
                 }
