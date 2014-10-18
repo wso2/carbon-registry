@@ -190,6 +190,7 @@ public class WSDLProcessor {
 
         if(version == null){
             version = CommonConstants.WSDL_VERSION_DEFAULT_VALUE;
+            context.getResource().setProperty("version", version);
         }
 
         String resourcePath = context.getResourcePath().getPath();

@@ -428,10 +428,11 @@ public class CommonUtil {
     public static void addService(OMElement service, RequestContext context)throws RegistryException{
         Registry registry = context.getRegistry();
         Resource resource = registry.newResource();
+        String version = context.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
         String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
                 CommonUtil.getServiceNamespace(service));
-        String path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace +
-                CommonUtil.getServiceName(service);
+        String path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace + version +
+                RegistryConstants.PATH_SEPARATOR + CommonUtil.getServiceName(service);
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
         resource.setMediaType(RegistryConstants.SERVICE_MEDIA_TYPE);

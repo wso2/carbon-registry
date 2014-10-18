@@ -80,10 +80,11 @@ public class WADLProcessor {
                                     String resourcePath,boolean skipValidation)
             throws RegistryException {
         String wadlName = RegistryUtils.getResourceName(resourcePath);
-        String version = requestContext.getResource().getProperty("version");
+        String version = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 
         if (version == null){
             version = CommonConstants.WADL_VERSION_DEFAULT_VALUE;
+            requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
         }
 
         OMElement wadlElement;
@@ -167,10 +168,11 @@ public class WADLProcessor {
 
         ResourcePath resourcePath = requestContext.getResourcePath();
         String wadlName = RegistryUtils.getResourceName(resourcePath.getPath());
-        String version = requestContext.getResource().getProperty("version");
+        String version = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 
         if(version == null){
             version = CommonConstants.WADL_VERSION_DEFAULT_VALUE;
+            requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
         }
 
         String uri = requestContext.getSourceURL();
