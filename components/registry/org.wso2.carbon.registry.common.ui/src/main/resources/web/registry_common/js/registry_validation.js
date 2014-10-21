@@ -119,15 +119,16 @@ function validateDate(fld,fldName){
     return error;
 }
 function validateUsername(fld) {
+
+    //validates the user name against the given regex given in user-mgt.xml
     var error = "";
-    // var illegalChars = /\W/; // allow letters, numbers, and underscores
-    // allow all charactors other than illegal characters  ~!@#$;%^*+={}|\<>"' validating in validateIllegal
-    var illegalChars = /([~!@#;%^*+={}\|\\<>\"\',])/;
+    var regex = RegExp(document.getElementById('userNameRegex'));
+    if(regex == null){
+        regex = RegExp("^[\S]{3,30}$");
+    }
     if (fld.value == "") {
         error = org_wso2_carbon_registry_common_ui_jsi18n["no.username"] + "<br />";
-    } else if ((fld.value.length < 3) || (fld.value.length > 30)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["wrong.username"] + "<br />";
-    } else if (illegalChars.test(fld.value)) {
+    }  else if (!(fld.value.match(regex))) {
         error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.username"] + "<br />";
     } else {
 //        fld.style.background = 'White';
