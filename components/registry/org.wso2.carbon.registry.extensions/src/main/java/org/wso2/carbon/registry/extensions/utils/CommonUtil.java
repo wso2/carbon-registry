@@ -428,10 +428,11 @@ public class CommonUtil {
     public static void addService(OMElement service, RequestContext context)throws RegistryException{
         Registry registry = context.getRegistry();
         Resource resource = registry.newResource();
+        String version = context.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
         String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
                 CommonUtil.getServiceNamespace(service));
-        String path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace +
-                CommonUtil.getServiceName(service);
+        String path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace + version +
+                RegistryConstants.PATH_SEPARATOR + CommonUtil.getServiceName(service);
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
         resource.setMediaType(RegistryConstants.SERVICE_MEDIA_TYPE);
@@ -475,9 +476,17 @@ public class CommonUtil {
             rxtList = MediaTypesUtils.getResultPaths(registry, CommonConstants.RXT_MEDIA_TYPE);
 
             for (String rxtcontent : rxtList) {
+            	Resource resource = registry.get(rxtcontent);
+            	Object content = resource.getContent();
+            	String elementString;
+            	if (content instanceof String) {
+            		elementString = (String) content;
+            	} else {
+            		elementString = RegistryUtils.decodeBytes((byte[]) content);
+            	}
                 OMElement configElement = null;
                 try {
-                    configElement = AXIOMUtil.stringToOM(rxtcontent);
+                    configElement = AXIOMUtil.stringToOM(elementString);
                 } catch (XMLStreamException e) {
                     throw new RegistryException("Error while serializing to OM content from String", e);
                 }
