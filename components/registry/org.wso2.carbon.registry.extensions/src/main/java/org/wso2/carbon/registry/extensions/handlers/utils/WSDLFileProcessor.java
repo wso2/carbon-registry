@@ -305,12 +305,13 @@ public class WSDLFileProcessor {
             }
 
             // getting the paramentes
-            if (wsdlDefinition.getQName() != null) {
+            //Commented to fix REGISTRY-2329
+                       /*if (wsdlDefinition.getQName() != null) {
                 String name = wsdlDefinition.getQName().getLocalPart();
                 if (name != null) {
                     wsdlResource.addProperty("registry.wsdl.Name", name);
                 }
-            }
+            }*/
 
             if (wsdlDefinition.getDocumentationElement() != null) {
                 String document = wsdlDefinition.getDocumentationElement().getTextContent();
@@ -320,13 +321,15 @@ public class WSDLFileProcessor {
             }
 
             String targetNamespace = wsdlDefinition.getTargetNamespace();
-            wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
+            //Commented to fix REGISTRY-2329
+            //wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
 
             wsdlResource.setContent(wsdlResourceContent);
 
             registry.put(wsdlPath, wsdlResource);
 
-            if (metadata !=null && original) {
+            //Commented to fix REGISTRY-2329
+            /*if (metadata !=null && original) {
                 metadata.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
                 if (wsdlDefinition.getQName() != null) {
                     String name = wsdlDefinition.getQName().getLocalPart();
@@ -340,7 +343,7 @@ public class WSDLFileProcessor {
                         metadata.addProperty("registry.wsdl.documentation", document);
                     }
                 }
-            }
+            }*/
             // add the associations
             String associatedWSDL;
             for (Object association : associations) {

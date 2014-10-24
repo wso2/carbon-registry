@@ -794,7 +794,9 @@ public class WSDLProcessor {
     private String addProperties(String masterWSDLPath, WSDLInfo wsdlInfo, Definition wsdlDefinition,
                                  byte[] wsdlResourceContent, String wsdlPath, Resource wsdlResource)
             throws RegistryException {
-        if (wsdlDefinition.getQName() != null) {
+
+        //Commented to fix REGISTRY-2329
+        /*if (wsdlDefinition.getQName() != null) {
             String name = wsdlDefinition.getQName().getLocalPart();
             if (name != null) {
                 wsdlResource.addProperty("registry.wsdl.Name", name);
@@ -805,10 +807,12 @@ public class WSDLProcessor {
             if (document != null) {
                 wsdlResource.addProperty("registry.wsdl.documentation", document);
             }
-        }
+        }*/
 
-        String targetNamespace = wsdlDefinition.getTargetNamespace();
-        wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
+
+        //Commented to fix REGISTRY-2329
+        //String targetNamespace = wsdlDefinition.getTargetNamespace();
+        //wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
         wsdlResource.setMediaType(RegistryConstants.WSDL_MEDIA_TYPE);
         wsdlResource.setContent(wsdlResourceContent);
 
