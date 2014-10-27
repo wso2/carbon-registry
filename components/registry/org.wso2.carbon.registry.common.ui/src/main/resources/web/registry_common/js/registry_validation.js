@@ -122,10 +122,11 @@ function validateUsername(fld) {
 
     //validates the user name against the given regex given in user-mgt.xml
     var error = "";
-    var regex = RegExp(document.getElementById('userNameRegex'));
-    if(regex == null){
-        regex = RegExp("^[\S]{3,30}$");
+    var regexString = document.getElementById('userNameRegex');
+    if(regexString == null){
+        regexString = '^[\\S]{3,30}$';
     }
+    var regex = RegExp(regexString);
     if (fld.value == "") {
         error = org_wso2_carbon_registry_common_ui_jsi18n["no.username"] + "<br />";
     }  else if (!(fld.value.match(regex))) {
