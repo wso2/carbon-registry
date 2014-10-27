@@ -28,10 +28,12 @@ import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 import javax.xml.namespace.QName;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -144,6 +146,11 @@ public class PolicyMediaTypeHandler extends Handler {
         } else {
             policyResource = requestContext.getResource();
         }
+        String version = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
+        if (version == null) {
+            version = CommonConstants.POLICY_VERSION_DEFAULT_VALUE;
+            requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
+        }
         Registry registry = requestContext.getRegistry();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int nextChar;
@@ -180,7 +187,7 @@ public class PolicyMediaTypeHandler extends Handler {
                         + RegistryConstants.PATH_SEPARATOR + policyFileName))) {
             policyPath = resourcePath;
         }else{
-            policyPath = commonLocation + extractResourceFromURL(policyFileName, ".xml");
+            policyPath = commonLocation + version + "/" +  extractResourceFromURL(policyFileName, ".xml");
         }
 
 
