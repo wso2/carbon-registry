@@ -291,6 +291,14 @@
                 </table>
             </div>
         </form>
+
+        <script>
+            jQuery(document).ready(function() {
+                makeSelectRoleSearchable();
+                makeSelectActionSelect2styled();
+            });
+        </script>
+
         <h4 style="margin-top:10px;"><fmt:message key="defined.role.permissions"/></h4>
 
         <form name="rolePermissions" theme="simple">
