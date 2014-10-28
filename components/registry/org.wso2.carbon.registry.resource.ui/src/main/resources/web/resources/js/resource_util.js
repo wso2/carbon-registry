@@ -2253,6 +2253,11 @@ function refreshPermissionsSection(path) {
                 var perDiv = $('permissionsDiv');
                 perDiv.innerHTML = transport.responseText;
                 YAHOO.util.Event.onAvailable('perExpanded', function() {
+
+                    //adding searchable drop-box component
+                    makeSelectRoleSearchable();
+                    makeSelectActionSelect2styled();
+
                     $('perIconExpanded').style.display = "";
                     $('perIconMinimized').style.display = "none";
                     $('perExpanded').style.display = "";
@@ -2266,6 +2271,23 @@ function refreshPermissionsSection(path) {
     //YAHOO.util.Event.onAvailable('perExpanded',function(){showHideCommon('perIconExpanded');showHideCommon('perIconMinimized');showHideCommon('perExpanded');showHideCommon('perMinimized');})
 
 
+}
+
+//function to make role drop-box component, searchable
+function makeSelectRoleSearchable(){
+    jQuery('#roleToAuthorize').select2({
+        width: "263px",
+        placeholder: "-Select-"
+    });
+}
+
+//function to make action drop-box component, select2 styled
+function makeSelectActionSelect2styled(){
+    jQuery('#roleActionToAuthorize').select2({
+        minimumResultsForSearch: -1,
+        width: "120px",
+        placeholder: "-Select-"
+    });
 }
 
 function submitUserAddForm() {

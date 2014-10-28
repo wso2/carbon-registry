@@ -301,7 +301,7 @@ public class WSDLProcessor {
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,currentEndpointLocation
                     ,dependeinciesList,masterVersion,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
 
-            addPolicyImportys(context);
+            addPolicyImportys(context, version);
 
             saveAssociations();
         } else {
@@ -311,7 +311,7 @@ public class WSDLProcessor {
 
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
 
-            addPolicyImportys(context);
+            addPolicyImportys(context, version);
 
             saveAssociations();
             if (addService && getCreateService()) {
@@ -325,7 +325,7 @@ public class WSDLProcessor {
         return masterWSDLPath;
     }
 
-    private void addPolicyImportys(RequestContext context) throws RegistryException {
+    private void addPolicyImportys(RequestContext context, String version) throws RegistryException {
         /* storing policyReferences in to Registry if available in the WSDL */
         for (WSDLInfo wsdlInfo : wsdls.values()) {
             if(wsdlInfo.isExistPolicyReferences()){
@@ -339,11 +339,10 @@ public class WSDLProcessor {
                         policyResource.setMediaType("application/policy+xml");
                         String path = policyURL.substring(policyURL.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
                         if(policyURL.lastIndexOf(RegistryConstants.PATH_SEPARATOR) > 0){
-                            registry.importResource(path,policyURL,policyResource);
-                            registry.addAssociation(getChrootedPolicyLocation(context.getRegistryContext()) + path,
-                                wsdlInfo.getProposedRegistryURL(), CommonConstants.USED_BY);
-                            registry.addAssociation(wsdlInfo.getProposedRegistryURL(),
-                                getChrootedPolicyLocation(context.getRegistryContext()) + path, CommonConstants.DEPENDS);
+                        	policyResource.setProperty("version", version);
+                            String policyPath = registry.importResource(path ,policyURL,policyResource);
+                            registry.addAssociation(policyPath, wsdlInfo.getProposedRegistryURL(), CommonConstants.USED_BY);
+                            registry.addAssociation(wsdlInfo.getProposedRegistryURL(), policyPath, CommonConstants.DEPENDS);
                         }
                     }finally {
                         if (lockAlreadyAcquired) {
@@ -794,7 +793,9 @@ public class WSDLProcessor {
     private String addProperties(String masterWSDLPath, WSDLInfo wsdlInfo, Definition wsdlDefinition,
                                  byte[] wsdlResourceContent, String wsdlPath, Resource wsdlResource)
             throws RegistryException {
-        if (wsdlDefinition.getQName() != null) {
+
+        //Commented to fix REGISTRY-2329
+        /*if (wsdlDefinition.getQName() != null) {
             String name = wsdlDefinition.getQName().getLocalPart();
             if (name != null) {
                 wsdlResource.addProperty("registry.wsdl.Name", name);
@@ -805,10 +806,12 @@ public class WSDLProcessor {
             if (document != null) {
                 wsdlResource.addProperty("registry.wsdl.documentation", document);
             }
-        }
+        }*/
 
-        String targetNamespace = wsdlDefinition.getTargetNamespace();
-        wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
+
+        //Commented to fix REGISTRY-2329
+        //String targetNamespace = wsdlDefinition.getTargetNamespace();
+        //wsdlResource.addProperty("registry.wsdl.TargetNamespace", targetNamespace);
         wsdlResource.setMediaType(RegistryConstants.WSDL_MEDIA_TYPE);
         wsdlResource.setContent(wsdlResourceContent);
 
