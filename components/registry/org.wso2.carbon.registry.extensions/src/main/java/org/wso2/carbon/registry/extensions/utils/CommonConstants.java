@@ -88,7 +88,7 @@ public class CommonConstants {
             "application/vnd.wso2-sla-version.patch";
 
     /*
-    * Now version can be accepted dynamically (jira:REGISTRY-2211)
+    * Now version can be displayed dynamically (jira:REGISTRY-2211)
     * public static final String SERVICE_VERSION_REGEX = "^\\d+[.]\\d+[.]\\d+(-[a-zA-Z0-9]+)?$";
     * */
     public static final String SERVICE_VERSION_REGEX = "^(\\d+[.]*)+\\d+(-[a-zA-Z0-9]+)?$";
