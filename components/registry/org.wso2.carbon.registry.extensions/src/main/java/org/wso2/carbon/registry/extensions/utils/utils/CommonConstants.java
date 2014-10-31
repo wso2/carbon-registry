@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wso2.carbon.registry.extensions.utils;
+package org.wso2.carbon.registry.extensions.utils.utils;
 
 import org.wso2.carbon.registry.core.RegistryConstants;
 
@@ -88,7 +88,7 @@ public class CommonConstants {
             "application/vnd.wso2-sla-version.patch";
 
     /*
-    * Now version can be accepted dynamically (jira:REGISTRY-2211)
+    * Now version can be accepted dynamically
     * public static final String SERVICE_VERSION_REGEX = "^\\d+[.]\\d+[.]\\d+(-[a-zA-Z0-9]+)?$";
     * */
     public static final String SERVICE_VERSION_REGEX = "^(\\d+[.]*)+\\d+(-[a-zA-Z0-9]+)?$";
