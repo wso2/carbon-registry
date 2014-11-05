@@ -41,11 +41,11 @@ public class RegistryConfigLoader {
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
-    private long startingDelayInSecs;
+    private long startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
 
-    private long indexingFreqInSecs;
+    private long indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
 
-    private String lastAccessTimeLocation = null;
+    private String lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
 
     private Map<String, Indexer> indexerMap = new LinkedHashMap<String, Indexer>();
 
@@ -130,8 +130,6 @@ public class RegistryConfigLoader {
     }
 
     private void loadIndexingConfiguration(OMElement indexingConfig){
-        //set default value
-        startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());
@@ -139,8 +137,6 @@ public class RegistryConfigLoader {
             // we can use default value and continue if no OMElement found in indexingConfig
         }
 
-        //set default value
-        indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         try {
             indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("indexingFrequencyInSeconds")).getText());
@@ -148,8 +144,6 @@ public class RegistryConfigLoader {
             // we can use default value and continue if no OMElement found in indexingConfig
         }
 
-        //set default value
-        lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
         try {
             lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
                     new QName("lastAccessTimeLocation")).getText();
