@@ -130,23 +130,31 @@ public class RegistryConfigLoader {
     }
 
     private void loadIndexingConfiguration(OMElement indexingConfig){
+        //set default value
+        startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());
-        } catch (Exception e) {
-            startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
+
+        //set default value
+        indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         try {
             indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("indexingFrequencyInSeconds")).getText());
-        } catch (Exception e) {
-            indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
+
+        //set default value
+        lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
         try {
             lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
                     new QName("lastAccessTimeLocation")).getText();
-        } catch (OMException e) {
-            lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
 
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
