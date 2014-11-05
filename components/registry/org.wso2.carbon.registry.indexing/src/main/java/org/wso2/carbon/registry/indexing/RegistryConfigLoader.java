@@ -41,11 +41,11 @@ public class RegistryConfigLoader {
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
-    private long startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+    private long startingDelayInSecs;
 
-    private long indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+    private long indexingFreqInSecs;
 
-    private String lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
+    private String lastAccessTimeLocation;
 
     private Map<String, Indexer> indexerMap = new LinkedHashMap<String, Indexer>();
 
@@ -65,6 +65,9 @@ public class RegistryConfigLoader {
 
 
     public RegistryConfigLoader() {
+        startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+        indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+        lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
         try {
             FileInputStream fileInputStream = new FileInputStream(getConfigFile());
             StAXOMBuilder builder = new StAXOMBuilder(
