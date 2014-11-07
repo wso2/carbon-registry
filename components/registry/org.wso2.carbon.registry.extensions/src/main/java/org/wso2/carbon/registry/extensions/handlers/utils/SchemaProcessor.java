@@ -293,16 +293,19 @@ public class SchemaProcessor {
         XmlSchemaObjectCollection includes = xmlSchema.getIncludes();
         SchemaInfo schemaInfo = new SchemaInfo();
         schemaInfo.setMasterSchema(isMasterSchema);
-        // set this as an visited schema to stop infinite traversal
-        visitedSchemas.add(xmlSchema.getSourceURI());
-        //Get the uri form of the sourceUri string.
-        URI uri = new URI(xmlSchema.getSourceURI());
-        //Extract the absolute path of master schema which has 'file' uri.
-        if (isMasterSchema && uri.getScheme().equals("file")) {
-            String sourceUri = xmlSchema.getSourceURI();
-            absoluteFilePath = StringUtils.removeStart(sourceUri, "file:///");//gives the file path
-            // without "file:///" prefix.
+        if (xmlSchema.getSourceURI() != null) {
+        	// set this as an visited schema to stop infinite traversal
+            visitedSchemas.add(xmlSchema.getSourceURI());
+            //Get the uri form of the sourceUri string.
+            URI uri = new URI(xmlSchema.getSourceURI());
+            //Extract the absolute path of master schema which has 'file' uri.
+            if (isMasterSchema && uri.getScheme().equals("file")) {
+                String sourceUri = xmlSchema.getSourceURI();
+                absoluteFilePath = StringUtils.removeStart(sourceUri, "file:///");//gives the file path
+                // without "file:///" prefix.
+            }
         }
+        
         if (includes != null) {
             Object externalComponent;
             XmlSchemaExternal xmlSchemaExternal;
