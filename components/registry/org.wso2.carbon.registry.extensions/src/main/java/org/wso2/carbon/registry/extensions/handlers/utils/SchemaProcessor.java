@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 
 import com.ibm.wsdl.extensions.schema.SchemaImportImpl;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ws.commons.schema.XmlSchema;
@@ -62,6 +63,8 @@ public class SchemaProcessor {
     private static final Log log = LogFactory.getLog(SchemaProcessor.class);
 
     private int i;
+
+    private String absoluteFilePath = null;//to hold the absolute path of schema from the sourceuri
 
     public SchemaProcessor(RequestContext requestContext, WSDLValidationInfo validationInfo) {
         this.registry = requestContext.getRegistry();
@@ -118,7 +121,12 @@ public class SchemaProcessor {
             xmlSchema = xmlSchemaCollection.read(inputSource, null);
             xmlSchema.setSourceURI(url);
             evaluateSchemasRecursively(xmlSchema, null, false, true);
-        } catch (RuntimeException re) {
+        }catch (URISyntaxException e) {
+            String msg = "Syntax error in the uri";
+            log.error(msg, e);
+            throw new RegistryException(msg, e);//to preserver the exception handling execution path of the rest of the
+            //application.
+        }catch (RuntimeException re) {
             String msg = "Could not read the XML Schema Definition file. ";
             if (re.getCause() instanceof org.apache.ws.commons.schema.XmlSchemaException) {
                 msg += re.getCause().getMessage();
@@ -204,7 +212,13 @@ public class SchemaProcessor {
             // bother with a ValidationEventHandler.
             XmlSchema xmlSchema = xmlSchemaCollection.read(inputSource, null);
             evaluateSchemasRecursively(xmlSchema, null, false, true);
-        } catch (RuntimeException re) {
+        }catch (URISyntaxException e) {
+            String msg = "Syntax error in the uri";
+            log.error(msg, e);
+            throw new RegistryException(msg, e);//to preserver the exception handling execution path of the rest of the
+            //application.
+        }
+        catch (RuntimeException re) {
             String msg = "Could not read the XML Schema Definition file. ";
             if (re.getCause() instanceof org.apache.ws.commons.schema.XmlSchemaException) {
                 msg += re.getCause().getMessage();
@@ -258,7 +272,14 @@ public class SchemaProcessor {
                     /* setting base URI in the collection to load relative schemas */
                     xmlSchemaCollection.setBaseUri(wsdlDocumentBaseURI);
                     xmlSchema = xmlSchemaCollection.read(schema.getElement());
-                    evaluateSchemasRecursively(xmlSchema, dependencies, true, false);
+                    try {
+                        evaluateSchemasRecursively(xmlSchema, dependencies, true, false);
+                    } catch (URISyntaxException e) {
+                        String msg = "Syntax error in the uri";
+                        log.error(msg, e);
+                        throw new RegistryException(msg, e);//to preserver the exception handling execution path of the rest of the
+                        //application.
+                    }
                 }
             }
         }
@@ -267,13 +288,24 @@ public class SchemaProcessor {
     private void evaluateSchemasRecursively(
             XmlSchema xmlSchema,
             ArrayList<String> dependencies,
-            boolean isWSDLInlineSchema, boolean isMasterSchema) throws RegistryException {
+            boolean isWSDLInlineSchema, boolean isMasterSchema) throws RegistryException, URISyntaxException {
         // first process the imports and includes
         XmlSchemaObjectCollection includes = xmlSchema.getIncludes();
         SchemaInfo schemaInfo = new SchemaInfo();
         schemaInfo.setMasterSchema(isMasterSchema);
-        // set this as an visited schema to stop infinite traversal
-        visitedSchemas.add(xmlSchema.getSourceURI());
+        if (xmlSchema.getSourceURI() != null) {
+        	// set this as an visited schema to stop infinite traversal
+            visitedSchemas.add(xmlSchema.getSourceURI());
+            //Get the uri form of the sourceUri string.
+            URI uri = new URI(xmlSchema.getSourceURI());
+            //Extract the absolute path of master schema which has 'file' uri.
+            if (isMasterSchema && uri.getScheme().equals("file")) {
+                String sourceUri = xmlSchema.getSourceURI();
+                absoluteFilePath = StringUtils.removeStart(sourceUri, "file:///");//gives the file path
+                // without "file:///" prefix.
+            }
+        }
+        
         if (includes != null) {
             Object externalComponent;
             XmlSchemaExternal xmlSchemaExternal;
@@ -293,10 +325,15 @@ public class SchemaProcessor {
                         }
 
                         if (!visitedSchemas.contains(sourceURI)) {
-                            evaluateSchemasRecursively(
-                                    innerSchema,
-                                    null,   /* passing null is safe since we are passing isWSDLSchema = false */
-                                    false, false); /* ignore inline schema and proceed with included ones */
+                            String dependencyAbsoluteFilePath = StringUtils.removeStart(sourceURI, "file:/");//gives
+                            // the file path without "file:/" prefix.
+                            if (!dependencyAbsoluteFilePath.equals(absoluteFilePath)) {//evaluate schema recursively if the
+                                //absolute filepaths are different.
+                                evaluateSchemasRecursively(
+                                        innerSchema,
+                                        null,   /* passing null is safe since we are passing isWSDLSchema = false */
+                                        false, false); /* ignore inline schema and proceed with included ones */
+                            }
                         }
                     }
                 }

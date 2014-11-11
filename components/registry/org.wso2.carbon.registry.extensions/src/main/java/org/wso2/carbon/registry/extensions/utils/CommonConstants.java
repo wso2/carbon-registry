@@ -87,7 +87,11 @@ public class CommonConstants {
     public static final String SLA_PATCH_VERSION_MEDIA_TYPE =
             "application/vnd.wso2-sla-version.patch";
 
-    public static final String SERVICE_VERSION_REGEX = "^\\d+[.]\\d+[.]\\d+(-[a-zA-Z0-9]+)?$";
+    /*
+    * Now version can be displayed dynamically (jira:REGISTRY-2211)
+    * public static final String SERVICE_VERSION_REGEX = "^\\d+[.]\\d+[.]\\d+(-[a-zA-Z0-9]+)?$";
+    * */
+    public static final String SERVICE_VERSION_REGEX = "^(\\d+[.]*)+\\d+(-[a-zA-Z0-9]+)?$";
 
     public static final String SOAP11_ENDPOINT_ATTRIBUTE = "soap11";
     public static final String SOAP12_ENDPOINT_ATTRIBUTE = "soap12";

@@ -45,7 +45,7 @@ public class RegistryConfigLoader {
 
     private long indexingFreqInSecs;
 
-    private String lastAccessTimeLocation = null;
+    private String lastAccessTimeLocation;
 
     private Map<String, Indexer> indexerMap = new LinkedHashMap<String, Indexer>();
 
@@ -65,6 +65,9 @@ public class RegistryConfigLoader {
 
 
     public RegistryConfigLoader() {
+        startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+        indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+        lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
         try {
             FileInputStream fileInputStream = new FileInputStream(getConfigFile());
             StAXOMBuilder builder = new StAXOMBuilder(
@@ -133,20 +136,22 @@ public class RegistryConfigLoader {
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());
-        } catch (Exception e) {
-            startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
+
         try {
             indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("indexingFrequencyInSeconds")).getText());
-        } catch (Exception e) {
-            indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
+
         try {
             lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
                     new QName("lastAccessTimeLocation")).getText();
-        } catch (OMException e) {
-            lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
+        } catch (OMException ignored) {
+            // we can use default value and continue if no OMElement found in indexingConfig
         }
 
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
