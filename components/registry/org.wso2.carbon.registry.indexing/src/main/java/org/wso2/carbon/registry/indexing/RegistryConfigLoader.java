@@ -136,22 +136,25 @@ public class RegistryConfigLoader {
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
+            log.error("No OMElement found in indexingConfig, hence using default value ", e);
         }
 
         try {
             indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("indexingFrequencyInSeconds")).getText());
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
+            log.error("No OMElement found in indexingConfig, hence using default value ", e);
         }
 
         try {
             lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
                     new QName("lastAccessTimeLocation")).getText();
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
+            log.error("No OMElement found in indexingConfig, hence using default value ", e);
         }
 
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
@@ -166,7 +169,8 @@ public class RegistryConfigLoader {
             if (pathRegEx != null) {
                 try {
                     exclusionList.add(Pattern.compile(pathRegEx));
-                } catch (PatternSyntaxException ignore) {
+                } catch (PatternSyntaxException e) {
+                    log.error("Error in compiling expression ", e);
                 }
             }
         }
