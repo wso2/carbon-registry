@@ -30,6 +30,7 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,6 +39,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class RegistryConfigLoader {
+	
+	private static volatile RegistryConfigLoader registryConfigLoaderInstance;
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
@@ -62,9 +65,14 @@ public class RegistryConfigLoader {
     public long getBatchSize() {
         return batchSize;
     }
-
-
-    public RegistryConfigLoader() {
+    
+    private String solrServerUrl;
+    
+    public String getSolrServerUrl(){
+    	return solrServerUrl;
+    }
+    
+    private RegistryConfigLoader() {
         startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
@@ -93,6 +101,17 @@ public class RegistryConfigLoader {
 
     }
 
+    public static RegistryConfigLoader getInstance(){
+    	if(registryConfigLoaderInstance == null){
+    		synchronized (RegistryConfigLoader.class) {
+    	    	if(registryConfigLoaderInstance == null){
+    	    		registryConfigLoaderInstance = new RegistryConfigLoader();
+    	    	}
+			}
+    	}
+    	return registryConfigLoaderInstance;
+    }
+    
     public long getIndexingFreqInSecs() {
         return indexingFreqInSecs;
     }
@@ -153,7 +172,9 @@ public class RegistryConfigLoader {
         } catch (OMException ignored) {
             // we can use default value and continue if no OMElement found in indexingConfig
         }
-
+        
+        	
+        solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
         indexerPoolSize =  Integer.parseInt(indexingConfig.getFirstChildWithName(new QName("indexerPoolSize")).getText());
 

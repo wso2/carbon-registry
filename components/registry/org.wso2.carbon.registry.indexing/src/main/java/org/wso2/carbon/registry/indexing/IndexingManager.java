@@ -65,7 +65,7 @@ public class IndexingManager {
     private IndexingManager() {
         try {
             registry = Utils.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-            registryConfig = new RegistryConfigLoader();
+            registryConfig = RegistryConfigLoader.getInstance();
             indexer = new AsyncIndexer();
         } catch (RegistryException e) {
             log.error("Could not initialize registry for indexing", e);
@@ -75,7 +75,9 @@ public class IndexingManager {
     public static IndexingManager getInstance() {
         if (instance == null) {
             synchronized (IndexingManager.class) {
-                instance = new IndexingManager();
+                if (instance == null) {           	
+                	instance = new IndexingManager();
+                }
             }
         }
         return instance;

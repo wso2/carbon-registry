@@ -875,7 +875,7 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>solr.wso2</groupId>
+            <groupId>org.apache.solr.wso2</groupId>
             <artifactId>solr</artifactId>
         </dependency>
         <dependency>

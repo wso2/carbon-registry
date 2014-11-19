@@ -25,6 +25,9 @@ public class IndexingConstants {
 
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
             RegistryConstants.REGISTRY_COMPONENT_PATH + "/indexing/lastaccesstime";
+    
+    //Default value of Solr Server URL is set to the embedded solr. This going to be used when nothing specify is registry.xml
+    public static final String SOLR_SERVER_URL = "http://localhost:9763/solr/registry-indexing";
 
     public static final long STARTING_DELAY_IN_SECS_DEFAULT_VALUE = 10 * 60; //10 minutes
     public static final long INDEXING_FREQ_IN_SECS_DEFAULT_VALUE = 1 * 60; //1 minute
