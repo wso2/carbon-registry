@@ -18,20 +18,24 @@
 
 package org.wso2.carbon.registry.indexing;
 
+import java.io.File;
+
 import org.wso2.carbon.registry.core.RegistryConstants;
 
 
 public class IndexingConstants {
-
+	//default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
-            RegistryConstants.REGISTRY_COMPONENT_PATH + "/indexing/lastaccesstime";
+            RegistryConstants.REGISTRY_COMPONENT_PATH + File.separator +"indexing" +File.separator +"lastaccesstime";
     
-    //Default value of Solr Server URL is set to the embedded solr. This going to be used when nothing specify is registry.xml
-    public static final String SOLR_SERVER_URL = "http://localhost:9763/solr/registry-indexing";
+    //Default value for Solr Server core is set to the embedded solr. This going to be used when nothing specify as solr url in registry.xml
+    public static final String DEFAULT_SOLR_SERVER_CORE = "registry-indexing";
 
+    //Default starting delay and indexing frequency when nothing specified in registry.xml
     public static final long STARTING_DELAY_IN_SECS_DEFAULT_VALUE = 10 * 60; //10 minutes
     public static final long INDEXING_FREQ_IN_SECS_DEFAULT_VALUE = 1 * 60; //1 minute
 
+    //fields are set for indexing document as default
     public static final String FIELD_ID ="id";
     public static final String FIELD_TENANT_ID="tenantId";
     public static final String FIELD_TEXT="text";

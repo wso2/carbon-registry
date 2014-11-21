@@ -173,8 +173,11 @@ public class RegistryConfigLoader {
             // we can use default value and continue if no OMElement found in indexingConfig
         }
         
-        	
-        solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
+        // solr server url for initiate the solr server	
+        if(indexingConfig.getFirstChildWithName(new QName("solrServerUrl")) != null){
+        	solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
+        }
+        
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
         indexerPoolSize =  Integer.parseInt(indexingConfig.getFirstChildWithName(new QName("indexerPoolSize")).getText());
 
