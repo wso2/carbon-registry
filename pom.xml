@@ -1053,7 +1053,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.solr.wso2</groupId>
+                <groupId>solr.wso2</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
             </dependency>

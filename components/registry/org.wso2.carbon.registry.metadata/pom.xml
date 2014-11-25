@@ -125,7 +125,7 @@
         <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.apache.solr.wso2</groupId>
+        <groupId>solr.wso2</groupId>
         <artifactId>solr</artifactId>
     </dependency>
     <dependency>

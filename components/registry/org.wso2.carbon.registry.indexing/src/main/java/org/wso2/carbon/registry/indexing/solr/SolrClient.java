@@ -48,7 +48,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,9 +128,14 @@ public class SolrClient {
 		copyConfigurationFiles();
 		//set the solr home path
 		System.setProperty("solr.solr.home", solrHome.getPath());
-/*		this.server = new HttpSolrServer(solrServerUrl);*/
-		CoreContainer coreContainer = new CoreContainer();
-		this.server = new EmbeddedSolrServer(coreContainer, "");
+		
+		if (solrServerUrl != null) {
+			this.server = new HttpSolrServer(solrServerUrl);
+		} else {
+			CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
+			coreContainer.load();
+			this.server = new EmbeddedSolrServer(coreContainer, solrCore);
+		}
 		log.info("Sorl server initiated at: " + solrServerUrl);
     }
 
@@ -260,6 +267,7 @@ public class SolrClient {
             String contentAsText = indexDoc.getContentAsText();
             int tenantId = indexDoc.getTenantId();
             Map<String,List<String>> fields = indexDoc.getFields();
+            List<String> multivaluedFields = indexDoc.getMultivaluedFields();
 
             if (log.isDebugEnabled()) {
             	log.debug("Indexing Document in resource path: "+path);
@@ -281,14 +289,27 @@ public class SolrClient {
 				for (Map.Entry<String, List<String>> e : fields.entrySet()) {
 					// The field is dynamic so we need to follow the solr
 					// schema.
-					String key = e.getKey() + "_ss";
-					for (String s : e.getValue()) {
+					String key = e.getKey() + "_s";
+					
+                    if (e.getValue().size() == 1) {
+                        document.addField(key, e.getValue().get(0));
+                    } else if (e.getValue().size() > 1) {
+                        StringBuilder builder = new StringBuilder();
+                        for (String s : e.getValue()) {
+                            builder.append(s).append(",");
+                        }
+                        document.addField(key, builder.substring(0, builder.length() - 1));
+                    }
+/*					for (String s : e.getValue()) {
 						document.addField(key, s);
-					}
+					}*/
 				}
 			}
-            
+			//get current date time with Calendar()
+			Date t1 = Calendar.getInstance().getTime();
             server.add(document);
+            Date t2 = Calendar.getInstance().getTime();
+            log.info("path: "+path+ " | time: "+(t2.getTime()-t1.getTime()));
 
         } catch (SolrServerException e) {
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
@@ -308,7 +329,12 @@ public class SolrClient {
 		try {
 			String id = generateId(tenantId, path);
 
+			//get current date time with Calendar()
+			Date t1 = Calendar.getInstance().getTime();
 			server.deleteById(id);
+            Date t2 = Calendar.getInstance().getTime();
+            log.info("path: "+path+ " | time: "+(t2.getTime()-t1.getTime()));
+            
 			if (log.isDebugEnabled()) {
 				log.debug("Delete the document " + id);
 			}
@@ -352,7 +378,7 @@ public class SolrClient {
                     //This is the fix REGISTRY-1970 before all the special characters where escaped sing
                     // 'SolrQueryParser.escape()' but because of that wildcard functionallity did not work poperly
                     // hence only ecaping ':' and ' ';
-                    query.addFilterQuery(e.getKey() + "_ss:" + e.getValue().replaceAll(":","\\\\\\:").replaceAll(" ",
+                    query.addFilterQuery(e.getKey() + "_s:" + e.getValue().replaceAll(":","\\\\\\:").replaceAll(" ",
                             "\\\\\\ "));
                 }
             }
@@ -371,10 +397,15 @@ public class SolrClient {
 					//                    query.setRows(paginationContext.getCount());
                     String sortBy = paginationContext.getSortBy();
                     if (sortBy.length() > 0) {
-                        query.setSort(sortBy + "_ss", paginationContext.getSortOrder().equals("ASC") ?
+                        query.setSort(sortBy + "_s", paginationContext.getSortOrder().equals("ASC") ?
                                 SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                     }
+        			//get current date time with Calendar()
+        			Date t1 = Calendar.getInstance().getTime();
                     queryresponse = server.query(query);
+                    Date t2 = Calendar.getInstance().getTime();
+                    log.info("query: "+query+ " | time: "+(t2.getTime()-t1.getTime()));
+                    
 					// TODO: Proper mechanism once authroizations are fixed - senaka
 					//                    PaginationUtils.setRowCount(messageContext,
 					//                            Long.toString(queryresponse.getResults().getNumFound()));
@@ -384,7 +415,11 @@ public class SolrClient {
                     }
                 }
             } else {
+    			//get current date time with Calendar()
+    			Date t1 = Calendar.getInstance().getTime();
                 queryresponse = server.query(query);
+                Date t2 = Calendar.getInstance().getTime();
+                log.info("query: "+query+ " | time: "+(t2.getTime()-t1.getTime()));
             }
 
             return queryresponse.getResults();
