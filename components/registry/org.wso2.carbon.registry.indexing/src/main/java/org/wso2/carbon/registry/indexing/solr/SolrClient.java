@@ -84,10 +84,14 @@ public class SolrClient {
     	//get the solr server url from the registry.xml
     	RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
     	String solrServerUrl = configLoader.getSolrServerUrl();
+    	String solrServerMode = configLoader.getSolrServerMode();
     	
-		if (solrServerUrl == null) {
-			//since solr server url is not set, registry indexing will not work. set the default value for solr-core.
-			log.info("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
+    	if("embedded".equals(solrServerMode)){
+			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
+    	}
+    	else if ("standalone".equals(solrServerMode) && solrServerUrl == null) {
+			//since solr server url is not set, registry indexing will be work as embeddedSolr. set the default value for solr-core.
+			log.warn("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
 			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
 		}
 		else{
@@ -95,6 +99,7 @@ public class SolrClient {
 			String [] splitUrl  = solrServerUrl.split("/");
 			solrCore = splitUrl[splitUrl.length -1];
 		}
+    	
 		if(log.isDebugEnabled()){
 			log.debug("Solr server core is set as: "+solrCore);
 		}
@@ -129,7 +134,8 @@ public class SolrClient {
 		//set the solr home path
 		System.setProperty("solr.solr.home", solrHome.getPath());
 		
-		if (solrServerUrl != null) {
+		if ("standalone".equalsIgnoreCase(solrServerMode) && solrServerUrl != null) {
+
 			this.server = new HttpSolrServer(solrServerUrl);
 		} else {
 			CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
@@ -267,7 +273,6 @@ public class SolrClient {
             String contentAsText = indexDoc.getContentAsText();
             int tenantId = indexDoc.getTenantId();
             Map<String,List<String>> fields = indexDoc.getFields();
-            List<String> multivaluedFields = indexDoc.getMultivaluedFields();
 
             if (log.isDebugEnabled()) {
             	log.debug("Indexing Document in resource path: "+path);

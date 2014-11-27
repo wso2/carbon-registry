@@ -68,11 +68,17 @@ public class RegistryConfigLoader {
     
     private String solrServerUrl;
     
+    private String solrServerMode;
+    
     public String getSolrServerUrl(){
     	return solrServerUrl;
     }
     
-    private RegistryConfigLoader() {
+    public String getSolrServerMode() {
+		return solrServerMode;
+	}
+
+	private RegistryConfigLoader() {
         startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
@@ -176,6 +182,11 @@ public class RegistryConfigLoader {
         // solr server url for initiate the solr server	
         if(indexingConfig.getFirstChildWithName(new QName("solrServerUrl")) != null){
         	solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
+        }
+        
+        // solr server mode for initiate the solr server: embedded or standalone
+        if(indexingConfig.getFirstChildWithName(new QName("solrServerMode")) != null){
+        	solrServerMode = indexingConfig.getFirstChildWithName(new QName("solrServerMode")).getText();
         }
         
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
