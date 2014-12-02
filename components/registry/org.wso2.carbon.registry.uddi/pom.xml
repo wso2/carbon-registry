@@ -58,7 +58,7 @@
                             javax.persistence.*;version="1.0",
                             org.wso2.carbon.common.*,
                             org.apache.juddi.*;version="0.0.0",
-                            org.wso2.carbon.registry.core.*;version="0.0.0",
+                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.registry.resource.*,
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,

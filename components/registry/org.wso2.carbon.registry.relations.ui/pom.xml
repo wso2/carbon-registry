@@ -46,14 +46,14 @@
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.ui.*;version="0.0.0",
-                            org.wso2.carbon.registry.core.*;version="0.0.0",
+                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.lucene.*,
-                            org.wso2.carbon.registry.relations.stub.*;version="${carbon.platform.package.import.version.range}",
+                            org.wso2.carbon.registry.relations.stub.*;version="${carbon.kernel.package.import.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
