@@ -67,7 +67,7 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.relations</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.kernel.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.platform.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

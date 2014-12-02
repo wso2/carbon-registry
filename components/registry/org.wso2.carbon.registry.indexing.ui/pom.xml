@@ -53,7 +53,7 @@
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.lucene.*,
                             org.apache.solr.*,
-                            org.wso2.carbon.registry.indexing.stub.*;version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.registry.indexing.stub.*;version="${carbon.platform.package.import.version.range}",
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
