@@ -51,8 +51,8 @@
                             org.wso2.carbon.registry.handler.*,
                         </Private-Package>
                         <Import-Package>
-                            org.wso2.carbon.registry.core.*;version="0.0.0",
-                            org.wso2.carbon.core.services.callback.*,
+                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.core.services.callback.*; version="${carbon.kernel.package.import.version.range}",
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
