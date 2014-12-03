@@ -1235,8 +1235,8 @@
         </carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.3.0-SNAPSHOT
         </carbon.platform.package.export.version>
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
+        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
         </carbon.kernel.package.import.version.range>
 
         <!-- Axis2 Version -->
