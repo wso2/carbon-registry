@@ -313,6 +313,16 @@
                 <artifactId>org.wso2.carbon.framework.exporter</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
+                <version>${carbon.kernel.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -332,11 +342,6 @@
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.caching.core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -400,11 +405,6 @@
                         <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.authenticator.stub</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.equinox</groupId>
@@ -1235,8 +1235,8 @@
         </carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.3.0-SNAPSHOT
         </carbon.platform.package.export.version>
-        <carbon.kernel.version>4.3.0-SNAPSHOT</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.3.0.SNAPSHOT, 4.4.0)
+        <carbon.kernel.version>4.3.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.kernel.package.import.version.range>
 
         <!-- Axis2 Version -->
