@@ -52,21 +52,20 @@
 
             while(lastIndex != -1){
 
-            lastIndex = textContent.indexOf(findStr, lastIndex);
+                lastIndex = textContent.indexOf(findStr, lastIndex);
 
-            if( lastIndex != -1){
-            count ++;
-            lastIndex+=(findStr.length()-1);
-            }
+                if( lastIndex != -1){
+                    count ++;
+                    lastIndex+=(findStr.length()-1);
+                }
             }
 
             for(int i=0;i<count;i++) {
-            Pattern p = Pattern.compile("/[^/.]*/[.][.]/");
-            Matcher m = p.matcher(textContent);
-            if(m.matches()) {
-            textContent = textContent.replaceFirst("/[^/]*/\\.{2}/", "/");
+                Pattern p = Pattern.compile("/[^/.]*/[.][.]/");
+                Matcher m = p.matcher(textContent);
+                if(m.matches()) {
+                    textContent = textContent.replaceFirst("/[^/]*/\\.{2}/", "/");
+                }
             }
-            }
-
 %>
 <%=textContent%>
