@@ -82,23 +82,23 @@ public class SolrClient {
     private Map<String,String> filePathMap = new HashMap<String, String>();
 	
 	// solr home directory path
-	private static final String SOLR_HOME_FILE_PATH = CarbonUtils
+    private static final String SOLR_HOME_FILE_PATH = CarbonUtils
 			.getCarbonHome()
 			+ File.separator
 			+ "repository"
 			+ File.separator
 			+ "conf" + File.separator + "solr";
 
-	private static final String SOLR_CONFIG_FILES_CONTAINER = "solr_configuration_files.properties";
-	private static final String CORE_PROPERTIES = "core.properties";
+    private static final String SOLR_CONFIG_FILES_CONTAINER = "solr_configuration_files.properties";
+    private static final String CORE_PROPERTIES = "core.properties";
 	
-	private static final String SOLR_HOME = "home/";
-	private static final String SOLR_CORE = "home/core/";
-	private static final String SOLR_CONF_LANG = "home/core/conf/lang";
+    private static final String SOLR_HOME = "home/";
+    private static final String SOLR_CORE = "home/core/";
+    private static final String SOLR_CONF_LANG = "home/core/conf/lang";
 
-	private File solrHome, confDir, langDir;
+    private File solrHome, confDir, langDir;
 	
-	private String solrCore = null;
+    private String solrCore = null;
 
     protected SolrClient() throws RegistryException, IOException{
     	//get the solr server url from the registry.xml
@@ -106,79 +106,79 @@ public class SolrClient {
     	String solrServerUrl = configLoader.getSolrServerUrl();
     	String solrServerMode = configLoader.getSolrServerMode();
     	
-		if (solrServerUrl == null) {
-			// since solr server url is not set, registry indexing will be work
-			// as embeddedSolr. set the default value for solr-core.
-			log.warn("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
-			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
-		}
-		else{
-			//get the final word which should be always the solr-core
-			String [] splitUrl  = solrServerUrl.split("/");
-			solrCore = splitUrl[splitUrl.length -1];
-		}
-		log.debug("Solr server core is set as: "+solrCore);
+    	if (solrServerUrl == null) {
+            // since solr server url is not set, registry indexing will be work
+            // as embeddedSolr. set the default value for solr-core.
+            log.warn("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
+            solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
+    	}
+    	else{
+            //get the final word which should be always the solr-core
+            String [] splitUrl  = solrServerUrl.split("/");
+            solrCore = splitUrl[splitUrl.length -1];
+    	}
+    	log.debug("Solr server core is set as: "+solrCore);
 
-		//create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
-		solrHome = new File(SOLR_HOME_FILE_PATH);
-		if (!solrHome.exists() && !solrHome.mkdirs()) {
-			throw new IOException("Solr home directory could not be created. path: "+ solrHome);
-		}
+    	//create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
+    	solrHome = new File(SOLR_HOME_FILE_PATH);
+    	if (!solrHome.exists() && !solrHome.mkdirs()) {
+            throw new IOException("Solr home directory could not be created. path: "+ solrHome);
+    	}
 		
-		//create the configuration folder inside solr core : carbon_home/repository/conf/solr/<solrCore>/conf
-		confDir = new File(solrHome, solrCore + File.separator + "conf");
-	 	if (!confDir.exists() && !confDir.mkdirs()) {
-			throw new IOException(
+    	//create the configuration folder inside solr core : carbon_home/repository/conf/solr/<solrCore>/conf
+    	confDir = new File(solrHome, solrCore + File.separator + "conf");
+    	if (!confDir.exists() && !confDir.mkdirs()) {
+            throw new IOException(
 					"Solr conf directory could not be created! Path: "
 							+ confDir);
-		}
+    	}
 	 	
-	 	//create lang directory inside conf to store language specific stopwords
-	 	//commons-io --> file utils
-		langDir = new File(confDir, "lang");
-		if (!langDir.exists() && !langDir.mkdirs()) {
-			throw new IOException(
+    	//create lang directory inside conf to store language specific stopwords
+    	//commons-io --> file utils
+    	langDir = new File(confDir, "lang");
+    	if (!langDir.exists() && !langDir.mkdirs()) {
+            throw new IOException(
 					"Solf lang directory could not be created! Path: "
 							+ langDir);
-		}
+    	}
 		
-		//read the configuration file name and there dest path and stored in filePathMap 
-		readConfigurationFilePaths();
-		//read the content of the files in filePathMap and copy them into destination path.
-		copyConfigurationFiles();
-		//set the solr home path
-		System.setProperty("solr.solr.home", solrHome.getPath());
+    	//read the configuration file name and there dest path and stored in filePathMap 
+    	readConfigurationFilePaths();
+    	//read the content of the files in filePathMap and copy them into destination path.
+    	copyConfigurationFiles();
+    	//set the solr home path
+    	System.setProperty("solr.solr.home", solrHome.getPath());
 		
-		if ("standalone".equalsIgnoreCase(solrServerMode)
+    	if ("standalone".equalsIgnoreCase(solrServerMode)
 				&& solrServerUrl != null) {
-			//creating httpclient with authentication.
-			ModifiableSolrParams params = new ModifiableSolrParams();
-			params.set(HttpClientUtil.PROP_MAX_CONNECTIONS, 128);
-			params.set(HttpClientUtil.PROP_MAX_CONNECTIONS_PER_HOST, 32);
-			params.set(HttpClientUtil.PROP_FOLLOW_REDIRECTS, false);
+            //creating httpclient with authentication.
+            ModifiableSolrParams params = new ModifiableSolrParams();
+            params.set(HttpClientUtil.PROP_MAX_CONNECTIONS, 128);
+            params.set(HttpClientUtil.PROP_MAX_CONNECTIONS_PER_HOST, 32);
+            params.set(HttpClientUtil.PROP_FOLLOW_REDIRECTS, false);
 			
-			// though DefaultHttpClient is depreciated, current solr version used DefaultHttpClient.
-			DefaultHttpClient httpClient = (DefaultHttpClient) HttpClientUtil
+            // though DefaultHttpClient is depreciated, current solr version used DefaultHttpClient.
+            DefaultHttpClient httpClient = (DefaultHttpClient) HttpClientUtil
 					.createClient(params);
-			httpClient.getCredentialsProvider().setCredentials(
+            httpClient.getCredentialsProvider().setCredentials(
 					AuthScope.ANY,
 					new UsernamePasswordCredentials(configLoader
 							.getSolrServerUserName(), configLoader
 							.getSolrServerPassword()));
 
-			// All this bollocks is just for pre-emptive authentication. It used
-			// to be a boolean...
-			httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+            // All this bollocks is just for pre-emptive authentication. It used
+            // to be a boolean...
+            httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
 
-			this.server = new HttpSolrServer(solrServerUrl, httpClient);
-			log.info("Http Sorl server initiated at: " + solrServerUrl);
+            this.server = new HttpSolrServer(solrServerUrl, httpClient);
+            log.info("Http Sorl server initiated at: " + solrServerUrl);
 
-		} else {
-			CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
-			coreContainer.load();
-			this.server = new EmbeddedSolrServer(coreContainer, solrCore);
-			log.info("Default Embedded Solr Server Initialized");
-		}
+    	} else {
+            CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
+            coreContainer.load();
+            this.server = new EmbeddedSolrServer(coreContainer, solrCore);
+            log.info("Default Embedded Solr Server Initialized");
+    	}
 
     }
 
@@ -189,30 +189,31 @@ public class SolrClient {
     * situations. This reduces the overhead of making requests over authenticated
     * connections. 
     */
-	private static class PreemptiveAuthInterceptor implements
+    private static class PreemptiveAuthInterceptor implements
 			HttpRequestInterceptor {
 
-		public void process(final HttpRequest request, final HttpContext context)
+    	public void process(final HttpRequest request, final HttpContext context)
 				throws HttpException, IOException {
-			AuthState authState = (AuthState) context
+            AuthState authState = (AuthState) context
 					.getAttribute(HttpClientContext.TARGET_AUTH_STATE);
 
-			// If no auth scheme avaialble yet, try to initialize it
-			// preemptively
-			if (authState.getAuthScheme() == null) {
-				CredentialsProvider credsProvider = (CredentialsProvider) context
+            // If no auth scheme avaialble yet, try to initialize it
+            // preemptively
+            if (authState.getAuthScheme() == null) {
+                CredentialsProvider credsProvider = (CredentialsProvider) context
 						.getAttribute(HttpClientContext.CREDS_PROVIDER);
-				HttpHost targetHost = (HttpHost) context
+                HttpHost targetHost = (HttpHost) context
 						.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-				Credentials creds = credsProvider.getCredentials(new AuthScope(
+                Credentials creds = credsProvider.getCredentials(new AuthScope(
 						targetHost.getHostName(), targetHost.getPort()));
-				if (creds == null)
-					throw new HttpException(
+                if (creds == null){
+	                throw new HttpException(
 							"No credentials for preemptive authentication");
-				authState.update(new BasicScheme(), creds);
-			}
-		}
-	}
+                }
+                authState.update(new BasicScheme(), creds);
+            }
+    	}
+    }
 
     public static SolrClient getInstance() throws IndexerException {
         if (instance == null) {
@@ -237,75 +238,74 @@ public class SolrClient {
      * home/core/conf is destination file path, this will go to solr-home/<solr-core>/conf directory.
      * @throws IOException
      */
-	private void readConfigurationFilePaths() throws IOException {
-		InputStream resourceAsStream = getClass().getClassLoader()
+    private void readConfigurationFilePaths() throws IOException {
+        InputStream resourceAsStream = getClass().getClassLoader()
 				.getResourceAsStream(SOLR_CONFIG_FILES_CONTAINER);
-		try {
+        try {
+            Properties fileProperties = new Properties();
+            fileProperties.load(resourceAsStream);
 
-			Properties fileProperties = new Properties();
-			fileProperties.load(resourceAsStream);
-
-			for (Entry<Object, Object> entry : fileProperties.entrySet()) {
-				if(entry.getValue() != null){
-					String [] fileNames = entry.getValue().toString().split(",");
-					for(String fileName : fileNames){
-						filePathMap.put(fileName, (String) entry.getKey());
-					}
-				}
-			}
-		} finally {
+            for (Entry<Object, Object> entry : fileProperties.entrySet()) {
+                if(entry.getValue() != null){
+	                String [] fileNames = entry.getValue().toString().split(",");
+	                for(String fileName : fileNames){
+	                    filePathMap.put(fileName, (String) entry.getKey());
+	                }
+                }
+            }
+        } finally {
 			resourceAsStream.close();
-		}
-	}
+        }
+    }
 	
     /**
      * copy solr configuration files in resource folder to solr home folder.
      * @throws IOException
      */
-	private void copyConfigurationFiles() throws IOException {
-		Properties corePropertise = new Properties();
-		File propertiesFile = null;
+    private void copyConfigurationFiles() throws IOException {
+        Properties corePropertise = new Properties();
+        File propertiesFile = null;
 
-		for (Entry<String, String> entry : filePathMap.entrySet()) {
-			String fileSourcePath = entry.getKey();
-			String fileDestPath = entry.getValue();
+        for (Entry<String, String> entry : filePathMap.entrySet()) {
+            String fileSourcePath = entry.getKey();
+            String fileDestPath = entry.getValue();
 
-			InputStream resourceAsStream = getClass().getClassLoader()
+            InputStream resourceAsStream = getClass().getClassLoader()
 					.getResourceAsStream(fileSourcePath);
-			if (resourceAsStream == null) {
-				throw new SolrException(ErrorCode.NOT_FOUND,
+            if (resourceAsStream == null) {
+                throw new SolrException(ErrorCode.NOT_FOUND,
 						"Can not find resource " + fileSourcePath
 								+ " from the classpath");
-			}
-			File file;
+            }
+            File file;
 
-			if (SOLR_HOME.equals(fileDestPath)) {
-				file = new File(solrHome, fileSourcePath);
-			} else if (SOLR_CORE.equals(fileDestPath)) {
-				file = new File(confDir.getParentFile(), fileSourcePath);
+            if (SOLR_HOME.equals(fileDestPath)) {
+                file = new File(solrHome, fileSourcePath);
+            } else if (SOLR_CORE.equals(fileDestPath)) {
+                file = new File(confDir.getParentFile(), fileSourcePath);
 
-				if (CORE_PROPERTIES.equals(fileSourcePath)) {
-					corePropertise.load(resourceAsStream);
-					corePropertise.setProperty("name", solrCore);
-					propertiesFile = file;
-				}
+                if (CORE_PROPERTIES.equals(fileSourcePath)) {
+	                corePropertise.load(resourceAsStream);
+	                corePropertise.setProperty("name", solrCore);
+	                propertiesFile = file;
+                }
 			} else if (SOLR_CONF_LANG.equals(fileDestPath)) {
-				file = new File(langDir, fileSourcePath);
+                file = new File(langDir, fileSourcePath);
 			} else {
-				file = new File(confDir, fileSourcePath);
+                file = new File(confDir, fileSourcePath);
 			}
 
-			if (!file.exists()) {
-				write2File(resourceAsStream, file);
-			}
-		}
+            if (!file.exists()) {
+                write2File(resourceAsStream, file);
+            }
+        }
 
-		editCorePropertise(propertiesFile, corePropertise);
-	}
+        editCorePropertise(propertiesFile, corePropertise);
+    }
     
     private void write2File(InputStream in, File dest) throws IOException{
         byte[] buf = new byte[1024];
-		OutputStream out = new FileOutputStream(dest);
+        OutputStream out = new FileOutputStream(dest);
         try {
             int read;
 
@@ -318,17 +318,17 @@ public class SolrClient {
         }
     }
     
-	private void editCorePropertise(File dest, Properties prop)
+    private void editCorePropertise(File dest, Properties prop)
 			throws IOException {
-		OutputStream out = new FileOutputStream(dest);
-		try {
+        OutputStream out = new FileOutputStream(dest);
+        try {
 			prop.store(out, null);
-		} finally {
-			if(out != null){
-				out.close();
-			}
+        } finally {
+            if(out != null){
+                out.close();
+            }
 		}
-	}
+    }
     
     private String generateId(int tenantId, String path) {
         return path + IndexingConstants.FIELD_TENANT_ID + tenantId;
@@ -391,21 +391,21 @@ public class SolrClient {
         addDocument(doc);
     }
 
-	public synchronized void deleteFromIndex(String path, int tenantId)
+    public synchronized void deleteFromIndex(String path, int tenantId)
 			throws SolrException {
-		try {
-			String id = generateId(tenantId, path);
-			server.deleteById(id);
+        try {
+            String id = generateId(tenantId, path);
+            server.deleteById(id);
             log.debug("Solr delete index path: "+path+ " id: " +id);
             
-		} catch (SolrServerException e) {
-			throw new SolrException(ErrorCode.SERVER_ERROR,
+        } catch (SolrServerException e) {
+            throw new SolrException(ErrorCode.SERVER_ERROR,
 					"Failure at deleting", e);
 		} catch (IOException e) {
-			throw new SolrException(ErrorCode.SERVER_ERROR,
+            throw new SolrException(ErrorCode.SERVER_ERROR,
 					"Failure at deleting", e);
 		}
-	}
+    }
 
     public SolrDocumentList query(String keywords, int tenantId) throws SolrException{
         return query(keywords, tenantId, Collections.<String, String>emptyMap());
@@ -444,7 +444,7 @@ public class SolrClient {
             }
             QueryResponse queryresponse;
             MessageContext messageContext = MessageContext.getCurrentMessageContext();
-			if ((messageContext != null && PaginationUtils
+            if ((messageContext != null && PaginationUtils
 					.isPaginationHeadersExist(messageContext))
 					|| PaginationContext.getInstance() != null) {
                 try {
@@ -454,9 +454,9 @@ public class SolrClient {
                     } else {
                         paginationContext = PaginationContext.getInstance();
                     }
-					// TODO: Proper mechanism once authroizations are fixed - senaka
-					//                    query.setStart(paginationContext.getStart());
-					//                    query.setRows(paginationContext.getCount());
+                    // TODO: Proper mechanism once authroizations are fixed - senaka
+                    //                    query.setStart(paginationContext.getStart());
+                    //                    query.setRows(paginationContext.getCount());
                     String sortBy = paginationContext.getSortBy();
                     if (sortBy.length() > 0) {
                         query.setSort(sortBy + "_s", paginationContext.getSortOrder().equals("ASC") ?
@@ -465,9 +465,9 @@ public class SolrClient {
                     queryresponse = server.query(query);
                     log.debug("Solr index queried query: "+query);
                     
-					// TODO: Proper mechanism once authroizations are fixed - senaka
-					//                    PaginationUtils.setRowCount(messageContext,
-					//                            Long.toString(queryresponse.getResults().getNumFound()));
+                    // TODO: Proper mechanism once authroizations are fixed - senaka
+                    //                    PaginationUtils.setRowCount(messageContext,
+                    //                            Long.toString(queryresponse.getResults().getNumFound()));
                 } finally {
                     if(messageContext!=null){
                         PaginationContext.destroy();
@@ -484,18 +484,16 @@ public class SolrClient {
         }
     }
 
-	public void cleanAllDocuments() throws SolrServerException, IOException {
+    public void cleanAllDocuments() throws SolrServerException, IOException {
+        QueryResponse results = server.query(new SolrQuery("ICWS"));
+        SolrDocumentList resultsList = results.getResults();
 
-		QueryResponse results = server.query(new SolrQuery("ICWS"));
-		SolrDocumentList resultsList = results.getResults();
-
-		for (int i = 0; i < resultsList.size(); i++) {
-			String id = (String) resultsList.get(i).getFieldValue(
+        for (int i = 0; i < resultsList.size(); i++) {
+            String id = (String) resultsList.get(i).getFieldValue(
 					IndexingConstants.FIELD_ID);
-			UpdateResponse deleteById = server.deleteById(id);
-			log.debug("Deleted ID " + id + " Status " + deleteById.getStatus());
-		}
-
-	}
+            UpdateResponse deleteById = server.deleteById(id);
+            log.debug("Deleted ID " + id + " Status " + deleteById.getStatus());
+        }
+    }
 
 }
