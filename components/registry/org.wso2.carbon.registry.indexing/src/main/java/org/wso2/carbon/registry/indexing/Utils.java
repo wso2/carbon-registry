@@ -180,41 +180,4 @@ public class Utils {
         }
         return false;
     }
-    
-    /**
-     * Returns indexing configuration in the registry.xml
-     * @return
-     * @throws RegistryException
-     */
-    public static OMElement getIndexingConfiguration() throws RegistryException {
-    	OMElement resultElement= null;
- 
-        String configPath = CarbonUtils.getRegistryXMLPath();
-        File registryXML = new File(configPath);
-        FileInputStream fileInputStream;
-        try {
-            fileInputStream = new FileInputStream(registryXML);
-        } catch (FileNotFoundException e) {
-            String msg = "Registry configuration file (registry.xml) file doesn't exist in the path " + configPath;
-            throw new RegistryException(msg,e);
-        }
-        StAXOMBuilder builder;
-        try {
-            builder = new StAXOMBuilder(
-                    CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
-            OMElement configElement = builder.getDocumentElement();
-            if (configElement != null) {
-                resultElement = configElement.getFirstChildWithName(
-                        new QName("indexingConfiguration"));
-            }
-        } catch (XMLStreamException e) {
-            String msg = "Failed to read <indexingConfiguration/> from registry.xml";
-            throw new RegistryException(msg,e);
-        } catch (CarbonException e) {
-            String msg = "Failed to read <indexingConfiguration/> from registry.xml";
-            throw new RegistryException(msg,e);
-        }
-        
-    	return resultElement;
-    }
 }
