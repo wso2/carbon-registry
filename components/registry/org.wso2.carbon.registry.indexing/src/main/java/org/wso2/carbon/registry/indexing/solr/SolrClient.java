@@ -65,9 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,9 +81,14 @@ public class SolrClient {
     
     private Map<String,String> filePathMap = new HashMap<String, String>();
 	
-    //describe
-	private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "conf" + File.separator + "solr";
-	
+	// solr home directory path
+	private static final String SOLR_HOME_FILE_PATH = CarbonUtils
+			.getCarbonHome()
+			+ File.separator
+			+ "repository"
+			+ File.separator
+			+ "conf" + File.separator + "solr";
+
 	private static final String SOLR_CONFIG_FILES_CONTAINER = "solr_configuration_files.properties";
 	private static final String CORE_PROPERTIES = "core.properties";
 	
@@ -103,8 +106,9 @@ public class SolrClient {
     	String solrServerUrl = configLoader.getSolrServerUrl();
     	String solrServerMode = configLoader.getSolrServerMode();
     	
-    	if(solrServerUrl == null) {
-			//since solr server url is not set, registry indexing will be work as embeddedSolr. set the default value for solr-core.
+		if (solrServerUrl == null) {
+			// since solr server url is not set, registry indexing will be work
+			// as embeddedSolr. set the default value for solr-core.
 			log.warn("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
 			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
 		}
@@ -440,7 +444,9 @@ public class SolrClient {
             }
             QueryResponse queryresponse;
             MessageContext messageContext = MessageContext.getCurrentMessageContext();
-            if ((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)) || PaginationContext.getInstance() != null) {
+			if ((messageContext != null && PaginationUtils
+					.isPaginationHeadersExist(messageContext))
+					|| PaginationContext.getInstance() != null) {
                 try {
                     PaginationContext paginationContext;
                     if (messageContext != null) {
@@ -456,11 +462,8 @@ public class SolrClient {
                         query.setSort(sortBy + "_s", paginationContext.getSortOrder().equals("ASC") ?
                                 SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                     }
-        			//get current date time with Calendar()
-        			Date t1 = Calendar.getInstance().getTime();
                     queryresponse = server.query(query);
-                    Date t2 = Calendar.getInstance().getTime();
-                    log.info("query: "+query+ " | time: "+(t2.getTime()-t1.getTime()));
+                    log.debug("Solr index queried query: "+query);
                     
 					// TODO: Proper mechanism once authroizations are fixed - senaka
 					//                    PaginationUtils.setRowCount(messageContext,
