@@ -322,12 +322,12 @@ public class SolrClient {
 			throws IOException {
         OutputStream out = new FileOutputStream(dest);
         try {
-			prop.store(out, null);
+            prop.store(out, null);
         } finally {
             if(out != null){
                 out.close();
             }
-		}
+        }
     }
     
     private String generateId(int tenantId, String path) {
@@ -359,13 +359,13 @@ public class SolrClient {
                 document.addField(IndexingConstants.FIELD_COUNT_ONLY, contentAsText);
             }
             
-			if (fields != null && fields.size() > 0) {
-				for (Map.Entry<String, List<String>> e : fields.entrySet()) {
-					// The field is dynamic so we need to follow the solr
-					// schema.
-					String key = e.getKey() + "_s";
+            if (fields != null && fields.size() > 0) {
+                for (Map.Entry<String, List<String>> e : fields.entrySet()) {
+	                // The field is dynamic so we need to follow the solr
+	                // schema.
+	                String key = e.getKey() + "_s";
 					
-                    if (e.getValue().size() == 1) {
+	                if (e.getValue().size() == 1) {
                         document.addField(key, e.getValue().get(0));
                     } else if (e.getValue().size() > 1) {
                         StringBuilder builder = new StringBuilder();
@@ -374,8 +374,8 @@ public class SolrClient {
                         }
                         document.addField(key, builder.substring(0, builder.length() - 1));
                     }
-				}
-			}
+                }
+            }
             server.add(document);
 
         } catch (SolrServerException e) {
