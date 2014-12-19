@@ -89,11 +89,15 @@ public class SolrClient {
 			+ File.separator
 			+ "conf" + File.separator + "solr";
 
+    //properties file name which contains all solr filenames and relative paths
     private static final String SOLR_CONFIG_FILES_CONTAINER = "solr_configuration_files.properties";
+    //solr core properties filename
     private static final String CORE_PROPERTIES = "core.properties";
-	
+    //constant to identify the file path. file maps to this value should go under home directory
     private static final String SOLR_HOME = "home/";
+    //constant to identify the file path. file maps to this value should go under home/core directory
     private static final String SOLR_CORE = "home/core/";
+    //constant to identify the file path. file maps to this value should go under home/core/conf/lang directory
     private static final String SOLR_CONF_LANG = "home/core/conf/lang";
 
     private File solrHome, confDir, langDir;
