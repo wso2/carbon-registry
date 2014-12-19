@@ -40,7 +40,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class RegistryConfigLoader {
 	
-	private static volatile RegistryConfigLoader registryConfigLoaderInstance;
+    private static volatile RegistryConfigLoader registryConfigLoaderInstance;
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
@@ -83,18 +83,18 @@ public class RegistryConfigLoader {
     }
     
     public String getSolrServerMode() {
-		return solrServerMode;
-	}
+    	return solrServerMode;
+    }
     
-	public String getSolrServerPassword() {
-		return solrServerPassword;
-	}
+    public String getSolrServerPassword() {
+    	return solrServerPassword;
+    }
 
-	public String getSolrServerUserName() {
-		return solrServerUserName;
-	}
+    public String getSolrServerUserName() {
+    	return solrServerUserName;
+    }
 
-	private RegistryConfigLoader() {
+    private RegistryConfigLoader() {
         startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
@@ -179,7 +179,7 @@ public class RegistryConfigLoader {
                     new QName("startingDelayInSeconds")).getText());
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-        	log.error("Error occurred when retriving startingDelayInSeconds, hence using the default value", e);
+            log.error("Error occurred when retriving startingDelayInSeconds, hence using the default value", e);
         }
 
         try {
@@ -187,7 +187,7 @@ public class RegistryConfigLoader {
                     new QName("indexingFrequencyInSeconds")).getText());
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-        	log.error("Error occurred when retriving indexingFrequencyInSeconds, hence using the default value", e);
+            log.error("Error occurred when retriving indexingFrequencyInSeconds, hence using the default value", e);
         }
 
         try {
@@ -231,7 +231,7 @@ public class RegistryConfigLoader {
                 try {
                     exclusionList.add(Pattern.compile(pathRegEx));
                 } catch (PatternSyntaxException ignore) {
-                	log.error("Error occured when compiling the RegEx pattern: " +pathRegEx, ignore);
+                    log.error("Error occured when compiling the RegEx pattern: " +pathRegEx, ignore);
                 }
             }
         }
