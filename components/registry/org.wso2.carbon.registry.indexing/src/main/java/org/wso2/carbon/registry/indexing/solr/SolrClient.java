@@ -392,7 +392,7 @@ public class SolrClient {
     }
 
     public synchronized void deleteFromIndex(String path, int tenantId)
-			throws SolrException {
+    		throws SolrException {
         try {
             String id = generateId(tenantId, path);
             server.deleteById(id);
@@ -401,10 +401,10 @@ public class SolrClient {
         } catch (SolrServerException e) {
             throw new SolrException(ErrorCode.SERVER_ERROR,
 					"Failure at deleting", e);
-		} catch (IOException e) {
+        } catch (IOException e) {
             throw new SolrException(ErrorCode.SERVER_ERROR,
 					"Failure at deleting", e);
-		}
+        }
     }
 
     public SolrDocumentList query(String keywords, int tenantId) throws SolrException{
