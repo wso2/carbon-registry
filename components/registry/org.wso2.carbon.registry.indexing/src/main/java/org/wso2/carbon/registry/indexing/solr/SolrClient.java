@@ -359,12 +359,10 @@ public class SolrClient {
                 document.addField(IndexingConstants.FIELD_COUNT_ONLY, contentAsText);
             }
             
-            if (fields != null && fields.size() > 0) {
+            if (fields!=null && fields.size() > 0) {
                 for (Map.Entry<String, List<String>> e : fields.entrySet()) {
-	                // The field is dynamic so we need to follow the solr
-	                // schema.
+	                // The field is dynamic so we need to follow the solr schema.
 	                String key = e.getKey() + "_s";
-					
 	                if (e.getValue().size() == 1) {
                         document.addField(key, e.getValue().get(0));
                     } else if (e.getValue().size() > 1) {
@@ -454,9 +452,9 @@ public class SolrClient {
                     } else {
                         paginationContext = PaginationContext.getInstance();
                     }
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
-                    //                    query.setStart(paginationContext.getStart());
-                    //                    query.setRows(paginationContext.getCount());
+// TODO: Proper mechanism once authroizations are fixed - senaka
+//                    query.setStart(paginationContext.getStart());
+//                    query.setRows(paginationContext.getCount());
                     String sortBy = paginationContext.getSortBy();
                     if (sortBy.length() > 0) {
                         query.setSort(sortBy + "_s", paginationContext.getSortOrder().equals("ASC") ?
@@ -465,9 +463,9 @@ public class SolrClient {
                     queryresponse = server.query(query);
                     log.debug("Solr index queried query: "+query);
                     
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
-                    //                    PaginationUtils.setRowCount(messageContext,
-                    //                            Long.toString(queryresponse.getResults().getNumFound()));
+// TODO: Proper mechanism once authroizations are fixed - senaka
+//                    PaginationUtils.setRowCount(messageContext,
+//                            Long.toString(queryresponse.getResults().getNumFound()));
                 } finally {
                     if(messageContext!=null){
                         PaginationContext.destroy();
