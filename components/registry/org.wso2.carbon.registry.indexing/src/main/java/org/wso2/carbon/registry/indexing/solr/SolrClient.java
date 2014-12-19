@@ -361,9 +361,9 @@ public class SolrClient {
             
             if (fields!=null && fields.size() > 0) {
                 for (Map.Entry<String, List<String>> e : fields.entrySet()) {
-	                // The field is dynamic so we need to follow the solr schema.
-	                String key = e.getKey() + "_s";
-	                if (e.getValue().size() == 1) {
+                    // The field is dynamic so we need to follow the solr schema.
+                    String key = e.getKey() + "_s";
+                    if (e.getValue().size() == 1) {
                         document.addField(key, e.getValue().get(0));
                     } else if (e.getValue().size() > 1) {
                         StringBuilder builder = new StringBuilder();
