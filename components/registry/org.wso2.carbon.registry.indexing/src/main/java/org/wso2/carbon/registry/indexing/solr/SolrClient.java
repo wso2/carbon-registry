@@ -18,18 +18,35 @@
 package org.wso2.carbon.registry.indexing.solr;
 
 import org.apache.axis2.context.MessageContext;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
+import org.apache.http.auth.Credentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.impl.HttpClientUtil;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.core.CoreContainer;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -86,10 +103,7 @@ public class SolrClient {
     	String solrServerUrl = configLoader.getSolrServerUrl();
     	String solrServerMode = configLoader.getSolrServerMode();
     	
-    	if("embedded".equals(solrServerMode)){
-			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
-    	}
-    	else if ("standalone".equals(solrServerMode) && solrServerUrl == null) {
+    	if(solrServerUrl == null) {
 			//since solr server url is not set, registry indexing will be work as embeddedSolr. set the default value for solr-core.
 			log.warn("Solr server url is not specified in registry.xml, registry indexing will operate as a embedded server");
 			solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
@@ -99,10 +113,7 @@ public class SolrClient {
 			String [] splitUrl  = solrServerUrl.split("/");
 			solrCore = splitUrl[splitUrl.length -1];
 		}
-    	
-		if(log.isDebugEnabled()){
-			log.debug("Solr server core is set as: "+solrCore);
-		}
+		log.debug("Solr server core is set as: "+solrCore);
 
 		//create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
 		solrHome = new File(SOLR_HOME_FILE_PATH);
@@ -134,16 +145,70 @@ public class SolrClient {
 		//set the solr home path
 		System.setProperty("solr.solr.home", solrHome.getPath());
 		
-		if ("standalone".equalsIgnoreCase(solrServerMode) && solrServerUrl != null) {
+		if ("standalone".equalsIgnoreCase(solrServerMode)
+				&& solrServerUrl != null) {
+			//creating httpclient with authentication.
+			ModifiableSolrParams params = new ModifiableSolrParams();
+			params.set(HttpClientUtil.PROP_MAX_CONNECTIONS, 128);
+			params.set(HttpClientUtil.PROP_MAX_CONNECTIONS_PER_HOST, 32);
+			params.set(HttpClientUtil.PROP_FOLLOW_REDIRECTS, false);
+			
+			// though DefaultHttpClient is depreciated, current solr version used DefaultHttpClient.
+			DefaultHttpClient httpClient = (DefaultHttpClient) HttpClientUtil
+					.createClient(params);
+			httpClient.getCredentialsProvider().setCredentials(
+					AuthScope.ANY,
+					new UsernamePasswordCredentials(configLoader
+							.getSolrServerUserName(), configLoader
+							.getSolrServerPassword()));
 
-			this.server = new HttpSolrServer(solrServerUrl);
+			// All this bollocks is just for pre-emptive authentication. It used
+			// to be a boolean...
+			httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+
+			this.server = new HttpSolrServer(solrServerUrl, httpClient);
+			log.info("Http Sorl server initiated at: " + solrServerUrl);
+
 		} else {
 			CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
 			coreContainer.load();
 			this.server = new EmbeddedSolrServer(coreContainer, solrCore);
+			log.info("Default Embedded Solr Server Initialized");
 		}
-		log.info("Sorl server initiated at: " + solrServerUrl);
+
     }
+
+    /** 
+    * This class can be used to configure the Apache Http Client for preemptive
+    * authentication. In this mode, the client will send the basic authentication
+    * response even before the server gives an unauthorized response in certain
+    * situations. This reduces the overhead of making requests over authenticated
+    * connections. 
+    */
+	private static class PreemptiveAuthInterceptor implements
+			HttpRequestInterceptor {
+
+		public void process(final HttpRequest request, final HttpContext context)
+				throws HttpException, IOException {
+			AuthState authState = (AuthState) context
+					.getAttribute(HttpClientContext.TARGET_AUTH_STATE);
+
+			// If no auth scheme avaialble yet, try to initialize it
+			// preemptively
+			if (authState.getAuthScheme() == null) {
+				CredentialsProvider credsProvider = (CredentialsProvider) context
+						.getAttribute(HttpClientContext.CREDS_PROVIDER);
+				HttpHost targetHost = (HttpHost) context
+						.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+				Credentials creds = credsProvider.getCredentials(new AuthScope(
+						targetHost.getHostName(), targetHost.getPort()));
+				if (creds == null)
+					throw new HttpException(
+							"No credentials for preemptive authentication");
+				authState.update(new BasicScheme(), creds);
+			}
+		}
+	}
 
     public static SolrClient getInstance() throws IndexerException {
         if (instance == null) {
@@ -305,16 +370,9 @@ public class SolrClient {
                         }
                         document.addField(key, builder.substring(0, builder.length() - 1));
                     }
-/*					for (String s : e.getValue()) {
-						document.addField(key, s);
-					}*/
 				}
 			}
-			//get current date time with Calendar()
-			Date t1 = Calendar.getInstance().getTime();
             server.add(document);
-            Date t2 = Calendar.getInstance().getTime();
-            log.info("path: "+path+ " | time: "+(t2.getTime()-t1.getTime()));
 
         } catch (SolrServerException e) {
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
@@ -333,16 +391,9 @@ public class SolrClient {
 			throws SolrException {
 		try {
 			String id = generateId(tenantId, path);
-
-			//get current date time with Calendar()
-			Date t1 = Calendar.getInstance().getTime();
 			server.deleteById(id);
-            Date t2 = Calendar.getInstance().getTime();
-            log.info("path: "+path+ " | time: "+(t2.getTime()-t1.getTime()));
+            log.debug("Solr delete index path: "+path+ " id: " +id);
             
-			if (log.isDebugEnabled()) {
-				log.debug("Delete the document " + id);
-			}
 		} catch (SolrServerException e) {
 			throw new SolrException(ErrorCode.SERVER_ERROR,
 					"Failure at deleting", e);
@@ -420,11 +471,8 @@ public class SolrClient {
                     }
                 }
             } else {
-    			//get current date time with Calendar()
-    			Date t1 = Calendar.getInstance().getTime();
                 queryresponse = server.query(query);
-                Date t2 = Calendar.getInstance().getTime();
-                log.info("query: "+query+ " | time: "+(t2.getTime()-t1.getTime()));
+                log.debug("Solr index queried query: "+query);
             }
 
             return queryresponse.getResults();
@@ -433,24 +481,18 @@ public class SolrClient {
         }
     }
 
-/*    public void cleanAllDocuments(){
-        try {
-            QueryResponse results = server.query(new SolrQuery("ICWS"));
-            SolrDocumentList resultsList = results.getResults();
+	public void cleanAllDocuments() throws SolrServerException, IOException {
 
-            for(int i =0; i < resultsList.size(); i++) {
-                String id = (String)resultsList.get(i).getFieldValue(IndexingConstants.FIELD_ID);
-                UpdateResponse deleteById = server.deleteById(id);
-                //server.commit();
-                log.debug("Deleted ID "+ id + " Status " + deleteById.getStatus());
-            }
-        } catch (SolrServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }*/
+		QueryResponse results = server.query(new SolrQuery("ICWS"));
+		SolrDocumentList resultsList = results.getResults();
+
+		for (int i = 0; i < resultsList.size(); i++) {
+			String id = (String) resultsList.get(i).getFieldValue(
+					IndexingConstants.FIELD_ID);
+			UpdateResponse deleteById = server.deleteById(id);
+			log.debug("Deleted ID " + id + " Status " + deleteById.getStatus());
+		}
+
+	}
 
 }

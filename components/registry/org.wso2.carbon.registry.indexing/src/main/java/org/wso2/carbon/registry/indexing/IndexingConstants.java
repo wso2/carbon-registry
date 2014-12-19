@@ -23,7 +23,11 @@ import java.io.File;
 import org.wso2.carbon.registry.core.RegistryConstants;
 
 
-public class IndexingConstants {
+public final class IndexingConstants {
+	
+	//make the constructor private, since it is a utility class
+	private IndexingConstants(){}
+	
 	//default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
             RegistryConstants.REGISTRY_COMPONENT_PATH + File.separator +"indexing" +File.separator +"lastaccesstime";
@@ -34,6 +38,9 @@ public class IndexingConstants {
     //Default starting delay and indexing frequency when nothing specified in registry.xml
     public static final long STARTING_DELAY_IN_SECS_DEFAULT_VALUE = 10 * 60; //10 minutes
     public static final long INDEXING_FREQ_IN_SECS_DEFAULT_VALUE = 1 * 60; //1 minute
+    
+    //Default indexer pool size when nothing specified in registry.xml
+    public static final int DEFAULT_INDEXER_POOL_SIZE = 50;
 
     //fields are set for indexing document as default
     public static final String FIELD_ID ="id";
@@ -43,6 +50,10 @@ public class IndexingConstants {
     public static final String FIELD_MEDIA_TYPE="mediaType";
     public static final String FIELD_LC_NAME="lcName";
     public static final String FIELD_LC_STATE="lcState";
-
+    
+    //new fields are added for indexing document 
+    public static final String FIELD_TAGS = "tags";
+    public static final String FIELD_CREATED_DATE = "createdDate";
+    public static final String FIELD_LAST_UPDATED_DATE = "lastUpdatedDate";    
 
 }

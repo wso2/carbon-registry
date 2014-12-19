@@ -47,7 +47,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.indexing.*,
+                            org.wso2.carbon.registry.indexing.*
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.*;version="0.0.0",
@@ -58,7 +58,7 @@
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.solr.*,
-                            org.apache.lucene.*,
+                            org.apache.http.*;version="4.3.0",
                             org.tartarus.*,
                             *;resolution:=optional
                         </Import-Package>
@@ -111,6 +111,5 @@
             <artifactId>solr</artifactId>
         </dependency>
     </dependencies>
-
 
 </project>
