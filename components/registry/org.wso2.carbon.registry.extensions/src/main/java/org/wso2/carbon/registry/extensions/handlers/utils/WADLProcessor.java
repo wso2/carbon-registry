@@ -256,7 +256,9 @@ public class WADLProcessor {
                     if (registry.resourceExists(importUrl)) {
                         continue;
                     } else {
-                        importUrl = wadlBaseUri + importUrl;
+                        if (wadlBaseUri != null) {
+                            importUrl = wadlBaseUri + importUrl;
+                        }
                     }
                 }
                 String schemaPath = saveSchema(importUrl, wadlVersion);

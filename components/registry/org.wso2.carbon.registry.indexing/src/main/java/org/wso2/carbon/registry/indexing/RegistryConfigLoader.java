@@ -177,25 +177,25 @@ public class RegistryConfigLoader {
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-        	log.error("Error occurred when retriving startingDelayInSeconds, hence using the default value", ignored);
+        	log.error("Error occurred when retriving startingDelayInSeconds, hence using the default value", e);
         }
 
         try {
             indexingFreqInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("indexingFrequencyInSeconds")).getText());
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-        	log.error("Error occurred when retriving indexingFrequencyInSeconds, hence using the default value", ignored);
+        	log.error("Error occurred when retriving indexingFrequencyInSeconds, hence using the default value", e);
         }
 
         try {
             lastAccessTimeLocation = indexingConfig.getFirstChildWithName(
                     new QName("lastAccessTimeLocation")).getText();
-        } catch (OMException ignored) {
+        } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-        	log.error("Error occurred when retriving lastAccessTimeLocation, hence using the default value", ignored);
+        	log.error("Error occurred when retriving lastAccessTimeLocation, hence using the default value", e);
         }
         
         // solr server url for initiate the solr server	

@@ -32,9 +32,9 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.mail.MailConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.event.core.Message;
 import org.wso2.carbon.event.core.subscription.Subscription;
 import org.wso2.carbon.event.ws.internal.notify.WSEventDispatcher;
@@ -42,14 +42,11 @@ import org.wso2.carbon.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.governance.notifications.worklist.stub.WorkListServiceStub;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.eventing.WorkListConfig;
-import org.wso2.carbon.registry.core.ActionConstants;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.eventing.events.DispatchEvent;
 import org.wso2.carbon.registry.eventing.internal.JMXEventsBean;
 import org.wso2.carbon.registry.eventing.internal.Utils;
 import org.wso2.carbon.user.core.UserCoreConstants;
-import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -58,18 +55,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.SimpleTimeZone;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -184,7 +170,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } catch (IllegalStateException e) {
             executorService.shutdownNow();
             throw new IllegalStateException("Unable to create registry event dispatcher during " +
-                                            "shutdown process.");
+                    "shutdown process.");
         }
     }
 
@@ -235,64 +221,52 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 }
             }
         }
-
         String topic = subscription.getTopicName();
-        String resourcePath = "/_" + topic.split("_")[1];
-
         boolean doRest = (subscription.getProperties() != null &&
-                          subscription.getProperties().get(
-                                  RegistryEventingConstants.DO_REST) != null &&
-                          (subscription.getProperties().get(
-                                  RegistryEventingConstants.DO_REST)).equals(
-                                  Boolean.toString(Boolean.TRUE)));
+                subscription.getProperties().get(
+                        RegistryEventingConstants.DO_REST) != null &&
+                (subscription.getProperties().get(
+                        RegistryEventingConstants.DO_REST)).equals(
+                        Boolean.toString(Boolean.TRUE)));
         if (endpoint.toLowerCase().startsWith("digest://")) {
             String digestType = endpoint.substring(9, 10);
             endpoint = endpoint.substring(11);
 
-            if (endpoint.toLowerCase().contains("user://")) {
+            if(endpoint.toLowerCase().contains("user://")){
                 try {
                     String username = endpoint.substring(7);
                     if (Utils.getRegistryService() != null) {
                         UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
-                        if (registry != null && registry.getUserRealm() != null) {
-                            boolean isUserPermitted = registry.getUserRealm().getAuthorizationManager().isUserAuthorized(
-                                    username, resourcePath, ActionConstants.GET);
-                            if (isUserPermitted) {
-                                if (registry.getUserRealm().getUserStoreManager() != null) {
-                                    UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
-                                    endpoint = "mailto:" + reader.getUserClaimValue(username,
-                                                                                    UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                                                                    UserCoreConstants.DEFAULT_PROFILE);
-                                }
-                            }
+                        if (registry != null && registry.getUserRealm() != null &&
+                            registry.getUserRealm().getUserStoreManager() != null) {
+                            UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
+                            endpoint = "mailto:" + reader.getUserClaimValue(username,
+                                                                            UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                                                            UserCoreConstants.DEFAULT_PROFILE);
                         }
                     }
                 } catch (Exception e) {
                     log.error("Failed Sending Notification to: " + endpoint);
                     return;
                 }
-                this.addToEmailDigestQueue(event, topic, endpoint, digestType, subscription.getTopicName());
+                this.addToEmailDigestQueue(event,topic,endpoint,digestType,subscription.getTopicName());
                 return;
-            } else if (endpoint.toLowerCase().contains("role://")) {
+            }
+            else if(endpoint.toLowerCase().contains("role://")){
                 List<String> emails = new LinkedList<String>();
-                String roleName = endpoint.substring(7);
                 try {
+                    String roleName = endpoint.substring(7);
                     if (Utils.getRegistryService() != null) {
                         UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
-                        if (registry != null && registry.getUserRealm() != null) {
-                            boolean isRolePermitted = registry.getUserRealm().getAuthorizationManager().isRoleAuthorized
-                                    (roleName, resourcePath, ActionConstants.GET);
-                            if (isRolePermitted) {
-                                if (registry.getUserRealm().getUserStoreManager() != null) {
-                                    UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
-                                    for (String username : reader.getUserListOfRole(roleName)) {
-                                        String temp = reader.getUserClaimValue(username,
-                                                                               UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                                                               UserCoreConstants.DEFAULT_PROFILE);
-                                        if (temp != null && temp.length() > 0) {
-                                            emails.add("mailto:" + temp);
-                                        }
-                                    }
+                        if (registry != null && registry.getUserRealm() != null &&
+                            registry.getUserRealm().getUserStoreManager() != null) {
+                            UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
+                            for (String username : reader.getUserListOfRole(roleName)) {
+                                String temp = reader.getUserClaimValue(username,
+                                                                       UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                                                       UserCoreConstants.DEFAULT_PROFILE);
+                                if (temp != null && temp.length() > 0) {
+                                    emails.add("mailto:" + temp);
                                 }
                             }
                         }
@@ -303,21 +277,21 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 }
                 for (String email : emails) {
                     log.debug("Sending Notification to: " + email);
-                    this.addToEmailDigestQueue(event, topic, email, digestType, subscription.getTopicName());
+                    this.addToEmailDigestQueue(event, topic, email, digestType,subscription.getTopicName());
                 }
                 return;
-            } else {
-                this.addToEmailDigestQueue(event, topic, endpoint, digestType, subscription.getTopicName());
+            }else {
+                this.addToEmailDigestQueue(event,topic,endpoint,digestType,subscription.getTopicName());
                 return;
             }
         }
         if (endpoint.toLowerCase().startsWith("mailto:")) {
             if (subscription.getProperties() != null &&
-                Boolean.toString(true).equals(subscription.getProperties().get(
-                        RegistryEventingConstants.NOT_VERIFIED))) {
+                    Boolean.toString(true).equals(subscription.getProperties().get(
+                            RegistryEventingConstants.NOT_VERIFIED))) {
                 String email = endpoint.toLowerCase().substring("mailto:".length());
                 log.warn("Unable to send notification. The e-mail address " + email +
-                         " has not been verified.");
+                        " has not been verified.");
                 return;
             }
             log.debug("Sending Notification to: " + endpoint);
@@ -329,17 +303,12 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 if (Utils.getRegistryService() != null) {
                     UserRegistry registry = Utils.getRegistryService().getGovernanceSystemRegistry
                             (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-                    if (registry != null && registry.getUserRealm() != null) {
-                        boolean isUserPermitted = registry.getUserRealm().getAuthorizationManager().isUserAuthorized(
-                                username, resourcePath, ActionConstants.GET);
-                        if (isUserPermitted) {
-                            if (registry.getUserRealm().getUserStoreManager() != null) {
-                                UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
-                                email = "mailto:" + reader.getUserClaimValue(username,
-                                                                             UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                                                             UserCoreConstants.DEFAULT_PROFILE);
-                            }
-                        }
+                    if (registry != null && registry.getUserRealm() != null &&
+                            registry.getUserRealm().getUserStoreManager() != null) {
+                        UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
+                        email = "mailto:" + reader.getUserClaimValue(username,
+                                UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                UserCoreConstants.DEFAULT_PROFILE);
                     }
                 }
             } catch (Exception e) {
@@ -355,20 +324,15 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 if (Utils.getRegistryService() != null) {
                     UserRegistry registry = Utils.getRegistryService().getGovernanceSystemRegistry
                             (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
-                    if (registry != null && registry.getUserRealm() != null) {
-                        boolean isRolePermitted = registry.getUserRealm().getAuthorizationManager().isRoleAuthorized(
-                                roleName, resourcePath, ActionConstants.GET);
-                        if (isRolePermitted) {
-                            if (registry.getUserRealm().getUserStoreManager() != null) {
-                                UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
-                                for (String username : reader.getUserListOfRole(roleName)) {
-                                    String temp = reader.getUserClaimValue(username,
-                                                                           UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                                                           UserCoreConstants.DEFAULT_PROFILE);
-                                    if (temp != null && temp.length() > 0) {
-                                        emails.add("mailto:" + temp);
-                                    }
-                                }
+                    if (registry != null && registry.getUserRealm() != null &&
+                            registry.getUserRealm().getUserStoreManager() != null) {
+                        UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
+                        for (String username : reader.getUserListOfRole(roleName)) {
+                            String temp = reader.getUserClaimValue(username,
+                                    UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                    UserCoreConstants.DEFAULT_PROFILE);
+                            if (temp != null && temp.length() > 0) {
+                                emails.add("mailto:" + temp);
                             }
                         }
                     }
@@ -387,17 +351,17 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             JMXEventsBean eventsBean = Utils.getEventsBean();
             if (eventsBean == null) {
                 log.warn("Unable to generate notification. The notification bean has not been " +
-                         "registered.");
+                        "registered.");
             } else {
                 OMElement message = event.getMessage();
                 OMElement firstElement = message.getFirstElement();
                 String namespaceURI = firstElement.getNamespace().getNamespaceURI();
                 OMElement timestamp = message.getFirstChildWithName(new QName(namespaceURI,
-                                                                              "Timestamp"));
+                        "Timestamp"));
                 if (timestamp != null) {
                     try {
                         eventsBean.addNotification(EVENT_TIME.parse(timestamp.getText()),
-                                                   firstElement.getText());
+                                firstElement.getText());
                     } catch (ParseException ignore) {
                         eventsBean.addNotification(new Date(), firstElement.getText());
                     }
@@ -406,36 +370,22 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } else if (endpoint.toLowerCase().startsWith("work://")) {
             log.debug("Sending Notification to work-list");
             try {
-                String roleName = endpoint.substring(7);
-                if (Utils.getRegistryService() != null) {
-                    UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
-                    if (registry != null && registry.getUserRealm() != null) {
-                        boolean isRolePermitted = registry.getUserRealm().getAuthorizationManager().isRoleAuthorized(
-                                roleName, resourcePath, ActionConstants.GET);
-                        if (isRolePermitted) {
-                            if (workListConfig.getServerURL() != null && workListConfig.getUsername() != null
-                                && workListConfig.getPassword() != null) {
-                                WorkListServiceStub stub = new WorkListServiceStub(configContext,
-                                                                                   workListConfig.getServerURL() + "WorkListService");
-                                ServiceClient client = stub._getServiceClient();
-                                CarbonUtils.setBasicAccessSecurityHeaders(workListConfig.getUsername(),
-                                                                          workListConfig.getPassword(), client);
-                                client.getOptions().setManageSession(true);
-                                stub.addTask(endpoint.substring(7),
-                                             event.getMessage().getFirstElement().getText(), 5);
-                            } else {
-                                log.warn("Unable to generate notification. The work list config has not been " +
-                                         "setup.");
-                            }
-                        }
-                    }
+                if (workListConfig.getServerURL() != null && workListConfig.getUsername() != null
+                        && workListConfig.getPassword() != null) {
+                    WorkListServiceStub stub = new WorkListServiceStub(configContext,
+                            workListConfig.getServerURL() + "WorkListService");
+                    ServiceClient client = stub._getServiceClient();
+                    CarbonUtils.setBasicAccessSecurityHeaders(workListConfig.getUsername(),
+                            workListConfig.getPassword(), client);
+                    client.getOptions().setManageSession(true);
+                    stub.addTask(endpoint.substring(7),
+                            event.getMessage().getFirstElement().getText(), 5);
+                } else {
+                    log.warn("Unable to generate notification. The work list config has not been " +
+                            "setup.");
                 }
             } catch (RemoteException e) {
                 log.error("Failed Sending Notification to work-list", e);
-            } catch (UserStoreException e) {
-                log.error("Failed to send Notifications", e);
-            } catch (RegistryException e) {
-                log.error("Failed to send notifiacations", e);
             }
         } else {
             log.debug("Sending Notification to: " + endpoint);
@@ -462,8 +412,8 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             if (registryURL != null && registryURL.indexOf(
                     "/services/RegistryEventingService") > -1) {
                 registryURL = registryURL.substring(0, registryURL.length() -
-                                                       "/services/RegistryEventingService".length()) +
-                              "/carbon";
+                        "/services/RegistryEventingService".length()) +
+                        "/carbon";
             }
             if (registryURL != null) {
                 signature += " URL: " + registryURL;
@@ -471,13 +421,13 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             OMElement firstElement = messageElement.getFirstElement();
             String namespaceURI = firstElement.getNamespace().getNamespaceURI();
             OMElement timestamp = messageElement.getFirstChildWithName(new QName(namespaceURI,
-                                                                                 "Timestamp"));
+                    "Timestamp"));
             String time = null;
             if (timestamp != null) {
                 time = timestamp.getText();
             }
             OMElement details = messageElement.getFirstChildWithName(new QName(namespaceURI,
-                                                                               "Details"));
+                    "Details"));
             String serverName = null;
             if (details != null) {
                 serverName = details.getFirstChildWithName(new QName(namespaceURI, "Server"))
@@ -486,7 +436,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             }
             if (time != null && serverName != null) {
                 signature = "\n\nThis event was generated" + (eventType.equals("DigestEvent") ? "" : " by " + serverName) +
-                            " at " + time + ". " + signature;
+                        " at " + time + ". " + signature;
             }
             payload.setText(firstElement.getText() + signature);
             return payload;
@@ -501,7 +451,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 EventingConstants.NOTIFICATION_NS_URI,
                 EventingConstants.NOTIFICATION_NS_PREFIX);
         OMElement topicEle = factory.createOMElement(RegistryEventingConstants.WSE_EN_TOPIC,
-                                                     topicNs);
+                topicNs);
         topicEle.setText(topic);
         return topicEle;
     }
@@ -525,7 +475,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } else {
             eventName = temp[2];
         }
-        OMElement payload = buildPayload(factory, message, isEmail, eventName);
+        OMElement payload = buildPayload(factory, message, isEmail,eventName);
 
         if (endpoint != null) {
             try {
@@ -560,12 +510,12 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                             }
                             String path = "";
                             if (topicText.endsWith(RegistryEvent.TOPIC_SEPARATOR) || topicText.endsWith("*") || topicText.endsWith("#")) {
-                                path = topicText
-                                        .substring(RegistryEventingConstants.TOPIC_PREFIX.length() + event.length() + 1,
-                                                   topicText.lastIndexOf(RegistryEvent.TOPIC_SEPARATOR));
+	                            path = topicText
+	                                    .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1,
+	                                            topicText.lastIndexOf(RegistryEvent.TOPIC_SEPARATOR));
                             } else {
-                                path = topicText
-                                        .substring(RegistryEventingConstants.TOPIC_PREFIX.length() + event.length() + 1);
+                            	path = topicText
+	                                    .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1);
                             }
 
                             String mailHeader = message.getProperty(MailConstants.MAIL_HEADER_SUBJECT);
@@ -573,26 +523,26 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                                 headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, mailHeader);
                             } else if (path == null || path.length() == 0) {
                                 headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
-                                              "[" + event + "]");
+                                        "[" + event + "]");
                             } else {
                                 headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
-                                              "[" + event + "] at path: " + path);
+                                        "[" + event + "] at path: " + path);
                             }
                         }
                         options.setProperty(MessageContext.TRANSPORT_HEADERS, headerMap);
                         options.setProperty(MailConstants.TRANSPORT_MAIL_FORMAT,
-                                            MailConstants.TRANSPORT_FORMAT_TEXT);
+                                MailConstants.TRANSPORT_FORMAT_TEXT);
                     }
                     options.setProperty(MessageContext.CLIENT_API_NON_BLOCKING, Boolean.TRUE);
                     options.setAction(RegistryEventingConstants.WSE_PUBLISH);
                     serviceClient.setOptions(options);
-                    if (log.isDebugEnabled()) {
-                        log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
-                    }
+                    if(log.isDebugEnabled()){
+                       log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                     }
                     serviceClient.fireAndForget(payload);
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                    if(log.isDebugEnabled()){
+                      log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
                     }
                     super.sendNotification(topicEle, payload, endpoint);
                 }
@@ -607,7 +557,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
     }
 
     private void addToEmailDigestQueue(Message event, String topic, String endpoint, String digestType,
-                                       String topicName) {
+                                       String topicName){
         OMElement payload = event.getMessage();
         if (payload != null && payload.getFirstElement() != null) {
             String[] temp = topicName.split(RegistryEvent.TOPIC_SEPARATOR);
