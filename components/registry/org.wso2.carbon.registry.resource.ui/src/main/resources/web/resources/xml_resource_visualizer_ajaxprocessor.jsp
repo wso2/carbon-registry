@@ -21,10 +21,12 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.core.utils.RegistryUtils" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.regex.Matcher" %>
 
-    <%
+
+<%
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
-
         String textContent;
         try {
             ResourceServiceClient client = new ResourceServiceClient(cookie, config, session);
@@ -33,9 +35,9 @@
             return;
         }
 %>
-<% 
+<%
     textContent = textContent.replace("&", "&amp;").replaceAll("<[?]xml[^?]*[?]>", "").replaceAll(
-            "([import|include|redefine|override][^>]*[ ]schemaLocation=[\"])([^\"]*)([\"])", 
+            "([import|include|redefine|override][^>]*[ ]schemaLocation=[\"])([^\"]*)([\"])",
             "$1../resources/xml_resource_visualizer_ajaxprocessor.jsp?rootPath=" +
             RegistryUtils.getParentPath(request.getParameter("rootPath")) + "&amp;path=" +
             RegistryUtils.getParentPath(request.getParameter("path")) + "/$2&amp;type=xsd$3").replaceAll(
@@ -43,8 +45,27 @@
             "$1../resources/xml_resource_visualizer_ajaxprocessor.jsp?rootPath=" +
             RegistryUtils.getParentPath(request.getParameter("rootPath")) + "&amp;path=" +
             RegistryUtils.getParentPath(request.getParameter("path")) + "/$2&amp;type=wsdl$3");
-    while (textContent.indexOf("/../") > 0) {
-        textContent = textContent.replaceAll("/[^/.]*/[.][.]/", "/");
-    }
+
+            String findStr = "/../";
+            int lastIndex = 0;
+            int count =0;
+
+            while(lastIndex != -1){
+
+                lastIndex = textContent.indexOf(findStr, lastIndex);
+
+                if( lastIndex != -1){
+                    count ++;
+                    lastIndex+=(findStr.length()-1);
+                }
+            }
+
+            for(int i=0;i<count;i++) {
+                Pattern p = Pattern.compile("/[^/.]*/[.][.]/");
+                Matcher m = p.matcher(textContent);
+                if(m.matches()) {
+                    textContent = textContent.replaceFirst("/[^/]*/\\.{2}/", "/");
+                }
+            }
 %>
 <%=textContent%>
