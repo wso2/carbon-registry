@@ -50,7 +50,7 @@
                             org.wso2.carbon.registry.eventing.*
                         </Export-Package>
                         <Import-Package>
-                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.common.*,
                             org.wso2.carbon.user.core; version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.event.*,

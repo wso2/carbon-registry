@@ -1239,6 +1239,8 @@
         <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.kernel.package.import.version.range>
 
+        <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
+
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v11</axis2.version>
         <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>

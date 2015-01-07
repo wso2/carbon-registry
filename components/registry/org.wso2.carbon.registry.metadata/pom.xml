@@ -90,7 +90,7 @@
                             org.wso2.carbon.registry.metadata.internal.*;version="1.0.0-SNAPSHOT",
                         </Private-Package>
                         <Import-Package>
-                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.apache.axiom.om.*;version="1.2.11.wso2v4",
                             org.apache.axiom.om.impl.builder.*,
                             org.apache.axiom.om.util.*

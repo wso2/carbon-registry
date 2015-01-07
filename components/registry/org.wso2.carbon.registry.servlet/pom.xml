@@ -52,7 +52,7 @@
                         </Private-Package>
                         <Import-Package>
                             org.wso2.carbon.utils.*; version="${carbon.kernel.package.import.version.range}",
-                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.ui.*; version="${carbon.kernel.package.import.version.range}",
                             !javax.xml.namespace,
                             org.apache.abdera.*; version="${imp.pkg.version.abdera}",
