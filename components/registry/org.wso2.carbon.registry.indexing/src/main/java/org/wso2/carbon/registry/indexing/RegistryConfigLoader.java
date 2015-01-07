@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class RegistryConfigLoader {
-	
-    private static volatile RegistryConfigLoader registryConfigLoaderInstance;
+
+    private static volatile RegistryConfigLoader registryConfigLoaderInstance = new RegistryConfigLoader();
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
@@ -124,13 +124,6 @@ public class RegistryConfigLoader {
     }
 
     public static RegistryConfigLoader getInstance(){
-    	if(registryConfigLoaderInstance == null){
-    		synchronized (RegistryConfigLoader.class) {
-    	    	if(registryConfigLoaderInstance == null){
-    	    		registryConfigLoaderInstance = new RegistryConfigLoader();
-    	    	}
-			}
-    	}
     	return registryConfigLoaderInstance;
     }
     
