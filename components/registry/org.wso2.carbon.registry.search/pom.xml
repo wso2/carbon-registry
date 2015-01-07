@@ -50,7 +50,8 @@
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.*;version="0.0.0",
-                            org.wso2.carbon.registry.core.*; version="${carbon.kernel.package.import.version.range}",
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
+                            org.wso2.carbon.core.*;version="[4.3.0, 4.4.0)",
                             org.wso2.carbon.registry.admin.api.*;version="0.0.0",
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
