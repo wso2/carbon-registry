@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.resource.services.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -63,5 +64,25 @@ public class CommonUtil {
         } catch (RegistryException e) {
             log.error("Unable to send notification", e);
         }
+    }
+
+    /**
+     * return the concatenated full path of the resource
+     *
+     * @param parentPath
+     * @param resourceName
+     * @return resourcePath
+     */
+    public static String calculatePath(String parentPath, String resourceName) {
+        StringBuilder resourcePath = new StringBuilder();
+        if (!parentPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
+            parentPath = RegistryConstants.PATH_SEPARATOR + parentPath;
+        }
+        if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
+            resourcePath.append(parentPath).append(resourceName);
+        } else {
+            resourcePath.append(parentPath).append(RegistryConstants.PATH_SEPARATOR).append(resourceName);
+        }
+        return resourcePath.toString();
     }
 }
