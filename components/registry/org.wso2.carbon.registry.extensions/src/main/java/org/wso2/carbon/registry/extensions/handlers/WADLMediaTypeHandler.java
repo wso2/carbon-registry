@@ -25,6 +25,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.WADLProcessor;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import javax.xml.namespace.QName;
@@ -97,6 +98,8 @@ public class WADLMediaTypeHandler extends Handler {
             CommonUtil.acquireUpdateLock();
             Resource resource = requestContext.getResource();
             String resourcePath = requestContext.getResourcePath().getPath();
+            requestContext.setSourceURL(
+                    requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
             WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
             wadlProcessor.addWadlToRegistry(requestContext, resource,
                     resourcePath, disableWADLValidation);
