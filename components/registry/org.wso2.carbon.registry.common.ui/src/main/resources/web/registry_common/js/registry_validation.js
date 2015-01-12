@@ -32,7 +32,7 @@ function validateRegex(regexStr, fldEleArr, fldName) {
 function validateUrl(fld,fldName) {
 
 	var error = "";
-	var regx = RegExp("(http|https|ftp|file)://.*");
+	var regx = RegExp("(http|https|ftp|file)://[^\\s]*?.*");
 	if(!(fld.value.match(regx))){
 		error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.valid.url"] + "<br />";
 	}
