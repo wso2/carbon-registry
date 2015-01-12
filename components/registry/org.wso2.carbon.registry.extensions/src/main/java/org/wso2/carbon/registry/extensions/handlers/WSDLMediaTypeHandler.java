@@ -363,63 +363,82 @@ public class WSDLMediaTypeHandler extends Handler {
                 log.error(msg, e);
                 throw new RegistryException(msg, e);
             }
-            try {
-                Object resourceContent = metadata.getContent();
-                byte[] resourceContentBytes;
 
-                if (resourceContent == null) {
-                    resourceContentBytes = new byte[0];
-                } else if (resourceContent instanceof byte[]) {
-                    resourceContentBytes = (byte[])resourceContent;
-                } else if (resourceContent instanceof String) {
-                    resourceContentBytes = RegistryUtils.encodeString(((String)resourceContent));
-                } else {
-                    String msg = "Unknown type for the content path: " + path + ", content type: " +
-                            resourceContent.getClass().getName() + ".";
-                    log.error(msg);
-                    throw new RegistryException(msg);
-                }
-                InputStream in = new ByteArrayInputStream(resourceContentBytes);
+            requestContext.setSourceURL(requestContext.
+                    getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
 
-                File tempFile = File.createTempFile("wsdl", ".wsdl");
+            if (requestContext.getSourceURL() != null) {
+                requestContext.setResource(metadata);
+                String SourceURL = requestContext.getSourceURL();
 
-                BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
-                byte[] contentChunk = new byte[1024];
-                int byteCount;
-                while ((byteCount = in.read(contentChunk)) != -1) {
-                    out.write(contentChunk, 0, byteCount);
-                }
-                out.flush();
-                out.close();
-                String uri = tempFile.toURI().toString();
-                if (uri.startsWith("file:")) {
-                    uri = uri.substring(5);
-                }
-                while (uri.startsWith("/")) {
-                    uri = uri.substring(1);
-                }
-                uri = "file:///" + uri;
-                String wsdlPath = null;
-                if (uri != null) {
-                    requestContext.setSourceURL(uri);
-                    requestContext.setResource(metadata);
+                wsdlProcessor = buildWSDLProcessor(requestContext);
+                String wsdlPath = processWSDLImport(requestContext, wsdlProcessor, metadata, SourceURL);
 
-                    wsdlProcessor = buildWSDLProcessor(requestContext);
-                    wsdlPath = processWSDLImport(requestContext, wsdlProcessor, metadata, uri);
-                }
-                delete(tempFile);
-                if (wsdlPath != null) {
-                    onPutCompleted(path, Collections.singletonMap(uri, wsdlPath),
-                            Collections.<String>emptyList(), requestContext);
-                    requestContext.setActualPath(wsdlPath);
-                }
+                onPutCompleted(path, Collections.singletonMap(SourceURL, wsdlPath),
+                        Collections.<String>emptyList(), requestContext);
+                requestContext.setActualPath(wsdlPath);
+            } else {
+                try {
+                    Object resourceContent = metadata.getContent();
+                    byte[] resourceContentBytes;
+
+                    if (resourceContent == null) {
+                        resourceContentBytes = new byte[0];
+                    } else if (resourceContent instanceof byte[]) {
+                        resourceContentBytes = (byte[]) resourceContent;
+                    } else if (resourceContent instanceof String) {
+                        resourceContentBytes = RegistryUtils.encodeString(((String) resourceContent));
+                    } else {
+                        String msg = "Unknown type for the content path: " + path + ", content type: " +
+                                resourceContent.getClass().getName() + ".";
+                        log.error(msg);
+                        throw new RegistryException(msg);
+                    }
+                    InputStream in = new ByteArrayInputStream(resourceContentBytes);
+
+                    File tempFile = File.createTempFile("wsdl", ".wsdl");
+
+                    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
+                    byte[] contentChunk = new byte[1024];
+                    int byteCount;
+                    while ((byteCount = in.read(contentChunk)) != -1) {
+                        out.write(contentChunk, 0, byteCount);
+                    }
+                    out.flush();
+                    out.close();
+                    String uri = tempFile.toURI().toString();
+                    if (uri.startsWith("file:")) {
+                        uri = uri.substring(5);
+                    }
+                    while (uri.startsWith("/")) {
+                        uri = uri.substring(1);
+                    }
+                    uri = "file:///" + uri;
+                    String wsdlPath = null;
+                    if (uri != null) {
+                        requestContext.setSourceURL(uri);
+                        requestContext.setResource(metadata);
+
+                        wsdlProcessor = buildWSDLProcessor(requestContext);
+                        wsdlPath = processWSDLImport(requestContext, wsdlProcessor, metadata, uri);
+                    }
+                    delete(tempFile);
+                    if (wsdlPath != null) {
+                        onPutCompleted(path, Collections.singletonMap(uri, wsdlPath),
+                                Collections.<String>emptyList(), requestContext);
+                        requestContext.setActualPath(wsdlPath);
+                    }
                 /*WSDLProcessor wsdlProcessor = buildWSDLProcessor(requestContext);
                 wsdlProcessor
                        .addWSDLToRegistry(
                                requestContext, null,
                                metadata, true, true);*/
-            } catch (IOException e) {
-                throw new RegistryException("An error occurred while uploading WSDL file", e);
+                } catch (IOException e) {
+                    String msg = "An error occurred while uploading WSDL file or " +
+                            "deleting the temporary files from local file system.";
+                    log.error(msg, e);
+                    throw new RegistryException(msg, e);
+                }
             }
 
             requestContext.setProcessingComplete(true);
