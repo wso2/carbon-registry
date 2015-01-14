@@ -72,7 +72,7 @@ public class GetTextContentUtil {
      * @throws RegistryException
      * @throws java.io.IOException
      */
-    public static DataHandler getByteContent(String fetchURL) throws IOException, RegistryException {
+    public static DataHandler getByteContent(String fetchURL) throws RegistryException, IOException {
         StringBuilder sb = new StringBuilder();
         DataHandler handler = null;
         BufferedReader in = null;
@@ -82,15 +82,15 @@ public class GetTextContentUtil {
                 in = new BufferedReader(
                         new InputStreamReader(sourceURL.openConnection().getInputStream()));
                 String inputLine;
-                while ((inputLine = in.readLine()) != null)
+                while ((inputLine = in.readLine()) != null) {
                     sb.append(inputLine);
+                }
 
                 DataSource ds = new ByteArrayDataSource(
                         encodeString(sb.toString()), "text/plain; charset=UTF-8");
                 handler = new DataHandler(ds);
             } catch (IOException e) {
                 String msg = "Wrong or unavailable source URL " + fetchURL + ".";
-                log.error(msg, e);
                 throw new RegistryException(msg, e);
             } finally {
                 if (in != null) {

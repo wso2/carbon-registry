@@ -154,7 +154,6 @@ public class WADLProcessor {
                         } catch (IOException e) {
                             String msg = "Error occurred while closing File writer";
                             log.error(msg, e);
-                            throw new RegistryException(msg, e);
                         }
                     }
                 }

@@ -369,12 +369,12 @@ public class WSDLMediaTypeHandler extends Handler {
 
             if (requestContext.getSourceURL() != null) {
                 requestContext.setResource(metadata);
-                String SourceURL = requestContext.getSourceURL();
+                String sourceURL = requestContext.getSourceURL();
 
                 wsdlProcessor = buildWSDLProcessor(requestContext);
-                String wsdlPath = processWSDLImport(requestContext, wsdlProcessor, metadata, SourceURL);
+                String wsdlPath = processWSDLImport(requestContext, wsdlProcessor, metadata, sourceURL);
 
-                onPutCompleted(path, Collections.singletonMap(SourceURL, wsdlPath),
+                onPutCompleted(path, Collections.singletonMap(sourceURL, wsdlPath),
                         Collections.<String>emptyList(), requestContext);
                 requestContext.setActualPath(wsdlPath);
             } else {
@@ -387,7 +387,7 @@ public class WSDLMediaTypeHandler extends Handler {
                     } else if (resourceContent instanceof byte[]) {
                         resourceContentBytes = (byte[]) resourceContent;
                     } else if (resourceContent instanceof String) {
-                        resourceContentBytes = RegistryUtils.encodeString(((String) resourceContent));
+                        resourceContentBytes = RegistryUtils.encodeString((String) resourceContent);
                     } else {
                         String msg = "Unknown type for the content path: " + path + ", content type: " +
                                 resourceContent.getClass().getName() + ".";
