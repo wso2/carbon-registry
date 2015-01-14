@@ -106,6 +106,8 @@ public class CommonConstants {
 
     public static final int NO_OF_DOCUMENTS_ALLOWED = 3;
 
+    public static final String SOURCEURL_PARAMETER_NAME="sourceURL";
+
     public static final String ENABLE="enable";
     public static final String UDDI_SYSTEM_PROPERTY="uddi";
 

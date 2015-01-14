@@ -16,11 +16,12 @@
 
 package org.wso2.carbon.registry.resource.ui.processors;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.context.ConfigurationContext;
-import org.wso2.carbon.registry.common.ui.UIException;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.resource.ui.Utils;
 import org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient;
@@ -33,17 +34,23 @@ import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.CarbonConstants;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletConfig;
 
 public class ImportResourceProcessor {
 
-    private static final Log log = LogFactory.getLog(ImportResourceProcessor.class);
+    private static final Log LOG = LogFactory.getLog(ImportResourceProcessor.class);
 
+    /**
+     * process the form data and send it to ResourceServiceClient
+     *
+     * @param request HTML request
+     * @param config  server configuration
+     * @throws RegistryException
+     */
     public static void process(
-            HttpServletRequest request, HttpServletResponse response, ServletConfig config)
-            throws UIException {
+            HttpServletRequest request, ServletConfig config)
+            throws RegistryException {
 
         String parentPath = request.getParameter("parentPath");
         String resourceName = request.getParameter("resourceName");
@@ -62,10 +69,7 @@ public class ImportResourceProcessor {
         try {
             ConfigurationContext configContext = (ConfigurationContext) config.
                     getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
-            IServerAdmin adminClient =
-                    (IServerAdmin) CarbonUIUtil.
-                            getServerProxy(new ServerAdminClient(configContext,
-                                    serverURL, cookie, session), IServerAdmin.class, session);
+            IServerAdmin adminClient = new ServerAdminClient(configContext, serverURL, cookie, session);
             ServerData data = null;
             String chroot = "";
             try {
@@ -88,24 +92,38 @@ public class ImportResourceProcessor {
             }
             if (chroot == null) {
                 symlinkLocation = null;
-                log.debug("Unable to determine chroot. Symbolic Link cannot be created");
+                LOG.debug("Unable to determine chroot. Symbolic Link cannot be created");
             }
             if (symlinkLocation != null) {
                 symlinkLocation = chroot + symlinkLocation;
             }
+            // fetching custom properties from the request. eg: version
+            String[][] newProperties = Utils.getProperties(request);
+            // Adding Source URL as property to end of the properties array.
+            String[][] properties = Utils.setProperties(newProperties,"sourceURL",fetchURL);
+
             ResourceServiceClient client =
                     new ResourceServiceClient(cookie, config, request.getSession());
             if (JavaUtils.isTrueExplicitly(isAsync)) {
-                client.importResource(parentPath, resourceName, mediaType, description, fetchURL, symlinkLocation, Utils.getProperties(request), true);
+                client.importResource(parentPath, resourceName, mediaType,
+                        description, fetchURL, symlinkLocation, properties, true);
             } else {
-                client.importResource(parentPath, resourceName, mediaType, description, fetchURL, symlinkLocation, Utils.getProperties(request), false);
+                client.importResource(parentPath, resourceName, mediaType,
+                        description, fetchURL, symlinkLocation, properties, false);
             }
+        } catch (AxisFault axisFault) {
+            String msg = "Failed to initiate Server Admin Client.";
+            LOG.error(msg, axisFault);
+            throw new RegistryException(msg, axisFault);
         } catch (Exception e) {
+            // Since ResourceServiceClient.importResource has thrown a Exception need to handle that as well,
+            // Therefore adding the original exception below.
             // having additional details will make the error message long
-            String msg = e.getMessage();
-            log.error(msg, e);
-            // if we skip msg and put just e, error message contain the axis2 fault story 
-            throw new UIException(msg, e);
+            String msg = "Unable to process (ResourceServiceClient.importResource) function." +
+                    " Please check the network connection.";
+            LOG.error(msg, e);
+            // if we skip msg and put just e, error message contain the axis2 fault story
+            throw new RegistryException(msg, e);
         }
     }
 }

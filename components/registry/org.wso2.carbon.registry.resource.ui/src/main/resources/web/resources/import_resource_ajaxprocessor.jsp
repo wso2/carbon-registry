@@ -22,10 +22,9 @@
     boolean displayPlainError = false;
     try {
         displayPlainError = (request.getParameter("printerror") != null);
-        ImportResourceProcessor.process(request, response, config);
+        ImportResourceProcessor.process(request, config);
 
     } catch (Exception e) {
-
         errorMessage = e.getMessage();
         response.setStatus(500);
         out.write(errorMessage);

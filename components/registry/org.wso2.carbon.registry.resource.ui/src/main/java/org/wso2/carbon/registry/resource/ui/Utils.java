@@ -254,4 +254,44 @@ public class Utils {
         return new String[0][];
     }
 
+    /**
+     * Adding new property to end of the properties array
+     *
+     * @param properties String[][] of properties
+     * @return propertyArray    updated String[][] of properties
+     */
+    public static String[][] setProperties(String[][] properties, String key, String value) {
+        String[][] propertyArray = new String[properties.length + 1][2];
+        for (int i = 0; i <= properties.length; i++) {
+            if (i < properties.length) {
+                propertyArray[i][0] = properties[i][0];
+                propertyArray[i][1] = properties[i][1];
+            } else {
+                propertyArray[properties.length][0] = key;
+                propertyArray[properties.length][1] = value;
+                return propertyArray;
+            }
+        }
+        return new String[0][];
+    }
+
+    /**
+     * return the concatenated full path of the resource
+     *
+     * @param parentPath
+     * @param resourceName
+     * @return resourcePath
+     */
+    public static String calculatePath(String parentPath, String resourceName) {
+        StringBuilder resourcePath = new StringBuilder();
+        if (!parentPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
+            parentPath = RegistryConstants.PATH_SEPARATOR + parentPath;
+        }
+        if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
+            resourcePath.append(parentPath).append(resourceName);
+        } else {
+            resourcePath.append(parentPath).append(RegistryConstants.PATH_SEPARATOR).append(resourceName);
+        }
+        return resourcePath.toString();
+    }
 }
