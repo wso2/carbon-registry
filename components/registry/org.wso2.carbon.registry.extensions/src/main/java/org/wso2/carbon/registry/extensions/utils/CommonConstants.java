@@ -106,6 +106,7 @@ public class CommonConstants {
 
     public static final int NO_OF_DOCUMENTS_ALLOWED = 3;
 
+    // This constant will use to identify the property key of resources uploaded using URL
     public static final String SOURCEURL_PARAMETER_NAME="sourceURL";
 
     public static final String ENABLE="enable";

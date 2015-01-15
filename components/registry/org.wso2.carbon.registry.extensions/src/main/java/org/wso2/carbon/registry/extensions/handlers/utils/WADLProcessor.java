@@ -192,7 +192,7 @@ public class WADLProcessor {
      * @param file
      * @throws IOException
      */
-    public void delete(File file) throws IOException {
+    private void delete(File file) throws IOException {
         if (file != null && file.exists() && !file.delete()) {
             log.warn("Failed to delete file/directory at path: " + file.getAbsolutePath());
         }

@@ -278,9 +278,9 @@ public class Utils {
     /**
      * return the concatenated full path of the resource
      *
-     * @param parentPath
-     * @param resourceName
-     * @return resourcePath
+     * @param parentPath location of the resource in registry
+     * @param resourceName resource name which entered by user
+     * @return resourcePath.toString() full path of the resource going to be saved
      */
     public static String calculatePath(String parentPath, String resourceName) {
         StringBuilder resourcePath = new StringBuilder();
