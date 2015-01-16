@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.extensions.handlers;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.uddi.api_v3.AuthToken;
@@ -395,27 +396,31 @@ public class WSDLMediaTypeHandler extends Handler {
                         throw new RegistryException(msg);
                     }
                     InputStream in = new ByteArrayInputStream(resourceContentBytes);
-
                     File tempFile = File.createTempFile("wsdl", ".wsdl");
-
                     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
-                    byte[] contentChunk = new byte[1024];
-                    int byteCount;
-                    while ((byteCount = in.read(contentChunk)) != -1) {
-                        out.write(contentChunk, 0, byteCount);
+
+                    String uri = null;
+                    try {
+                        byte[] contentChunk = new byte[1024];
+                        int byteCount;
+                        while ((byteCount = in.read(contentChunk)) != -1) {
+                            out.write(contentChunk, 0, byteCount);
+                        }
+                        uri = tempFile.toURI().toString();
+                    } finally {
+                        in.close();
+                        out.flush();
+                        out.close();
                     }
-                    out.flush();
-                    out.close();
-                    String uri = tempFile.toURI().toString();
-                    if (uri.startsWith("file:")) {
+                    if (StringUtils.isNotBlank(uri) && uri.startsWith("file:")) {
                         uri = uri.substring(5);
                     }
                     while (uri.startsWith("/")) {
                         uri = uri.substring(1);
                     }
-                    uri = "file:///" + uri;
                     String wsdlPath = null;
-                    if (uri != null) {
+                    if (StringUtils.isNotBlank(uri)) {
+                        uri = "file:///" + uri;
                         requestContext.setSourceURL(uri);
                         requestContext.setResource(metadata);
 

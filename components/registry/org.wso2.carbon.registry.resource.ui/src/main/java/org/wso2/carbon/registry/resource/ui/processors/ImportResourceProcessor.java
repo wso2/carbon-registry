@@ -81,7 +81,7 @@ public class ImportResourceProcessor {
             if (data != null && data.getRegistryType() != null && 
                     "remote".equals(data.getRegistryType()) &&
                     data.getRemoteRegistryChroot() != null &&
-                    !data.getRemoteRegistryChroot().equals(RegistryConstants.PATH_SEPARATOR)) {
+                    !RegistryConstants.PATH_SEPARATOR.equals(data.getRemoteRegistryChroot())) {
                 chroot = data.getRemoteRegistryChroot();
                 if (!chroot.startsWith(RegistryConstants.PATH_SEPARATOR)) {
                     chroot = RegistryConstants.PATH_SEPARATOR + chroot;
