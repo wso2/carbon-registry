@@ -258,7 +258,7 @@ public class SolrClient {
                 }
             }
         } finally {
-			resourceAsStream.close();
+            resourceAsStream.close();
         }
     }
 	
@@ -293,11 +293,11 @@ public class SolrClient {
 	                corePropertise.setProperty("name", solrCore);
 	                propertiesFile = file;
                 }
-			} else if (SOLR_CONF_LANG.equals(fileDestPath)) {
+            } else if (SOLR_CONF_LANG.equals(fileDestPath)) {
                 file = new File(langDir, fileSourcePath);
-			} else {
+            } else {
                 file = new File(confDir, fileSourcePath);
-			}
+            }
 
             if (!file.exists()) {
                 write2File(resourceAsStream, file);
