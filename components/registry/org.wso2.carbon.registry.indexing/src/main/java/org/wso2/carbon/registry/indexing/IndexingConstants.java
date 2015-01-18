@@ -27,10 +27,10 @@ public final class IndexingConstants {
 	
     //make the constructor private, since it is a utility class
     private IndexingConstants(){}
-	
-	//default last access time location path is set as default when nothing specified in registry.xml
+
+    //default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
-            RegistryConstants.REGISTRY_COMPONENT_PATH + File.separator +"indexing" +File.separator +"lastaccesstime";
+            RegistryConstants.REGISTRY_COMPONENT_PATH + File.separator + "indexing" + File.separator + "lastaccesstime";
     
     //Default value for Solr Server core is set to the embedded solr. This going to be used when nothing specify as solr url in registry.xml
     public static final String DEFAULT_SOLR_SERVER_CORE = "registry-indexing";

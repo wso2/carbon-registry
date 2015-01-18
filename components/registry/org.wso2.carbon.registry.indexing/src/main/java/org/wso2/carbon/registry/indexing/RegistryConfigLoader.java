@@ -224,7 +224,7 @@ public class RegistryConfigLoader {
                 try {
                     exclusionList.add(Pattern.compile(pathRegEx));
                 } catch (PatternSyntaxException ignore) {
-                    log.error("Error occured when compiling the RegEx pattern: " +pathRegEx, ignore);
+                    log.error("Error occured when compiling the RegEx pattern: " + pathRegEx, ignore);
                 }
             }
         }
