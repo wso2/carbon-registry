@@ -408,9 +408,13 @@ public class WSDLMediaTypeHandler extends Handler {
                         }
                         uri = tempFile.toURI().toString();
                     } finally {
-                        in.close();
-                        out.flush();
-                        out.close();
+                        if (in != null) {
+                            in.close();
+                        }
+                        if (out != null) {
+                            out.flush();
+                            out.close();
+                        }
                     }
                     if (StringUtils.isNotBlank(uri) && uri.startsWith("file:")) {
                         uri = uri.substring(5);

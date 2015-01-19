@@ -72,7 +72,7 @@ public class GetTextContentUtil {
      * @throws RegistryException
      * @throws java.io.IOException
      */
-    public static DataHandler getByteContent(String fetchURL) throws RegistryException, IOException {
+    public static DataHandler getByteContent(String fetchURL) throws RegistryException {
         StringBuilder sb = new StringBuilder();
         DataHandler handler = null;
         BufferedReader in = null;
@@ -94,7 +94,13 @@ public class GetTextContentUtil {
                 throw new RegistryException(msg, e);
             } finally {
                 if (in != null) {
-                    in.close();
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        String msg = "Error occurred while trying to close the BufferedReader";
+                        log.error(msg, e);
+
+                    }
                 }
             }
         } else {
