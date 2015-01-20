@@ -138,11 +138,14 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
+        // Adding Source URL as property to end of the properties array.
+        String[][] newProperties = CommonUtil.setProperties(properties, "sourceURL", fetchURL);
+
         // Data is directed to below AddResourceUtil.addResource from ImportResourceUtil.importResource
         // Hence resource upload path will now go through put.
         AddResourceUtil.addResource(CommonUtil.calculatePath(parentPath, resourceName),
                 mediaType, description, GetTextContentUtil.getByteContent(fetchURL),
-                symlinkLocation, registry, properties);
+                symlinkLocation, registry, newProperties);
         return true;
     }
 

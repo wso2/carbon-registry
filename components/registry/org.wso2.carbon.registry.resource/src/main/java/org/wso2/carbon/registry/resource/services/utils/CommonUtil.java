@@ -85,4 +85,25 @@ public class CommonUtil {
         }
         return resourcePath.toString();
     }
+
+    /**
+     * Adding new property to end of the properties array
+     *
+     * @param properties String[][] of properties
+     * @return propertyArray    updated String[][] of properties
+     */
+    public static String[][] setProperties(String[][] properties, String key, String value) {
+        String[][] propertyArray = new String[properties.length + 1][2];
+        for (int i = 0; i <= properties.length; i++) {
+            if (i < properties.length) {
+                propertyArray[i][0] = properties[i][0];
+                propertyArray[i][1] = properties[i][1];
+            } else {
+                propertyArray[properties.length][0] = key;
+                propertyArray[properties.length][1] = value;
+                return propertyArray;
+            }
+        }
+        return new String[0][];
+    }
 }

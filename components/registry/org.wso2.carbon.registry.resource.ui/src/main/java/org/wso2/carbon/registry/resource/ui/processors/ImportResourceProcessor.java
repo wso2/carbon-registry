@@ -98,9 +98,7 @@ public class ImportResourceProcessor {
                 symlinkLocation = chroot + symlinkLocation;
             }
             // fetching custom properties from the request. eg: version
-            String[][] newProperties = Utils.getProperties(request);
-            // Adding Source URL as property to end of the properties array.
-            String[][] properties = Utils.setProperties(newProperties,"sourceURL",fetchURL);
+            String[][] properties = Utils.getProperties(request);
 
             ResourceServiceClient client =
                     new ResourceServiceClient(cookie, config, request.getSession());
