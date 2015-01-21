@@ -17,17 +17,13 @@
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"  %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.ImportResourceProcessor" %>
+<%@ page import="org.wso2.carbon.registry.core.exceptions.RegistryException" %>
 <%
-    String errorMessage = null;
-    boolean displayPlainError = false;
     try {
-        displayPlainError = (request.getParameter("printerror") != null);
-        ImportResourceProcessor.process(request, config);
-
-    } catch (Exception e) {
-        errorMessage = e.getMessage();
+        ImportResourceProcessor.process(request, response, config);
+    } catch (RegistryException e) {
         response.setStatus(500);
-        out.write(errorMessage);
+        out.write(e.getMessage());
         return;
     }
 %>
