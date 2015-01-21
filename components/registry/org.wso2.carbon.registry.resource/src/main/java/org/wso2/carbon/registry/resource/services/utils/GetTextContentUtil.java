@@ -38,6 +38,7 @@ public class GetTextContentUtil {
     private static final Log log = LogFactory.getLog(GetTextContentUtil.class);
     private static final String URL_SOURCE_REGEX = "(http|https|ftp|file)://[^\\s]*?.*";
     private static final String ENCODING = System.getProperty("carbon.registry.character.encoding");
+    private static final String DECODE_TYPE = "text/plain; charset=UTF-8";
 
     public static String getTextContent(String path, Registry registry) throws Exception {
 
@@ -70,7 +71,6 @@ public class GetTextContentUtil {
      * @param fetchURL source URL
      * @return handler    byte DataHandler of the wsdl content
      * @throws RegistryException
-     * @throws java.io.IOException
      */
     public static DataHandler getByteContent(String fetchURL) throws RegistryException {
         StringBuilder sb = new StringBuilder();
@@ -85,9 +85,8 @@ public class GetTextContentUtil {
                 while ((inputLine = in.readLine()) != null) {
                     sb.append(inputLine);
                 }
-
                 DataSource ds = new ByteArrayDataSource(
-                        encodeString(sb.toString()), "text/plain; charset=UTF-8");
+                        encodeString(sb.toString()), DECODE_TYPE);
                 handler = new DataHandler(ds);
             } catch (IOException e) {
                 String msg = "Wrong or unavailable source URL " + fetchURL + ".";
@@ -98,8 +97,7 @@ public class GetTextContentUtil {
                         in.close();
                     } catch (IOException e) {
                         String msg = "Error occurred while trying to close the BufferedReader";
-                        log.error(msg, e);
-
+                        log.warn(msg, e);
                     }
                 }
             }

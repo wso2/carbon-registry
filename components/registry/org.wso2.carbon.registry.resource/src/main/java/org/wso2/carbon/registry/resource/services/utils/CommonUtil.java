@@ -67,11 +67,14 @@ public class CommonUtil {
     }
 
     /**
-     * return the concatenated full path of the resource
+     * Return the concatenated full path of the resource where
+     * it need to be stored. This will decrease the memory usage.
+     * This method use StringBuilder to construct the string.
+     * Therefore this method is not thread safe.
      *
-     * @param parentPath
-     * @param resourceName
-     * @return resourcePath
+     * @param parentPath ex: x /x /x/y x/y x/y/
+     * @param resourceName ex: resourceName
+     * @return resourcePath ex: /x/resourceName /x/resourceName /x/y/resourceName /x/y/resourceName /x/y/resourceName
      */
     public static String calculatePath(String parentPath, String resourceName) {
         StringBuilder resourcePath = new StringBuilder();
@@ -87,7 +90,7 @@ public class CommonUtil {
     }
 
     /**
-     * Adding new property to end of the properties array
+     * Adding new properties to end of the properties array
      *
      * @param properties String[][] of properties
      * @return propertyArray    updated String[][] of properties

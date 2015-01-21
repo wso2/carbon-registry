@@ -34,6 +34,7 @@ import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.CarbonConstants;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletConfig;
 
@@ -42,14 +43,15 @@ public class ImportResourceProcessor {
     private static final Log LOG = LogFactory.getLog(ImportResourceProcessor.class);
 
     /**
-     * process the form data and send it to ResourceServiceClient
+     * Process the form data and send it to ResourceServiceClient
      *
      * @param request HTML request
      * @param config  server configuration
+     * @param response  in case if we needed to sendRedirect
      * @throws RegistryException
      */
     public static void process(
-            HttpServletRequest request, ServletConfig config)
+            HttpServletRequest request, HttpServletResponse response, ServletConfig config)
             throws RegistryException {
 
         String parentPath = request.getParameter("parentPath");
@@ -58,7 +60,7 @@ public class ImportResourceProcessor {
                 request.getParameter("mediaType"));
         String description = request.getParameter("description");
         String fetchURL = request.getParameter("fetchURL");
-        String isAsync = request.getParameter("isAsync");
+        String async = request.getParameter("isAsync");
         String symlinkLocation = request.getParameter("symlinkLocation");
 
         String cookie = (String) request.
@@ -70,18 +72,16 @@ public class ImportResourceProcessor {
             ConfigurationContext configContext = (ConfigurationContext) config.
                     getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
             IServerAdmin adminClient = new ServerAdminClient(configContext, serverURL, cookie, session);
-            ServerData data = null;
-            String chroot = "";
+            ServerData data;
             try {
                 data = adminClient.getServerData();
-            } catch (Exception ignored) {
+            } catch (Exception e) {
                 // If we can't get server data the chroot cannot be determined.
-                chroot = null;
+                throw new RegistryException("No server data", e);
             }
-            if (data != null && data.getRegistryType() != null && 
-                    "remote".equals(data.getRegistryType()) &&
-                    data.getRemoteRegistryChroot() != null &&
-                    !RegistryConstants.PATH_SEPARATOR.equals(data.getRemoteRegistryChroot())) {
+            // TODO: refactor the code to remove chroot = ""
+            String chroot = "";
+            if (validateServerData(data)) {
                 chroot = data.getRemoteRegistryChroot();
                 if (!chroot.startsWith(RegistryConstants.PATH_SEPARATOR)) {
                     chroot = RegistryConstants.PATH_SEPARATOR + chroot;
@@ -102,13 +102,10 @@ public class ImportResourceProcessor {
 
             ResourceServiceClient client =
                     new ResourceServiceClient(cookie, config, request.getSession());
-            if (JavaUtils.isTrueExplicitly(isAsync)) {
-                client.importResource(parentPath, resourceName, mediaType,
-                        description, fetchURL, symlinkLocation, properties, true);
-            } else {
-                client.importResource(parentPath, resourceName, mediaType,
-                        description, fetchURL, symlinkLocation, properties, false);
-            }
+            boolean isAsync = JavaUtils.isTrueExplicitly(async);
+
+            client.importResource(parentPath, resourceName, mediaType,
+                    description, fetchURL, symlinkLocation, properties, isAsync);
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate Server Admin Client.";
             LOG.error(msg, axisFault);
@@ -123,5 +120,11 @@ public class ImportResourceProcessor {
             // if we skip msg and put just e, error message contain the axis2 fault story
             throw new RegistryException(msg, e);
         }
+    }
+
+    private static boolean validateServerData(ServerData data) {
+        return data != null &&
+                "remote".equals(data.getRegistryType()) &&
+                !RegistryConstants.PATH_SEPARATOR.equals(data.getRemoteRegistryChroot());
     }
 }
