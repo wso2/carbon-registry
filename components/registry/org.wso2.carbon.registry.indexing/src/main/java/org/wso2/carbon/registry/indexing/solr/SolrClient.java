@@ -100,27 +100,29 @@ public class SolrClient {
     private static final String SOLR_HOME_SYSTEM_PROPERTY = "solr.solr.home";
     //constant to identify solr standalone mode which is the HttpSolrServer
     private static final String SOLR_STANDALONE_MODE = "standalone";
+    //constant to identify solr embedded mode
+    private static final String SOLR_EMBEDDED_MODE = "embedded";
 
     private File solrHome, confDir, langDir;
 	
     private String solrCore = null;
 
-    protected SolrClient() throws RegistryException, IOException{
+    protected SolrClient() throws IOException{
     	//get the solr server url from the registry.xml
     	RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
     	String solrServerUrl = configLoader.getSolrServerUrl();
     	String solrServerMode = configLoader.getSolrServerMode();
     	
-    	if (solrServerUrl == null) {
+    	if (SOLR_EMBEDDED_MODE.equals(solrServerMode) || solrServerUrl == null) {
             // since solr server url is not set, registry indexing will be work
             // as embeddedSolr. set the default value for solr-core.
-            log.warn("Solr server url is not specified in registry.xml, registry indexing will use the default value");
+            log.info("Registry indexing will use the default value | registry-indexing");
             solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
     	}
     	else{
             String [] splitUrl  = solrServerUrl.split("/");
             if(splitUrl == null){
-                log.warn("Specified solr server url is not correct, registry indexing will use the default value");
+                log.warn("Specified solr server url is not correct, registry indexing will use the default value | registry-indexing");
                 solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
             }
             else {
@@ -227,7 +229,7 @@ public class SolrClient {
                 if (instance == null) {
 	                try {
 	                    instance = new SolrClient();
-	                } catch (Exception e) {
+	                } catch (IOException e) {
 	                    log.error("Could not instantiate Solr client", e);
 	                    throw new IndexerException("Could not instantiate Solr client", e);
 	                }
@@ -269,33 +271,28 @@ public class SolrClient {
      * @throws IOException
      */
     private void copyConfigurationFiles() throws IOException {
-        Properties corePropertise = new Properties();
+        Properties coreProperties = new Properties();
         File propertiesFile = null;
 
         for (Entry<String, String> entry : filePathMap.entrySet()) {
             String fileSourcePath = entry.getKey();
-            String fileDestPath = entry.getValue();
+            String fileDestinationPath = entry.getValue();
 
             InputStream resourceAsStream = getClass().getClassLoader()
 					.getResourceAsStream(fileSourcePath);
-            if (resourceAsStream == null) {
-                throw new SolrException(ErrorCode.NOT_FOUND,
-                        "Can not find resource " + fileSourcePath
-                                + " from the classpath");
-            }
             File file;
 
-            if (SOLR_HOME.equals(fileDestPath)) {
+            if (SOLR_HOME.equals(fileDestinationPath)) {
                 file = new File(solrHome, fileSourcePath);
-            } else if (SOLR_CORE.equals(fileDestPath)) {
+            } else if (SOLR_CORE.equals(fileDestinationPath)) {
                 file = new File(confDir.getParentFile(), fileSourcePath);
 
                 if (CORE_PROPERTIES.equals(fileSourcePath)) {
-	                corePropertise.load(resourceAsStream);
-	                corePropertise.setProperty("name", solrCore);
+	                coreProperties.load(resourceAsStream);
+	                coreProperties.setProperty("name", solrCore);
 	                propertiesFile = file;
                 }
-            } else if (SOLR_CONF_LANG.equals(fileDestPath)) {
+            } else if (SOLR_CONF_LANG.equals(fileDestinationPath)) {
                 file = new File(langDir, fileSourcePath);
             } else {
                 file = new File(confDir, fileSourcePath);
@@ -306,7 +303,7 @@ public class SolrClient {
             }
         }
 
-        editCorePropertise(propertiesFile, corePropertise);
+        editCoreProperties(propertiesFile, coreProperties);
     }
     
     private void write2File(InputStream in, File dest) throws IOException{
@@ -324,7 +321,7 @@ public class SolrClient {
         }
     }
     
-    private void editCorePropertise(File dest, Properties prop)
+    private void editCoreProperties(File dest, Properties prop)
 			throws IOException {
         OutputStream out = new FileOutputStream(dest);
         try {
@@ -383,8 +380,10 @@ public class SolrClient {
             server.add(document);
 
         } catch (SolrServerException e) {
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
         } catch (IOException e) {
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
         }
     }
@@ -400,14 +399,15 @@ public class SolrClient {
         try {
             String id = generateId(tenantId, path);
             server.deleteById(id);
-            log.debug("Solr delete index path: " + path + " id: " + id);
-            
+            if(log.isDebugEnabled()) {
+                log.debug("Solr delete index path: " + path + " id: " + id);
+            }
         } catch (SolrServerException e) {
-            throw new SolrException(ErrorCode.SERVER_ERROR,
-					"Failure at deleting", e);
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         } catch (IOException e) {
-            throw new SolrException(ErrorCode.SERVER_ERROR,
-					"Failure at deleting", e);
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         }
     }
 
@@ -467,8 +467,9 @@ public class SolrClient {
                                 SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
                     }
                     queryresponse = server.query(query);
-                    log.debug("Solr index queried query: " + query);
-                    
+                    if(log.isDebugEnabled()) {
+                        log.debug("Solr index queried query: " + query);
+                    }
 // TODO: Proper mechanism once authroizations are fixed - senaka
 //                    PaginationUtils.setRowCount(messageContext,
 //                            Long.toString(queryresponse.getResults().getNumFound()));
@@ -479,24 +480,37 @@ public class SolrClient {
                 }
             } else {
                 queryresponse = server.query(query);
-                log.debug("Solr index queried query: " + query);
+                if(log.isDebugEnabled()) {
+                    log.debug("Solr index queried query: " + query);
+                }
             }
 
             return queryresponse.getResults();
         } catch (SolrServerException e) {
+            //throw unchecked exception: SolrException, this will cause due to invalid search query or error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at query " + keywords, e);
         }
     }
 
-    public void cleanAllDocuments() throws SolrServerException, IOException {
-        QueryResponse results = server.query(new SolrQuery("ICWS"));
-        SolrDocumentList resultsList = results.getResults();
+    public void cleanAllDocuments() {
+        try {
+            QueryResponse results = server.query(new SolrQuery("ICWS"));
+            SolrDocumentList resultsList = results.getResults();
 
-        for (int i = 0; i < resultsList.size(); i++) {
-            String id = (String) resultsList.get(i).getFieldValue(
-					IndexingConstants.FIELD_ID);
-            UpdateResponse deleteById = server.deleteById(id);
-            log.debug("Deleted ID " + id + " Status " + deleteById.getStatus());
+            for (int i = 0; i < resultsList.size(); i++) {
+                String id = (String) resultsList.get(i).getFieldValue(
+                        IndexingConstants.FIELD_ID);
+                UpdateResponse deleteById = server.deleteById(id);
+                if(log.isDebugEnabled()) {
+                    log.debug("Deleted ID " + id + " Status " + deleteById.getStatus());
+                }
+            }
+        } catch (SolrServerException e) {
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            throw new SolrException(ErrorCode.SERVER_ERROR, e);
+        } catch (IOException e) {
+            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            throw new SolrException(ErrorCode.SERVER_ERROR, e);
         }
     }
 
