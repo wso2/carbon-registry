@@ -247,9 +247,10 @@ public class SolrClient {
      * @throws IOException
      */
     private void readConfigurationFilePaths() throws IOException {
-        InputStream resourceAsStream = getClass().getClassLoader()
-				.getResourceAsStream(SOLR_CONFIG_FILES_CONTAINER);
+        InputStream resourceAsStream = null;
         try {
+            resourceAsStream = getClass().getClassLoader()
+                    .getResourceAsStream(SOLR_CONFIG_FILES_CONTAINER);
             Properties fileProperties = new Properties();
             fileProperties.load(resourceAsStream);
 
@@ -262,7 +263,9 @@ public class SolrClient {
                 }
             }
         } finally {
-            resourceAsStream.close();
+            if(resourceAsStream != null) {
+                resourceAsStream.close();
+            }
         }
     }
 	
@@ -271,64 +274,54 @@ public class SolrClient {
      * @throws IOException
      */
     private void copyConfigurationFiles() throws IOException {
-        Properties coreProperties = new Properties();
-        File propertiesFile = null;
-
         for (Entry<String, String> entry : filePathMap.entrySet()) {
-            String fileSourcePath = entry.getKey();
+            String sourceFileName = entry.getKey();
             String fileDestinationPath = entry.getValue();
-
-            InputStream resourceAsStream = getClass().getClassLoader()
-					.getResourceAsStream(fileSourcePath);
             File file;
 
             if (SOLR_HOME.equals(fileDestinationPath)) {
-                file = new File(solrHome, fileSourcePath);
+                file = new File(solrHome, sourceFileName);
             } else if (SOLR_CORE.equals(fileDestinationPath)) {
-                file = new File(confDir.getParentFile(), fileSourcePath);
-
-                if (CORE_PROPERTIES.equals(fileSourcePath)) {
-	                coreProperties.load(resourceAsStream);
-	                coreProperties.setProperty("name", solrCore);
-	                propertiesFile = file;
-                }
+                file = new File(confDir.getParentFile(), sourceFileName);
             } else if (SOLR_CONF_LANG.equals(fileDestinationPath)) {
-                file = new File(langDir, fileSourcePath);
+                file = new File(langDir, sourceFileName);
             } else {
-                file = new File(confDir, fileSourcePath);
+                file = new File(confDir, sourceFileName);
             }
 
             if (!file.exists()) {
-                write2File(resourceAsStream, file);
+                write2File(sourceFileName, file);
             }
         }
-
-        editCoreProperties(propertiesFile, coreProperties);
     }
     
-    private void write2File(InputStream in, File dest) throws IOException{
+    private void write2File(String sourceFileName, File dest) throws IOException{
         byte[] buf = new byte[1024];
-        OutputStream out = new FileOutputStream(dest);
+        InputStream in = null;
+        OutputStream out = null;
         try {
-            int read;
+            in = getClass().getClassLoader().getResourceAsStream(sourceFileName);
+            out = new FileOutputStream(dest);
 
-            while ((read = in.read(buf)) >= 0) {
-                out.write(buf, 0, read);
+            if (CORE_PROPERTIES.equals(sourceFileName)) {
+                Properties coreProperties = new Properties();
+                coreProperties.load(in);
+                coreProperties.setProperty("name", solrCore);
+                coreProperties.store(out, null);
             }
+            else {
+                int read;
+                while ((read = in.read(buf)) >= 0) {
+                    out.write(buf, 0, read);
+                }
+            }
+
         } finally {
-            out.close();
-            in.close();
-        }
-    }
-    
-    private void editCoreProperties(File dest, Properties prop)
-			throws IOException {
-        OutputStream out = new FileOutputStream(dest);
-        try {
-            prop.store(out, null);
-        } finally {
-            if(out != null){
+            if (out != null) {
                 out.close();
+            }
+            if (in != null) {
+                in.close();
             }
         }
     }
