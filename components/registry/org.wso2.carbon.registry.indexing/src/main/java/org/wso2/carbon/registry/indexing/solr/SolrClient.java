@@ -82,8 +82,7 @@ public class SolrClient {
     private Map<String,String> filePathMap = new HashMap<String, String>();
 	
 	// solr home directory path
-    private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonHome() + File.separator +
-	                                                  "repository" + File.separator + "conf" +
+    private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() +
 	                                                  File.separator + "solr";
 
     //properties file name which contains all solr filenames and relative paths
@@ -373,10 +372,10 @@ public class SolrClient {
             server.add(document);
 
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
         } catch (IOException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Error at indexing", e);
         }
     }
@@ -396,10 +395,10 @@ public class SolrClient {
                 log.debug("Solr delete index path: " + path + " id: " + id);
             }
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         } catch (IOException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         }
     }
@@ -480,7 +479,7 @@ public class SolrClient {
 
             return queryresponse.getResults();
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will cause due to invalid search query or error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an invalid search query or error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at query " + keywords, e);
         }
     }
@@ -499,10 +498,10 @@ public class SolrClient {
                 }
             }
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, e);
         } catch (IOException e) {
-            //throw unchecked exception: SolrException, this will cause due to error in connection.
+            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, e);
         }
     }
