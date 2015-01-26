@@ -368,7 +368,7 @@ public class WSDLMediaTypeHandler extends Handler {
             requestContext.setSourceURL(requestContext.
                     getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
 
-            if (requestContext.getSourceURL() != null) {
+            if (StringUtils.isNotBlank(requestContext.getSourceURL())) {
                 requestContext.setResource(metadata);
                 String sourceURL = requestContext.getSourceURL();
 

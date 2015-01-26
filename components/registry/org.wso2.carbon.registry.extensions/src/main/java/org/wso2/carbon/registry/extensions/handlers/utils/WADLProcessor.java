@@ -3,6 +3,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -118,7 +119,7 @@ public class WADLProcessor {
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
 
-        if (requestContext.getSourceURL() != null) {
+        if (StringUtils.isNotBlank(requestContext.getSourceURL())) {
             String uri = requestContext.getSourceURL();
             if (!skipValidation) {
                 validateWADL(uri);
@@ -153,7 +154,7 @@ public class WADLProcessor {
                             bufferedWriter.close();
                         } catch (IOException e) {
                             String msg = "Error occurred while closing File writer";
-                            log.error(msg, e);
+                            log.warn(msg, e);
                         }
                     }
                 }
@@ -162,7 +163,7 @@ public class WADLProcessor {
                     delete(tempFile);
                 } catch (IOException e) {
                     String msg = "An error occurred while deleting the temporary files from local file system.";
-                    log.error(msg, e);
+                    log.warn(msg, e);
                     throw new RegistryException(msg, e);
                 }
             }

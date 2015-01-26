@@ -40,7 +40,7 @@ import javax.servlet.ServletConfig;
 
 public class ImportResourceProcessor {
 
-    private static final Log LOG = LogFactory.getLog(ImportResourceProcessor.class);
+    private static final Log log = LogFactory.getLog(ImportResourceProcessor.class);
 
     /**
      * Process the form data and send it to ResourceServiceClient
@@ -75,7 +75,7 @@ public class ImportResourceProcessor {
             ServerData data;
             try {
                 data = adminClient.getServerData();
-            } catch (Exception e) {
+            } catch (RegistryException e) {
                 // If we can't get server data the chroot cannot be determined.
                 throw new RegistryException("No server data", e);
             }
@@ -92,7 +92,7 @@ public class ImportResourceProcessor {
             }
             if (chroot == null) {
                 symlinkLocation = null;
-                LOG.debug("Unable to determine chroot. Symbolic Link cannot be created");
+                log.debug("Unable to determine chroot. Symbolic Link cannot be created");
             }
             if (symlinkLocation != null) {
                 symlinkLocation = chroot + symlinkLocation;
@@ -108,7 +108,7 @@ public class ImportResourceProcessor {
                     description, fetchURL, symlinkLocation, properties, isAsync);
         } catch (AxisFault axisFault) {
             String msg = "Failed to initiate Server Admin Client.";
-            LOG.error(msg, axisFault);
+            log.error(msg, axisFault);
             throw new RegistryException(msg, axisFault);
         } catch (Exception e) {
             // Since ResourceServiceClient.importResource has thrown a Exception need to handle that as well,
@@ -116,7 +116,7 @@ public class ImportResourceProcessor {
             // having additional details will make the error message long
             String msg = "Unable to process (ResourceServiceClient.importResource) function." +
                     " Please check the network connection.";
-            LOG.error(msg, e);
+            log.error(msg, e);
             // if we skip msg and put just e, error message contain the axis2 fault story
             throw new RegistryException(msg, e);
         }

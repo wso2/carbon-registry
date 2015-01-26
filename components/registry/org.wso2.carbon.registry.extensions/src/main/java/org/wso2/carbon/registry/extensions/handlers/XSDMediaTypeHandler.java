@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.extensions.handlers;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -138,28 +139,51 @@ public class XSDMediaTypeHandler extends Handler {
                 }
                 oldResourcePath = resourcePath; // keep the old resource path.
             }
-
             WSDLValidationInfo validationInfo = null;
-            Object resourceContent = resource.getContent();
-            if (resourceContent instanceof String) {
-                resourceContent = RegistryUtils.encodeString(((String) resourceContent));
-                resource.setContent(resourceContent);
-            }
-            if (resourceContent instanceof byte[]) {
+            String savedName;
+
+            requestContext.setSourceURL(
+                    requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
+            String sourceURL = requestContext.getSourceURL();
+
+            if (StringUtils.isNotBlank(sourceURL)) {
+                if (requestContext.getSourceURL().toLowerCase()
+                        .startsWith("file:")) {
+                    String msg = "The source URL must not be file in the server's local file system";
+                    throw new RegistryException(msg);
+                }
                 try {
-                    InputStream in = new ByteArrayInputStream((byte[]) resourceContent);
                     if (!disableSchemaValidation) {
-                        validationInfo =
-                                SchemaValidator.validate(new XMLInputSource(null, null, null, in,
-                                        null));
+                        validationInfo = SchemaValidator.validate(new XMLInputSource(null, sourceURL, null));
                     }
                 } catch (Exception e) {
-                    throw new RegistryException("Exception occured while validating the schema", e);
+                    // Since SchemaValidator.validate method is throwing Exception need to catch it here
+                    throw new RegistryException("Exception occurred while validating the schema", e);
                 }
+
+                savedName = processSchemaImport(requestContext, resourcePath, validationInfo);
+
+            } else {
+                Object resourceContent = resource.getContent();
+                if (resourceContent instanceof String) {
+                    resourceContent = RegistryUtils.encodeString(((String) resourceContent));
+                    resource.setContent(resourceContent);
+                }
+                if (resourceContent instanceof byte[]) {
+                    try {
+                        InputStream in = new ByteArrayInputStream((byte[]) resourceContent);
+                        if (!disableSchemaValidation) {
+                            validationInfo = SchemaValidator.
+                                    validate(new XMLInputSource(null, null, null, in, null));
+                        }
+                    } catch (Exception e) {
+                        // Since SchemaValidator.validate method is throwing Exception need to catch it here
+                        throw new RegistryException("Exception occurred while validating the schema", e);
+                    }
+                }
+
+                savedName = processSchemaUpload(requestContext, resourcePath, validationInfo);
             }
-
-            String savedName = processSchemaUpload(requestContext, resourcePath, validationInfo);
-
             if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
                 requestContext.setActualPath(parentPath + RegistryUtils.getResourceName(savedName));
             } else {
@@ -167,8 +191,8 @@ public class XSDMediaTypeHandler extends Handler {
                         RegistryUtils.getResourceName(savedName));
             }
 
-            if (savedName != null) {
-                onPutCompleted(resourcePath, Collections.singletonMap("", savedName),
+            if (StringUtils.isNotBlank(savedName)) {
+                onPutCompleted(resourcePath, Collections.singletonMap(sourceURL, savedName),
                         Collections.<String>emptyList(), requestContext);
             }
 
