@@ -115,24 +115,6 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <distributionManagement>
-        <!--repository>
-        <id>wso2-maven2-repository</id>
-        <name>WSO2 Maven2 Repository</name>
-        <url>scp://dist.wso2.org/home/httpd/dist.wso2.org/maven2/</url>
-        </repository-->
-        <repository>
-            <id>nexus-releases</id>
-            <name>WSO2 Nexus Release Repository</name>
-            <url>http://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>wso2.snapshots</id>
-            <name>Apache Snapshot Repository</name>
-            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <dependencyManagement>
         <dependencies>
             <!-- Carbon Kernel Dependencies-->
@@ -1309,7 +1291,7 @@
         <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
-        <rampart.wso2.version>1.6.1-wso2v13-SNAPSHOT</rampart.wso2.version>
+        <rampart.wso2.version>1.6.1-wso2v13</rampart.wso2.version>
 
         <!-- Axiom Version -->
         <axiom.version>1.2.11-wso2v5</axiom.version>
@@ -1402,6 +1384,8 @@
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>4.3.0-SNAPSHOT
         </carbon.registry.package.export.version>
+
+        <project.scm.id>wso2-scm-server</project.scm.id>
 
     </properties>
 </project>
