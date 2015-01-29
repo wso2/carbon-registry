@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -84,20 +84,16 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.metadata.*;version="1.0.0-SNAPSHOT",
+                            org.wso2.carbon.registry.metadata.*;version="${project.version}",
                         </Export-Package>
                         <Private-Package>
-                            org.wso2.carbon.registry.metadata.internal.*;version="1.0.0-SNAPSHOT",
+                            org.wso2.carbon.registry.metadata.internal.*;version="${project.version}";-split-package:=merge-first
                         </Private-Package>
                         <Import-Package>
-                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
-                            org.apache.axiom.om.*;version="1.2.11.wso2v4",
-                            org.apache.axiom.om.impl.builder.*,
-                            org.apache.axiom.om.util.*
                             !javax.xml.namespace,
+                            org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             javax.xml.namespace; version=0.0.0,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.solr.*,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
@@ -114,30 +110,26 @@
         <artifactId>org.wso2.carbon.registry.core</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.common</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.indexing</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
         <groupId>solr.wso2</groupId>
         <artifactId>solr</artifactId>
-        <version>1.4.1.wso2v1</version>
+        <version>${version.solr}</version>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.extensions</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
 
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.commons</groupId>
         <artifactId>org.wso2.carbon.user.mgt</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
 
     <dependency>
@@ -158,9 +150,8 @@
         <artifactId>org.wso2.carbon.user.core</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.admin.api</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
         <groupId>org.wso2.carbon</groupId>
@@ -171,27 +162,24 @@
         <artifactId>org.wso2.carbon.base</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.commons</groupId>
         <artifactId>org.wso2.carbon.ntask.core</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>org.wso2.carbon.user.api</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.uddi</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
         <groupId>org.wso2.carbon</groupId>
         <artifactId>org.wso2.carbon.registry.server</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>org.wso2.carbon.registry.servlet</artifactId>
-        <version>${carbon.platform.version}</version>
     </dependency>
     <dependency>
         <groupId>org.wso2.carbon</groupId>

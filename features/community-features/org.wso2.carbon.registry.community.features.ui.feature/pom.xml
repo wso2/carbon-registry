@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>community.features-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -30,17 +30,16 @@
     <artifactId>org.wso2.carbon.registry.community.features.ui.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Community Features UI Feature</name>
-    <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
     <description>This feature contains the bundles required for Front-end Registry Community Features functionality
     </description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.info.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.info.stub</artifactId>
         </dependency>
         <dependency>
@@ -75,8 +74,8 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.info.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.info.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.info.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.info.stub</bundleDef>
                             </bundles>
                             <importBundles>
                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.email.verification.ui</importBundleDef>
@@ -84,7 +83,7 @@
                                 </importBundleDef>
                             </importBundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.platform.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

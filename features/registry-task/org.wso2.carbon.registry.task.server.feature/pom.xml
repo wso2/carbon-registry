@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry.task-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
@@ -30,12 +30,11 @@
     <artifactId>org.wso2.carbon.registry.task.server.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Task Server Feature</name>
-    <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
     <description>This feature contains the bundles required for Back-end Registry Task Scheduling</description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.task</artifactId>
         </dependency>
     </dependencies>
@@ -62,10 +61,10 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.task</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.task</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.ntask</importFeatureDef>
                             </importFeatures>
                         </configuration>
