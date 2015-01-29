@@ -43,7 +43,7 @@
             <artifactId>org.wso2.carbon.registry.eventing</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.email.verification</artifactId>
         </dependency>
     </dependencies>
@@ -74,7 +74,7 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.info</bundleDef>
                             </bundles>
                             <importBundles>
-                                <importBundleDef>org.wso2.carbon:org.wso2.carbon.email.verification</importBundleDef>
+                                <importBundleDef>org.wso2.carbon.commons:org.wso2.carbon.email.verification</importBundleDef>
                             </importBundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}

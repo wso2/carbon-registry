@@ -39,6 +39,7 @@
         <module>features/webdav</module>
         <module>features/jcr</module>
         <module>features/uddi</module>
+        <module>features/deployment-synchronizer</module>
     </modules>
 
     <repositories>
@@ -774,6 +775,11 @@
                 <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
                 <version>${carbon.registry.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.deployment.synchronizer</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
 
             <!-- Carbon Kernel Features Dependencies-->
             <dependency>
@@ -816,6 +822,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.event.ws</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.deployment.synchronizer</artifactId>
                 <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
@@ -1123,24 +1134,19 @@
 
             <!-- Email verification dependencies -->
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.email.verification</artifactId>
-                <version>4.2.0</version>
+                <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.email.verification.ui</artifactId>
-                <version>4.2.0</version>
+                <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
+                <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.email.verification.stub</artifactId>
-                <version>4.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.deployment.synchronizer</artifactId>
-                <version>4.3.0-SNAPSHOT</version>
+                <version>${carbon.commons.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.ws.commons.axiom</groupId>
@@ -1326,7 +1332,7 @@
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
-        <wss4j.version>1.5.11.wso2v8-SNAPSHOT</wss4j.version>
+        <wss4j.version>1.5.11.wso2v9</wss4j.version>
         <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
         <jetty.version>6.1.5</jetty.version>
         <xml-apis.version>1.3.04</xml-apis.version>
@@ -1387,7 +1393,7 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.3.0</carbon.commons.version>
+        <carbon.commons.version>4.3.1</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Registry -->
