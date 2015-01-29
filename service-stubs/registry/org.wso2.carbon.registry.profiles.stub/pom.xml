@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>carbon-service-stubs</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -97,7 +97,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.profiles.stub.*;version="${carbon.platform.package.export.version}",
+                            org.wso2.carbon.registry.profiles.stub.*;version="${carbon.registry.package.export.version}",
                         </Export-Package>
                         <Import-Package>
                             !javax.xml.namespace,

@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -53,7 +53,7 @@
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.registry.common.*,
                             org.wso2.carbon.user.core; version="${carbon.kernel.package.import.version.range}",
-                            org.wso2.carbon.event.*,
+                            org.wso2.carbon.event.*;version="${carbon.commons.imp.pkg.version}",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
@@ -82,7 +82,7 @@
             <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.common</artifactId>
         </dependency>
         <dependency>
@@ -94,11 +94,11 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.event.ws</artifactId>
         </dependency>
         <dependency>
@@ -118,11 +118,11 @@
             <artifactId>axiom-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.extensions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.governance.notifications.worklist.stub</artifactId>
         </dependency>
     </dependencies>

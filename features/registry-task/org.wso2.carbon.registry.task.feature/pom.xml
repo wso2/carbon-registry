@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry.task-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -30,7 +30,6 @@
     <artifactId>org.wso2.carbon.registry.task.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Task Feature</name>
-    <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
     <description>
         Ability to associate a profile with a user account on carbon, which will be stored on the
@@ -39,9 +38,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.task.server.feature</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>
@@ -63,10 +62,10 @@
                             <id>org.wso2.carbon.registry.task</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core:${project.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core:${carbon.registry.version}</importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
-                                <includedFeatureDef>org.wso2.carbon:org.wso2.carbon.registry.task.server.feature
+                                <includedFeatureDef>org.wso2.carbon.registry:org.wso2.carbon.registry.task.server.feature
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>

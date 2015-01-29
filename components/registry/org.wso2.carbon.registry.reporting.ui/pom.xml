@@ -18,7 +18,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -27,7 +27,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.registry.reporting.ui</artifactId>
     <packaging>bundle</packaging>
-    <version>4.3.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Registry - Reporting UI</name>
 
     <build>
@@ -64,7 +63,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.reporting.stub</artifactId>
         </dependency>
         <dependency>
@@ -72,7 +71,7 @@
             <artifactId>org.wso2.carbon.registry.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.common.ui</artifactId>
         </dependency>
     </dependencies>

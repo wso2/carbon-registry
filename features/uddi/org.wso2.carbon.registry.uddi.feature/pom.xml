@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>uddi-feature</artifactId>
         <version>4.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -32,7 +32,7 @@
             <artifactId>juddi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.uddi</artifactId>
         </dependency>
     </dependencies>
@@ -41,7 +41,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.registry.uddi.feature</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.0-SNAPSHOT</version>
     <name>WSO2 Carbon - Registry UDDI Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the bundles required for UDDI functionality</description>
@@ -68,7 +67,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.juddi.wso2:juddi</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.uddi</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.uddi</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
