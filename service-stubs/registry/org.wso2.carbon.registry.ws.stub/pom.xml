@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>carbon-service-stubs</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -52,7 +52,7 @@
                                     <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${orbit.version.axis2}/axis2-${orbit.version.axis2}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/WSRegistryService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.ws.stub -ns2p http://api.ws.registry.carbon.wso2.org=org.wso2.carbon.registry.ws.stub,http://dao.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.dao.jdbc.core,http://core.user.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.core.user.xsd,http://io.java/xsd=org.wso2.carbon.registry.ws.stub.io.java,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.exceptions.core.xsd,http://api.ws.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.xsd,http://core.user.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.registry.core.user.xsd,http://core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.core.xsd,http://dataaccess.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.dataaccess.jdbc.core.xsd" />
+                                    <arg line="-uri src/main/resources/WSRegistryService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.ws.stub                                     -ns2p http://api.ws.registry.carbon.wso2.org=org.wso2.carbon.registry.ws.stub,http://dao.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.dao.jdbc.core,http://core.user.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.core.user.xsd,http://io.java/xsd=org.wso2.carbon.registry.ws.stub.io.java,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.exceptions.core.xsd,http://api.ws.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.xsd,http://core.user.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.registry.core.user.xsd,http://core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.core.xsd,http://dataaccess.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.ws.stub.dataaccess.jdbc.core.xsd" />
                                     <classpath refid="wsdl2java.classpath" />
                                 </java>
                             </tasks>

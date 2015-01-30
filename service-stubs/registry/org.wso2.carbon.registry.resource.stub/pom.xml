@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>carbon-service-stubs</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.0</version>
 
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -55,15 +55,15 @@
                                 </path>
 
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ResourceAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub -ns2p http://utils.services.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.services" />
+                                    <arg line="-uri src/main/resources/ResourceAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub                                     -ns2p http://utils.services.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.services.utils.xsd,http://common.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.common.xsd,http://beans.resource.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.resource.stub.beans.xsd,http://services.resource.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.services" />
                                     <classpath refid="wsdl2java.classpath" />
                                 </java>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CustomUIAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub.custom -ns2p http://services.custom.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.custom.services" />
+                                    <arg line="-uri src/main/resources/CustomUIAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub.custom                                     -ns2p http://services.custom.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.custom.services" />
                                     <classpath refid="wsdl2java.classpath" />
                                 </java>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/RegistryAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub.registry.service -ns2p http://service.server.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.registry.service" />
+                                    <arg line="-uri src/main/resources/RegistryAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.resource.stub.registry.service                                     -ns2p http://service.server.registry.carbon.wso2.org=org.wso2.carbon.registry.resource.stub.registry.service" />
                                     <classpath refid="wsdl2java.classpath" />
                                 </java>
                             </tasks>
