@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>carbon-service-stubs</artifactId>
-        <version>4.3.0</version>
+        <version>4.3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -53,7 +53,7 @@
                                     <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${orbit.version.axis2}/axis2-${orbit.version.axis2}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ProfilesAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.profiles.stub                                     -ns2p http://services.profiles.registry.carbon.wso2.org=org.wso2.carbon.registry.profiles.stub.services,http://beans.profiles.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.beans.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.exceptions.xsd,http://core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.core.xsd,http://core.user.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.core.xsd" />
+                                    <arg line="-uri src/main/resources/ProfilesAdminService.wsdl -u -uw -o target/generated-code -p org.wso2.carbon.registry.profiles.stub -ns2p http://services.profiles.registry.carbon.wso2.org=org.wso2.carbon.registry.profiles.stub.services,http://beans.profiles.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.beans.xsd,http://exceptions.core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.exceptions.xsd,http://core.registry.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.core.xsd,http://core.user.carbon.wso2.org/xsd=org.wso2.carbon.registry.profiles.stub.core.xsd" />
                                     <classpath refid="wsdl2java.classpath" />
                                 </java>
                             </tasks>
