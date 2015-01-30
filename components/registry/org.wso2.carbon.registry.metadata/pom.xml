@@ -84,10 +84,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.metadata.*;version="${project.version}",
+                            org.wso2.carbon.registry.metadata.*;version="${carbon.registry.metadata.version}",
                         </Export-Package>
                         <Private-Package>
-                            org.wso2.carbon.registry.metadata.internal.*;version="${project.version}";-split-package:=merge-first
+                            org.wso2.carbon.registry.metadata.internal.*;version="${carbon.registry.metadata.version}";-split-package:=merge-first
                         </Private-Package>
                         <Import-Package>
                             !javax.xml.namespace,

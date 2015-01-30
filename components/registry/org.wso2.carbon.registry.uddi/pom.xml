@@ -44,7 +44,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Axis2Module>${project.artifactId}-${project.version}</Axis2Module>
+                        <Axis2Module>${project.artifactId}-${carbon.registry.version}</Axis2Module>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>org.wso2.carbon.registry.uddi.persistance.*,
                             org.wso2.carbon.registry.uddi.servlet.*,
