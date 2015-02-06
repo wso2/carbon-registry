@@ -9,7 +9,7 @@
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.1</version>
+    <version>4.3.2-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -17,7 +17,7 @@
         <connection>scm:git:https://github.com/wso2/carbon-registry.git</connection>
         <developerConnection>scm:git:https://github.com/wso2/carbon-registry.git</developerConnection>
         <url>https://github.com/wso2/carbon-registry.git</url>
-        <tag>carbon-registry-4.3.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
@@ -1378,7 +1378,7 @@
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.1</carbon.registry.version>
+        <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.registry.package.import.version.range>
