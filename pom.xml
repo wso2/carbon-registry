@@ -1374,12 +1374,12 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.3.1</carbon.commons.version>
+        <carbon.commons.version>4.3.4</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.3.1-SNAPSHOT</carbon.registry.version>
-        <carbon.registry.metadata.version>1.0.0</carbon.registry.metadata.version>
+        <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>4.3.0</carbon.registry.package.export.version>

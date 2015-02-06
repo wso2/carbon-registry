@@ -54,7 +54,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.registry.ws</id>
+                            <id>org.wso2.carbon.registry.deployment.synchronizer</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
