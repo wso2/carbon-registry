@@ -1382,7 +1382,7 @@
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.registry.package.import.version.range>
-        <carbon.registry.package.export.version>4.3.0</carbon.registry.package.export.version>
+        <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
 
