@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
-import org.wso2.carbon.deployment.synchronizer.internal.DeploymentSynchronizerConstants;
+import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerConstants;
 import org.wso2.carbon.deployment.synchronizer.util.RepositoryConfigParameter;
 import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.Collection;

@@ -32,7 +32,7 @@
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-only"
                              class="org.apache.axis2.receivers.RawXMLINOnlyMessageReceiver"/>
         </operation>
-        <parameter name="ServiceClass">org.wso2.carbon.deployment.synchronizer.services.AutoCheckoutService</parameter>
+        <parameter name="ServiceClass">org.wso2.carbon.registry.deployment.synchronizer.services.AutoCheckoutService</parameter>
     </service>
     <parameter name="hiddenService" locked="true">true</parameter>
 </serviceGroup>
