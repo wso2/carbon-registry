@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.deployment.synchronizer.RegistryBasedArtifactRepository;
 
 /**
+ * @scr.component name="org.wso2.carbon.registry.deployment.synchronizer" immediate="true"
  * @scr.reference name="registry.service" immediate="true"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
