@@ -50,7 +50,7 @@
                             org.wso2.carbon.registry.deployment.synchronizer.internal.*
                         </Private-Package>
                         <Export-Package>
-                            !org.wso2.carbon.registry.deployment.synchronizer.internal.*
+                            !org.wso2.carbon.registry.deployment.synchronizer.internal.*,
                             org.wso2.carbon.registry.deployment.synchronizer.*,
                         </Export-Package>
                         <Import-Package>
