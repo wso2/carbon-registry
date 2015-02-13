@@ -21,8 +21,8 @@ package org.wso2.carbon.registry.deployment.synchronizer.services;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.deployment.synchronizer.internal.DeploymentSynchronizationManager;
-import org.wso2.carbon.deployment.synchronizer.internal.DeploymentSynchronizer;
+import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizationManager;
+import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizer;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
