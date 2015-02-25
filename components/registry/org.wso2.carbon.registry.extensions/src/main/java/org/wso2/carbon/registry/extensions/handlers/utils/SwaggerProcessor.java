@@ -112,7 +112,7 @@ public class SwaggerProcessor {
 
 		swaggerContentElement.addChild(swaggerContentText);
 		overviewElement.addChild(swaggerContentElement);
-		swaggerElement.addChild(overviewElement);S
+		swaggerElement.addChild(overviewElement);
 
 		return swaggerElement;
 	}
