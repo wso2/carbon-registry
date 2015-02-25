@@ -57,6 +57,7 @@ public class CommonConstants {
     public static final String ENDPOINT_MEDIA_TYPE = "application/vnd.wso2.endpoint";
     public static final String WSDL_MEDIA_TYPE = "application/wsdl+xml";
     public static final String SCHEMA_MEDIA_TYPE = "application/xsd+xml";
+	public static final String SWAGGER_MEDIA_TYPE = "application/swagger+json";
     public static final String SERVICE_MEDIA_TYPE = RegistryConstants.SERVICE_MEDIA_TYPE;
     public static final String SERVICE_VERSION_COLLECTION_MEDIA_TYPE =
             "application/vnd.wso2-service-version.collection";
@@ -118,6 +119,8 @@ public class CommonConstants {
     public static final String SCHEMA_VERSION_DEFAULT_VALUE = "1.0.0";
     
     public static final String POLICY_VERSION_DEFAULT_VALUE = "1.0.0";
+
+	public static final String SWAGGER_VERSION_DEFAULT_VALUE = "1.0.0";
 
     public static final String VERSION_CONTAINER_MEDIA_TYPE =
             "application/vnd.wso2.version-container";
