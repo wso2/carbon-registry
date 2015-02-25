@@ -19,7 +19,6 @@ package org.wso2.carbon.registry.extensions.handlers;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -34,11 +33,7 @@ import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import javax.xml.namespace.QName;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 
 public class SwaggerMediaTypeHandler extends Handler {
@@ -79,93 +74,25 @@ public class SwaggerMediaTypeHandler extends Handler {
 			if (requestContext == null) {
 				throw new RegistryException("The request context is not available.");
 			}
-			String path = requestContext.getResourcePath().getPath();
+			SwaggerProcessor processor = new SwaggerProcessor();
 			Resource resource = requestContext.getResource();
-			Registry registry = requestContext.getRegistry();
-
-			Object resourceContentObj = resource.getContent();
+			Object content = resource.getContent();
 			String resourceContent;
-			if (resourceContentObj instanceof String) {
-				resourceContent = (String)resourceContentObj;
+
+			if(content instanceof String) {
+				resourceContent = (String)content;
 				resource.setContent(RegistryUtils.encodeString(resourceContent));
+			} else if(content instanceof byte[]) {
+				resourceContent = RegistryUtils.decodeBytes((byte[])content);
 			} else {
-				resourceContent = RegistryUtils.decodeBytes((byte[])resourceContentObj);
-			}
-			try {
-				if (registry.resourceExists(path)) {
-					Resource oldResource = registry.get(path);
-					byte[] oldContent = (byte[])oldResource.getContent();
-					if (oldContent != null && RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
-						// this will continue adding from the default path.
-						return;
-					}
-				}
-			} catch (Exception e) {
-				String msg = "Error in comparing the policy content updates. policy path: " + path + ".";
-				log.error(msg, e);
-				throw new RegistryException(msg, e);
-			}
-			Object newContent = RegistryUtils.encodeString(resourceContent);
-			if (newContent != null) {
-				InputStream inputStream = new ByteArrayInputStream((byte[])newContent);
-				addSwaggerToRegistry(requestContext, inputStream);
-			}
-			ArtifactManager.getArtifactManager().getTenantArtifactRepository().addArtifact(path);
-		} finally {
-			CommonUtil.releaseUpdateLock();
-		}
-	}
-
-	@Override public void importResource(RequestContext requestContext) throws RegistryException {
-
-		if (!CommonUtil.isUpdateLockAvailable()) {
-			return;
-		}
-		CommonUtil.acquireUpdateLock();
-
-		try {
-			String sourceURL = requestContext.getSourceURL();
-
-			if(sourceURL == null){
-				throw new RegistryException("Swagger source url is null.");
+				log.error("Resource content is not valid.");
+				throw new RegistryException("Resource content is not valid.");
 			}
 
-			InputStream inputStream;
-			try {
-				if (sourceURL.toLowerCase().startsWith("file:")) {
-					String msg =
-							"The source URL must not be file in the server's local file system";
-					throw new RegistryException(msg);
-				}
-				inputStream = new URL(sourceURL).openStream();
-			} catch (IOException e) {
-				throw new RegistryException("The URL " + sourceURL + " is incorrect.", e);
-			}
-
-			addSwaggerToRegistry(requestContext, inputStream);
-			new SwaggerProcessor(requestContext).populateAPI(null,requestContext);
 			requestContext.setProcessingComplete(true);
-
 		} finally {
 			CommonUtil.releaseUpdateLock();
 		}
-
-	}
-
-	private ByteArrayOutputStream readSourceContent(InputStream inputStream)
-			throws RegistryException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		int nextChar;
-		try {
-			while ((nextChar = inputStream.read()) != -1) {
-				outputStream.write(nextChar);
-			}
-			outputStream.flush();
-		} catch (IOException e) {
-			throw new RegistryException("Exception occurred while reading swagger content", e);
-		}
-
-		return  outputStream;
 	}
 
 	private void addSwaggerToRegistry(RequestContext requestContext, InputStream inputStream)
@@ -187,8 +114,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 			resource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
 		}
 
-		ByteArrayOutputStream resourceContent = readSourceContent(inputStream);
-
+		//ByteArrayOutputStream resourceContent = readSourceContent(inputStream);
 
 		String resourcePath = requestContext.getResourcePath().getPath();
 		String swaggerFileName = resourcePath
@@ -253,7 +179,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 			swaggerResourceUUID = UUID.randomUUID().toString();
 		}
 		newResource.setUUID(swaggerResourceUUID);
-		newResource.setContent(new String(resourceContent.toByteArray()));
+		//newResource.setContent(new String(resourceContent.toByteArray()));
 		addSwaggerToRegistry(requestContext, swaggerPath, requestContext.getSourceURL(),
 		                     newResource, registry);
 		((ResourceImpl)newResource).setPath(relativeArtifactPath);
