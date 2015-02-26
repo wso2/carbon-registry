@@ -29,8 +29,11 @@ public class ClaimTestUtil {
     public static final String CLAIM_URI1 = "http://wso2.org/claims/aboutme";
     public static final String CLAIM_URI2 = "http://wso2.org/claims/givenname";
     public static final String CLAIM_URI3 = "http://wso2.org/givenname3";
-        public static final String CLAIM_URI4 = "http://wso2.org/claims/emailaddress";
-         public static final String CLAIM_URI5 = "http://wso2.org/claims/telephone";
+    public static final String CLAIM_URI4 = "http://wso2.org/claims/emailaddress";
+    public static final String CLAIM_URI5 = "http://wso2.org/claims/telephone";
+    public static final String CLAIM_URI6 = "http://wso2.org/claims/lastname";
+    public static final String CLAIM_URI7 = "http://wso2.org/claims/nickname";
+    public static final String CLAIM_URI8 = "http://wso2.org/claims/displayname";
     public static final String HOME_PROFILE_NAME = "HomeProfile";
 
     public static Map<String, ClaimMapping> getClaimTestData() {
@@ -99,6 +102,45 @@ public class ClaimTestUtil {
         cm3.setClaim(claim3);
         cm3.setMappedAttribute("attr3");
         claims.put("http://wso2.org/givenname3", cm3);
+
+        Claim claim6 = new Claim();
+        claim6.setClaimUri(CLAIM_URI6);
+        claim6.setDescription("This is last name");
+        claim6.setDialectURI("http://wso2.org/");
+        claim6.setDisplayTag("Last Name");
+        claim6.setRegEx("ty&*RegEx2");
+        claim6.setRequired(true);
+        claim6.setSupportedByDefault(true);
+        ClaimMapping cm6 = new ClaimMapping();
+        cm6.setClaim(claim6);
+        cm6.setMappedAttribute("attr6");
+        claims.put(CLAIM_URI6, cm6);
+
+        Claim claim7 = new Claim();
+        claim7.setClaimUri(CLAIM_URI7);
+        claim7.setDescription("This is nick name");
+        claim7.setDialectURI("http://wso2.org/");
+        claim7.setDisplayTag("Nick Name");
+        claim7.setRegEx("ty&*RegEx2");
+        claim7.setRequired(true);
+        claim7.setSupportedByDefault(true);
+        ClaimMapping cm7 = new ClaimMapping();
+        cm7.setClaim(claim7);
+        cm7.setMappedAttribute("attr7");
+        claims.put(CLAIM_URI7, cm7);
+
+        Claim claim8 = new Claim();
+        claim8.setClaimUri(CLAIM_URI8);
+        claim8.setDescription("This is display name");
+        claim8.setDialectURI("http://wso2.org/");
+        claim8.setDisplayTag("Display Name");
+        claim8.setRegEx("ty&*RegEx2");
+        claim8.setRequired(true);
+        claim8.setSupportedByDefault(true);
+        ClaimMapping cm8 = new ClaimMapping();
+        cm8.setClaim(claim8);
+        cm8.setMappedAttribute("attr8");
+        claims.put(CLAIM_URI8, cm8);
 
         return claims;
 
