@@ -73,39 +73,46 @@ public class SwaggerMediaTypeHandler extends Handler {
 		CommonUtil.acquireUpdateLock();
 
 		try {
-			if (requestContext == null) {
-				throw new RegistryException("The request context is not available.");
-			}
 			String path = requestContext.getResourcePath().getPath();
 			Resource resource = requestContext.getResource();
 			Registry registry = requestContext.getRegistry();
 
+			if (resource == null) {
+				throw new RegistryException("Resource does not exist.");
+			}
+
 			Object resourceContentObj = resource.getContent();
 			String resourceContent;
 			if (resourceContentObj instanceof String) {
-				resourceContent = (String)resourceContentObj;
+				resourceContent = (String) resourceContentObj;
 				resource.setContent(RegistryUtils.encodeString(resourceContent));
+			} else if (resourceContentObj instanceof byte[]) {
+				resourceContent = RegistryUtils.decodeBytes((byte[]) resourceContentObj);
 			} else {
-				resourceContent = RegistryUtils.decodeBytes((byte[])resourceContentObj);
+				throw new RegistryException("Resource content is not valid.");
 			}
+
 			try {
 				if (registry.resourceExists(path)) {
 					Resource oldResource = registry.get(path);
-					byte[] oldContent = (byte[])oldResource.getContent();
-					if (oldContent != null && RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
+					byte[] oldContent = (byte[]) oldResource.getContent();
+					if (oldContent != null &&
+					    RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
 						// this will continue adding from the default path.
 						return;
 					}
 				}
 			} catch (Exception e) {
-				String msg = "Error in comparing the policy content updates. policy path: " + path + ".";
-				log.error(msg, e);
-				throw new RegistryException(msg, e);
+				throw new RegistryException(
+						"Error in comparing the swagger content updates. swagger path: " + path +
+						".", e);
 			}
 			Object newContent = RegistryUtils.encodeString(resourceContent);
 			if (newContent != null) {
-				InputStream inputStream = new ByteArrayInputStream((byte[])newContent);
-				//addSwaggerToRegistry(requestContext, inputStream);
+				InputStream inputStream = new ByteArrayInputStream((byte[]) newContent);
+				SwaggerProcessor processor = new SwaggerProcessor();
+				processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
+						requestContext.getRegistryContext()));
 			}
 			ArtifactManager.getArtifactManager().getTenantArtifactRepository().addArtifact(path);
 		} finally {
@@ -113,6 +120,12 @@ public class SwaggerMediaTypeHandler extends Handler {
 		}
 	}
 
+	/**
+	 * Creates a resource in the given path by fetching the resource content from the given URL.
+	 *
+	 * @param requestContext Information about the current request.
+	 * @throws RegistryException If import fails due a handler specific error
+	 */
 	@Override public void importResource(RequestContext requestContext) throws RegistryException {
 
 		if (!CommonUtil.isUpdateLockAvailable()) {
@@ -123,23 +136,25 @@ public class SwaggerMediaTypeHandler extends Handler {
 		try {
 			String sourceURL = requestContext.getSourceURL();
 
-			if(sourceURL == null){
+			if (sourceURL == null) {
 				throw new RegistryException("Swagger source url is null.");
 			}
 
 			InputStream inputStream;
 			try {
 				if (sourceURL.toLowerCase().startsWith("file:")) {
-					String msg =
-							"The source URL must not be file in the server's local file system";
-					throw new RegistryException(msg);
+					throw new RegistryException(
+							"The source URL must not be point to a file in the server's local file system. ");
 				}
+				//Open a stream to the sourceURL
 				inputStream = new URL(sourceURL).openStream();
 			} catch (IOException e) {
 				throw new RegistryException("The URL " + sourceURL + " is incorrect.", e);
 			}
+
 			SwaggerProcessor processor = new SwaggerProcessor();
-			processor.addSwaggerToRegistry(requestContext, inputStream);
+			processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
+					requestContext.getRegistryContext()));
 			requestContext.setProcessingComplete(true);
 
 		} finally {

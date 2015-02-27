@@ -50,7 +50,8 @@ public class SwaggerProcessor {
 		return  outputStream;
 	}
 
-	public void addSwaggerToRegistry(RequestContext requestContext, InputStream inputStream)
+	public void addSwaggerToRegistry(RequestContext requestContext, InputStream inputStream,
+	                                 String commonLocation)
 			throws RegistryException {
 
 		Resource resource;
@@ -79,7 +80,7 @@ public class SwaggerProcessor {
 
 		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
 		RegistryContext registryContext = requestContext.getRegistryContext();
-		String commonLocation = "";//getChrootedLocation(registryContext);
+		//String commonLocation = "";//getChrootedLocation(registryContext);
 
 		//Creating new collection
 		if (!systemRegistry.resourceExists(commonLocation)) {
@@ -87,11 +88,12 @@ public class SwaggerProcessor {
 		}
 
 		String swaggerPath;
-		if (!resourcePath.startsWith(commonLocation)
-		    && !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
-		                                                          RegistryConstants.PATH_SEPARATOR +
-		                                                          swaggerFileName))
-		    && !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
+		if (!resourcePath.startsWith(commonLocation) && !resourcePath.equals(RegistryUtils
+				                                                                     .getAbsolutePath(
+						                                                                     registryContext,
+						                                                                     RegistryConstants.PATH_SEPARATOR +
+						                                                                     swaggerFileName)) &&
+		    !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
 		                                                          RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
 		                                                          RegistryConstants.PATH_SEPARATOR + swaggerFileName))) {
 			swaggerPath = resourcePath;
