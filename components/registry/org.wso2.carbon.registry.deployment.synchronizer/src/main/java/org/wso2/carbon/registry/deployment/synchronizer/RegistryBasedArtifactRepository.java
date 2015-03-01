@@ -24,12 +24,11 @@ import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerConstants;
 import org.wso2.carbon.deployment.synchronizer.util.RepositoryConfigParameter;
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.deployment.synchronizer.utils.RegistryServiceReferenceHolder;
+import org.wso2.carbon.registry.deployment.synchronizer.internal.utils.RegistryServiceReferenceHolder;
 import org.wso2.carbon.registry.synchronization.RegistrySynchronizer;
 import org.wso2.carbon.registry.synchronization.SynchronizationException;
 import org.wso2.carbon.registry.synchronization.Utils;
@@ -93,7 +92,7 @@ public class RegistryBasedArtifactRepository implements ArtifactRepository {
     }
 
     private static UserRegistry getConfigurationRegistry(int tenantId) throws RegistryException {
-        return ServiceReferenceHolder.getRegistryService().getConfigSystemRegistry(tenantId);
+        return RegistryServiceReferenceHolder.getRegistryService().getConfigSystemRegistry(tenantId);
     }
 
     private static String getRegistryPath(int tenantId) {
