@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.registry.extensions.handlers;
 
-import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
@@ -31,40 +30,14 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
-import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
 
 public class SwaggerMediaTypeHandler extends Handler {
 
 	private static final Log log = LogFactory.getLog(SwaggerMediaTypeHandler.class);
-
-	private String location;
-	private OMElement swaggerlocationConfiguration;
-
-	public OMElement getSwaggerLocationConfiguration() {
-		return swaggerlocationConfiguration;
-	}
-
-	public void setSwaggerLocationConfiguration(OMElement locationConfiguration) throws RegistryException {
-		Iterator confElements = locationConfiguration.getChildElements();
-		while (confElements.hasNext()) {
-			OMElement confElement = (OMElement)confElements.next();
-			if (confElement.getQName().equals(new QName("location"))) {
-				location = confElement.getText();
-				if (!location.startsWith(RegistryConstants.PATH_SEPARATOR)) {
-					location = RegistryConstants.PATH_SEPARATOR + location;
-				}
-				if (!location.endsWith(RegistryConstants.PATH_SEPARATOR)) {
-					location = location + RegistryConstants.PATH_SEPARATOR;
-				}
-			}
-		}
-		this.swaggerlocationConfiguration = locationConfiguration;
-	}
 
 	@Override public void put(RequestContext requestContext) throws RegistryException {
 		if (!CommonUtil.isUpdateLockAvailable()) {
@@ -162,9 +135,10 @@ public class SwaggerMediaTypeHandler extends Handler {
 	}
 
 	private String getChrootedLocation(RegistryContext registryContext) {
+		String relativeLocation = "/apimgt/applicationdata/api_docs/";
 		return RegistryUtils.getAbsolutePath(registryContext,
 		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-		                                     location);
+		                                     relativeLocation);
 	}
 
 }

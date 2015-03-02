@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -34,6 +33,7 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
+import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,6 +88,7 @@ public class SwaggerProcessor {
 
 		String version = resource.getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 		String apiName = resource.getProperty("apiName");
+		String provider = resource.getProperty("provider");
 
 		if (version == null) {
 			version = CommonConstants.SWAGGER_SPEC_VERSION_DEFAULT_VALUE;
@@ -124,7 +125,8 @@ public class SwaggerProcessor {
 		                                                       swaggerFileName))) {
 			actualPath = resourcePath;
 		} else {
-			actualPath = commonLocation + apiName + RegistryConstants.PATH_SEPARATOR + version +
+			actualPath = commonLocation + provider + RegistryConstants.PATH_SEPARATOR + apiName +
+			             RegistryConstants.PATH_SEPARATOR + version +
 			             RegistryConstants.PATH_SEPARATOR + swaggerFileName;
 		}
 
@@ -142,7 +144,7 @@ public class SwaggerProcessor {
 			swaggerResource = new ResourceImpl();
 
 			Properties properties = resource.getProperties();
-
+			//Setting properties to the new resource
 			if (properties != null) {
 				Set keys = properties.keySet();
 				for (Object key : keys) {
@@ -161,29 +163,40 @@ public class SwaggerProcessor {
 		if (resourceId == null) {
 			resourceId = UUID.randomUUID().toString();
 		}
+		//Setting resource media type : application/swagger+json (proposed media type to swagger specs)
 		swaggerResource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
+		//setting resource UUID
 		swaggerResource.setUUID(resourceId);
+		//Setting swagger as the resource content
 		swaggerResource.setContent(swaggerContent.toByteArray());
+		//Setting actual path
 		requestContext.setActualPath(actualPath);
+		//Saving in to the registry
 		registry.put(actualPath, swaggerResource);
 		((ResourceImpl) swaggerResource).setPath(relativeArtifactPath);
 		requestContext.setResource(swaggerResource);
 
-		OMElement data = createAPIArtifact(swaggerContent);
-		addApiToregistry(requestContext, data);
+		//Creating API artifact from the swagger content
+		OMElement data = createAPIArtifact(swaggerContent, provider);
+		addApiToregistry(requestContext, data, provider, apiName);
 
 	}
 
-	private void addApiToregistry(RequestContext requestContext, OMElement data)
-			throws RegistryException {
+	private void addApiToregistry(RequestContext requestContext, OMElement data, String provider,
+	                              String apiName) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		Resource apiResource = new ResourceImpl();
 
-		apiResource.setMediaType("application/vnd.wso2-api+xml");
+		apiResource.setMediaType(CommonConstants.API_MEDIA_TYPE);
 
-		apiResource.setProperty("Version", "1.0.0");
+		OMElement overview = data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+		String apiVersion = overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
 
+		if(apiVersion == null) {
+			apiVersion = CommonConstants.API_VERSION_DEFAULT_VALUE;
+		}
+		apiResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, apiVersion);
 		apiResource.setContent(RegistryUtils.encodeString(data.toString()));
 
 		String resourceId = apiResource.getUUID();
@@ -193,25 +206,19 @@ public class SwaggerProcessor {
 		}
 
 		apiResource.setUUID(resourceId);
-
-		String actualPath = "/_system/governance/apimgt/applicationdata/provider/admin/petstore/api_doc";
+		String actualPath = getChrootedApiLocation(requestContext.getRegistryContext()) + provider +
+		                    RegistryConstants.PATH_SEPARATOR + apiName +
+		                    RegistryConstants.PATH_SEPARATOR + apiVersion + "/api";
 
 		registry.put(actualPath, apiResource);
 
 	}
 
-	private OMElement createAPIArtifact(ByteArrayOutputStream swaggerContent) throws RegistryException {
+	private OMElement createAPIArtifact(ByteArrayOutputStream swaggerContent, String providerName)
+			throws RegistryException {
 		String swagger = swaggerContent.toString();
 		JsonParser parser = new JsonParser();
 		JsonObject swaggerObject = parser.parse(swagger).getAsJsonObject();
-
-		JsonElement versionElement = swaggerObject.get("swagger");
-		String version;
-		if(versionElement == null) {
-			version = swaggerObject.get("swaggerVersion").getAsString();
-		} else {
-			version = swaggerObject.get("swagger").getAsString();
-		}
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
 		OMNamespace namespace =
@@ -219,45 +226,44 @@ public class SwaggerProcessor {
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement("overview", namespace);
 
-		if (version.equals("1.2")) {
-			return null;
-		} else if (version.equals("2.0")) {
+		JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
 
-			JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
+		OMElement provider = factory.createOMElement("provider", namespace);
+		provider.setText(providerName);
 
-			OMElement provider = factory.createOMElement("provider",namespace);
-			provider.setText("admin");
+		OMElement name = factory.createOMElement("name", namespace);
+		name.setText(infoObject.get("title").getAsString());
 
-			OMElement name = factory.createOMElement("name", namespace);
-			name.setText(infoObject.get("title").getAsString());
+		OMElement context = factory.createOMElement("context", namespace);
+		context.setText(swaggerObject.get("host").getAsString());
 
-			OMElement context = factory.createOMElement("context", namespace);
-			context.setText(swaggerObject.get("host").getAsString());
+		OMElement apiVersion = factory.createOMElement("version", namespace);
+		apiVersion.setText(infoObject.get("version").getAsString());
 
-			OMElement apiVersion = factory.createOMElement("version", namespace);
-			apiVersion.setText(infoObject.get("version").getAsString());
+		OMElement transports = factory.createOMElement("transports", namespace);
+		transports.setText(swaggerObject.get("schemes").getAsString());
 
-			OMElement transports = factory.createOMElement("transports", namespace);
-			transports.setText(swaggerObject.get("schemes").getAsString());
+		OMElement description = factory.createOMElement("description", namespace);
+		description.setText(infoObject.get("description").getAsString());
 
-			OMElement description = factory.createOMElement("description", namespace);
-			description.setText(infoObject.get("description").getAsString());
+		overview.addChild(provider);
+		overview.addChild(name);
+		overview.addChild(context);
+		overview.addChild(apiVersion);
+		overview.addChild(transports);
+		overview.addChild(description);
 
-			overview.addChild(provider);
-			overview.addChild(name);
-			overview.addChild(context);
-			overview.addChild(apiVersion);
-			overview.addChild(transports);
-			overview.addChild(description);
+		data.addChild(overview);
 
-			data.addChild(overview);
-
-			return data;
-		}
-
-		return null;
+		return data;
 
 	}
 
+	private String getChrootedApiLocation(RegistryContext registryContext) {
+		String relativeLocation = "/apimgt/applicationdata/provider/";
+		return RegistryUtils.getAbsolutePath(registryContext,
+		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+		                                     relativeLocation);
+	}
 
 }
