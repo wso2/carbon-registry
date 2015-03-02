@@ -16,6 +16,13 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -162,6 +169,95 @@ public class SwaggerProcessor {
 		((ResourceImpl) swaggerResource).setPath(relativeArtifactPath);
 		requestContext.setResource(swaggerResource);
 
+		OMElement data = createAPIArtifact(swaggerContent);
+		addApiToregistry(requestContext, data);
+
 	}
+
+	private void addApiToregistry(RequestContext requestContext, OMElement data)
+			throws RegistryException {
+
+		Registry registry = requestContext.getRegistry();
+		Resource apiResource = new ResourceImpl();
+
+		apiResource.setMediaType("application/vnd.wso2-api+xml");
+
+		apiResource.setProperty("Version", "1.0.0");
+
+		apiResource.setContent(RegistryUtils.encodeString(data.toString()));
+
+		String resourceId = apiResource.getUUID();
+
+		if (resourceId == null) {
+			resourceId = UUID.randomUUID().toString();
+		}
+
+		apiResource.setUUID(resourceId);
+
+		String actualPath = "/_system/governance/apimgt/applicationdata/provider/admin/petstore/api_doc";
+
+		registry.put(actualPath, apiResource);
+
+	}
+
+	private OMElement createAPIArtifact(ByteArrayOutputStream swaggerContent) throws RegistryException {
+		String swagger = swaggerContent.toString();
+		JsonParser parser = new JsonParser();
+		JsonObject swaggerObject = parser.parse(swagger).getAsJsonObject();
+
+		JsonElement versionElement = swaggerObject.get("swagger");
+		String version;
+		if(versionElement == null) {
+			version = swaggerObject.get("swaggerVersion").getAsString();
+		} else {
+			version = swaggerObject.get("swagger").getAsString();
+		}
+
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace namespace =
+				factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
+		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
+		OMElement overview = factory.createOMElement("overview", namespace);
+
+		if (version.equals("1.2")) {
+			return null;
+		} else if (version.equals("2.0")) {
+
+			JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
+
+			OMElement provider = factory.createOMElement("provider",namespace);
+			provider.setText("admin");
+
+			OMElement name = factory.createOMElement("name", namespace);
+			name.setText(infoObject.get("title").getAsString());
+
+			OMElement context = factory.createOMElement("context", namespace);
+			context.setText(swaggerObject.get("host").getAsString());
+
+			OMElement apiVersion = factory.createOMElement("version", namespace);
+			apiVersion.setText(infoObject.get("version").getAsString());
+
+			OMElement transports = factory.createOMElement("transports", namespace);
+			transports.setText(swaggerObject.get("schemes").getAsString());
+
+			OMElement description = factory.createOMElement("description", namespace);
+			description.setText(infoObject.get("description").getAsString());
+
+			overview.addChild(provider);
+			overview.addChild(name);
+			overview.addChild(context);
+			overview.addChild(apiVersion);
+			overview.addChild(transports);
+			overview.addChild(description);
+
+			data.addChild(overview);
+
+			return data;
+		}
+
+		return null;
+
+	}
+
 
 }
