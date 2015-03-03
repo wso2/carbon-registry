@@ -23,6 +23,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -44,6 +46,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SwaggerProcessor {
+
+	private static final Log log = LogFactory.getLog(SwaggerProcessor.class);
 
 	/**
 	 * Reading content form the provided input stream.
@@ -83,6 +87,7 @@ public class SwaggerProcessor {
 		Resource resource = requestContext.getResource();
 
 		if (resource == null) {
+			log.debug("Resource is null in the RequestContent object.");
 			resource = new ResourceImpl();
 			resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		}
@@ -145,6 +150,7 @@ public class SwaggerProcessor {
 			Properties properties = resource.getProperties();
 			//Setting properties to the new resource
 			if (properties != null) {
+				log.info("Adding existing properties to the new resource. ");
 				Set keys = properties.keySet();
 				for (Object key : keys) {
 					List values = (List) properties.get(key);
@@ -181,6 +187,15 @@ public class SwaggerProcessor {
 
 	}
 
+	/**
+	 * Saves the API registry artifact created from the imported swagger definition.
+	 *
+	 * @param requestContext Information about the current request.
+	 * @param data           API artifact metadata
+	 * @param provider       API provider
+	 * @param apiName        Name of the API
+	 * @throws RegistryException
+	 */
 	private void addApiToregistry(RequestContext requestContext, OMElement data, String provider,
 	                              String apiName) throws RegistryException {
 
@@ -215,6 +230,14 @@ public class SwaggerProcessor {
 
 	}
 
+	/**
+	 * Extracts the data from swagger and creates an API registry artifact.
+	 *
+	 * @param swaggerContent Swagger json content
+	 * @param providerName   API provider
+	 * @return The API metadata
+	 * @throws RegistryException If swagger content is invalid.
+	 */
 	private OMElement createAPIArtifact(ByteArrayOutputStream swaggerContent, String providerName)
 			throws RegistryException {
 		String swagger = swaggerContent.toString();
@@ -248,11 +271,15 @@ public class SwaggerProcessor {
 		JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
 		name.setText(getChildElementText(infoObject, "title"));
 		description.setText(getChildElementText(infoObject, "description"));
+		provider.setText(providerName);
 
 		if (swaggerVersion.equals("2.0")) {
-			String contextUrl = getChildElementText(swaggerObject, "host") +
-			                    getChildElementText(swaggerObject, "basepath");
-			context.setText(contextUrl);
+			String host = getChildElementText(swaggerObject, "host");
+			String basePath = getChildElementText(swaggerObject, "basepath");
+
+			if (host != null && basePath != null) {
+				context.setText(host + basePath);
+			}
 			apiVersion.setText(getChildElementText(infoObject, "version"));
 			transports.setText(getChildElementText(swaggerObject, "schemes"));
 		} else if (swaggerVersion.equals("1.2")) {
@@ -272,16 +299,27 @@ public class SwaggerProcessor {
 
 	}
 
-	private String getChildElementText(JsonObject object, String name) {
-		JsonElement element = object.get(name);
-
+	/**
+	 * Returns a Json element as a string
+	 *
+	 * @param object Json Object
+	 * @param key    Element key
+	 * @return Element value
+	 */
+	private String getChildElementText(JsonObject object, String key) {
+		JsonElement element = object.get(key);
 		if (element != null) {
-			return object.get(name).getAsString();
+			return object.get(key).getAsString();
 		}
-
 		return null;
 	}
 
+	/**
+	 * Returns the root location of the API.
+	 *
+	 * @param registryContext Registry context
+	 * @return the root location of the API artifact.
+	 */
 	private String getChrootedApiLocation(RegistryContext registryContext) {
 		String relativeLocation = "/apimgt/applicationdata/provider/";
 		return RegistryUtils.getAbsolutePath(registryContext,

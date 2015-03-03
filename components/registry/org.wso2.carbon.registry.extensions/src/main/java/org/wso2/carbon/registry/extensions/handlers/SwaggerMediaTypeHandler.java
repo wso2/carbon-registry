@@ -39,6 +39,12 @@ public class SwaggerMediaTypeHandler extends Handler {
 
 	private static final Log log = LogFactory.getLog(SwaggerMediaTypeHandler.class);
 
+	/**
+	 * Processes the PUT action for swagger files.
+	 *
+	 * @param requestContext Information about the current request.
+	 * @throws RegistryException If fails due a handler specific error
+	 */
 	@Override public void put(RequestContext requestContext) throws RegistryException {
 		if (!CommonUtil.isUpdateLockAvailable()) {
 			return;
@@ -71,7 +77,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 					byte[] oldContent = (byte[]) oldResource.getContent();
 					if (oldContent != null &&
 					    RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
-						// this will continue adding from the default path.
+						log.info("Old content is same as the new content. Skipping the put action.");
 						return;
 					}
 				}
@@ -134,6 +140,12 @@ public class SwaggerMediaTypeHandler extends Handler {
 		}
 	}
 
+	/**
+	 * Returns the root location of the Swagger.
+	 *
+	 * @param registryContext Registry context
+	 * @return the root location of the Swagger.
+	 */
 	private String getChrootedLocation(RegistryContext registryContext) {
 		String relativeLocation = "/apimgt/applicationdata/api_docs/";
 		return RegistryUtils.getAbsolutePath(registryContext,
