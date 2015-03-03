@@ -183,8 +183,11 @@ public class SwaggerProcessor {
 
 		//Creating API artifact from the swagger content
 		OMElement data = createAPIArtifact(swaggerContent, provider);
-		addApiToregistry(requestContext, data, provider, apiName);
+		String apiPath = addApiToregistry(requestContext, data, provider, apiName);
 
+		//Adding associations to the resources
+		registry.addAssociation(apiPath, actualPath, CommonConstants.DEPENDS);
+		registry.addAssociation(actualPath, apiPath, CommonConstants.USED_BY);
 	}
 
 	/**
@@ -196,7 +199,7 @@ public class SwaggerProcessor {
 	 * @param apiName        Name of the API
 	 * @throws RegistryException
 	 */
-	private void addApiToregistry(RequestContext requestContext, OMElement data, String provider,
+	private String addApiToregistry(RequestContext requestContext, OMElement data, String provider,
 	                              String apiName) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
@@ -227,6 +230,8 @@ public class SwaggerProcessor {
 		                    RegistryConstants.PATH_SEPARATOR + apiVersion + "/api";
 
 		registry.put(actualPath, apiResource);
+
+		return actualPath;
 
 	}
 
