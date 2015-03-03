@@ -79,7 +79,7 @@ public class SwaggerProcessor {
 	 * @param requestContext Information about the current request.
 	 * @param inputStream    Input stream to read content.
 	 * @param commonLocation Root location of the swagger artifacts.
-	 * @throws RegistryException
+	 * @throws RegistryException If a failure occurs when adding the swagger to registry.
 	 */
 	public void addSwaggerToRegistry(RequestContext requestContext, InputStream inputStream,
 	                                 String commonLocation) throws RegistryException {
@@ -197,7 +197,7 @@ public class SwaggerProcessor {
 	 * @param data           API artifact metadata
 	 * @param provider       API provider
 	 * @param apiName        Name of the API
-	 * @throws RegistryException
+	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
 	private String addApiToregistry(RequestContext requestContext, OMElement data, String provider,
 	                              String apiName) throws RegistryException {
