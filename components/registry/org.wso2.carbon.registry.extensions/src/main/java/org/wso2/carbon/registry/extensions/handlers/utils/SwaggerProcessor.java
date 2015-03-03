@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -96,8 +97,6 @@ public class SwaggerProcessor {
 		}
 
 		ByteArrayOutputStream swaggerContent = readSourceContent(inputStream);
-
-		//TODO: VALIDATE SWAGGER AGAINST SWAGGER SCHEMA
 
 		String resourcePath = requestContext.getResourcePath().getPath();
 		String swaggerFileName = resourcePath
@@ -190,10 +189,12 @@ public class SwaggerProcessor {
 
 		apiResource.setMediaType(CommonConstants.API_MEDIA_TYPE);
 
-		OMElement overview = data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
-		String apiVersion = overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
+		OMElement overview = data.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+		String apiVersion = overview.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
 
-		if(apiVersion == null) {
+		if (apiVersion == null) {
 			apiVersion = CommonConstants.API_VERSION_DEFAULT_VALUE;
 		}
 		apiResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, apiVersion);
@@ -225,26 +226,38 @@ public class SwaggerProcessor {
 				factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement("overview", namespace);
-
-		JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
-
 		OMElement provider = factory.createOMElement("provider", namespace);
-		provider.setText(providerName);
-
 		OMElement name = factory.createOMElement("name", namespace);
-		name.setText(infoObject.get("title").getAsString());
-
 		OMElement context = factory.createOMElement("context", namespace);
-		context.setText(swaggerObject.get("host").getAsString());
-
 		OMElement apiVersion = factory.createOMElement("version", namespace);
-		apiVersion.setText(infoObject.get("version").getAsString());
-
 		OMElement transports = factory.createOMElement("transports", namespace);
-		transports.setText(swaggerObject.get("schemes").getAsString());
-
 		OMElement description = factory.createOMElement("description", namespace);
-		description.setText(infoObject.get("description").getAsString());
+
+		JsonElement versionElement = swaggerObject.get("swaggerVersion");
+
+		if (versionElement == null) {
+			versionElement = swaggerObject.get("swagger");
+		}
+
+		String swaggerVersion;
+		if (versionElement != null) {
+			swaggerVersion = versionElement.getAsString();
+		} else {
+			throw new RegistryException("Invalid swagger version. ");
+		}
+		JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
+		name.setText(getChildElementText(infoObject, "title"));
+		description.setText(getChildElementText(infoObject, "description"));
+
+		if (swaggerVersion.equals("2.0")) {
+			String contextUrl = getChildElementText(swaggerObject, "host") +
+			                    getChildElementText(swaggerObject, "basepath");
+			context.setText(contextUrl);
+			apiVersion.setText(getChildElementText(infoObject, "version"));
+			transports.setText(getChildElementText(swaggerObject, "schemes"));
+		} else if (swaggerVersion.equals("1.2")) {
+			apiVersion.setText(getChildElementText(swaggerObject, "apiVersion"));
+		}
 
 		overview.addChild(provider);
 		overview.addChild(name);
@@ -257,6 +270,16 @@ public class SwaggerProcessor {
 
 		return data;
 
+	}
+
+	private String getChildElementText(JsonObject object, String name) {
+		JsonElement element = object.get(name);
+
+		if (element != null) {
+			return object.get(name).getAsString();
+		}
+
+		return null;
 	}
 
 	private String getChrootedApiLocation(RegistryContext registryContext) {
