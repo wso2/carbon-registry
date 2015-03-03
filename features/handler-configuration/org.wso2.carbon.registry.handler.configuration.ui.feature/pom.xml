@@ -15,20 +15,17 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>handler.configuration-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.registry.handler.configuration.ui.feature</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Handler Config UI Feature</name>
     <url>http://wso2.org</url>
@@ -37,11 +34,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.handler.ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.handler.stub</artifactId>
         </dependency>
     </dependencies>
@@ -69,13 +66,13 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.handler.ui</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.handler.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.handler.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.handler.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.platform.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}
                                 </importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.registry.extensions.ui:${carbon.platform.version}
+                                <importFeatureDef>org.wso2.carbon.registry.extensions.ui:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

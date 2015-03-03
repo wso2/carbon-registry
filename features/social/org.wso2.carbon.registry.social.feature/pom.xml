@@ -15,14 +15,12 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>social-feature</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,7 +28,6 @@
     <artifactId>org.wso2.carbon.registry.social.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - Registry Social Feature</name>
-    <version>4.3.0-SNAPSHOT</version>
     <url>http://wso2.org</url>
     <description>
         Enables OpenSocial Support
@@ -38,14 +35,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.social.api</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.social.impl</artifactId>
-            <version>${project.version}</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava.wso2</groupId>
@@ -73,8 +70,8 @@
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
                             <bundles>
                                 <bundleDef>com.google.guava.wso2:guava</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.social.api</bundleDef>
-                                <bundleDef>org.wso2.carbon:org.wso2.carbon.registry.social.impl</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.api</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.impl</bundleDef>
                             </bundles>
                         </configuration>
                     </execution>
