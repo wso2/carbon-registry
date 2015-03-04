@@ -17,45 +17,6 @@ import java.net.URL;
 import java.util.Properties;
 
 public class IndexingUtils {
-	
-	@Deprecated
-	public static String getSolrUrl() throws IOException, RegistryException {
-
-		String solrServerUrl = null;
-		String carbonHome = System.getProperty("carbon.home");
-		File confFile = new File(carbonHome,"repository" + File.separator + "conf" + File.separator + "solr.conf");
-		if(confFile.exists()){
-			FileInputStream inputStream =  new FileInputStream(confFile);
-            try {
-			    Properties properties = new Properties();
-			    properties.load(inputStream);
-
-			    solrServerUrl = properties.getProperty("solr.endpoint");
-            } finally {
-                inputStream.close();
-            }
-		} else {
-			solrServerUrl = "https://localhost:9443/registry/resourcesolr/solr";
-
-			boolean confCreated = confFile.createNewFile();
-			if (confCreated) {
-				FileOutputStream outputStream = new FileOutputStream(confFile);
-				//outputStream.write("solr.endpoint=http://localhost:8080/solr\n\n".getBytes());
-                try {
-				    outputStream.write(RegistryUtils.encodeString("solr.endpoint=" + solrServerUrl + "\n\n"));
-                } finally {
-				    outputStream.close();
-                }
-			}
-		}
-		return solrServerUrl;
-	}
-	
-//	public static String getSolrCoreUrl(int tenantId) throws IOException {
-//		String baseURL = IndexingUtils.getSolrUrl();
-//		return baseURL + "/admin/cores/" + tenantId;
-//		
-//	}
 
     public static boolean isAuthorized(UserRegistry registry, String resourcePath, String action)
                             throws RegistryException{
