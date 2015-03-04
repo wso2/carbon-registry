@@ -123,7 +123,9 @@ function validateUsername(fld) {
     //validates the user name against the given regex given in user-mgt.xml
     var error = "";
     var regexString = document.getElementById('userNameRegex');
-    if(regexString == null){
+    if(regexString != null && regexString.value != null){
+        regexString = regexString.value;
+    } else {
         regexString = '^[\\S]{3,30}$';
     }
     var regex = RegExp(regexString);

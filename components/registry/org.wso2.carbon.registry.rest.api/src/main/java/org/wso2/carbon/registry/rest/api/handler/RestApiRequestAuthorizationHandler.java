@@ -20,17 +20,23 @@ package org.wso2.carbon.registry.rest.api.handler;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
-import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
- 
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.tenant.TenantManager;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+
+import javax.ws.rs.core.Response;
+
 public class RestApiRequestAuthorizationHandler implements RequestHandler{
 	
 	protected Log log = LogFactory.getLog(RestApiRequestAuthorizationHandler.class);
-	/**
+    private RealmService service;
+
+    /**
 	  * This method handles the request received at the registry endpoint. The method decodes the extracted 
 	  * JWT token and extract the enduser's username and tenantID which is appended to the original rest request 
 	  * as query param and forwarded to the respective resource class. This method returns 
@@ -48,9 +54,9 @@ public class RestApiRequestAuthorizationHandler implements RequestHandler{
 		String userName = getUsernameFromJwtToken(header);
 		String tenantID = null;
 		try {
-			tenantID = String.valueOf(IdentityUtil.getTenantIdOFUser(userName));  
+			tenantID = String.valueOf(getTenantIdOFUser(userName));
 		} 
-		catch (IdentityException e) {
+		catch (UserStoreException e) {
 			log.error(e.getMessage(),e);
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -105,4 +111,23 @@ public class RestApiRequestAuthorizationHandler implements RequestHandler{
 		endUsername = endUsername.substring(0, endUsername.indexOf('"'));	
 		return endUsername;
 	}
+
+    private int getTenantIdOFUser(String username) throws UserStoreException {
+        int tenantId = 0;
+        String domainName = MultitenantUtils.getTenantDomain(username);
+        if (domainName != null) {
+            try {
+                RealmService service = (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                        .getOSGiService(RealmService.class, null);
+                TenantManager tenantManager = service.getTenantManager();
+                tenantId = tenantManager.getTenantId(domainName);
+            } catch (UserStoreException e) {
+                String errorMsg = "Error when getting the tenant id from the tenant domain : " +
+                        domainName;
+                log.error(errorMsg, e);
+                throw e;
+            }
+        }
+        return tenantId;
+    }
 }
