@@ -16,7 +16,8 @@
 
 package org.wso2.carbon.registry.rest.api;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+//import edu.emory.mathcs.backport.java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -30,6 +31,7 @@ import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 

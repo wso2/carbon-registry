@@ -28,19 +28,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Stack;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -133,6 +126,9 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     private boolean disableSymlinkCreation = true;
     private static int numberOfRetry = 5;
     private boolean disableWADLValidation = false;
+
+    private static List<String> skipFileExtensions = new ArrayList<String>();
+    private String extensionsSeparator = ",";
 
     public void setNumberOfRetry(String numberOfRetry) {
         ZipWSDLMediaTypeHandler.numberOfRetry = Integer.parseInt(numberOfRetry);
@@ -308,20 +304,29 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                     }
                                     wadlUriList.add(uri);
                                 } else if (entryName != null) {
-                                    String uri = tempFile.toURI().toString();
-                                    uri = uri.substring(0, uri.length() -
-                                            archiveExtension.length()) + "/" + entryName;
-                                    if (uri.startsWith("file:")) {
-                                        uri = uri.substring(5);
+                                    boolean isSkipFileExtension = false;
+                                    for (String extension : skipFileExtensions) {
+                                        if (entryName.toLowerCase().endsWith(extension.toLowerCase())) {
+                                            isSkipFileExtension = true;
+                                            break;
+                                        }
                                     }
-                                    while (uri.startsWith("/")) {
-                                        uri = uri.substring(1);
+                                    if(!isSkipFileExtension){
+                                        String uri = tempFile.toURI().toString();
+                                        uri = uri.substring(0, uri.length() -
+                                                archiveExtension.length()) + "/" + entryName;
+                                        if (uri.startsWith("file:")) {
+                                            uri = uri.substring(5);
+                                        }
+                                        while (uri.startsWith("/")) {
+                                            uri = uri.substring(1);
+                                        }
+                                        uri = "file:///" + uri;
+                                        if (uri.endsWith("/")) {
+                                            uri = uri.substring(0, uri.length() -1);
+                                        }
+                                        uriList.add(uri);
                                     }
-                                    uri = "file:///" + uri;
-                                    if (uri.endsWith("/")) {
-                                        uri = uri.substring(0, uri.length() -1);
-                                    }
-                                    uriList.add(uri);
                                 }
                             }
                         } finally {
@@ -606,6 +611,13 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
 
     public void setUseOriginalSchema(String useOriginalSchema) {
         this.useOriginalSchema = Boolean.toString(true).equals(useOriginalSchema);
+    }
+
+    public void setSkipFileExtensions(String skipFileExtensions) {
+        if (skipFileExtensions != null) {
+            String[] extensions = skipFileExtensions.split(this.extensionsSeparator);
+            this.skipFileExtensions = Arrays.asList(extensions);
+        }
     }
 
     /**
