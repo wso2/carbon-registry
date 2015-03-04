@@ -126,11 +126,11 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
         registerEventType("child.created", null, ChildCreatedEvent.EVENT_NAME);
     }
 
-    public void notify(RegistryEvent event) throws Exception {
+    public void notify(RegistryEvent event) throws RegistryException {
         notify(event, null);
     }
 
-    public void notify(RegistryEvent event, String endpoint) throws Exception {
+    public void notify(RegistryEvent event, String endpoint) throws RegistryException {
         notify(event, endpoint, false);
     }
 
@@ -142,7 +142,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
     }
 
     public void notify(RegistryEvent event, String endpoint, boolean doRest)
-            throws Exception {
+            throws RegistryException {
         if (!initialized) {
             return;
         }

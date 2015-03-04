@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.registry.common.eventing;
 
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import java.util.Map;
 
 public interface NotificationService {
@@ -28,7 +29,7 @@ public interface NotificationService {
      * @param event the event to be sent.
      * @throws Exception if the operation failed.
      */
-    public void notify(RegistryEvent event) throws Exception;
+    public void notify(RegistryEvent event) throws RegistryException;
 
     /**
      * Sends a notification (SOAP) to the given endpoint by forwarding the event.
@@ -37,7 +38,7 @@ public interface NotificationService {
      * @param endpoint the endpoint to be notified.
      * @throws Exception if the operation failed.
      */
-    public void notify(RegistryEvent event, String endpoint) throws Exception;
+    public void notify(RegistryEvent event, String endpoint) throws RegistryException;
 
     /**
      * Sends a notification (SOAP or REST) to the given endpoint by forwarding the event.
@@ -48,7 +49,7 @@ public interface NotificationService {
      * @throws Exception if the operation failed.
      */
     public void notify(RegistryEvent event, String endpoint, boolean doRest)
-            throws Exception;
+            throws RegistryException;
 
     /**
      * Registers an event type, so that users can subscribe from the front-end administration
