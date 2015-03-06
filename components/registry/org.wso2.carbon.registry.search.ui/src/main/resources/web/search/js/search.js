@@ -156,6 +156,17 @@ function validateIllegalContentSearchString(fld,fldName){
    return error;
 }
 
+function validateIllegalSearchString(fld,fldName){
+    var error = "";
+    var illegalChars = /([~!@#$;^*+{}\|\\<>\"\',\[\]\(\)])/;
+    var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
+    if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] + "<br />";
+    }
+
+    return error;
+}
+
 function clearAll(){
     var table = $('customTable');
     var rows = table.getElementsByTagName('input');
@@ -302,12 +313,12 @@ function submitAdvSearchForm(pageNumber) {
 		reason += validateIllegalNoPercent(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["resource.name"]);
 	    }
             else if ((rows[i].id == "#_content") && trim(rows[i].value) != "") reason += validateIllegalContentSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["content.name"]);
-            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
-            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
+            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
+            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
             else if ((rows[i].id == "#_tags") && rows[i].value != "") reason += validateTagsInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["tags"]);
             else if ((rows[i].id == "#_comments") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["comments"]);
-            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
-            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
+            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
+            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
             else if ((rows[i].value != "") && rows[i].type == "text") {           	
                reason += validateForInput(rows[i], rows[i].name);
             }           
@@ -483,9 +494,9 @@ function validateEmptyPropertyValues(){
     var propertyName = document.getElementById('#_propertyName').value;
 
     if(leftVal != "" || rightVal != "") {
-    	   if(propertyName == "" && (opRight.options[opRight.selectedIndex].value != "eq")){
-    	        return 1;
-    	   }
+        if(propertyName == ""){
+            return 1;
+        }
     }
 
     return 0;
