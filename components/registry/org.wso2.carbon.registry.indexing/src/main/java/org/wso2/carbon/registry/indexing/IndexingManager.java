@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,15 +21,10 @@ package org.wso2.carbon.registry.indexing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.app.Property;
-import org.wso2.carbon.registry.app.PropertyExtensionFactory;
-import org.wso2.carbon.registry.app.PropertyName;
-import org.wso2.carbon.registry.app.PropertyValue;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -47,10 +42,9 @@ import java.util.regex.Pattern;
 /**
  * This singleton class manages indexing.
  */
-@edu.umd.cs.findbugs.annotations.SuppressWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class IndexingManager {
 
-    private static Log log = LogFactory.getLog(IndexingManager.class);
+    private static final Log log = LogFactory.getLog(IndexingManager.class);
     private static volatile IndexingManager instance;
 
     private UserRegistry registry;
@@ -140,7 +134,7 @@ public class IndexingManager {
         return registryConfig.getLastAccessTimeLocation();
     }
 
-    private AsyncIndexer getIndexer() throws RegistryException {
+    private AsyncIndexer getIndexer() {
         return indexer;
     }
 
@@ -161,45 +155,59 @@ public class IndexingManager {
         getIndexer().getClient().deleteFromIndex(oldPath, tenantId);
     }
 
+    /**
+     * Method for submit the file for indexing
+     * @param tenantID tenant id
+     * @param tenantDomain tenant domain
+     * @param resource resource to be index
+     * @param path resource path
+     * @param sourceURL source url
+     * @throws RegistryException
+     */
     public void submitFileForIndexing(int tenantID, String tenantDomain, Resource resource, String path,
-                                      String sourceURL) throws RegistryException {
-        // TODO: path parameter is redundant
-        //if media type is null, mostly it is not a file. We will skip.
-        if (resource.getMediaType() == null ||
-                getIndexerForMediaType(resource.getMediaType()) == null) {
-            return;
-        }
+            String sourceURL) throws RegistryException {
         if (log.isDebugEnabled()) {
             log.debug("Submitting file " + path + " for Indexing");
         }
         String lcName = resource.getProperty("registry.LC.name");
         String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
-        getIndexer().addFile(new AsyncIndexer.File2Index(IndexingUtils.getByteContent(resource,
-                sourceURL), resource.getMediaType(), path, tenantID, tenantDomain, lcName, lcState));
+        String mediaType = resource.getMediaType();
+        byte[] byteData = new byte[0];
+        // Check for resources that can get the byte content
+        if (!(resource instanceof Collection)
+                || IndexingManager.getInstance().getIndexerForMediaType(mediaType) != null) {
+            byteData = IndexingUtils.getByteContent(resource, sourceURL);
+        }
+        // Add the file to AsyncIndexer
+        getIndexer().addFile(
+                new AsyncIndexer.File2Index(byteData, mediaType, path, tenantID, tenantDomain, lcName, lcState));
 
-        //Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
-        //in the indexer. see CARBON-11510.
+        // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
+        // in the indexer. see CARBON-11510.
         String symlinkPath = resource.getProperty("registry.resource.symlink.path");
-        if( symlinkPath != null)   {
-            getIndexer().addFile(new AsyncIndexer.File2Index(IndexingUtils.getByteContent(resource,
-                    sourceURL), resource.getMediaType(), symlinkPath, tenantID, tenantDomain, lcName, lcState));
+        if (symlinkPath != null) {
+            getIndexer().addFile(
+                    new AsyncIndexer.File2Index(byteData, mediaType, symlinkPath, tenantID, tenantDomain, lcName,
+                            lcState));
         }
     }
 
+    /**
+     * Method for get the pre-defined Indexer matches for the resource mediaType.
+     * Reads the registry configurations for indexing in Registry.xml and check for Indexer with mediaType provided.
+     * @param mimeType mediaType
+     * @return Indexer
+     */
     public Indexer getIndexerForMediaType(String mimeType) {
-        for (Map.Entry<String, Indexer> entry : registryConfig.getIndexerMap().entrySet()) {
-            if (Pattern.matches(entry.getKey(), mimeType)) {
-                return entry.getValue();
+        Indexer resultIndexer = null;
+        if (mimeType != null) {
+            for (Map.Entry<String, Indexer> entry : registryConfig.getIndexerMap().entrySet()) {
+                if (Pattern.matches(entry.getKey(), mimeType)) {
+                    resultIndexer = entry.getValue();
+                }
             }
         }
-        return null;
-    }
-
-    public boolean isIndexable(Resource resource) {
-        return resource != null &&
-                resource.getMediaType() != null &&
-                !(resource instanceof Collection) &&
-                IndexingManager.getInstance().getIndexerForMediaType(resource.getMediaType()) != null;
+        return resultIndexer;
     }
 
     public UserRegistry getRegistry(int tenantId) {
