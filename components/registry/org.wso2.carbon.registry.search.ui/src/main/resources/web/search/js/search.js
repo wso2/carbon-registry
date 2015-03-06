@@ -156,12 +156,12 @@ function validateIllegalContentSearchString(fld,fldName){
    return error;
 }
 
-function validateIllegalSearchString(fld,fldName){
+function validateIllegalSearchString(fld, fldName) {
     var error = "";
     var illegalChars = /([~!@#$;^*+{}\|\\<>\"\',\[\]\(\)])/;
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] + "<br />";
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] + "<br />";
     }
 
     return error;
@@ -493,8 +493,8 @@ function validateEmptyPropertyValues(){
     var opRight = document.getElementById('opRight');
     var propertyName = document.getElementById('#_propertyName').value;
 
-    if(leftVal != "" || rightVal != "") {
-        if(propertyName == ""){
+    if (leftVal != "" || rightVal != "") {
+        if (propertyName == "") {
             return 1;
         }
     }
