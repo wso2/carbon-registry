@@ -18,8 +18,6 @@
 
 package org.wso2.carbon.registry.indexing;
 
-import java.io.File;
-
 import org.wso2.carbon.registry.core.RegistryConstants;
 
 
@@ -38,9 +36,6 @@ public final class IndexingConstants {
     //Default starting delay and indexing frequency when nothing specified in registry.xml
     public static final long STARTING_DELAY_IN_SECS_DEFAULT_VALUE = 10 * 60; //10 minutes
     public static final long INDEXING_FREQ_IN_SECS_DEFAULT_VALUE = 1 * 60; //1 minute
-    
-    //Default indexer pool size when nothing specified in registry.xml
-    public static final int DEFAULT_INDEXER_POOL_SIZE = 50;
 
     //fields are set for indexing document as default
     public static final String FIELD_ID ="id";
@@ -50,10 +45,5 @@ public final class IndexingConstants {
     public static final String FIELD_MEDIA_TYPE="mediaType";
     public static final String FIELD_LC_NAME="lcName";
     public static final String FIELD_LC_STATE="lcState";
-    
-    //new fields are added for indexing document 
-    public static final String FIELD_TAGS = "tags";
-    public static final String FIELD_CREATED_DATE = "createdDate";
-    public static final String FIELD_LAST_UPDATED_DATE = "lastUpdatedDate";    
 
 }
