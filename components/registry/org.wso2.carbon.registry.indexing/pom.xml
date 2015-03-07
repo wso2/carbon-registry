@@ -54,7 +54,7 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.solr.*;version="4.7.2",
+                            org.apache.solr.*;version="[5.0.0,5.1.0)",
                             org.apache.http.*,
                             org.tartarus.*,
                             *;resolution:=optional

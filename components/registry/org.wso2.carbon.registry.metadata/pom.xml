@@ -118,7 +118,6 @@
     <dependency>
         <groupId>org.wso2.apache.solr</groupId>
         <artifactId>solr</artifactId>
-        <version>${version.solr}</version>
     </dependency>
     <dependency>
         <groupId>org.wso2.carbon.registry</groupId>
