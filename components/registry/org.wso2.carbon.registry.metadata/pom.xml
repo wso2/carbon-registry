@@ -116,7 +116,7 @@
         <artifactId>org.wso2.carbon.registry.indexing</artifactId>
     </dependency>
     <dependency>
-        <groupId>solr.wso2</groupId>
+        <groupId>org.wso2.apache.solr</groupId>
         <artifactId>solr</artifactId>
         <version>${version.solr}</version>
     </dependency>
