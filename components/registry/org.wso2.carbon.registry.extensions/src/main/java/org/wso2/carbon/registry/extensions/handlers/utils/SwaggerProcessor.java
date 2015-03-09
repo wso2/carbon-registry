@@ -16,14 +16,8 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.axiom.om.OMAbstractFactory;
+import com.google.gson.*;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
@@ -51,7 +45,6 @@ public class SwaggerProcessor {
 	private RequestContext requestContext;
 	private Registry registry;
 	private JsonParser parser;
-	private JsonObject swaggerDocObject;
 
 	public SwaggerProcessor(RequestContext requestContext) {
 		this.parser = new JsonParser();
@@ -74,19 +67,17 @@ public class SwaggerProcessor {
 		if (!systemRegistry.resourceExists(commonLocation)) {
 			systemRegistry.put(commonLocation, systemRegistry.newCollection());
 		}
-
-		Resource resource = requestContext.getResource();
-
-		if (resource == null) {
-			log.debug("Resource is null in the RequestContent object.");
-			resource = new ResourceImpl();
-			resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
-		}
-
+		//Reading resource content
 		ByteArrayOutputStream swaggerContent = readSourceContent(inputStream);
 
-		this.swaggerDocObject = parser.parse(swaggerContent.toString()).getAsJsonObject();
+		JsonObject swaggerDocObject;
+		try {
+			swaggerDocObject = parser.parse(swaggerContent.toString()).getAsJsonObject();
+		} catch (JsonParseException e) {
+			throw new RegistryException("Unexpected error occurred when parsing the swagger content.", e);
+		}
 
+		//Getting the swagger version
 		JsonElement swaggerVersionElement = swaggerDocObject.get("swaggerVersion");
 		if (swaggerVersionElement == null) {
 			swaggerVersionElement = swaggerDocObject.get("swagger");
@@ -96,12 +87,17 @@ public class SwaggerProcessor {
 		}
 		String swaggerVersion = swaggerVersionElement.getAsString();
 
-		//TODO: VALIDATE SWAGGER CONTENT AGAINST SCHEMA
+		//Validate against schema
+		if(!APIUtils.isValidSwaggerContent(swaggerDocObject, swaggerVersion)) {
+			throw new RegistryException("Swagger content is not valid.");
+		}
 
+		//Configuring the location to save the swagger resource.
 		String resourcePath = requestContext.getResourcePath().getPath();
 		String apiDocName = resourcePath
 				.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
-		String commonResourcePath = getCommonPathFromContent(commonLocation, swaggerContent.toString());
+		String commonResourcePath =
+				getCommonPathFromContent(commonLocation, swaggerContent.toString());
 
 		if (swaggerVersion.equals("1.2")) {
 			addDocumentToRegistry(swaggerContent,
@@ -133,7 +129,9 @@ public class SwaggerProcessor {
 			                      apiDocName);
 		}
 
-		OMElement data = createAPIArtifact(swaggerVersion);
+		//Creating the api artifact from the swagger content.
+		OMElement data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion);
+		//Saving the api artifact in the registry.
 		addApiToregistry(data);
 
 	}
@@ -162,6 +160,7 @@ public class SwaggerProcessor {
 				throw new RegistryException("Resource content is not valid.");
 			}
 
+			//Checking whether the existing resource is updated.
 			if(resourceContent.equals(swaggerContent.toString())) {
 				log.info("Old content is same as the new content. Skipping the put action.");
 				return;
@@ -230,58 +229,6 @@ public class SwaggerProcessor {
 	}
 
 	/**
-	 * Extracts the data from swagger and creates an API registry artifact.
-	 *
-	 * @return The API metadata
-	 * @throws RegistryException If swagger content is invalid.
-	 */
-	private OMElement createAPIArtifact(String swaggerVersion)
-			throws RegistryException {
-
-		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace namespace =
-				factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
-		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
-		OMElement overview = factory.createOMElement("overview", namespace);
-		OMElement provider = factory.createOMElement("provider", namespace);
-		OMElement name = factory.createOMElement("name", namespace);
-		OMElement context = factory.createOMElement("context", namespace);
-		OMElement apiVersion = factory.createOMElement("version", namespace);
-		OMElement transports = factory.createOMElement("transports", namespace);
-		OMElement description = factory.createOMElement("description", namespace);
-
-		JsonObject infoObject = swaggerDocObject.get("info").getAsJsonObject();
-		name.setText(getChildElementText(infoObject, "title"));
-		description.setText(getChildElementText(infoObject, "description"));
-		provider.setText(CurrentSession.getUser());
-
-		if (swaggerVersion.equals("2.0")) {
-			String host = getChildElementText(swaggerDocObject, "host");
-			String basePath = getChildElementText(swaggerDocObject, "basepath");
-
-			if (host != null && basePath != null) {
-				context.setText(host + basePath);
-			}
-			apiVersion.setText(getChildElementText(infoObject, "version"));
-			transports.setText(getChildElementText(swaggerDocObject, "schemes"));
-		} else if (swaggerVersion.equals("1.2")) {
-			apiVersion.setText(getChildElementText(swaggerDocObject, "apiVersion"));
-		}
-
-		overview.addChild(provider);
-		overview.addChild(name);
-		overview.addChild(context);
-		overview.addChild(apiVersion);
-		overview.addChild(transports);
-		overview.addChild(description);
-
-		data.addChild(overview);
-
-		return data;
-
-	}
-
-	/**
 	 * Reading content form the provided input stream.
 	 *
 	 * @param inputStream Input stream to read.
@@ -303,21 +250,6 @@ public class SwaggerProcessor {
 
 		return outputStream;
 
-	}
-
-	/**
-	 * Returns a Json element as a string
-	 *
-	 * @param object Json Object
-	 * @param key    Element key
-	 * @return Element value
-	 */
-	private String getChildElementText(JsonObject object, String key) {
-		JsonElement element = object.get(key);
-		if (element != null) {
-			return object.get(key).getAsString();
-		}
-		return null;
 	}
 
 	/**
