@@ -316,7 +316,8 @@ public class SolrClient {
                         }
                         // Add single field String values
                         solrInputDocument
-                                .addField(fieldKeyValue + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX, fieldList.getValue().get(0));
+                                .addField(fieldKeyValue + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
+                                        fieldList.getValue().get(0));
                     }
                 }
             }
@@ -674,7 +675,7 @@ public class SolrClient {
         String fieldQuery;
         if (StringUtils.isNotEmpty(fieldNegate) && fieldNegate.equalsIgnoreCase(
                 SolrConstants.NEGATE_VALUE_DEFAULT)) {
-            fieldQuery = fieldKey + SolrConstants.SOLR_NEGATE_VALUE+ fieldKey + fieldValue;
+            fieldQuery = fieldKey + SolrConstants.SOLR_NEGATE_VALUE + fieldKey + fieldValue;
         } else {
             fieldQuery = fieldKey + fieldValue;
         }
@@ -803,7 +804,8 @@ public class SolrClient {
      * @param query solr query
      * @param propertyName value for the property name
      */
-    private void setQueryFilterForIntegerPropertyValues(SolrQuery query, String propertyName, String leftPropertyValue, String rightPropertyValue,
+    private void setQueryFilterForIntegerPropertyValues(SolrQuery query, String propertyName, String leftPropertyValue,
+            String rightPropertyValue,
             int rightIntValue, String leftOp, String rightOp) {
         int leftIntValue = 0;
         // Get the integer values
@@ -811,7 +813,8 @@ public class SolrClient {
             leftIntValue = Integer.parseInt(leftPropertyValue);
         }
         String fieldKey = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
-        if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp.equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
+        if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp
+                .equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
                 || leftOp.equals(SolrConstants.OPERATION_NA)) {
 
             // If operation is greater than add 1
@@ -869,7 +872,7 @@ public class SolrClient {
      * @param query solr query
      */
     private void setQueryFilterDateRange(SolrQuery query, String dateAfter, String dateBefore, String dateRangeNegate,
-             String fieldKeyName) {
+            String fieldKeyName) {
         String dateRangeQuery;
         // Set the suffix value of the key
         String fieldKeySuffix = SolrConstants.SOLR_DATE_FIELD_KEY_SUFFIX + ":[";
@@ -877,7 +880,8 @@ public class SolrClient {
             if (StringUtils.isNotEmpty(dateRangeNegate) && dateRangeNegate.equalsIgnoreCase(
                     SolrConstants.NEGATE_VALUE_DEFAULT)) {
                 dateRangeQuery =
-                        "(NOT " + fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateAfter, SolrConstants.CALENDER_DATE_FORMAT)
+                        "(NOT " + fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateAfter,
+                                SolrConstants.CALENDER_DATE_FORMAT)
                                 + " TO " + toSolrDateFormat(dateBefore,
                                 SolrConstants.CALENDER_DATE_FORMAT) + "])";
             } else {
@@ -904,10 +908,12 @@ public class SolrClient {
                     .equalsIgnoreCase(
                             SolrConstants.NEGATE_VALUE_DEFAULT)) {
                 dateRangeQuery =
-                        fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateBefore, SolrConstants.CALENDER_DATE_FORMAT) + " TO NOW]";
+                        fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateBefore, SolrConstants.CALENDER_DATE_FORMAT)
+                                + " TO NOW]";
             } else {
                 dateRangeQuery =
-                        "(NOT " + fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateBefore, SolrConstants.CALENDER_DATE_FORMAT)
+                        "(NOT " + fieldKeyName + fieldKeySuffix + toSolrDateFormat(dateBefore,
+                                SolrConstants.CALENDER_DATE_FORMAT)
                                 + " TO NOW])";
             }
             query.addFilterQuery(dateRangeQuery);
