@@ -1182,9 +1182,49 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>solr.wso2</groupId>
+                <groupId>org.wso2.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.lucene</groupId>
+                <artifactId>lucene</artifactId>
+                <version>${version.lucene}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.httpclient}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${version.httpmime}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${version.httpcore}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.noggit</groupId>
+                <artifactId>noggit</artifactId>
+                <version>${version.noggit}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.restlet.jee</groupId>
+                <artifactId>org.restlet</artifactId>
+                <version>${version.org.restlet}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2.spatial4j</groupId>
+                <artifactId>spatial4j</artifactId>
+                <version>${version.spatial4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.zookeeper.wso2</groupId>
+                <artifactId>apache-zookeeper</artifactId>
+                <version>${version.zookeeper}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
@@ -1309,7 +1349,15 @@
         <!-- Misc -->
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>1.4.1.wso2v1</version.solr>
+        <version.solr>5.0.0.wso2v1</version.solr>
+        <version.lucene>5.0.0.wso2v1</version.lucene>
+        <version.httpclient>4.3.1.wso2v1</version.httpclient>
+        <version.httpmime>4.3.1.wso2v1</version.httpmime>
+        <version.httpcore>4.3.3.wso2v1</version.httpcore>
+        <version.noggit>0.6.wso2v1</version.noggit>
+        <version.org.restlet>2.1.1.wso2v1</version.org.restlet>
+        <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
+        <version.zookeeper>3.3.4.wso2v1</version.zookeeper>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
@@ -1364,7 +1412,7 @@
         <commons-collections.version>3.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
-        <commons-io.wso2.version>2.0.0.wso2v1</commons-io.wso2.version>
+        <commons-io.wso2.version>2.4.0.wso2v1</commons-io.wso2.version>
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <commons-httpclient.version>3.0.1</commons-httpclient.version>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>

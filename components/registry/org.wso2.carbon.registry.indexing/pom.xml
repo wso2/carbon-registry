@@ -38,14 +38,13 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.indexing.*,
+                            org.wso2.carbon.registry.indexing.*
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.common.*;version="0.0.0",
@@ -55,9 +54,8 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.solr.*,
-                            org.apache.lucene.*;version="2.9.3",
-                            org.tartarus.*,
+                            org.apache.solr.*;version="[5.0.0,5.1.0)",
+                            org.tartarus.*;version="[5.0.0,5.1.0)",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
@@ -105,10 +103,9 @@
             <artifactId>commons-digester</artifactId>
         </dependency>
         <dependency>
-            <groupId>solr.wso2</groupId>
+            <groupId>org.wso2.apache.solr</groupId>
             <artifactId>solr</artifactId>
         </dependency>
     </dependencies>
-
 
 </project>
