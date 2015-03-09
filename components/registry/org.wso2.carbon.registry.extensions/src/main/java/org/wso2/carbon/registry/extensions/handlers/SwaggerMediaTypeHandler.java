@@ -19,7 +19,6 @@ package org.wso2.carbon.registry.extensions.handlers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
@@ -54,45 +53,28 @@ public class SwaggerMediaTypeHandler extends Handler {
 		try {
 			String path = requestContext.getResourcePath().getPath();
 			Resource resource = requestContext.getResource();
-			Registry registry = requestContext.getRegistry();
 
 			if (resource == null) {
 				throw new RegistryException("Resource does not exist.");
 			}
 
 			Object resourceContentObj = resource.getContent();
-			String resourceContent;
+
+			if(resourceContentObj == null) {
+				throw new RegistryException("Resource content is empty.");
+			}
+
+			byte[] resourceContent;
 			if (resourceContentObj instanceof String) {
-				resourceContent = (String) resourceContentObj;
-				resource.setContent(RegistryUtils.encodeString(resourceContent));
-			} else if (resourceContentObj instanceof byte[]) {
-				resourceContent = RegistryUtils.decodeBytes((byte[]) resourceContentObj);
-			} else {
+				resourceContent = RegistryUtils.encodeString((String) resourceContentObj);
+			}  else {
 				throw new RegistryException("Resource content is not valid.");
 			}
 
-			try {
-				if (registry.resourceExists(path)) {
-					Resource oldResource = registry.get(path);
-					byte[] oldContent = (byte[]) oldResource.getContent();
-					if (oldContent != null &&
-					    RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
-						log.info("Old content is same as the new content. Skipping the put action.");
-						return;
-					}
-				}
-			} catch (Exception e) {
-				throw new RegistryException(
-						"Error in comparing the swagger content updates. swagger path: " + path +
-						".", e);
-			}
-			Object newContent = RegistryUtils.encodeString(resourceContent);
-			if (newContent != null) {
-				InputStream inputStream = new ByteArrayInputStream((byte[]) newContent);
-				SwaggerProcessor processor = new SwaggerProcessor();
-				processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
-						requestContext.getRegistryContext()));
-			}
+			InputStream inputStream = new ByteArrayInputStream(resourceContent);
+			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+//			processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
+//					requestContext.getRegistryContext()));
 			ArtifactManager.getArtifactManager().getTenantArtifactRepository().addArtifact(path);
 		} finally {
 			CommonUtil.releaseUpdateLock();
@@ -131,9 +113,10 @@ public class SwaggerMediaTypeHandler extends Handler {
 				throw new RegistryException("The URL " + sourceURL + " is incorrect.", e);
 			}
 
-			SwaggerProcessor processor = new SwaggerProcessor();
-			processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
-					requestContext.getRegistryContext()));
+			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+			processor.addSwaggerToRegistry(inputStream,
+			                               getChrootedLocation(requestContext.getRegistryContext()),
+			                               sourceURL);
 			requestContext.setProcessingComplete(true);
 		} finally {
 			CommonUtil.releaseUpdateLock();
@@ -147,7 +130,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 	 * @return the root location of the Swagger.
 	 */
 	private String getChrootedLocation(RegistryContext registryContext) {
-		String relativeLocation = "/apimgt/applicationdata/api_docs/";
+		String relativeLocation = "/apimgt/applicationdata/api-docs/";
 		return RegistryUtils.getAbsolutePath(registryContext,
 		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
 		                                     relativeLocation);

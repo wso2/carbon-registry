@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -40,49 +41,40 @@ import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.net.URL;
 import java.util.UUID;
 
 public class SwaggerProcessor {
 
 	private static final Log log = LogFactory.getLog(SwaggerProcessor.class);
+	private RequestContext requestContext;
+	private Registry registry;
+	private RegistryContext registryContext;
+	private JsonParser parser;
+	private JsonObject swaggerDocObject;
 
-	/**
-	 * Reading content form the provided input stream.
-	 *
-	 * @param inputStream Input stream to read.
-	 * @return content as a {@link java.io.ByteArrayOutputStream}
-	 * @throws RegistryException If a failure occurs when reading the content.
-	 */
-	private ByteArrayOutputStream readSourceContent(InputStream inputStream)
-			throws RegistryException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		int nextChar;
-		try {
-			while ((nextChar = inputStream.read()) != -1) {
-				outputStream.write(nextChar);
-			}
-			outputStream.flush();
-		} catch (IOException e) {
-			throw new RegistryException("Exception occurred while reading swagger content", e);
-		}
-
-		return outputStream;
-
+	public SwaggerProcessor(RequestContext requestContext) {
+		this.parser = new JsonParser();
+		this.requestContext = requestContext;
+		this.registry = requestContext.getRegistry();
+		this.registryContext = requestContext.getRegistryContext();
 	}
 
 	/**
 	 * Saves the swagger file as a registry artifact.
 	 *
-	 * @param requestContext Information about the current request.
 	 * @param inputStream    Input stream to read content.
 	 * @param commonLocation Root location of the swagger artifacts.
 	 * @throws RegistryException If a failure occurs when adding the swagger to registry.
 	 */
-	public void addSwaggerToRegistry(RequestContext requestContext, InputStream inputStream,
-	                                 String commonLocation) throws RegistryException {
+	public void addSwaggerToRegistry(InputStream inputStream, String commonLocation,
+	                                 String sourceUrl) throws RegistryException {
+
+		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
+		//Creating a collection if not exists.
+		if (!systemRegistry.resourceExists(commonLocation)) {
+			systemRegistry.put(commonLocation, systemRegistry.newCollection());
+		}
 
 		Resource resource = requestContext.getResource();
 
@@ -93,74 +85,84 @@ public class SwaggerProcessor {
 		}
 
 		String version = resource.getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
-		String apiName = resource.getProperty("apiName");
-		String provider = resource.getProperty("provider");
 
 		if (version == null) {
 			version = CommonConstants.SWAGGER_SPEC_VERSION_DEFAULT_VALUE;
-			resource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
 		}
 
 		ByteArrayOutputStream swaggerContent = readSourceContent(inputStream);
 
+		this.swaggerDocObject = parser.parse(swaggerContent.toString()).getAsJsonObject();
+
+		JsonElement swaggerVersionElement = swaggerDocObject.get("swaggerVersion");
+		if (swaggerVersionElement == null) {
+			swaggerVersionElement = swaggerDocObject.get("swagger");
+		}
+		if (swaggerVersionElement == null) {
+			throw new RegistryException("Unsupported swagger version.");
+		}
+		String swaggerVersion = swaggerVersionElement.getAsString();
+
+		//TODO: VALIDATE SWAGGER CONTENT AGAINST SCHEMA
+
+		JsonObject apiInfoObject = swaggerDocObject.get("info").getAsJsonObject();
+
 		String resourcePath = requestContext.getResourcePath().getPath();
-		String swaggerFileName = resourcePath
+		String apiDocName = resourcePath
 				.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
+		String apiName = apiInfoObject.get("title").getAsString().replaceAll(" ", "");
 
-		Registry registry = requestContext.getRegistry();
-		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
-		RegistryContext registryContext = requestContext.getRegistryContext();
+		String commonResourcePath =
+				commonLocation + apiName + RegistryConstants.PATH_SEPARATOR + version;
 
-		//Creating a collection if not exists.
-		if (!systemRegistry.resourceExists(commonLocation)) {
-			systemRegistry.put(commonLocation, systemRegistry.newCollection());
-		}
+		if (swaggerVersion.equals("1.2")) {
+			addDocumentToRegistry(swaggerContent,
+			                      commonResourcePath + RegistryConstants.PATH_SEPARATOR +
+			                      apiDocName);
 
-		//setting up the swagger location
-		String actualPath;
-		if (!resourcePath.startsWith(commonLocation) && !resourcePath.equals(RegistryUtils
-				                                                                     .getAbsolutePath(
-						                                                                     registryContext,
-						                                                                     RegistryConstants.PATH_SEPARATOR +
-						                                                                     swaggerFileName)) &&
-		    !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
-		                                                       RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-		                                                       RegistryConstants.PATH_SEPARATOR +
-		                                                       swaggerFileName))) {
-			actualPath = resourcePath;
-		} else {
-			actualPath = commonLocation + provider + RegistryConstants.PATH_SEPARATOR + apiName +
-			             RegistryConstants.PATH_SEPARATOR + version +
-			             RegistryConstants.PATH_SEPARATOR + swaggerFileName;
-		}
+			//Adding APIs to registry.
+			JsonArray apis = swaggerDocObject.get("apis").getAsJsonArray();
 
-		String relativeArtifactPath =
-				RegistryUtils.getRelativePath(registry.getRegistryContext(), actualPath);
-
-		relativeArtifactPath = RegistryUtils.getRelativePathToOriginal(relativeArtifactPath,
-		                                                               RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH);
-
-		//Creating a new resource to store in the registry
-		Resource swaggerResource;
-		if (registry.resourceExists(actualPath)) {
-			swaggerResource = registry.get(actualPath);
-		} else {
-			swaggerResource = new ResourceImpl();
-
-			Properties properties = resource.getProperties();
-			//Setting properties to the new resource
-			if (properties != null) {
-				log.info("Adding existing properties to the new resource. ");
-				Set keys = properties.keySet();
-				for (Object key : keys) {
-					List values = (List) properties.get(key);
-					if (values != null) {
-						for (Object value : values) {
-							swaggerResource.addProperty((String) key, (String) value);
-						}
-					}
+			ByteArrayOutputStream apiContent;
+			InputStream apiInputStream;
+			String path;
+			for (JsonElement api : apis) {
+				JsonObject apiObject = api.getAsJsonObject();
+				path = apiObject.get("path").getAsString();
+				try {
+					apiInputStream = new URL(sourceUrl + path).openStream();
+				} catch (IOException e) {
+					throw new RegistryException("The URL " + sourceUrl + path + " is incorrect.",
+					                            e);
 				}
+				apiContent = readSourceContent(apiInputStream);
+				path = commonResourcePath + path;
+				addDocumentToRegistry(apiContent, path);
 			}
+		} else if (swaggerVersion.equals("2.0")) {
+			addDocumentToRegistry(swaggerContent,
+			                      commonResourcePath + RegistryConstants.PATH_SEPARATOR +
+			                      apiDocName);
+		}
+
+	}
+
+	/**
+	 * Saves a resource document in the registry.
+	 *
+	 * @param swaggerContent Resource content.
+	 * @param path           Resource path.
+	 * @throws RegistryException
+	 */
+	private void addDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path)
+			throws RegistryException {
+
+		Resource resource;
+		if (registry.resourceExists(path)) {
+			resource = registry.get(path);
+		} else {
+			resource = new ResourceImpl();
+			resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		}
 
 		String resourceId = resource.getUUID();
@@ -168,26 +170,13 @@ public class SwaggerProcessor {
 		if (resourceId == null) {
 			resourceId = UUID.randomUUID().toString();
 		}
-		//Setting resource media type : application/swagger+json (proposed media type to swagger specs)
-		swaggerResource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
+
 		//setting resource UUID
-		swaggerResource.setUUID(resourceId);
+		resource.setUUID(resourceId);
 		//Setting swagger as the resource content
-		swaggerResource.setContent(swaggerContent.toByteArray());
-		//Setting actual path
-		requestContext.setActualPath(actualPath);
+		resource.setContent(swaggerContent.toByteArray());
 		//Saving in to the registry
-		registry.put(actualPath, swaggerResource);
-		((ResourceImpl) swaggerResource).setPath(relativeArtifactPath);
-		requestContext.setResource(swaggerResource);
-
-		//Creating API artifact from the swagger content
-		OMElement data = createAPIArtifact(swaggerContent, provider);
-		String apiPath = addApiToregistry(requestContext, data, provider, apiName);
-
-		//Adding associations to the resources
-		registry.addAssociation(apiPath, actualPath, CommonConstants.DEPENDS);
-		registry.addAssociation(actualPath, apiPath, CommonConstants.USED_BY);
+		registry.put(path, resource);
 	}
 
 	/**
@@ -200,7 +189,7 @@ public class SwaggerProcessor {
 	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
 	private String addApiToregistry(RequestContext requestContext, OMElement data, String provider,
-	                              String apiName) throws RegistryException {
+	                                String apiName) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		Resource apiResource = new ResourceImpl();
@@ -301,6 +290,30 @@ public class SwaggerProcessor {
 		data.addChild(overview);
 
 		return data;
+
+	}
+
+	/**
+	 * Reading content form the provided input stream.
+	 *
+	 * @param inputStream Input stream to read.
+	 * @return content as a {@link java.io.ByteArrayOutputStream}
+	 * @throws RegistryException If a failure occurs when reading the content.
+	 */
+	private ByteArrayOutputStream readSourceContent(InputStream inputStream)
+			throws RegistryException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		int nextChar;
+		try {
+			while ((nextChar = inputStream.read()) != -1) {
+				outputStream.write(nextChar);
+			}
+			outputStream.flush();
+		} catch (IOException e) {
+			throw new RegistryException("Exception occurred while reading swagger content", e);
+		}
+
+		return outputStream;
 
 	}
 
