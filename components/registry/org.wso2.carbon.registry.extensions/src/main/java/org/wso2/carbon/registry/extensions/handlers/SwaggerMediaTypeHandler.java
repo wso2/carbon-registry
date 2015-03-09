@@ -114,9 +114,8 @@ public class SwaggerMediaTypeHandler extends Handler {
 			}
 
 			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-			processor.addSwaggerToRegistry(inputStream,
-			                               getChrootedLocation(requestContext.getRegistryContext()),
-			                               sourceURL);
+			processor.importSwaggerToRegistry(inputStream, getChrootedLocation(
+					requestContext.getRegistryContext()), sourceURL);
 			requestContext.setProcessingComplete(true);
 		} finally {
 			CommonUtil.releaseUpdateLock();

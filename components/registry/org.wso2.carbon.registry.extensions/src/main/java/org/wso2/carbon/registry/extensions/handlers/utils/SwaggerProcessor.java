@@ -33,6 +33,7 @@ import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
@@ -49,7 +50,6 @@ public class SwaggerProcessor {
 	private static final Log log = LogFactory.getLog(SwaggerProcessor.class);
 	private RequestContext requestContext;
 	private Registry registry;
-	private RegistryContext registryContext;
 	private JsonParser parser;
 	private JsonObject swaggerDocObject;
 
@@ -57,7 +57,6 @@ public class SwaggerProcessor {
 		this.parser = new JsonParser();
 		this.requestContext = requestContext;
 		this.registry = requestContext.getRegistry();
-		this.registryContext = requestContext.getRegistryContext();
 	}
 
 	/**
@@ -67,8 +66,8 @@ public class SwaggerProcessor {
 	 * @param commonLocation Root location of the swagger artifacts.
 	 * @throws RegistryException If a failure occurs when adding the swagger to registry.
 	 */
-	public void addSwaggerToRegistry(InputStream inputStream, String commonLocation,
-	                                 String sourceUrl) throws RegistryException {
+	public void importSwaggerToRegistry(InputStream inputStream, String commonLocation,
+	                                    String sourceUrl) throws RegistryException {
 
 		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
 		//Creating a collection if not exists.
@@ -111,9 +110,11 @@ public class SwaggerProcessor {
 		String apiDocName = resourcePath
 				.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
 		String apiName = apiInfoObject.get("title").getAsString().replaceAll(" ", "");
+		String apiProvider = CurrentSession.getUser();
 
 		String commonResourcePath =
-				commonLocation + apiName + RegistryConstants.PATH_SEPARATOR + version;
+				commonLocation + apiProvider + RegistryConstants.PATH_SEPARATOR + apiName +
+				RegistryConstants.PATH_SEPARATOR + version;
 
 		if (swaggerVersion.equals("1.2")) {
 			addDocumentToRegistry(swaggerContent,
@@ -144,6 +145,9 @@ public class SwaggerProcessor {
 			                      commonResourcePath + RegistryConstants.PATH_SEPARATOR +
 			                      apiDocName);
 		}
+
+		OMElement data = createAPIArtifact(swaggerVersion);
+		addApiToregistry(data, apiName);
 
 	}
 
@@ -182,14 +186,11 @@ public class SwaggerProcessor {
 	/**
 	 * Saves the API registry artifact created from the imported swagger definition.
 	 *
-	 * @param requestContext Information about the current request.
-	 * @param data           API artifact metadata
-	 * @param provider       API provider
-	 * @param apiName        Name of the API
+	 * @param apiName Name of the API.
+	 * @param data    API artifact metadata.
 	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
-	private String addApiToregistry(RequestContext requestContext, OMElement data, String provider,
-	                                String apiName) throws RegistryException {
+	private String addApiToregistry(OMElement data, String apiName) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		Resource apiResource = new ResourceImpl();
@@ -214,7 +215,7 @@ public class SwaggerProcessor {
 		}
 
 		apiResource.setUUID(resourceId);
-		String actualPath = getChrootedApiLocation(requestContext.getRegistryContext()) + provider +
+		String actualPath = getChrootedApiLocation(requestContext.getRegistryContext()) + CurrentSession.getUser() +
 		                    RegistryConstants.PATH_SEPARATOR + apiName +
 		                    RegistryConstants.PATH_SEPARATOR + apiVersion + "/api";
 
@@ -227,16 +228,11 @@ public class SwaggerProcessor {
 	/**
 	 * Extracts the data from swagger and creates an API registry artifact.
 	 *
-	 * @param swaggerContent Swagger json content
-	 * @param providerName   API provider
 	 * @return The API metadata
 	 * @throws RegistryException If swagger content is invalid.
 	 */
-	private OMElement createAPIArtifact(ByteArrayOutputStream swaggerContent, String providerName)
+	private OMElement createAPIArtifact(String swaggerVersion)
 			throws RegistryException {
-		String swagger = swaggerContent.toString();
-		JsonParser parser = new JsonParser();
-		JsonObject swaggerObject = parser.parse(swagger).getAsJsonObject();
 
 		OMFactory factory = OMAbstractFactory.getOMFactory();
 		OMNamespace namespace =
@@ -250,34 +246,22 @@ public class SwaggerProcessor {
 		OMElement transports = factory.createOMElement("transports", namespace);
 		OMElement description = factory.createOMElement("description", namespace);
 
-		JsonElement versionElement = swaggerObject.get("swaggerVersion");
-
-		if (versionElement == null) {
-			versionElement = swaggerObject.get("swagger");
-		}
-
-		String swaggerVersion;
-		if (versionElement != null) {
-			swaggerVersion = versionElement.getAsString();
-		} else {
-			throw new RegistryException("Invalid swagger version. ");
-		}
-		JsonObject infoObject = swaggerObject.get("info").getAsJsonObject();
+		JsonObject infoObject = swaggerDocObject.get("info").getAsJsonObject();
 		name.setText(getChildElementText(infoObject, "title"));
 		description.setText(getChildElementText(infoObject, "description"));
-		provider.setText(providerName);
+		provider.setText(CurrentSession.getUser());
 
 		if (swaggerVersion.equals("2.0")) {
-			String host = getChildElementText(swaggerObject, "host");
-			String basePath = getChildElementText(swaggerObject, "basepath");
+			String host = getChildElementText(swaggerDocObject, "host");
+			String basePath = getChildElementText(swaggerDocObject, "basepath");
 
 			if (host != null && basePath != null) {
 				context.setText(host + basePath);
 			}
 			apiVersion.setText(getChildElementText(infoObject, "version"));
-			transports.setText(getChildElementText(swaggerObject, "schemes"));
+			transports.setText(getChildElementText(swaggerDocObject, "schemes"));
 		} else if (swaggerVersion.equals("1.2")) {
-			apiVersion.setText(getChildElementText(swaggerObject, "apiVersion"));
+			apiVersion.setText(getChildElementText(swaggerDocObject, "apiVersion"));
 		}
 
 		overview.addChild(provider);
