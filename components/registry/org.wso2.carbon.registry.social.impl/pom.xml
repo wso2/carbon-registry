@@ -14,18 +14,16 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon</groupId>
+        <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>4.3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.3.0-SNAPSHOT</version>
     <artifactId>org.wso2.carbon.registry.social.impl</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Registry - Social API Impl</name>
@@ -41,7 +39,7 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
+            <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.social.api</artifactId>
         </dependency>
         <dependency>
@@ -94,7 +92,7 @@
                             org.wso2.carbon.registry.social.impl.*; version=1.0.0,
                         </Export-Package>
                         <Import-Package>
-                            org.apache.axis2.*; version="${axis2.osgi.version.range.socialimpl}",
+                            org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.wso2.carbon.registry.social.impl.common.*,
                             *;resolution:=optional
