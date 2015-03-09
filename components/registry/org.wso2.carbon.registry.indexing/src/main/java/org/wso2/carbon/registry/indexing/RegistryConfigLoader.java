@@ -69,29 +69,8 @@ public class RegistryConfigLoader {
     // solr server url for initiate the solr server	
     private String solrServerUrl;
 
-    // solr server mode for initiate the solr server: embedded or standalone
-    private String solrServerMode;
-    
-    // solr server username: this is used only for standalone is specified
-    private String solrServerUserName;
-    
-    // solr server password: this is used only for standalone is specified
-    private String solrServerPassword;
-    
     public String getSolrServerUrl(){
     	return solrServerUrl;
-    }
-    
-    public String getSolrServerMode() {
-    	return solrServerMode;
-    }
-    
-    public String getSolrServerPassword() {
-    	return solrServerPassword;
-    }
-
-    public String getSolrServerUserName() {
-    	return solrServerUserName;
     }
 
     private RegistryConfigLoader() {
@@ -195,22 +174,7 @@ public class RegistryConfigLoader {
         if(indexingConfig.getFirstChildWithName(new QName("solrServerUrl")) != null){
         	solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
         }
-        
-        // solr server mode for initiate the solr server: embedded or standalone
-        if(indexingConfig.getFirstChildWithName(new QName("solrServerMode")) != null){
-        	solrServerMode = indexingConfig.getFirstChildWithName(new QName("solrServerMode")).getText();
-        }
-        
-        // solr server username: this is used only for standalone is specified
-        if(indexingConfig.getFirstChildWithName(new QName("username")) != null){
-        	solrServerUserName = indexingConfig.getFirstChildWithName(new QName("username")).getText();
-        }
-        
-        // solr server password: this is used only for standalone is specified
-        if(indexingConfig.getFirstChildWithName(new QName("password")) != null){
-        	solrServerPassword = indexingConfig.getFirstChildWithName(new QName("password")).getText();
-        }
-        
+
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
         indexerPoolSize =  Integer.parseInt(indexingConfig.getFirstChildWithName(new QName("indexerPoolSize")).getText());
 

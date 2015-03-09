@@ -21,26 +21,10 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpCoreContext;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.HttpClientUtil;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
@@ -48,7 +32,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.core.CoreContainer;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -80,33 +63,26 @@ public class SolrClient {
 
     public static final Log log = LogFactory.getLog(SolrClient.class);
     private static volatile SolrClient instance;
-    private SolrServer server;
-    private Map<String, String> filePathMap = new HashMap<String, String>();
-    // solr home directory path
+    private org.apache.solr.client.solrj.SolrClient server;
+    private Map<String,String> filePathMap = new HashMap<String, String>();
+	// solr home directory path
     private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() +
-            File.separator + "solr";
+	                                                  File.separator + "solr";
     private File solrHome, confDir, langDir;
     private String solrCore = null;
 
-    protected SolrClient() throws IOException {
-        //get the solr server url from the registry.xml
-        RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
-        String solrServerUrl = configLoader.getSolrServerUrl();
-        String solrServerMode = configLoader.getSolrServerMode();
+    protected SolrClient() throws IOException{
+    	//get the solr server url from the registry.xml
+    	RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
+    	String solrServerUrl = configLoader.getSolrServerUrl();
 
-        if (SolrConstants.SOLR_EMBEDDED_MODE.equals(solrServerMode) || solrServerUrl == null) {
-            // since solr server url is not set, registry indexing will be work
-            // as embeddedSolr. set the default value for solr-core.
-            log.info("Registry indexing will use the default value | registry-indexing");
-            solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
-        } else {
-            String[] splitUrl = solrServerUrl.split("/");
-            //get the final word which should be always the solr-core
-            solrCore = splitUrl[splitUrl.length - 1];
-
+        /**
+         * default solr core is set to registry-indexing
+         */
+        solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
+        if(log.isDebugEnabled()) {
+            log.debug("Solr server core is set as: " + solrCore);
         }
-        log.debug("Solr server core is set as: " + solrCore);
-
         //create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
         solrHome = new File(SOLR_HOME_FILE_PATH);
         if (!solrHome.exists() && !solrHome.mkdirs()) {
@@ -125,76 +101,14 @@ public class SolrClient {
         if (!langDir.exists() && !langDir.mkdirs()) {
             throw new IOException("Solf lang directory could not be created! Path: " + langDir);
         }
-
-        //read the configuration file name and there dest path and stored in filePathMap
-        readConfigurationFilePaths();
-        //read the content of the files in filePathMap and copy them into destination path.
-        copyConfigurationFiles();
-        //set the solr home path
-        System.setProperty(SolrConstants.SOLR_HOME_SYSTEM_PROPERTY, solrHome.getPath());
-
-        if (SolrConstants.SOLR_STANDALONE_MODE.equalsIgnoreCase(solrServerMode)
-                && solrServerUrl != null) {
-            //creating httpclient with authentication.
-            ModifiableSolrParams params = new ModifiableSolrParams();
-            params.set(HttpClientUtil.PROP_MAX_CONNECTIONS, 128);
-            params.set(HttpClientUtil.PROP_MAX_CONNECTIONS_PER_HOST, 32);
-            params.set(HttpClientUtil.PROP_FOLLOW_REDIRECTS, false);
-
-            // though DefaultHttpClient is depreciated, current solr version used DefaultHttpClient.
-            DefaultHttpClient httpClient = (DefaultHttpClient) HttpClientUtil
-                    .createClient(params);
-            httpClient.getCredentialsProvider().setCredentials(
-                    AuthScope.ANY,
-                    new UsernamePasswordCredentials(configLoader
-                            .getSolrServerUserName(), configLoader
-                            .getSolrServerPassword()));
-
-            // All this bollocks is just for pre-emptive authentication. It used
-            // to be a boolean...
-            httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
-
-            this.server = new HttpSolrServer(solrServerUrl, httpClient);
+        if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
+            this.server = new HttpSolrClient(solrServerUrl);
             log.info("Http Sorl server initiated at: " + solrServerUrl);
-
         } else {
             CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
             coreContainer.load();
             this.server = new EmbeddedSolrServer(coreContainer, solrCore);
             log.info("Default Embedded Solr Server Initialized");
-        }
-
-    }
-
-    /**
-     * This class can be used to configure the Apache Http Client for preemptive
-     * authentication. In this mode, the client will send the basic authentication
-     * response even before the server gives an unauthorized response in certain
-     * situations. This reduces the overhead of making requests over authenticated
-     * connections.
-     */
-    private static class PreemptiveAuthInterceptor implements
-            HttpRequestInterceptor {
-
-        public void process(final HttpRequest request, final HttpContext context)
-                throws HttpException, IOException {
-            AuthState authState = (AuthState) context
-                    .getAttribute(HttpClientContext.TARGET_AUTH_STATE);
-
-            // If no auth scheme avaialble yet, try to initialize it
-            // preemptively
-            if (authState.getAuthScheme() == null) {
-                CredentialsProvider credsProvider = (CredentialsProvider) context
-                        .getAttribute(HttpClientContext.CREDS_PROVIDER);
-                HttpHost targetHost = (HttpHost) context
-                        .getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
-                Credentials creds = credsProvider.getCredentials(new AuthScope(
-                        targetHost.getHostName(), targetHost.getPort()));
-                if (creds == null) {
-                    throw new HttpException("No credentials for preemptive authentication");
-                }
-                authState.update(new BasicScheme(), creds);
-            }
         }
     }
 

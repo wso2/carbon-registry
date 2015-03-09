@@ -69,8 +69,8 @@ public class IndexingManager {
     public static IndexingManager getInstance() {
         if (instance == null) {
             synchronized (IndexingManager.class) {
-                if (instance == null) {           	
-                	instance = new IndexingManager();
+                if (instance == null) {
+                    instance = new IndexingManager();
                 }
             }
         }

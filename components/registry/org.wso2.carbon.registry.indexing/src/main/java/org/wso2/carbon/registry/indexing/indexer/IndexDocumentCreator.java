@@ -55,7 +55,7 @@ public class IndexDocumentCreator {
     private String resourcePath;
     private UserRegistry registry;
     private Resource resource;
-    private static final Log log = LogFactory.getLog(DefaultIndexer.class);
+    private static final Log log = LogFactory.getLog(IndexDocumentCreator.class);
     // Indexing fields attribute Map
     private Map<String, List<String>> attributes = new HashMap<String, List<String>>();
 
