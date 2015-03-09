@@ -83,12 +83,6 @@ public class SwaggerProcessor {
 			resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		}
 
-		String version = resource.getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
-
-		if (version == null) {
-			version = CommonConstants.SWAGGER_SPEC_VERSION_DEFAULT_VALUE;
-		}
-
 		ByteArrayOutputStream swaggerContent = readSourceContent(inputStream);
 
 		this.swaggerDocObject = parser.parse(swaggerContent.toString()).getAsJsonObject();
@@ -104,17 +98,10 @@ public class SwaggerProcessor {
 
 		//TODO: VALIDATE SWAGGER CONTENT AGAINST SCHEMA
 
-		JsonObject apiInfoObject = swaggerDocObject.get("info").getAsJsonObject();
-
 		String resourcePath = requestContext.getResourcePath().getPath();
 		String apiDocName = resourcePath
 				.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
-		String apiName = apiInfoObject.get("title").getAsString().replaceAll(" ", "");
-		String apiProvider = CurrentSession.getUser();
-
-		String commonResourcePath =
-				commonLocation + apiProvider + RegistryConstants.PATH_SEPARATOR + apiName +
-				RegistryConstants.PATH_SEPARATOR + version;
+		String commonResourcePath = getCommonPathFromContent(commonLocation, swaggerContent.toString());
 
 		if (swaggerVersion.equals("1.2")) {
 			addDocumentToRegistry(swaggerContent,
@@ -147,7 +134,7 @@ public class SwaggerProcessor {
 		}
 
 		OMElement data = createAPIArtifact(swaggerVersion);
-		addApiToregistry(data, apiName);
+		addApiToregistry(data);
 
 	}
 
@@ -158,15 +145,29 @@ public class SwaggerProcessor {
 	 * @param path           Resource path.
 	 * @throws RegistryException
 	 */
-	private void addDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path)
+	public void addDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path)
 			throws RegistryException {
 
 		Resource resource;
 		if (registry.resourceExists(path)) {
 			resource = registry.get(path);
+			Object resourceContentObj = resource.getContent();
+			String resourceContent;
+			if (resourceContentObj instanceof String) {
+				resourceContent = (String) resourceContentObj;
+				resource.setContent(RegistryUtils.encodeString(resourceContent));
+			} else if (resourceContentObj instanceof byte[]) {
+				resourceContent = RegistryUtils.decodeBytes((byte[]) resourceContentObj);
+			} else {
+				throw new RegistryException("Resource content is not valid.");
+			}
+
+			if(resourceContent.equals(swaggerContent.toString())) {
+				log.info("Old content is same as the new content. Skipping the put action.");
+				return;
+			}
 		} else {
 			resource = new ResourceImpl();
-			resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		}
 
 		String resourceId = resource.getUUID();
@@ -177,6 +178,8 @@ public class SwaggerProcessor {
 
 		//setting resource UUID
 		resource.setUUID(resourceId);
+		//Setting resource media type : application/swagger+json (proposed media type to swagger specs)
+		resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		//Setting swagger as the resource content
 		resource.setContent(swaggerContent.toByteArray());
 		//Saving in to the registry
@@ -186,11 +189,10 @@ public class SwaggerProcessor {
 	/**
 	 * Saves the API registry artifact created from the imported swagger definition.
 	 *
-	 * @param apiName Name of the API.
 	 * @param data    API artifact metadata.
 	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
-	private String addApiToregistry(OMElement data, String apiName) throws RegistryException {
+	private String addApiToregistry(OMElement data) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		Resource apiResource = new ResourceImpl();
@@ -201,6 +203,8 @@ public class SwaggerProcessor {
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
 		String apiVersion = overview.getFirstChildWithName(
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
+		String apiName = overview.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
 
 		if (apiVersion == null) {
 			apiVersion = CommonConstants.API_VERSION_DEFAULT_VALUE;
@@ -284,7 +288,7 @@ public class SwaggerProcessor {
 	 * @return content as a {@link java.io.ByteArrayOutputStream}
 	 * @throws RegistryException If a failure occurs when reading the content.
 	 */
-	private ByteArrayOutputStream readSourceContent(InputStream inputStream)
+	public ByteArrayOutputStream readSourceContent(InputStream inputStream)
 			throws RegistryException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		int nextChar;
@@ -327,6 +331,29 @@ public class SwaggerProcessor {
 		return RegistryUtils.getAbsolutePath(registryContext,
 		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
 		                                     relativeLocation);
+	}
+
+	/**
+	 * Returns the common swagger resources path.
+	 *
+	 * @param rootLocation Root location of the swagger files.
+	 * @return Common resource path.
+	 */
+	public String getCommonPathFromContent(String rootLocation, String content) {
+
+		JsonObject contentObject = parser.parse(content).getAsJsonObject();
+		JsonObject apiInfoObject = contentObject.get("info").getAsJsonObject();
+
+		String apiName = apiInfoObject.get("title").getAsString().replaceAll("\\s", "");
+		JsonElement apiVersionElement = contentObject.get("apiVersion");
+		if (apiVersionElement == null) {
+			apiVersionElement = apiInfoObject.get("version");
+		}
+		String version = apiVersionElement.getAsString();
+		String apiProvider = CurrentSession.getUser();
+
+		return rootLocation + apiProvider + RegistryConstants.PATH_SEPARATOR + apiName +
+		       RegistryConstants.PATH_SEPARATOR + version;
 	}
 
 }

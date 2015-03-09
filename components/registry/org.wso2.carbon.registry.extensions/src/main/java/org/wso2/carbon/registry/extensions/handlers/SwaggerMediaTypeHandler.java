@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -51,7 +52,6 @@ public class SwaggerMediaTypeHandler extends Handler {
 		CommonUtil.acquireUpdateLock();
 
 		try {
-			String path = requestContext.getResourcePath().getPath();
 			Resource resource = requestContext.getResource();
 
 			if (resource == null) {
@@ -60,21 +60,17 @@ public class SwaggerMediaTypeHandler extends Handler {
 
 			Object resourceContentObj = resource.getContent();
 
-			if(resourceContentObj == null) {
+			if (resourceContentObj == null || !(resourceContentObj instanceof byte[])) {
 				throw new RegistryException("Resource content is empty.");
 			}
 
-			byte[] resourceContent;
-			if (resourceContentObj instanceof String) {
-				resourceContent = RegistryUtils.encodeString((String) resourceContentObj);
-			}  else {
-				throw new RegistryException("Resource content is not valid.");
-			}
-
-			InputStream inputStream = new ByteArrayInputStream(resourceContent);
+			InputStream inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
 			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-//			processor.addSwaggerToRegistry(requestContext, inputStream, getChrootedLocation(
-//					requestContext.getRegistryContext()));
+			ByteArrayOutputStream swaggerContent = processor.readSourceContent(inputStream);
+			String commonLocation = getChrootedLocation(requestContext.getRegistryContext());
+			String path = processor.getCommonPathFromContent(commonLocation,
+			                                                 swaggerContent.toString());
+			processor.addDocumentToRegistry(swaggerContent, path);
 			ArtifactManager.getArtifactManager().getTenantArtifactRepository().addArtifact(path);
 		} finally {
 			CommonUtil.releaseUpdateLock();
