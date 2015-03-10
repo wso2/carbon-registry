@@ -25,23 +25,22 @@ import org.wso2.carbon.registry.core.RegistryConstants;
  */
 public final class IndexingConstants {
 
-    //make the constructor private, since it is a utility class
+    // Make the constructor private, since it is a utility class
     private IndexingConstants() {
     }
-    //default last access time location path is set as default when nothing specified in registry.xml
+
+    // Default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
             RegistryConstants.REGISTRY_COMPONENT_PATH + "/indexing/lastaccesstime";
 
-    //Default value for Solr Server core is set to the embedded solr. This going to be used when nothing specify as solr url in registry.xml
+    // Default value for Solr Server core is set to the embedded solr. This going to be used when nothing specify as solr url in registry.xml
     public static final String DEFAULT_SOLR_SERVER_CORE = "registry-indexing";
 
-    //Default starting delay and indexing frequency when nothing specified in registry.xml
+    // Default starting delay and indexing frequency when nothing specified in registry.xml
     public static final long STARTING_DELAY_IN_SECS_DEFAULT_VALUE = 10 * 60; //10 minutes
     public static final long INDEXING_FREQ_IN_SECS_DEFAULT_VALUE = 60; //1 minute
 
-
-    public static final String ADVANCE_SEARCH = "AdvanceSearch";
-    //fields are set for indexing document as default
+    // Fields are set for indexing document as default
     public static final String FIELD_ID = "id";
     public static final String FIELD_TENANT_ID = "tenantId";
     public static final String FIELD_TEXT = "text";
@@ -50,7 +49,7 @@ public final class IndexingConstants {
     public static final String FIELD_LC_NAME = "lcName";
     public static final String FIELD_LC_STATE = "lcState";
 
-    //new fields are added for indexing document 
+    // New fields are added for indexing
     public static final String FIELD_TAGS = "tags";
     public static final String FIELD_CONTENT = "content";
     public static final String FIELD_CREATED_DATE = "createdDate";
@@ -61,10 +60,10 @@ public final class IndexingConstants {
     public static final String FIELD_LAST_UPDATED_BY = "updater";
     public static final String FIELD_CREATED_BY = "author";
     public static final String FIELD_RESOURCE_NAME = "resourceName";
-    public static final String FIELD_PROPERTY_NAMES = "propertyNames";
     public static final String FIELD_PROPERTY_VALUES = "propertyValues";
+    public static final String ADVANCE_SEARCH = "AdvanceSearch";
 
-    //new fields need for index search
+    // New fields need for index search
     public static final String FIELD_CREATED_AFTER = "createdAfter";
     public static final String FIELD_CREATED_BEFORE = "createdBefore";
     public static final String FIELD_UPDATED_AFTER = "updatedAfter";

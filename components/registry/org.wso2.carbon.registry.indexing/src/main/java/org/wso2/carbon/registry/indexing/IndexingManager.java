@@ -138,7 +138,7 @@ public class IndexingManager {
         return indexer;
     }
 
-    public long getBatchSize(){
+    public long getBatchSize() {
         return registryConfig.getBatchSize();
     }
 

@@ -35,11 +35,14 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
+import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RegistryConfigLoader;
 import org.wso2.carbon.registry.indexing.SolrConstants;
+import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.utils.CarbonUtils;
 
@@ -62,45 +65,52 @@ import java.util.regex.Matcher;
 public class SolrClient {
 
     public static final Log log = LogFactory.getLog(SolrClient.class);
+
     private static volatile SolrClient instance;
     private org.apache.solr.client.solrj.SolrClient server;
-    private Map<String,String> filePathMap = new HashMap<String, String>();
-	// solr home directory path
-    private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() +
-	                                                  File.separator + "solr";
+    private Map<String, String> filePathMap = new HashMap<String, String>();
+    // solr home directory path
+    private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() + File.separator + "solr";
     private File solrHome, confDir, langDir;
     private String solrCore = null;
 
-    protected SolrClient() throws IOException{
-    	//get the solr server url from the registry.xml
-    	RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
-    	String solrServerUrl = configLoader.getSolrServerUrl();
+    protected SolrClient() throws IOException {
+        // Get the solr server url from the registry.xml
+        RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
+        String solrServerUrl = configLoader.getSolrServerUrl();
 
-        /**
-         * default solr core is set to registry-indexing
-         */
+        // Default solr core is set to registry-indexing
         solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Solr server core is set as: " + solrCore);
         }
-        //create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
+
+        // Create the solr home path defined in SOLR_HOME_FILE_PATH : carbon_home/repository/conf/solr
         solrHome = new File(SOLR_HOME_FILE_PATH);
         if (!solrHome.exists() && !solrHome.mkdirs()) {
             throw new IOException("Solr home directory could not be created. path: " + solrHome);
         }
 
-        //create the configuration folder inside solr core : carbon_home/repository/conf/solr/<solrCore>/conf
+        // Create the configuration folder inside solr core : carbon_home/repository/conf/solr/<solrCore>/conf
         confDir = new File(solrHome, solrCore + File.separator + "conf");
         if (!confDir.exists() && !confDir.mkdirs()) {
             throw new IOException("Solr conf directory could not be created! Path: " + confDir);
         }
 
-        //create lang directory inside conf to store language specific stopwords
-        //commons-io --> file utils
+        // Create lang directory inside conf to store language specific stop words
+        // commons-io --> file utils
         langDir = new File(confDir, "lang");
         if (!langDir.exists() && !langDir.mkdirs()) {
             throw new IOException("Solf lang directory could not be created! Path: " + langDir);
         }
+
+        // Read the configuration file name and there destination path and stored in filePathMap
+        readConfigurationFilePaths();
+        // Read the content of the files in filePathMap and copy them into destination path
+        copyConfigurationFiles();
+        // Set the solr home path
+        System.setProperty(SolrConstants.SOLR_HOME_SYSTEM_PROPERTY, solrHome.getPath());
+
         if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
             this.server = new HttpSolrClient(solrServerUrl);
             log.info("Http Sorl server initiated at: " + solrServerUrl);
@@ -129,7 +139,7 @@ public class SolrClient {
     }
 
     /**
-     * reads sourceFilePath and destFilePath from solr_configuration_files.properties file
+     * Reads sourceFilePath and destFilePath from solr_configuration_files.properties file
      * e.g: protwords.txt = home/core/conf
      * protword.txt is the resource file name
      * home/core/conf is destination file path, this will go to solr-home/<solr-core>/conf directory.
@@ -159,7 +169,7 @@ public class SolrClient {
     }
 
     /**
-     * copy solr configuration files in resource folder to solr home folder.
+     * Copy solr configuration files in resource folder to solr home folder.
      * @throws IOException
      */
     private void copyConfigurationFiles() throws IOException {
@@ -331,7 +341,6 @@ public class SolrClient {
      * @param solrInputDocument Solr InputDocument
      */
     private void addPropertyField(String fieldKey, String value, SolrInputDocument solrInputDocument) {
-        //        boolean isInt = false, isFloat = false;
         int intValue;
         double doubleValue;
         // Check whether the value is an Int or decimal or string
@@ -414,7 +423,7 @@ public class SolrClient {
     }
 
     /**
-     *  Method to get Solr generic date formatter
+     * Method to get Solr generic date formatter
      * @param dateStr date value
      * @param currentFormat date format
      * @return solr date format
@@ -432,8 +441,13 @@ public class SolrClient {
         return solrDateFormatResult;
     }
 
-    public synchronized void deleteFromIndex(String path, int tenantId)
-            throws SolrException {
+    public void indexDocument(AsyncIndexer.File2Index fileData, Indexer indexer) throws RegistryException {
+        IndexDocument doc = indexer.getIndexedDocument(fileData);
+        doc.setTenantId(fileData.tenantId);
+        addDocument(doc);
+    }
+
+    public synchronized void deleteFromIndex(String path, int tenantId) throws SolrException {
         try {
             String id = generateId(tenantId, path);
             server.deleteById(id);
@@ -441,10 +455,10 @@ public class SolrClient {
                 log.debug("Solr delete index path: " + path + " id: " + id);
             }
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
+            // Throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         } catch (IOException e) {
-            //throw unchecked exception: SolrException, this will throw when there is an error in connection.
+            // Throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
         }
     }
@@ -490,8 +504,8 @@ public class SolrClient {
                 query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + tenantId);
             }
             if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
-                //This is for fixing  REGISTRY-1695, This is temporary solution until
-                //the default security polices also stored in Governance registry.
+                // This is for fixing  REGISTRY-1695, This is temporary solution until
+                // the default security polices also stored in Governance registry.
                 if (fields.size() > 0 && fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
                         RegistryConstants.POLICY_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
@@ -541,7 +555,6 @@ public class SolrClient {
             }
             return queryresponse.getResults();
         } catch (SolrServerException e) {
-            //throw unchecked exception: SolrException, this will throw when there is an invalid search query or error in connection.
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
         }
