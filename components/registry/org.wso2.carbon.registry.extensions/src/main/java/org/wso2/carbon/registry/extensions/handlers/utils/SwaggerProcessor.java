@@ -98,11 +98,9 @@ public class SwaggerProcessor {
 				.substring(resourcePath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
 		String commonResourcePath =
 				getCommonPathFromContent(commonLocation, swaggerContent.toString());
-
+		resourcePath = commonResourcePath + apiDocName;
 		if (swaggerVersion.equals("1.2")) {
-			addDocumentToRegistry(swaggerContent,
-			                      commonResourcePath + RegistryConstants.PATH_SEPARATOR +
-			                      apiDocName);
+			addDocumentToRegistry(swaggerContent, resourcePath);
 
 			//Adding APIs to registry.
 			JsonArray apis = swaggerDocObject.get("apis").getAsJsonArray();
@@ -124,15 +122,17 @@ public class SwaggerProcessor {
 				addDocumentToRegistry(apiContent, path);
 			}
 		} else if (swaggerVersion.equals("2.0")) {
-			addDocumentToRegistry(swaggerContent,
-			                      commonResourcePath + RegistryConstants.PATH_SEPARATOR +
-			                      apiDocName);
+			addDocumentToRegistry(swaggerContent, resourcePath);
 		}
 
 		//Creating the api artifact from the swagger content.
 		OMElement data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion);
 		//Saving the api artifact in the registry.
-		addApiToregistry(data);
+		String apiPath = addApiToregistry(data);
+
+		//Adding associations to the resources
+		registry.addAssociation(apiPath, resourcePath, CommonConstants.DEPENDS);
+		registry.addAssociation(resourcePath, apiPath, CommonConstants.USED_BY);
 
 	}
 
