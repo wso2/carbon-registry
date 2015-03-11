@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -17,14 +17,17 @@
  */
 package org.wso2.carbon.registry.indexing;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
+import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,23 +186,30 @@ public class AsyncIndexer implements Runnable {
                 PrivilegedCarbonContext.startTenantFlow();
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(fileData.tenantId);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(fileData.tenantDomain);
-                createIndexDocument(fileData);
+                doWork(fileData);
 
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
 
-        private void createIndexDocument(File2Index file2Index) {
+        private boolean doWork(File2Index file2Index) {
+            AsyncIndexer asyncIndexer;
             try {
-                // Create the IndexDocument
-                IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index);
-                indexDocumentCreator.createIndexDocument();
-            } catch (RegistryException e) {
-                log.error("Error while indexing.", e);
-            } catch (IndexerException e) {
+                Indexer indexer = IndexingManager.getInstance().getIndexerForMediaType(
+                        file2Index.mediaType);
+                try {
+                    asyncIndexer = new AsyncIndexer();
+                    asyncIndexer.getClient().indexDocument(file2Index, indexer);
+                } catch (Exception e) {
+                    log.error("Could not index the resource: path=" + file2Index.path +
+                            ", media type=" + file2Index.mediaType,e); // to ease debugging
+                }
+
+            } catch (Throwable e) { // Throwable is caught to prevent the executor termination
                 log.error("Error while indexing.", e);
             }
+            return true;
         }
     }
 }

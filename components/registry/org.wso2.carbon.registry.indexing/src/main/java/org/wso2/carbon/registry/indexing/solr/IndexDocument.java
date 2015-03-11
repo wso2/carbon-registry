@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2015, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ *  Copyright (c) WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -28,9 +28,6 @@ public class IndexDocument {
     private String rawContent;
     private int tenantId;
     private Map<String, List<String>> fields;
-
-    public IndexDocument() {
-    }
 
     public IndexDocument(String path, String rawContent, String contentAsText) {
         this.path = path;

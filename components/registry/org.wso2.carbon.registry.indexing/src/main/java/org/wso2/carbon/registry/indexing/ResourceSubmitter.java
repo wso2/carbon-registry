@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -17,11 +17,13 @@
 */
 package org.wso2.carbon.registry.indexing;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -31,6 +33,7 @@ import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -69,8 +72,9 @@ public class ResourceSubmitter implements Runnable {
      * indexed. This method handles interrupts properly so that it is compatible with the
      * Executor framework
      */
-    @SuppressWarnings({ "REC_CATCH_EXCEPTION" })
+    @SuppressWarnings({"REC_CATCH_EXCEPTION"})
     public void run() {
+
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -119,10 +123,10 @@ public class ResourceSubmitter implements Runnable {
             }
             String lastAccessTimeLocation = indexingManager.getLastAccessTimeLocation();
 
+
             LogEntry[] entries = registry.getLogs(null, LogEntry.ALL, null, indexingManager.getLastAccessTime(tenantId),
                     new Date(), false);
             Arrays.sort(entries, new Comparator<LogEntry>() {
-
                 public int compare(LogEntry o1, LogEntry o2) {
                     return o1.getDate().compareTo(o2.getDate());
                 }
@@ -146,54 +150,20 @@ public class ResourceSubmitter implements Runnable {
                             log.debug("Resource Deleted: Resource at " + path +
                                     " will be deleted from Indexing Server");
                         }
-                    } else if (IndexingUtils.isAuthorized(registry, path, ActionConstants.GET) && registry
-                                    .resourceExists(path) && (resourceToIndex = registry.get(path)) != null) {
+                    } else if (indexingManager.canIndex(path) &&
+                            IndexingUtils.isAuthorized(registry, path, ActionConstants.GET) &&
+                            registry.resourceExists(path) &&
+                            indexingManager.isIndexable(resourceToIndex = registry.get(path))) {
                         if (logEntry.getAction() == LogEntry.UPDATE) {
                             indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Updated: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
-                        } else if (logEntry.getAction() == LogEntry.DELETE_COMMENT) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource comment deleted: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.REMOVE_ASSOCIATION) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource association removed: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.REMOVE_TAG) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource tag removed: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.ADD) {
+                        } else if (logEntry.getAction() == (LogEntry.ADD)) {
                             indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Inserted: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.TAG) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource tag added: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.COMMENT) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource comment added: Resource at " + path +
-                                        " has been submitted to the Indexing Server");
-                            }
-                        } else if (logEntry.getAction() == LogEntry.ADD_ASSOCIATION) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Resource association added: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == (LogEntry.MOVE)) {

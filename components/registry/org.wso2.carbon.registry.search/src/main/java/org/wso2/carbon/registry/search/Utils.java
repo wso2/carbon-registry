@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 *  WSO2 Inc. licenses this file to you under the Apache License,
 *  Version 2.0 (the "License"); you may not use this file except
@@ -17,18 +17,24 @@
 */
 package org.wso2.carbon.registry.search;
 
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.common.AttributeSearchService;
-import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.indexing.service.ContentBasedSearchService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
 
     private static RegistryService registryService;
     private static ContentSearchService contentSearchService;
-    private static AttributeSearchService attributeSearchService;
 
     public static synchronized void setRegistryService(RegistryService service) {
         registryService = service;
@@ -44,13 +50,5 @@ public class Utils {
 
     public static ContentSearchService getContentSearchService(){
         return contentSearchService;
-    }
-
-    public static void setAttributeIndexingService(AttributeSearchService service) {
-        attributeSearchService = service;
-    }
-
-    public static AttributeSearchService getAttributeSearchService() {
-        return attributeSearchService;
     }
 }
