@@ -82,5 +82,7 @@ public final class SolrConstants {
     public static final Pattern INT_PATTERN = Pattern.compile("-?\\d+");
     // Constant for regex double
     public static final Pattern DOUBLE_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
+    //constant for governance path to solr queries
+    public static final String GOVERNANCE_REGISTRY_BASE_PATH =  "\\/_system\\/governance\\/";
 
 }

@@ -509,7 +509,7 @@ public class SolrClient {
                 if (fields.size() > 0 && fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
                         RegistryConstants.POLICY_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
-                            RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
                 }
             }
             // Add query filters
