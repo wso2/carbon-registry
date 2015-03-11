@@ -81,6 +81,8 @@ public class SolrClient {
     private static final String SOLR_CONF_LANG = "home/core/conf/lang";
     //constant to set the solr system property
     private static final String SOLR_HOME_SYSTEM_PROPERTY = "solr.solr.home";
+    //constant for governance path to solr queries
+    private static final String GOVERNANCE_REGISTRY_BASE_PATH =  "\\/_system\\/governance\\/";
 
     private File solrHome, confDir, langDir;
 	
@@ -342,7 +344,7 @@ public class SolrClient {
             if (fields.size() > 0 && fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
                     RegistryConstants.POLICY_MEDIA_TYPE)) {
                 query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
-                        RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+                        GOVERNANCE_REGISTRY_BASE_PATH + "*");
             }
             if (fields.size() > 0) {
                 for (Map.Entry<String, String> e : fields.entrySet()) {
