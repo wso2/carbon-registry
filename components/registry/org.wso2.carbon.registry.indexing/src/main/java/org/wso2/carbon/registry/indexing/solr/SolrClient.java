@@ -506,10 +506,11 @@ public class SolrClient {
             if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
-                if (fields.size() > 0 && fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
                         RegistryConstants.POLICY_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
                             SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+
                 }
             }
             // Add query filters
