@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2006-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,46 @@
 package org.wso2.carbon.registry.search.services;
 
 import org.apache.axis2.context.MessageContext;
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.registry.admin.api.search.ISearchService;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
 import org.wso2.carbon.registry.search.beans.CustomSearchParameterBean;
 import org.wso2.carbon.registry.search.beans.MediaTypeValueList;
 import org.wso2.carbon.registry.search.beans.SearchResultsBean;
-import org.wso2.carbon.registry.search.services.utils.*;
+import org.wso2.carbon.registry.search.services.utils.AdvancedSearchFilterActions;
+import org.wso2.carbon.registry.search.services.utils.CustomSearchParameterPopulator;
+import org.wso2.carbon.registry.search.services.utils.SearchResultsBeanPopulator;
+import org.wso2.carbon.registry.search.services.utils.SearchUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ *  This class is dedicated for resource search
+ */
+public class SearchService extends RegistryAbstractAdmin implements
+        ISearchService<SearchResultsBean, AdvancedSearchResultsBean, CustomSearchParameterBean, MediaTypeValueList> {
 
-public class SearchService extends RegistryAbstractAdmin implements ISearchService<SearchResultsBean, AdvancedSearchResultsBean, CustomSearchParameterBean, MediaTypeValueList> {
+    private boolean allEmpty = true;
+    private static final String SEARCH_ATTRIBUTES_ALL_EMPTY_MESSAGE = "At least one field must be filled";
+    private static final String SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE = " contains illegal characters";
 
     /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#getSearchResults(java.lang.String, java.lang.String)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getSearchResults(java.lang.String, java.lang.String)
 	 */
-    public SearchResultsBean getSearchResults(String searchType, String criteria) throws RegistryException {    	
+    public SearchResultsBean getSearchResults(String searchType, String criteria) throws RegistryException {
         RegistryUtils.recordStatistics(searchType, criteria);
         UserRegistry registry = (UserRegistry) getRootRegistry();
         return SearchResultsBeanPopulator.populate(registry, searchType, criteria);
@@ -62,48 +74,79 @@ public class SearchService extends RegistryAbstractAdmin implements ISearchServi
                                                            commentWords, propertyName, propertyValue, content);
     }*/
 
-    //newly added method
-    //this method is to get the custom search results
-
-    /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#getAdvancedSearchResults(org.wso2.carbon.registry.search.beans.CustomSearchParameterBean)
-	 */
-    public AdvancedSearchResultsBean getAdvancedSearchResults(CustomSearchParameterBean parameters) throws RegistryException {    	
+    /**
+     * Method to get Advance search result bean
+     * @param parameters CustomSearchParameterBean
+     * @return AdvancedSearchResultsBean
+     * @throws RegistryException
+     */
+    public AdvancedSearchResultsBean getAdvancedSearchResults(CustomSearchParameterBean parameters)
+            throws RegistryException {
         RegistryUtils.recordStatistics(parameters);
-        AdvancedSearchResultsBean metaDataSearchResultsBean;
+        AdvancedSearchResultsBean advancedSearchResultsBean;
         UserRegistry registry = (UserRegistry) getRootRegistry();
-        Registry configSystemRegistry = getConfigSystemRegistry();
-        ContentSearchService contentSearchService = Utils.getContentSearchService();
-        ResourceData[] contentSearchResourceData;
-        String[][] tempParameterValues = parameters.getParameterValues();
+        AttributeSearchService attributeSearchService = Utils.getAttributeSearchService();
+        // Get advance search parameter values
+        String[][] searchParameterValues = parameters.getParameterValues();
+        ResourceData[] advanceSearchResourceData = new ResourceData[0];
+        // Map to store advance search attributes values
+        Map<String, String> advanceSearchAttributes;
 
-//        Doing a validation of all the values sent
-        boolean allEmpty = true;
-        for (String[] tempParameterValue : tempParameterValues) {
-            if(tempParameterValue[1] != null & tempParameterValue[1].trim().length() > 0){
+        // Validating the values sent
+        String validationErrorMessage = getValidationErrorMessage(searchParameterValues);
+        if (validationErrorMessage != null && StringUtils.isNotEmpty(validationErrorMessage)) {
+            return SearchUtils.getEmptyResultBeanWithErrorMsg(validationErrorMessage);
+        }
+        // No attribute has provide for search
+        if (allEmpty) {
+            return SearchUtils.getEmptyResultBeanWithErrorMsg(SEARCH_ATTRIBUTES_ALL_EMPTY_MESSAGE);
+        }
+        // Add search parameter values to advanceSearchAttributes Map
+        advanceSearchAttributes = getAdvanceSearchValueMap(searchParameterValues);
+
+        // Get Advance Search resource data
+        if (attributeSearchService != null && advanceSearchAttributes.size() > 0) {
+            if (!(advanceSearchAttributes.size() == 2)) {
+                advanceSearchAttributes.put(IndexingConstants.ADVANCE_SEARCH, "true");
+                advanceSearchResourceData = attributeSearchService.search(registry, advanceSearchAttributes);
+            }
+        }
+        advancedSearchResultsBean = new AdvancedSearchResultsBean();
+        if (advanceSearchResourceData != null && advanceSearchResourceData.length > 0) {
+            advancedSearchResultsBean.setResourceDataList(advanceSearchResourceData);
+        }
+        return getPaginatedResult(advancedSearchResultsBean);
+    }
+
+    /**
+     * Method to get the advance search attribute validation error message
+     * @param searchParameterValues search parameter values
+     * @return validation error message
+     */
+    private String getValidationErrorMessage(String[][] searchParameterValues) {
+        String message = null;
+        for (String[] tempParameterValue : searchParameterValues) {
+            if (tempParameterValue[1] != null & tempParameterValue[1].trim().length() > 0) {
                 allEmpty = false;
-//                Validating all the dates
+                // Validating all the dates
                 if (tempParameterValue[0].equals("createdAfter") || tempParameterValue[0].equals("createdBefore") ||
-                        tempParameterValue[0].equals("updatedAfter") || tempParameterValue[0].equals("updatedBefore")){
-                    if(!SearchUtils.validateDateInput(tempParameterValue[1])){
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                        tempParameterValue[0].equals("updatedAfter") || tempParameterValue[0].equals("updatedBefore")) {
+                    if (!SearchUtils.validateDateInput(tempParameterValue[1])) {
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
-                }
-
-                else if(tempParameterValue[0].equals("mediaType")){
+                } else if (tempParameterValue[0].equals("author")) { // Validating media type
+                    if (SearchUtils.validatePathInput(tempParameterValue[1])) {
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
+                    }
+                } else if (tempParameterValue[0].equals("mediaType")) { // Validating media type
                     if (SearchUtils.validateMediaTypeInput(tempParameterValue[1])) {
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
-                }
-                else if(tempParameterValue[0].equals("content")){
+                } else if (tempParameterValue[0].equals("content")) { // Validating content
                     if (SearchUtils.validateContentInput(tempParameterValue[1])) {
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
-                }
-                else if(tempParameterValue[0].equals("tags")){
+                } else if (tempParameterValue[0].equals("tags")) { // Validating tags
                     boolean containsTag = false;
                     for (String str : tempParameterValue[1].split(",")) {
                         if (str.trim().length() > 0) {
@@ -112,106 +155,125 @@ public class SearchService extends RegistryAbstractAdmin implements ISearchServi
                         }
                     }
                     if (!containsTag) {
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
                     if (SearchUtils.validateTagsInput(tempParameterValue[1])) {
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
-                }
-                else{
-                    if(SearchUtils.validatePathInput(tempParameterValue[1])){
-                        String message = tempParameterValue[0] + " contains illegal characters";
-                        return SearchUtils.getEmptyResultBeanWithErrorMsg(message);
+                } else {
+                    if (SearchUtils.validatePathInput(tempParameterValue[1])) {
+                        message = tempParameterValue[0] + SEARCH_ATTRIBUTES_CONTAINS_ILLEGAL_CHARACTER_MESSAGE;
                     }
                 }
             }
         }
-
-        if (allEmpty) {
-            return SearchUtils.getEmptyResultBeanWithErrorMsg("At least one field must be filled");
-        }
-
-        boolean onlyContent = true;
-        for (String[] tempParameterValue : tempParameterValues) {
-            if(!tempParameterValue[0].equals("content") && !tempParameterValue[0].equals("leftOp") &&
-                    !tempParameterValue[0].equals("rightOp") && tempParameterValue[1] != null &&
-                    tempParameterValue[1].length() > 0){
-                onlyContent = false;
-                break;
-            }
-        }
-
-        for (String[] tempParameterValue : tempParameterValues) {
-            if (tempParameterValue[0].equals("content") && tempParameterValue[1] != null &&
-                    tempParameterValue[1].length() > 0) {
-                try {
-                    contentSearchResourceData = contentSearchService.search(registry, tempParameterValue[1]);
-                } catch (RegistryException e) {
-                    metaDataSearchResultsBean = new AdvancedSearchResultsBean();
-                    metaDataSearchResultsBean.setErrorMessage(e.getMessage());
-                    return getPaginatedResult(metaDataSearchResultsBean);
-                }
-
-//                If there are no resource paths returned from content, then there is no point of searching for more
-                if (contentSearchResourceData != null && contentSearchResourceData.length > 0) {
-//                    Map<String, ResourceData> resourceDataMap = new HashMap<String, ResourceData>();
-                    Map<String,ResourceData> aggregatedMap = new HashMap<String, ResourceData>();
-
-                    for (ResourceData resourceData : contentSearchResourceData) {
-                        aggregatedMap.put(resourceData.getResourcePath(), resourceData);
-                    }
-
-                    metaDataSearchResultsBean = AdvancedSearchResultsBeanPopulator.populate(configSystemRegistry,
-                            registry, parameters);
-
-                    if (metaDataSearchResultsBean != null) {
-                        ResourceData[] metaDataResourceData = metaDataSearchResultsBean.getResourceDataList();
-                        if (metaDataResourceData != null && metaDataResourceData.length > 0) {
-
-                            List<String> invalidKeys = new ArrayList<String>();
-                            for (String key : aggregatedMap.keySet()) {
-                                boolean keyFound = false;
-                                for (ResourceData resourceData : metaDataResourceData) {
-                                    if(resourceData.getResourcePath().equals(key)){
-                                        keyFound = true;
-                                        break;
-                                    }
-                                }
-                                if(!keyFound){
-                                    invalidKeys.add(key);
-                                }
-                            }
-                            for (String invalidKey : invalidKeys) {
-                                aggregatedMap.remove(invalidKey);
-                            }
-                        }else if(!onlyContent) {
-                            aggregatedMap.clear();
-                        }
-                    }
-
-                    ArrayList<ResourceData> sortedList = new ArrayList<ResourceData>(aggregatedMap.values());
-                    SearchUtils.sortResourceDataList(sortedList);
-
-                    metaDataSearchResultsBean = new AdvancedSearchResultsBean();
-                    metaDataSearchResultsBean.setResourceDataList(sortedList.toArray(new ResourceData[sortedList.size()]));
-                    return getPaginatedResult(metaDataSearchResultsBean);
-                }else {
-                    metaDataSearchResultsBean = new AdvancedSearchResultsBean();
-                    metaDataSearchResultsBean.setResourceDataList(contentSearchResourceData);
-                    return getPaginatedResult(metaDataSearchResultsBean);
-                }
-            }
-        }
-        return getPaginatedResult(
-                AdvancedSearchResultsBeanPopulator.populate(configSystemRegistry, registry, parameters));
+        return message;
     }
 
-    private AdvancedSearchResultsBean getPaginatedResult( AdvancedSearchResultsBean advancedSearchResultsBean){
+    /**
+     * Method to get the advance search attribute Map
+     * @param searchParameterValues search parameter array
+     * @return attribute map
+     */
+    private Map<String, String> getAdvanceSearchValueMap(String[][] searchParameterValues) {
+        // Map to store advance search attributes values
+        Map<String, String> advanceSearchAttributes = new HashMap<String, String>();
+
+        for (String[] tempParameterValue : searchParameterValues) {
+            if (tempParameterValue[0].equals("content") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_CONTENT, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("mediaType") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_MEDIA_TYPE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("resourcePath") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                if (!(tempParameterValue[1].length() == 1 && tempParameterValue[1].charAt(0) == '%')) {
+                    advanceSearchAttributes.put(IndexingConstants.FIELD_RESOURCE_NAME, tempParameterValue[1]);
+                }
+            } else if (tempParameterValue[0].equals("author") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                if (!(tempParameterValue[1].length() == 1 && tempParameterValue[1].charAt(0) == '%')) {
+                    advanceSearchAttributes.put(IndexingConstants.FIELD_CREATED_BY, tempParameterValue[1]);
+                }
+            } else if (tempParameterValue[0].equals("updater") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                if (!(tempParameterValue[1].length() == 1 && tempParameterValue[1].charAt(0) == '%')) {
+                    advanceSearchAttributes.put(IndexingConstants.FIELD_LAST_UPDATED_BY, tempParameterValue[1]);
+                }
+            } else if (tempParameterValue[0].equals("createdAfter") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_CREATED_AFTER, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("createdBefore") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_CREATED_BEFORE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("updatedAfter") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_UPDATED_AFTER, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("updatedBefore") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_UPDATED_BEFORE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("tags") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_TAGS, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("commentWords") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_COMMENTS, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("associationType") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_ASSOCIATION_TYPES, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("associationDest") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("authorNameNegate") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_CREATED_BY_NEGATE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("updaterNameNegate") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_UPDATE_BY_NEGATE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("createdRangeNegate") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_CREATED_RANGE_NEGATE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("updatedRangeNegate") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_UPDATED_RANGE_NEGATE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("mediaTypeNegate") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_MEDIA_TYPE_NEGATE, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("propertyName") && tempParameterValue[1] != null && !StringUtils
+                    .isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_PROPERTY_NAME, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("leftPropertyValue") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                if (!(tempParameterValue[1].length() == 1 && tempParameterValue[1].charAt(0) == '%')) {
+                    advanceSearchAttributes.put(IndexingConstants.FIELD_LEFT_PROPERTY_VAL, tempParameterValue[1]);
+                }
+            } else if (tempParameterValue[0].equals("rightPropertyValue") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                if (!(tempParameterValue[1].length() == 1 && tempParameterValue[1].charAt(0) == '%')) {
+                    advanceSearchAttributes.put(IndexingConstants.FIELD_RIGHT_PROPERTY_VAL, tempParameterValue[1]);
+                }
+            } else if (tempParameterValue[0].equals("leftOp") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_LEFT_OP, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("rightOp") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FIELD_RIGHT_OP, tempParameterValue[1]);
+            }
+        }
+        return advanceSearchAttributes;
+    }
+
+    /**
+     * Method to get the paginated result for advance search
+     * @param advancedSearchResultsBean AdvancedSearchResultsBean
+     * @return paginated result
+     */
+    private AdvancedSearchResultsBean getPaginatedResult(AdvancedSearchResultsBean advancedSearchResultsBean) {
         ResourceData[] paginatedResult;
         MessageContext messageContext = MessageContext.getCurrentMessageContext();
-        if (messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext) && advancedSearchResultsBean.getResourceDataList() != null) {
+        if (messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)
+                && advancedSearchResultsBean.getResourceDataList() != null) {
 
             int rowCount = advancedSearchResultsBean.getResourceDataList().length;
             try {
@@ -229,10 +291,12 @@ public class SearchService extends RegistryAbstractAdmin implements ISearchServi
                 }
                 if (rowCount < start + count) {
                     paginatedResult = new ResourceData[rowCount - startIndex];
-                    System.arraycopy(advancedSearchResultsBean.getResourceDataList(), startIndex, paginatedResult, 0, (rowCount - startIndex));
+                    System.arraycopy(advancedSearchResultsBean.getResourceDataList(), startIndex, paginatedResult, 0,
+                            (rowCount - startIndex));
                 } else {
                     paginatedResult = new ResourceData[count];
-                    System.arraycopy(advancedSearchResultsBean.getResourceDataList(), startIndex, paginatedResult, 0, count);
+                    System.arraycopy(advancedSearchResultsBean.getResourceDataList(), startIndex, paginatedResult, 0,
+                            count);
                 }
                 advancedSearchResultsBean.setResourceDataList(paginatedResult);
                 return advancedSearchResultsBean;
@@ -240,47 +304,50 @@ public class SearchService extends RegistryAbstractAdmin implements ISearchServi
             } finally {
                 PaginationContext.destroy();
             }
-        }else {
+        } else {
             return advancedSearchResultsBean;
         }
     }
 
     /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#getMediaTypeSearch(java.lang.String)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getMediaTypeSearch(java.lang.String)
 	 */
-    public MediaTypeValueList getMediaTypeSearch(String mediaType) throws RegistryException{
+    public MediaTypeValueList getMediaTypeSearch(String mediaType) throws RegistryException {
         UserRegistry registry = (UserRegistry) getRootRegistry();
         return CustomSearchParameterPopulator.getMediaTypeParameterValues(registry, mediaType);
     }
 
     /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#saveAdvancedSearchFilter(org.wso2.carbon.registry.search.beans.CustomSearchParameterBean, java.lang.String)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#saveAdvancedSearchFilter(org.wso2.carbon.registry.search.beans.CustomSearchParameterBean, java.lang.String)
 	 */
     public void saveAdvancedSearchFilter(CustomSearchParameterBean queryBean, String filterName) throws
-                                                                                               RegistryException {
-        UserRegistry configUserRegistry = (UserRegistry)getConfigUserRegistry();
+            RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
         AdvancedSearchFilterActions.saveAdvancedSearchQueryBean(configUserRegistry, queryBean, filterName);
     }
 
     /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#getAdvancedSearchFilter(java.lang.String)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getAdvancedSearchFilter(java.lang.String)
 	 */
     public CustomSearchParameterBean getAdvancedSearchFilter(String filterName) throws
-                                                                              RegistryException {
-        UserRegistry configUserRegistry = (UserRegistry)getConfigUserRegistry();
+            RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
         return AdvancedSearchFilterActions.getAdvancedSearchQueryBean(configUserRegistry, filterName);
     }
 
     /* (non-Javadoc)
-	 * @see org.wso2.carbon.registry.search.services.ISearchService#getSavedFilters()
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getSavedFilters()
 	 */
     public String[] getSavedFilters() throws RegistryException {
-        UserRegistry configUserRegistry = (UserRegistry)getConfigUserRegistry();
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
         return AdvancedSearchFilterActions.getSavedFilterNames(configUserRegistry);
     }
 
     public void deleteFilter(String filterName) throws RegistryException {
         UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
-        configUserRegistry.delete(RegistryConstants.PATH_SEPARATOR+"users"+RegistryConstants.PATH_SEPARATOR+CarbonContext.getThreadLocalCarbonContext().getUsername()+ RegistryConstants.PATH_SEPARATOR +"searchFilters" +RegistryConstants.PATH_SEPARATOR+filterName);
+        configUserRegistry
+                .delete(RegistryConstants.PATH_SEPARATOR + "users" + RegistryConstants.PATH_SEPARATOR + CarbonContext
+                        .getThreadLocalCarbonContext().getUsername() + RegistryConstants.PATH_SEPARATOR
+                        + "searchFilters" + RegistryConstants.PATH_SEPARATOR + filterName);
     }
 }
