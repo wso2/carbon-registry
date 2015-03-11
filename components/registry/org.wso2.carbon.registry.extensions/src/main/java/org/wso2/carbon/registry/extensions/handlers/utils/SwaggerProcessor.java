@@ -37,6 +37,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SwaggerProcessor {
@@ -59,8 +61,7 @@ public class SwaggerProcessor {
 	 * @param commonLocation Root location of the swagger artifacts.
 	 * @throws RegistryException If a failure occurs when adding the swagger to registry.
 	 */
-	public void importSwaggerToRegistry(InputStream inputStream, String commonLocation,
-	                                    String sourceUrl) throws RegistryException {
+	public void processSwagger(InputStream inputStream, String commonLocation, String sourceUrl) throws RegistryException {
 
 		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
 		//Creating a collection if not exists.
@@ -99,9 +100,13 @@ public class SwaggerProcessor {
 		String commonResourcePath =
 				getCommonPathFromContent(commonLocation, swaggerContent.toString());
 		resourcePath = commonResourcePath + apiDocName;
+
+		OMElement data = null;
+
 		if (swaggerVersion.equals("1.2")) {
 			addDocumentToRegistry(swaggerContent, resourcePath);
 
+			List<JsonObject> resourceObjects = new ArrayList<JsonObject>();
 			//Adding APIs to registry.
 			JsonArray apis = swaggerDocObject.get("apis").getAsJsonArray();
 
@@ -118,21 +123,28 @@ public class SwaggerProcessor {
 					                            e);
 				}
 				apiContent = readSourceContent(apiInputStream);
+				resourceObjects.add(parser.parse(apiContent.toString()).getAsJsonObject());
 				path = commonResourcePath + path;
 				addDocumentToRegistry(apiContent, path);
+				//Creating the api artifact from the swagger content.
+				data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion, resourceObjects);
 			}
 		} else if (swaggerVersion.equals("2.0")) {
 			addDocumentToRegistry(swaggerContent, resourcePath);
+			data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion, null);
 		}
 
-		//Creating the api artifact from the swagger content.
-		OMElement data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion);
-		//Saving the api artifact in the registry.
-		String apiPath = addApiToregistry(data);
+		if(data != null) {
+			//Saving the api artifact in the registry.
+			String apiPath = addApiToregistry(data);
+			//Adding associations to the resources
+			registry.addAssociation(apiPath, resourcePath, CommonConstants.DEPENDS);
+			registry.addAssociation(resourcePath, apiPath, CommonConstants.USED_BY);
+		}else {
+			log.warn("API content is null.");
+		}
 
-		//Adding associations to the resources
-		registry.addAssociation(apiPath, resourcePath, CommonConstants.DEPENDS);
-		registry.addAssociation(resourcePath, apiPath, CommonConstants.USED_BY);
+
 
 	}
 
