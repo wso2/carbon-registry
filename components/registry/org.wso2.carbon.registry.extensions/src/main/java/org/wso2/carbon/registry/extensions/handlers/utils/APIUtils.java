@@ -30,6 +30,8 @@ import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class APIUtils {
 
@@ -97,7 +99,7 @@ public class APIUtils {
 			}
 			apiVersion.setText(getChildElementText(infoObject, "version"));
 			transports.setText(getChildElementText(swaggerDocObject, APIConstants.SCHEMES));
-
+			uriTemplate = createURITemplateFromSwagger2(swaggerDocObject);
 		} else if (swaggerVersion.equals(APIConstants.SWAGGER_VERSION_1_2)) {
 			apiVersion.setText(getChildElementText(swaggerDocObject, APIConstants.API_VERSION));
 			uriTemplate = createURITemplateFromSwagger12(resourceObjects);
@@ -151,11 +153,6 @@ public class APIUtils {
 		OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, DEFAULT_NAMESPACE);
 
 		for (JsonObject resourceObject : resourceObjects) {
-
-			OMElement resourceElement = factory.createOMElement(RESOURCE, DEFAULT_NAMESPACE);
-			resourceElement.addAttribute(NAME, resourceObject.get(APIConstants.RESOURCE_PATH)
-			                                                 .getAsString(), DEFAULT_NAMESPACE);
-
 			JsonArray apis = resourceObject.getAsJsonArray(APIConstants.APIS);
 
 			//Iterating through the Paths
@@ -168,9 +165,6 @@ public class APIUtils {
 				                               DEFAULT_NAMESPACE);
 
 				JsonArray methods = apiObj.getAsJsonArray(APIConstants.OPERATIONS);
-
-				OMElement operationsElement =
-						factory.createOMElement(OPERATIONS, DEFAULT_NAMESPACE);
 
 				//Iterating through HTTP methods (Actions)
 				for (JsonElement method : methods) {
@@ -188,6 +182,84 @@ public class APIUtils {
 					summaryElement.setText(methodObj.get(APIConstants.SUMMARY).getAsString());
 					httpVerbElement.setText(methodObj.get(APIConstants.METHOD).getAsString());
 
+					if (parameters != null) {
+						//Iterating through action parameters
+						for (JsonElement parameter : parameters) {
+							JsonObject paramObj = parameter.getAsJsonObject();
+
+							OMElement parameterElement =
+									factory.createOMElement(PARAMETER, DEFAULT_NAMESPACE);
+							parameterElement.addAttribute(REQUIRED,
+							                              paramObj.get(APIConstants.REQUIRED)
+							                                      .getAsString(),
+							                              DEFAULT_NAMESPACE);
+							OMElement nameElement =
+									factory.createOMElement(NAME, DEFAULT_NAMESPACE);
+							nameElement.setText(paramObj.get(APIConstants.NAME).getAsString());
+							OMElement typeElement =
+									factory.createOMElement(PARAM_TYPE, DEFAULT_NAMESPACE);
+							typeElement
+									.setText(paramObj.get(APIConstants.PARAM_TYPE).getAsString());
+							OMElement descriptionElement =
+									factory.createOMElement(DESCRIPTION, DEFAULT_NAMESPACE);
+							descriptionElement
+									.setText(paramObj.get(APIConstants.DESCRIPTION).getAsString());
+							OMElement dataTypeElement =
+									factory.createOMElement(DATA_TYPE, DEFAULT_NAMESPACE);
+							dataTypeElement.setText(paramObj.get(APIConstants.TYPE).getAsString());
+
+							//Adding parameter element children
+							parameterElement.addChild(nameElement);
+							parameterElement.addChild(descriptionElement);
+							parameterElement.addChild(typeElement);
+							parameterElement.addChild(dataTypeElement);
+							//Adding the parameter element to parameters element.
+							parametersElement.addChild(parameterElement);
+						}
+					}
+					//Adding operation element children.
+					operationElement.addChild(httpVerbElement);
+					operationElement.addChild(summaryElement);
+					operationElement.addChild(parametersElement);
+					//Adding the operation element to the urlPattern element.
+					urlPatternElement.addChild(operationElement);
+				}
+				//Adding urlPattern element to URITemplate element.
+				uriTemplateElement.addChild(urlPatternElement);
+			}
+		}
+
+		return uriTemplateElement;
+	}
+
+	private static OMElement createURITemplateFromSwagger2(JsonObject swaggerDocObject) {
+
+		OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, DEFAULT_NAMESPACE);
+
+		JsonObject paths = swaggerDocObject.get(APIConstants.PATHS).getAsJsonObject();
+		Set<Map.Entry<String, JsonElement>> pathSet = paths.entrySet();
+
+		for (Map.Entry path : pathSet) {
+			OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, DEFAULT_NAMESPACE);
+			urlPatternElement.addAttribute(PATH, path.getKey().toString(), DEFAULT_NAMESPACE);
+			JsonObject urlPattern = ((JsonElement)path.getValue()).getAsJsonObject();
+			Set<Map.Entry<String, JsonElement>> operationSet = urlPattern.entrySet();
+
+			for (Map.Entry operationEntry : operationSet) {
+				JsonObject operation = ((JsonElement)operationEntry.getValue()).getAsJsonObject();
+
+				OMElement operationElement = factory.createOMElement(OPERATION, DEFAULT_NAMESPACE);
+				OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, DEFAULT_NAMESPACE);
+				OMElement summaryElement = factory.createOMElement(SUMMARY, DEFAULT_NAMESPACE);
+				OMElement parametersElement =
+						factory.createOMElement(PARAMETERS, DEFAULT_NAMESPACE);
+
+				httpVerbElement.setText(operationEntry.getKey().toString());
+				summaryElement.setText(operation.get(SUMMARY).getAsString());
+
+				JsonArray parameters = operation.getAsJsonArray(APIConstants.PARAMETERS);
+
+				if (parameters != null) {
 					//Iterating through action parameters
 					for (JsonElement parameter : parameters) {
 						JsonObject paramObj = parameter.getAsJsonObject();
@@ -201,39 +273,29 @@ public class APIUtils {
 						nameElement.setText(paramObj.get(APIConstants.NAME).getAsString());
 						OMElement typeElement =
 								factory.createOMElement(PARAM_TYPE, DEFAULT_NAMESPACE);
-						typeElement.setText(paramObj.get(APIConstants.PARAM_TYPE).getAsString());
+						typeElement.setText(paramObj.get("in").getAsString());
 						OMElement descriptionElement =
 								factory.createOMElement(DESCRIPTION, DEFAULT_NAMESPACE);
 						descriptionElement
 								.setText(paramObj.get(APIConstants.DESCRIPTION).getAsString());
-						OMElement dataTypeElement =
-								factory.createOMElement(DATA_TYPE, DEFAULT_NAMESPACE);
-						dataTypeElement.setText(paramObj.get(APIConstants.TYPE).getAsString());
 
 						//Adding parameter element children
 						parameterElement.addChild(nameElement);
 						parameterElement.addChild(descriptionElement);
 						parameterElement.addChild(typeElement);
-						parameterElement.addChild(dataTypeElement);
 						//Adding the parameter element to parameters element.
 						parametersElement.addChild(parameterElement);
 					}
-					//Adding operation element children.
-					operationElement.addChild(httpVerbElement);
-					operationElement.addChild(summaryElement);
-					operationElement.addChild(parametersElement);
-					//Adding the operation element to the operations element.
-					operationsElement.addChild(operationElement);
 				}
-				//Adding operations to urlPattern element.
-				urlPatternElement.addChild(operationsElement);
-				//Adding urlPattern element to resource element.
-				resourceElement.addChild(urlPatternElement);
-			}
-			//Adding resource element to URITemplate element.
-			uriTemplateElement.addChild(resourceElement);
-		}
+				//Adding operation element children.
+				operationElement.addChild(httpVerbElement);
+				operationElement.addChild(summaryElement);
+				operationElement.addChild(parametersElement);
 
+				urlPatternElement.addChild(operationElement);
+			}
+			uriTemplateElement.addChild(urlPatternElement);
+		}
 		return uriTemplateElement;
 	}
 }
