@@ -18,7 +18,6 @@ package org.wso2.carbon.registry.extensions.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
@@ -30,11 +29,11 @@ import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+@SuppressWarnings("unused")
 public class SwaggerMediaTypeHandler extends Handler {
 
 	private static final Log log = LogFactory.getLog(SwaggerMediaTypeHandler.class);
@@ -46,6 +45,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 	 * @throws RegistryException If fails due a handler specific error
 	 */
 	@Override public void put(RequestContext requestContext) throws RegistryException {
+		//Acquiring the update lock if available.
 		if (!CommonUtil.isUpdateLockAvailable()) {
 			return;
 		}
@@ -66,12 +66,10 @@ public class SwaggerMediaTypeHandler extends Handler {
 
 			InputStream inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
 			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-			ByteArrayOutputStream swaggerContent = processor.readSourceContent(inputStream);
-			String commonLocation = getChrootedLocation(requestContext.getRegistryContext());
-			String path = processor.getCommonPathFromContent(commonLocation,
-			                                                 swaggerContent.toString());
-			processor.addDocumentToRegistry(swaggerContent, path);
-			ArtifactManager.getArtifactManager().getTenantArtifactRepository().addArtifact(path);
+			processor.processSwagger(inputStream,
+			                         getChrootedLocation(requestContext.getRegistryContext()),
+			                         null);
+			requestContext.setProcessingComplete(true);
 		} finally {
 			CommonUtil.releaseUpdateLock();
 		}
@@ -84,7 +82,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 	 * @throws RegistryException If import fails due a handler specific error
 	 */
 	@Override public void importResource(RequestContext requestContext) throws RegistryException {
-
+		//Acquiring the update lock if available.
 		if (!CommonUtil.isUpdateLockAvailable()) {
 			return;
 		}
