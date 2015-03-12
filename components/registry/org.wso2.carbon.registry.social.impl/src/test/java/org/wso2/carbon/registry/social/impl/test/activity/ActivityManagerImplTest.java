@@ -151,7 +151,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
         Activity activity2 = manager.getActivity("userX", "self", "5", null, "4");
         assertNotNull(activity2);
         assertEquals("userX", activity2.getUserId());
-        assertEquals("Adding Gadget", activity2.getTitle());
+        assertTrue("Adding Gadget".equals(activity2.getTitle()));
         activity1.setTitle("New Comment added");
         manager.updateActivity("userX", activity1);
         activity2 = manager.getActivity("userX", "self", "5", null, "4");
