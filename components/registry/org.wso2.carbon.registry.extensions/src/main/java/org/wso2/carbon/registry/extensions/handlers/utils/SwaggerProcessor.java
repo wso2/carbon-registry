@@ -306,6 +306,13 @@ public class SwaggerProcessor {
 		}
 	}
 
+	/**
+	 * Returns swagger version
+	 *
+	 * @param swaggerDocObject Swagger JSON.
+	 * @return Swagger version.
+	 * @throws RegistryException If swagger version is unsupported.
+	 */
 	private String getSwaggerVersion(JsonObject swaggerDocObject) throws RegistryException {
 		//Getting the swagger version
 		JsonElement swaggerVersionElement = swaggerDocObject.get(APIConstants.SWAGGER_VERSION);
