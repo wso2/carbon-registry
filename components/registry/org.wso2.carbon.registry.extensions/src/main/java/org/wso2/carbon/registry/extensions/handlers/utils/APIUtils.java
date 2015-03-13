@@ -25,13 +25,23 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class APIUtils {
 
@@ -40,26 +50,25 @@ public class APIUtils {
 	private static final OMFactory factory = OMAbstractFactory.getOMFactory();
 	public static final OMNamespace DEFAULT_NAMESPACE = null;
 
-	public static final String OVERVIEW = "overview";
-	public static final String PROVIDER = "provider";
-	public static final String NAME = "name";
-	public static final String CONTEXT = "context";
-	public static final String VERSION = "version";
-	public static final String TRANSPORTS = "transports";
-	public static final String DESCRIPTION = "description";
-	public static final String URI_TEMPLATE = "URITemplate";
-	public static final String URL_PATTERN = "urlPattern";
-	public static final String RESOURCE = "resource";
-	public static final String PATH = "path";
-	public static final String OPERATIONS = "operations";
-	public static final String PARAMETERS = "parameters";
-	public static final String OPERATION = "operation";
-	public static final String HTTP_VERB = "httpVerb";
-	public static final String PARAMETER = "parameter";
-	public static final String PARAM_TYPE = "paramType";
-	public static final String DATA_TYPE = "dataType";
-	public static final String REQUIRED = "required";
+	private static final String OVERVIEW = "overview";
+	private static final String PROVIDER = "provider";
+	private static final String NAME = "name";
+	private static final String CONTEXT = "context";
+	private static final String VERSION = "version";
+	private static final String TRANSPORTS = "transports";
+	private static final String DESCRIPTION = "description";
+	private static final String URI_TEMPLATE = "URITemplate";
+	private static final String URL_PATTERN = "urlPattern";
+	private static final String PATH = "path";
+	private static final String PARAMETERS = "parameters";
+	private static final String OPERATION = "operation";
+	private static final String HTTP_VERB = "httpVerb";
+	private static final String PARAMETER = "parameter";
+	private static final String PARAM_TYPE = "paramType";
+	private static final String DATA_TYPE = "dataType";
+	private static final String REQUIRED = "required";
 	private static final String SUMMARY = "summary";
+	private static final String API_RELATIVE_LOCATION = "/apimgt/applicationdata/provider/";
 
 	/**
 	 * Extracts the data from swagger and creates an API registry artifact.
@@ -85,22 +94,21 @@ public class APIUtils {
 		OMElement description = factory.createOMElement(DESCRIPTION, namespace);
 		OMElement uriTemplate = null;
 
-		JsonObject infoObject = swaggerDocObject.get(APIConstants.INFO_OBJECT).getAsJsonObject();
-		name.setText(getChildElementText(infoObject, APIConstants.TITLE).replaceAll("\\s", ""));
+		JsonObject infoObject = swaggerDocObject.get(APIConstants.INFO).getAsJsonObject();
+		//get api name.
+		String apiName = getChildElementText(infoObject, APIConstants.TITLE).replaceAll("\\s", "");
+		name.setText(apiName);
+		context.setText(apiName);
+		//get api description.
 		description.setText(getChildElementText(infoObject, APIConstants.DESCRIPTION));
-		provider.setText(CurrentSession.getUser());
+		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
+		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 
-		if (swaggerVersion.equals(APIConstants.SWAGGER_VERSION_2)) {
-			String host = getChildElementText(swaggerDocObject, APIConstants.HOST);
-			String basePath = getChildElementText(swaggerDocObject, APIConstants.BASEPATH);
-
-			if (host != null && basePath != null) {
-				context.setText(host + basePath);
-			}
-			apiVersion.setText(getChildElementText(infoObject, "version"));
+		if (swaggerVersion.equals("2.0")) {
+			apiVersion.setText(getChildElementText(infoObject, APIConstants.VERSION));
 			transports.setText(getChildElementText(swaggerDocObject, APIConstants.SCHEMES));
 			uriTemplate = createURITemplateFromSwagger2(swaggerDocObject);
-		} else if (swaggerVersion.equals(APIConstants.SWAGGER_VERSION_1_2)) {
+		} else if (swaggerVersion.equals("1.2")) {
 			apiVersion.setText(getChildElementText(swaggerDocObject, APIConstants.API_VERSION));
 			uriTemplate = createURITemplateFromSwagger12(resourceObjects);
 		}
@@ -118,6 +126,49 @@ public class APIUtils {
 		data.addChild(overview);
 
 		return data;
+
+	}
+
+	/**
+	 * Saves the API registry artifact created from the imported swagger definition.
+	 *
+	 * @param requestContext Information about current request.
+	 * @param data           API artifact metadata.
+	 * @throws RegistryException If a failure occurs when adding the api to registry.
+	 */
+	public static String addApiToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
+
+		Registry registry = requestContext.getRegistry();
+		//Creating new resource.
+		Resource apiResource = new ResourceImpl();
+		//setting API mediatype.
+		apiResource.setMediaType(CommonConstants.API_MEDIA_TYPE);
+
+		OMElement overview = data.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+		String apiVersion = overview.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
+		String apiName = overview.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
+		apiVersion = (apiVersion == null) ? CommonConstants.API_VERSION_DEFAULT_VALUE : apiVersion;
+
+		//set version property.
+		apiResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, apiVersion);
+		//set content.
+		apiResource.setContent(RegistryUtils.encodeString(data.toString()));
+
+		String resourceId = apiResource.getUUID();
+		//set resource UUID
+		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
+
+		apiResource.setUUID(resourceId);
+		String actualPath = getChrootedApiLocation(requestContext.getRegistryContext()) + CurrentSession.getUser() +
+		                    RegistryConstants.PATH_SEPARATOR + apiName +
+		                    RegistryConstants.PATH_SEPARATOR + apiVersion + "/api";
+		//saving the api resource to repository.
+		registry.put(actualPath, apiResource);
+
+		return actualPath;
 
 	}
 
@@ -273,7 +324,7 @@ public class APIUtils {
 						nameElement.setText(paramObj.get(APIConstants.NAME).getAsString());
 						OMElement typeElement =
 								factory.createOMElement(PARAM_TYPE, DEFAULT_NAMESPACE);
-						typeElement.setText(paramObj.get("in").getAsString());
+						typeElement.setText(paramObj.get(APIConstants.PARAM_IN).getAsString());
 						OMElement descriptionElement =
 								factory.createOMElement(DESCRIPTION, DEFAULT_NAMESPACE);
 						descriptionElement
@@ -297,5 +348,17 @@ public class APIUtils {
 			uriTemplateElement.addChild(urlPatternElement);
 		}
 		return uriTemplateElement;
+	}
+
+	/**
+	 * Returns the root location of the API.
+	 *
+	 * @param registryContext Registry context
+	 * @return the root location of the API artifact.
+	 */
+	private  static String getChrootedApiLocation(RegistryContext registryContext) {
+		return RegistryUtils.getAbsolutePath(registryContext,
+		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+		                                     API_RELATIVE_LOCATION);
 	}
 }

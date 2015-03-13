@@ -64,6 +64,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 				throw new RegistryException("Resource content is empty.");
 			}
 
+			//TODO: CHECK IF RESOURCE EXISTS IN THE RESOURCE PATH AND HANDLE UPDATE API
 			InputStream inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
 			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
 			processor.processSwagger(inputStream,
