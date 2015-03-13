@@ -43,7 +43,7 @@ public class APIConstants {
 
 
 	//swagger 2.0 constants
-	public static final String SWAGGER2_VERSION = "version";
+	public static final String SWAGGER2_VERSION = "swagger";
 	public static final String TITLE = "title";
 	public static final String PATH = "path";
 	public static final String HOST = "host";

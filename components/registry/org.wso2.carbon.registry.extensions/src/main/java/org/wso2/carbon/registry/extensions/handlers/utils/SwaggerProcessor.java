@@ -147,7 +147,6 @@ public class SwaggerProcessor {
 	 */
 	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path)
 			throws RegistryException {
-		//TODO: TEST IF RESOURCE GETS UPDATED CORRECTLY.
 		Resource resource;
 		if (registry.resourceExists(path)) {
 			//If a resource existing in the given path.
