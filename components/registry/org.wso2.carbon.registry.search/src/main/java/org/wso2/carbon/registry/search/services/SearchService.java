@@ -106,16 +106,43 @@ public class SearchService extends RegistryAbstractAdmin implements
 
         // Get Advance Search resource data
         if (attributeSearchService != null && advanceSearchAttributes.size() > 0) {
-            if (!(advanceSearchAttributes.size() == 2)) {
+            if (!(advanceSearchAttributes.size() == 2 && advanceSearchAttributes.containsKey("leftOp")
+                    && advanceSearchAttributes.get("leftOp").equals("na") && advanceSearchAttributes
+                    .containsKey("rightOp")
+                    && advanceSearchAttributes.get("rightOp").equals("na"))) {
                 advanceSearchAttributes.put(IndexingConstants.ADVANCE_SEARCH, "true");
                 advanceSearchResourceData = attributeSearchService.search(registry, advanceSearchAttributes);
             }
         }
         advancedSearchResultsBean = new AdvancedSearchResultsBean();
         if (advanceSearchResourceData != null && advanceSearchResourceData.length > 0) {
+
             advancedSearchResultsBean.setResourceDataList(advanceSearchResourceData);
+            if (!isEmptyResourceDataList(advancedSearchResultsBean)) {
+                return getPaginatedResult(advancedSearchResultsBean);
+            }
+
         }
-        return getPaginatedResult(advancedSearchResultsBean);
+        advancedSearchResultsBean.setResourceDataList(new ResourceData[0]);
+        return advancedSearchResultsBean;
+    }
+
+    /**
+     * Method to check whether the result set is empty
+     * @param resultsBean AdvancedSearchResultsBean
+     * @return boolean value of result empty or not
+     */
+    private boolean isEmptyResourceDataList(AdvancedSearchResultsBean resultsBean) {
+        boolean resultEmpty = true;
+        if ((resultsBean.getResourceDataList() != null && resultsBean.getResourceDataList().length > 0)) {
+            for (ResourceData data : resultsBean.getResourceDataList()) {
+                if (data != null) {
+                    resultEmpty = false;
+                    break;
+                }
+            }
+        }
+        return resultEmpty;
     }
 
     /**
