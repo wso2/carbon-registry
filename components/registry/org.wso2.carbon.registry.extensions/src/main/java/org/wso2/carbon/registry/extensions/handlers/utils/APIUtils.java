@@ -179,7 +179,7 @@ public class APIUtils {
 	 * @param key    Element key
 	 * @return Element value
 	 */
-	private static String getChildElementText(JsonObject object, String key) {
+	public static String getChildElementText(JsonObject object, String key) {
 		JsonElement element = object.get(key);
 		if (element != null) {
 			return object.get(key).getAsString();
