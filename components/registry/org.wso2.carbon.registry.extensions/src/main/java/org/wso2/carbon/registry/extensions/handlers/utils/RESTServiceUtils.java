@@ -23,8 +23,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -42,8 +40,6 @@ import java.util.*;
 
 public class RESTServiceUtils {
 
-	private static final Log log = LogFactory.getLog(RESTServiceUtils.class);
-
 	private static final String OVERVIEW = "overview";
 	private static final String PROVIDER = "provider";
 	private static final String NAME = "name";
@@ -53,9 +49,9 @@ public class RESTServiceUtils {
 	private static final String DESCRIPTION = "description";
 	private static final String URI_TEMPLATE = "uritemplate";
 	private static final String URL_PATTERN = "urlPattern";
+	public static final String AUTH_TYPE = "authType";
 	private static final String HTTP_VERB = "httpVerb";
 	private static final String API_RELATIVE_LOCATION = "/apimgt/applicationdata/provider/";
-	public static final String AUTH_TYPE = "authType";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace =
@@ -166,7 +162,6 @@ public class RESTServiceUtils {
 		registry.put(servicePath, serviceResource);
 
 		return servicePath;
-
 	}
 
 	/**

@@ -122,7 +122,7 @@ public class SwaggerProcessor {
 				data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
 				                                                  resourceObjects);
 			} else {
-				log.warn("Cannot read API resources, RestService may not get updated.");
+				log.warn("Cannot read path resources, RestService may not get updated.");
 			}
 		} else if (swaggerVersion.equals("2.0")) {
 			addSwaggerDocumentToRegistry(swaggerContent, swaggerDocPath, documentVersion);
