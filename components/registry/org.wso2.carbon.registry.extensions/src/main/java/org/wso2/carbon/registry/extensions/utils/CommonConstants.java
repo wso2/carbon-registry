@@ -58,7 +58,7 @@ public class CommonConstants {
     public static final String WSDL_MEDIA_TYPE = "application/wsdl+xml";
     public static final String SCHEMA_MEDIA_TYPE = "application/xsd+xml";
 	public static final String SWAGGER_MEDIA_TYPE = "application/swagger+json";
-	public static final String API_MEDIA_TYPE = "application/vnd.wso2-api+xml";
+	public static final String REST_SERVICE_MEDIA_TYPE = "application/vnd.wso2-restservice+xml";
     public static final String SERVICE_MEDIA_TYPE = RegistryConstants.SERVICE_MEDIA_TYPE;
     public static final String SERVICE_VERSION_COLLECTION_MEDIA_TYPE =
             "application/vnd.wso2-service-version.collection";

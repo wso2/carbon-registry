@@ -75,7 +75,7 @@ public class SwaggerProcessor {
 		String swaggerVersion = getSwaggerVersion(swaggerDocObject);
 
 		//Validate against schema
-		if (!APIUtils.isValidSwaggerContent(swaggerDocObject, swaggerVersion)) {
+		if (!RESTServiceUtils.isValidSwaggerContent(swaggerDocObject, swaggerVersion)) {
 			throw new RegistryException("Swagger content is not valid.");
 		}
 
@@ -117,19 +117,21 @@ public class SwaggerProcessor {
 					registry.addAssociation(resourcePath, path, CommonConstants.DEPENDS);
 				}
 				//Creating the api artifact from the swagger content.
-				data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion,
-				                                  resourceObjects);
+				data = RESTServiceUtils
+						.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
+						                           resourceObjects);
 			} else {
 				log.warn("Cannot read API resources, RestService may not get updated.");
 			}
 		} else if (swaggerVersion.equals("2.0")) {
 			addSwaggerDocumentToRegistry(swaggerContent, resourcePath);
-			data = APIUtils.createAPIArtifact(swaggerDocObject, swaggerVersion, null);
+			data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
+			                                                  null);
 		}
 
 		if (data != null) {
 			//Saving the api artifact in the registry.
-			String apiPath = APIUtils.addApiToRegistry(requestContext, data);
+			String apiPath = RESTServiceUtils.addRESTServiceToRegistry(requestContext, data);
 			//Adding associations to the resources
 			registry.addAssociation(apiPath, resourcePath, CommonConstants.DEPENDS);
 			registry.addAssociation(resourcePath, apiPath, CommonConstants.USED_BY);
