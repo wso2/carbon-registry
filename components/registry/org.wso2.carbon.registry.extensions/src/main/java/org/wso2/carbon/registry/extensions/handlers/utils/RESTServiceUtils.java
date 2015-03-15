@@ -86,7 +86,8 @@ public class RESTServiceUtils {
 
 		JsonObject infoObject = swaggerDocObject.get(SwaggerConstants.INFO).getAsJsonObject();
 		//get api name.
-		String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
+		String apiName =
+				getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
 		name.setText(apiName);
 		context.setText("/" + apiName);
 		//get api description.
@@ -111,7 +112,7 @@ public class RESTServiceUtils {
 		overview.addChild(description);
 		data.addChild(overview);
 
-		if(uriTemplates != null) {
+		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
 				data.addChild(uriTemplate);
 			}
@@ -128,39 +129,43 @@ public class RESTServiceUtils {
 	 * @param data           Service artifact metadata.
 	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
-	public static String addServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
+	public static String addServiceToRegistry(RequestContext requestContext, OMElement data)
+			throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
-		Resource apiResource = new ResourceImpl();
+		Resource serviceResource = new ResourceImpl();
 		//setting API media type.
-		apiResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
+		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 
 		OMElement overview = data.getFirstChildWithName(
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
-		String apiVersion = overview.getFirstChildWithName(
+		String serviceVersion = overview.getFirstChildWithName(
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
 		String apiName = overview.getFirstChildWithName(
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
-		apiVersion = (apiVersion == null) ? CommonConstants.API_VERSION_DEFAULT_VALUE : apiVersion;
+		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE :
+		                 serviceVersion;
 
 		//set version property.
-		apiResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, apiVersion);
+		serviceResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, serviceVersion);
 		//set content.
-		apiResource.setContent(RegistryUtils.encodeString(data.toString()));
+		serviceResource.setContent(RegistryUtils.encodeString(data.toString()));
 
-		String resourceId = apiResource.getUUID();
+		String resourceId = serviceResource.getUUID();
 		//set resource UUID
 		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
 
-		apiResource.setUUID(resourceId);
-		String actualPath = getChrootedApiLocation(requestContext.getRegistryContext()) + CurrentSession.getUser() +
+		serviceResource.setUUID(resourceId);
+		String servicePath = getChrootedServiceiLocation(requestContext.getRegistryContext()) +
+		                    CurrentSession.getUser() +
 		                    RegistryConstants.PATH_SEPARATOR + apiName +
-		                    RegistryConstants.PATH_SEPARATOR + apiVersion + "/api";
+		                    RegistryConstants.PATH_SEPARATOR + serviceVersion +
+		                    RegistryConstants.PATH_SEPARATOR + apiName + "rest_service";
 		//saving the api resource to repository.
-		registry.put(actualPath, apiResource);
+		registry.put(servicePath, serviceResource);
 
-		return actualPath;
+		return servicePath;
 
 	}
 
@@ -185,7 +190,8 @@ public class RESTServiceUtils {
 	 * @param resourceObjects The path resource documents.
 	 * @return URITemplate element.
 	 */
-	private static List<OMElement> createURITemplateFromSwagger12(List<JsonObject> resourceObjects) {
+	private static List<OMElement> createURITemplateFromSwagger12(
+			List<JsonObject> resourceObjects) {
 
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
 
@@ -203,11 +209,9 @@ public class RESTServiceUtils {
 					JsonObject methodObj = method.getAsJsonObject();
 
 					OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
-					OMElement urlPatternElement =
-							factory.createOMElement(URL_PATTERN, namespace);
-					OMElement httpVerbElement =
-							factory.createOMElement(HTTP_VERB, namespace);
-					OMElement authTypeElement = factory.createOMElement(AUTH_TYPE,namespace);
+					OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, namespace);
+					OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, namespace);
+					OMElement authTypeElement = factory.createOMElement(AUTH_TYPE, namespace);
 
 					urlPatternElement.setText(pathText);
 					httpVerbElement.setText(methodObj.get(SwaggerConstants.METHOD).getAsString());
@@ -233,7 +237,7 @@ public class RESTServiceUtils {
 		Set<Map.Entry<String, JsonElement>> pathSet = paths.entrySet();
 
 		for (Map.Entry path : pathSet) {
-			JsonObject urlPattern = ((JsonElement)path.getValue()).getAsJsonObject();
+			JsonObject urlPattern = ((JsonElement) path.getValue()).getAsJsonObject();
 			String pathText = path.getKey().toString();
 			Set<Map.Entry<String, JsonElement>> operationSet = urlPattern.entrySet();
 
@@ -241,7 +245,7 @@ public class RESTServiceUtils {
 				OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
 				OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, namespace);
 				OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, namespace);
-				OMElement authTypeElement = factory.createOMElement(AUTH_TYPE,namespace);
+				OMElement authTypeElement = factory.createOMElement(AUTH_TYPE, namespace);
 
 				urlPatternElement.setText(pathText);
 				httpVerbElement.setText(operationEntry.getKey().toString());
@@ -262,7 +266,7 @@ public class RESTServiceUtils {
 	 * @param registryContext Registry context
 	 * @return the root location of the API artifact.
 	 */
-	private  static String getChrootedApiLocation(RegistryContext registryContext) {
+	private static String getChrootedServiceiLocation(RegistryContext registryContext) {
 		return RegistryUtils.getAbsolutePath(registryContext,
 		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
 		                                     API_RELATIVE_LOCATION);

@@ -123,8 +123,6 @@ public class CommonConstants {
 
 	public static final String SWAGGER_SPEC_VERSION_DEFAULT_VALUE = "1.0.0";
 
-	public static final String API_VERSION_DEFAULT_VALUE = "1.0.0";
-
     public static final String VERSION_CONTAINER_MEDIA_TYPE =
             "application/vnd.wso2.version-container";
 
