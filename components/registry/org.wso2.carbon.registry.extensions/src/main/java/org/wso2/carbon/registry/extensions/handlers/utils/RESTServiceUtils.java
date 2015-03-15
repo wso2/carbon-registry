@@ -84,22 +84,22 @@ public class RESTServiceUtils {
 		OMElement description = factory.createOMElement(DESCRIPTION, namespace);
 		List<OMElement> uriTemplates = null;
 
-		JsonObject infoObject = swaggerDocObject.get(APIConstants.INFO).getAsJsonObject();
+		JsonObject infoObject = swaggerDocObject.get(SwaggerConstants.INFO).getAsJsonObject();
 		//get api name.
-		String apiName = getChildElementText(infoObject, APIConstants.TITLE).replaceAll("\\s", "");
+		String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
 		name.setText(apiName);
 		context.setText(apiName);
 		//get api description.
-		description.setText(getChildElementText(infoObject, APIConstants.DESCRIPTION));
+		description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 
 		if (swaggerVersion.equals("2.0")) {
-			apiVersion.setText(getChildElementText(infoObject, APIConstants.VERSION));
-			transports.setText(getChildElementText(swaggerDocObject, APIConstants.SCHEMES));
+			apiVersion.setText(getChildElementText(infoObject, SwaggerConstants.VERSION));
+			transports.setText(getChildElementText(swaggerDocObject, SwaggerConstants.SCHEMES));
 			uriTemplates = createURITemplateFromSwagger2(swaggerDocObject);
 		} else if (swaggerVersion.equals("1.2")) {
-			apiVersion.setText(getChildElementText(swaggerDocObject, APIConstants.API_VERSION));
+			apiVersion.setText(getChildElementText(swaggerDocObject, SwaggerConstants.API_VERSION));
 			uriTemplates = createURITemplateFromSwagger12(resourceObjects);
 		}
 
@@ -196,7 +196,7 @@ public class RESTServiceUtils {
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
 
 		for (JsonObject resourceObject : resourceObjects) {
-			JsonArray apis = resourceObject.getAsJsonArray(APIConstants.APIS);
+			JsonArray apis = resourceObject.getAsJsonArray(SwaggerConstants.APIS);
 
 			//Iterating through the Paths
 			for (JsonElement api : apis) {
@@ -204,9 +204,9 @@ public class RESTServiceUtils {
 				OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, null);
 				OMElement urlPatternElement =
 						factory.createOMElement(URL_PATTERN, DEFAULT_NAMESPACE);
-				urlPatternElement.setText(apiObj.get(APIConstants.PATH).getAsString());
+				urlPatternElement.setText(apiObj.get(SwaggerConstants.PATH).getAsString());
 
-				JsonArray methods = apiObj.getAsJsonArray(APIConstants.OPERATIONS);
+				JsonArray methods = apiObj.getAsJsonArray(SwaggerConstants.OPERATIONS);
 
 				//Iterating through HTTP methods (Actions)
 				for (JsonElement method : methods) {
@@ -214,7 +214,7 @@ public class RESTServiceUtils {
 
 					OMElement httpVerbElement =
 							factory.createOMElement(HTTP_VERB, DEFAULT_NAMESPACE);
-					httpVerbElement.setText(methodObj.get(APIConstants.METHOD).getAsString());
+					httpVerbElement.setText(methodObj.get(SwaggerConstants.METHOD).getAsString());
 
 					//Adding urlPattern element to URITemplate element.
 					uriTemplateElement.addChild(urlPatternElement);
@@ -233,7 +233,7 @@ public class RESTServiceUtils {
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
 		OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, DEFAULT_NAMESPACE);
 
-		JsonObject paths = swaggerDocObject.get(APIConstants.PATHS).getAsJsonObject();
+		JsonObject paths = swaggerDocObject.get(SwaggerConstants.PATHS).getAsJsonObject();
 		Set<Map.Entry<String, JsonElement>> pathSet = paths.entrySet();
 
 		for (Map.Entry path : pathSet) {

@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
-public class APIConstants {
+public class SwaggerConstants {
 
 	/*
 	Swagger key constants
