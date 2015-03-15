@@ -55,6 +55,7 @@ public class RESTServiceUtils {
 	private static final String URL_PATTERN = "urlPattern";
 	private static final String HTTP_VERB = "httpVerb";
 	private static final String API_RELATIVE_LOCATION = "/apimgt/applicationdata/provider/";
+	public static final String AUTH_TYPE = "authType";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace =
@@ -206,6 +207,7 @@ public class RESTServiceUtils {
 							factory.createOMElement(URL_PATTERN, namespace);
 					OMElement httpVerbElement =
 							factory.createOMElement(HTTP_VERB, namespace);
+					OMElement authTypeElement = factory.createOMElement(AUTH_TYPE,namespace);
 
 					urlPatternElement.setText(pathText);
 					httpVerbElement.setText(methodObj.get(SwaggerConstants.METHOD).getAsString());
@@ -213,6 +215,7 @@ public class RESTServiceUtils {
 					//Adding urlPattern element to URITemplate element.
 					uriTemplateElement.addChild(urlPatternElement);
 					uriTemplateElement.addChild(httpVerbElement);
+					uriTemplateElement.addChild(authTypeElement);
 					uriTemplates.add(uriTemplateElement);
 				}
 			}
@@ -238,12 +241,14 @@ public class RESTServiceUtils {
 				OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
 				OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, namespace);
 				OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, namespace);
+				OMElement authTypeElement = factory.createOMElement(AUTH_TYPE,namespace);
 
 				urlPatternElement.setText(pathText);
 				httpVerbElement.setText(operationEntry.getKey().toString());
 
 				uriTemplateElement.addChild(urlPatternElement);
 				uriTemplateElement.addChild(httpVerbElement);
+				uriTemplateElement.addChild(authTypeElement);
 				uriTemplates.add(uriTemplateElement);
 			}
 
