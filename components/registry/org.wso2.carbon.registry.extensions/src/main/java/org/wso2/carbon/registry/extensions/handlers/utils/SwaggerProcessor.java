@@ -132,7 +132,7 @@ public class SwaggerProcessor {
 
 		if (data != null) {
 			//Saving the RESTService artifact in the registry.
-			String servicePath = RESTServiceUtils.addRESTServiceToRegistry(requestContext, data);
+			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, data);
 			//Adding associations to the resources
 			registry.addAssociation(servicePath, swaggerDocPath, CommonConstants.DEPENDS);
 			registry.addAssociation(swaggerDocPath, servicePath, CommonConstants.USED_BY);

@@ -44,9 +44,6 @@ public class RESTServiceUtils {
 
 	private static final Log log = LogFactory.getLog(RESTServiceUtils.class);
 
-	private static final OMFactory factory = OMAbstractFactory.getOMFactory();
-	public static final OMNamespace DEFAULT_NAMESPACE = null;
-
 	private static final String OVERVIEW = "overview";
 	private static final String PROVIDER = "provider";
 	private static final String NAME = "name";
@@ -59,8 +56,12 @@ public class RESTServiceUtils {
 	private static final String HTTP_VERB = "httpVerb";
 	private static final String API_RELATIVE_LOCATION = "/apimgt/applicationdata/provider/";
 
+	private static OMFactory factory = OMAbstractFactory.getOMFactory();
+	private static OMNamespace namespace =
+			factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
+
 	/**
-	 * Extracts the data from swagger and creates an API registry artifact.
+	 * Extracts the data from swagger and creates an REST Service registry artifact.
 	 *
 	 * @param swaggerDocObject Swagger Json Object.
 	 * @param swaggerVersion   Swagger version.
@@ -72,8 +73,6 @@ public class RESTServiceUtils {
 	                                                  List<JsonObject> resourceObjects)
 			throws RegistryException {
 
-		OMNamespace namespace =
-				factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
 		OMElement provider = factory.createOMElement(PROVIDER, namespace);
@@ -88,7 +87,7 @@ public class RESTServiceUtils {
 		//get api name.
 		String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
 		name.setText(apiName);
-		context.setText(apiName);
+		context.setText("/" + apiName);
 		//get api description.
 		description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
@@ -122,13 +121,13 @@ public class RESTServiceUtils {
 	}
 
 	/**
-	 * Saves the API registry artifact created from the imported swagger definition.
+	 * Saves the REST Service registry artifact created from the imported swagger definition.
 	 *
 	 * @param requestContext Information about current request.
-	 * @param data           API artifact metadata.
+	 * @param data           Service artifact metadata.
 	 * @throws RegistryException If a failure occurs when adding the api to registry.
 	 */
-	public static String addRESTServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
+	public static String addServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
@@ -179,41 +178,36 @@ public class RESTServiceUtils {
 		return null;
 	}
 
-	public static boolean isValidSwaggerContent(JsonObject swaggerObject, String version) {
-		//TODO: VALIDATE SWAGGER CONTENT AGAINST SCHEMA
-
-		return true;
-	}
-
 	/**
 	 * Contains the logic to create URITemplate XML Element from the swagger 1.2 resource.
 	 *
-	 * @param resourceObjects The API resource documents
-	 * @return URITemplate element
+	 * @param resourceObjects The path resource documents.
+	 * @return URITemplate element.
 	 */
 	private static List<OMElement> createURITemplateFromSwagger12(List<JsonObject> resourceObjects) {
 
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
 
 		for (JsonObject resourceObject : resourceObjects) {
-			JsonArray apis = resourceObject.getAsJsonArray(SwaggerConstants.APIS);
+			JsonArray pathResources = resourceObject.getAsJsonArray(SwaggerConstants.APIS);
 
 			//Iterating through the Paths
-			for (JsonElement api : apis) {
-				JsonObject apiObj = api.getAsJsonObject();
-				OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, null);
-				OMElement urlPatternElement =
-						factory.createOMElement(URL_PATTERN, DEFAULT_NAMESPACE);
-				urlPatternElement.setText(apiObj.get(SwaggerConstants.PATH).getAsString());
-
-				JsonArray methods = apiObj.getAsJsonArray(SwaggerConstants.OPERATIONS);
+			for (JsonElement pathResource : pathResources) {
+				JsonObject path = pathResource.getAsJsonObject();
+				String pathText = path.get(SwaggerConstants.PATH).getAsString();
+				JsonArray methods = path.getAsJsonArray(SwaggerConstants.OPERATIONS);
 
 				//Iterating through HTTP methods (Actions)
 				for (JsonElement method : methods) {
 					JsonObject methodObj = method.getAsJsonObject();
 
+					OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
+					OMElement urlPatternElement =
+							factory.createOMElement(URL_PATTERN, namespace);
 					OMElement httpVerbElement =
-							factory.createOMElement(HTTP_VERB, DEFAULT_NAMESPACE);
+							factory.createOMElement(HTTP_VERB, namespace);
+
+					urlPatternElement.setText(pathText);
 					httpVerbElement.setText(methodObj.get(SwaggerConstants.METHOD).getAsString());
 
 					//Adding urlPattern element to URITemplate element.
@@ -231,20 +225,21 @@ public class RESTServiceUtils {
 	private static List<OMElement> createURITemplateFromSwagger2(JsonObject swaggerDocObject) {
 
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
-		OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, DEFAULT_NAMESPACE);
 
 		JsonObject paths = swaggerDocObject.get(SwaggerConstants.PATHS).getAsJsonObject();
 		Set<Map.Entry<String, JsonElement>> pathSet = paths.entrySet();
 
 		for (Map.Entry path : pathSet) {
-			OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, DEFAULT_NAMESPACE);
-			urlPatternElement.setText(path.getKey().toString());
 			JsonObject urlPattern = ((JsonElement)path.getValue()).getAsJsonObject();
+			String pathText = path.getKey().toString();
 			Set<Map.Entry<String, JsonElement>> operationSet = urlPattern.entrySet();
 
 			for (Map.Entry operationEntry : operationSet) {
-				OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, DEFAULT_NAMESPACE);
+				OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
+				OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, namespace);
+				OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, namespace);
 
+				urlPatternElement.setText(pathText);
 				httpVerbElement.setText(operationEntry.getKey().toString());
 
 				uriTemplateElement.addChild(urlPatternElement);
