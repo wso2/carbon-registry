@@ -370,7 +370,10 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                         CurrentSession.getTenantId(),
                                         CurrentSession.getUserRegistry(), CurrentSession.getUserRealm(),
                                         CurrentSession.getUser(), CurrentSession.getCallerTenantId(),
-                                        localPathMap, mediaType));
+                                        // since all the wsdl/wadl and schemas are captured above
+                                        // there couldn't be any other wsdl/wadl and schemas left in the zip file
+                                        // therefore setting media.type null. (REGISTRY-2191)
+                                        localPathMap, null));
                             }
                             uriList.clear();
                         }
