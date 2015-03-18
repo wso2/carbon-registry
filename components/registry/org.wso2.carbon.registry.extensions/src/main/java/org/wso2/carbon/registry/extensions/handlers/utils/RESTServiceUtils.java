@@ -31,13 +31,16 @@ import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import javax.xml.namespace.QName;
 import java.util.*;
 
+/**
+ * This class contains static methods to generate REST Service registry artifact from the swagger doc added to the
+ * Registry.
+ */
 public class RESTServiceUtils {
 
 	private static final String OVERVIEW = "overview";
@@ -51,24 +54,23 @@ public class RESTServiceUtils {
 	private static final String URL_PATTERN = "urlPattern";
 	public static final String AUTH_TYPE = "authType";
 	private static final String HTTP_VERB = "httpVerb";
-	private static final String API_RELATIVE_LOCATION = "/apimgt/applicationdata/provider/";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
-	private static OMNamespace namespace =
-			factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
+	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
+
+	public static String commonRestServiceLocation;
 
 	/**
 	 * Extracts the data from swagger and creates an REST Service registry artifact.
 	 *
-	 * @param swaggerDocObject Swagger Json Object.
-	 * @param swaggerVersion   Swagger version.
-	 * @return The API metadata
-	 * @throws org.wso2.carbon.registry.core.exceptions.RegistryException If swagger content is invalid.
+	 * @param swaggerDocObject      swagger Json Object.
+	 * @param swaggerVersion        swagger version.
+	 * @param resourceObjects       swagger resource object list.
+	 * @return                      The API metadata
+	 * @throws RegistryException    If swagger content is invalid.
 	 */
-	public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject,
-	                                                  String swaggerVersion,
-	                                                  List<JsonObject> resourceObjects)
-			throws RegistryException {
+	public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
+	                                                  List<JsonObject> resourceObjects) throws RegistryException {
 
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
@@ -82,8 +84,7 @@ public class RESTServiceUtils {
 
 		JsonObject infoObject = swaggerDocObject.get(SwaggerConstants.INFO).getAsJsonObject();
 		//get api name.
-		String apiName =
-				getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
+		String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
 		name.setText(apiName);
 		context.setText("/" + apiName);
 		//get api description.
@@ -91,11 +92,11 @@ public class RESTServiceUtils {
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 
-		if (swaggerVersion.equals("2.0")) {
+		if (SwaggerConstants.SWAGGER2_VERSION.equals(swaggerVersion)) {
 			apiVersion.setText(getChildElementText(infoObject, SwaggerConstants.VERSION));
 			transports.setText(getChildElementText(swaggerDocObject, SwaggerConstants.SCHEMES));
 			uriTemplates = createURITemplateFromSwagger2(swaggerDocObject);
-		} else if (swaggerVersion.equals("1.2")) {
+		} else if (SwaggerConstants.SWAGGER12_VERSION.equals(swaggerVersion)) {
 			apiVersion.setText(getChildElementText(swaggerDocObject, SwaggerConstants.API_VERSION));
 			uriTemplates = createURITemplateFromSwagger12(resourceObjects);
 		}
@@ -115,18 +116,16 @@ public class RESTServiceUtils {
 		}
 
 		return data;
-
 	}
 
 	/**
 	 * Saves the REST Service registry artifact created from the imported swagger definition.
 	 *
-	 * @param requestContext Information about current request.
-	 * @param data           Service artifact metadata.
-	 * @throws RegistryException If a failure occurs when adding the api to registry.
+	 * @param requestContext        information about current request.
+	 * @param data                  service artifact metadata.
+	 * @throws RegistryException    If a failure occurs when adding the api to registry.
 	 */
-	public static String addServiceToRegistry(RequestContext requestContext, OMElement data)
-			throws RegistryException {
+	public static String addServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
 
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
@@ -134,14 +133,14 @@ public class RESTServiceUtils {
 		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 
-		OMElement overview = data.getFirstChildWithName(
-				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
-		String serviceVersion = overview.getFirstChildWithName(
-				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version")).getText();
-		String apiName = overview.getFirstChildWithName(
-				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
-		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE :
-		                 serviceVersion;
+		OMElement overview =
+				data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+		String serviceVersion =
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version"))
+				        .getText();
+		String apiName =
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
+		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : serviceVersion;
 
 		//set version property.
 		serviceResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, serviceVersion);
@@ -153,11 +152,11 @@ public class RESTServiceUtils {
 		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
 
 		serviceResource.setUUID(resourceId);
-		String servicePath = getChrootedServiceiLocation(requestContext.getRegistryContext()) +
-		                    CurrentSession.getUser() +
-		                    RegistryConstants.PATH_SEPARATOR + apiName +
-		                    RegistryConstants.PATH_SEPARATOR + serviceVersion +
-		                    RegistryConstants.PATH_SEPARATOR + apiName + "rest_service";
+		String servicePath = getChrootedServiceLocation(requestContext.getRegistryContext()) +
+		                     CarbonContext.getThreadLocalCarbonContext().getUsername() +
+		                     RegistryConstants.PATH_SEPARATOR + apiName +
+		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
+		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
 		registry.put(servicePath, serviceResource);
 
@@ -167,9 +166,9 @@ public class RESTServiceUtils {
 	/**
 	 * Returns a Json element as a string
 	 *
-	 * @param object Json Object
-	 * @param key    Element key
-	 * @return Element value
+	 * @param object    json Object
+	 * @param key       element key
+	 * @return          Element value
 	 */
 	public static String getChildElementText(JsonObject object, String key) {
 		JsonElement element = object.get(key);
@@ -182,11 +181,10 @@ public class RESTServiceUtils {
 	/**
 	 * Contains the logic to create URITemplate XML Element from the swagger 1.2 resource.
 	 *
-	 * @param resourceObjects The path resource documents.
-	 * @return URITemplate element.
+	 * @param resourceObjects   the path resource documents.
+	 * @return                  URITemplate element.
 	 */
-	private static List<OMElement> createURITemplateFromSwagger12(
-			List<JsonObject> resourceObjects) {
+	private static List<OMElement> createURITemplateFromSwagger12(List<JsonObject> resourceObjects) {
 
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
 
@@ -224,6 +222,12 @@ public class RESTServiceUtils {
 		return uriTemplates;
 	}
 
+	/**
+	 * Contains the logic to create URITemplate XML Element from the swagger 2.0 resource.
+	 *
+	 * @param swaggerDocObject  swagger document
+	 * @return                  URITemplate element.
+	 */
 	private static List<OMElement> createURITemplateFromSwagger2(JsonObject swaggerDocObject) {
 
 		List<OMElement> uriTemplates = new ArrayList<OMElement>();
@@ -261,9 +265,17 @@ public class RESTServiceUtils {
 	 * @param registryContext Registry context
 	 * @return the root location of the API artifact.
 	 */
-	private static String getChrootedServiceiLocation(RegistryContext registryContext) {
-		return RegistryUtils.getAbsolutePath(registryContext,
-		                                     RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-		                                     API_RELATIVE_LOCATION);
+	private static String getChrootedServiceLocation(RegistryContext registryContext) {
+		return RegistryUtils.getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+		                                                      commonRestServiceLocation);
+	}
+
+	/**
+	 * Set the restServiceLocation.
+	 *
+	 * @param restServiceLocation  the restserviceLocation
+	 */
+	public static void setCommonRestServiceLocation(String restServiceLocation) {
+		RESTServiceUtils.commonRestServiceLocation = restServiceLocation;
 	}
 }

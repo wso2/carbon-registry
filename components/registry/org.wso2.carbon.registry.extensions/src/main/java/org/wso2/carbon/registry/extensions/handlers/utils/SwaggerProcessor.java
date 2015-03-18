@@ -56,24 +56,21 @@ public class SwaggerProcessor {
 	/**
 	 * Saves the swagger file as a registry artifact.
 	 *
-	 * @param inputStream    Input stream to read content.
-	 * @param commonLocation Root location of the swagger artifacts.
-	 * @param sourceUrl      Source URL.
-	 * @throws RegistryException If a failure occurs when adding the swagger to registry.
+	 * @param inputStream           input stream to read content.
+	 * @param commonLocation        root location of the swagger artifacts.
+	 * @param sourceUrl             source URL.
+	 * @throws RegistryException    If a failure occurs when adding the swagger to registry.
 	 */
 	public void processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
 			throws RegistryException {
-		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
-		//Creating a collection if not exists.
-		if (!systemRegistry.resourceExists(commonLocation)) {
-			systemRegistry.put(commonLocation, systemRegistry.newCollection());
-		}
+
+		createCollection(commonLocation);
+
 		//Reading resource content
 		ByteArrayOutputStream swaggerContent = readSourceContent(inputStream);
 		JsonObject swaggerDocObject = getSwaggerObject(swaggerContent.toString());
 		String swaggerVersion = getSwaggerVersion(swaggerDocObject);
-		String documentVersion =
-				requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
+		String documentVersion = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 
 		if (documentVersion == null) {
 			documentVersion = CommonConstants.SWAGGER_SPEC_VERSION_DEFAULT_VALUE;
@@ -81,22 +78,20 @@ public class SwaggerProcessor {
 
 		//Configuring the location to save the swagger resource.
 		String swaggerDocPath = requestContext.getResourcePath().getPath();
-		String swaggerDocName = swaggerDocPath
-				.substring(swaggerDocPath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
-		String swaggerResourcesPath =
-				getResourcePathFromContent(commonLocation, swaggerDocObject, documentVersion);
+		String swaggerDocName =
+				swaggerDocPath.substring(swaggerDocPath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
+		String swaggerResourcesPath = getResourcePathFromContent(commonLocation, swaggerDocObject, documentVersion);
 		swaggerDocPath = swaggerResourcesPath + RegistryConstants.PATH_SEPARATOR + swaggerDocName;
 
 		OMElement data = null;
 
-		if (swaggerVersion.equals("1.2")) {
+		if (SwaggerConstants.SWAGGER12_VERSION.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContent, swaggerDocPath, documentVersion);
 
 			List<JsonObject> resourceObjects = new ArrayList<JsonObject>();
 			if (sourceUrl != null) {
 				//Adding Resource documents to registry.
-				JsonArray pathResources =
-						swaggerDocObject.get(SwaggerConstants.APIS).getAsJsonArray();
+				JsonArray pathResources = swaggerDocObject.get(SwaggerConstants.APIS).getAsJsonArray();
 				ByteArrayOutputStream pathResourceContent;
 				InputStream resourceInputStream;
 				String path;
@@ -106,12 +101,10 @@ public class SwaggerProcessor {
 					try {
 						resourceInputStream = new URL(sourceUrl + path).openStream();
 					} catch (IOException e) {
-						throw new RegistryException(
-								"The URL " + sourceUrl + path + " is incorrect.", e);
+						throw new RegistryException("The URL " + sourceUrl + path + " is incorrect.", e);
 					}
 					pathResourceContent = readSourceContent(resourceInputStream);
-					resourceObjects
-							.add(parser.parse(pathResourceContent.toString()).getAsJsonObject());
+					resourceObjects.add(parser.parse(pathResourceContent.toString()).getAsJsonObject());
 					path = swaggerResourcesPath + path;
 					//Save Resource document to registry
 					addSwaggerDocumentToRegistry(pathResourceContent, path, documentVersion);
@@ -119,15 +112,13 @@ public class SwaggerProcessor {
 					registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
 				}
 				//Creating the RESTService artifact from the swagger content.
-				data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
-				                                                  resourceObjects);
+				data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, resourceObjects);
 			} else {
 				log.warn("Cannot read path resources, RestService may not get updated.");
 			}
-		} else if (swaggerVersion.equals("2.0")) {
+		} else if (SwaggerConstants.SWAGGER2_VERSION.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContent, swaggerDocPath, documentVersion);
-			data = RESTServiceUtils
-					.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
+			data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
 		}
 
 		if (data != null) {
@@ -144,13 +135,13 @@ public class SwaggerProcessor {
 	/**
 	 * Saves a swagger document in the registry.
 	 *
-	 * @param swaggerContent  Resource content.
-	 * @param path            Resource path.
-	 * @param documentVersion Version of the swagger document.
-	 * @throws RegistryException
+	 * @param swaggerContent        resource content.
+	 * @param path                  resource path.
+	 * @param documentVersion       version of the swagger document.
+	 * @throws RegistryException    If fails to add the swagger document to registry.
 	 */
-	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path,
-	                                          String documentVersion) throws RegistryException {
+	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path, String documentVersion)
+			throws RegistryException {
 		Resource resource;
 		if (registry.resourceExists(path)) {
 			//If a resource existing in the given path.
@@ -201,8 +192,7 @@ public class SwaggerProcessor {
 	 * @return content as a {@link java.io.ByteArrayOutputStream}
 	 * @throws RegistryException If a failure occurs when reading the content.
 	 */
-	private ByteArrayOutputStream readSourceContent(InputStream inputStream)
-			throws RegistryException {
+	private ByteArrayOutputStream readSourceContent(InputStream inputStream) throws RegistryException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		int nextChar;
 		try {
@@ -219,6 +209,20 @@ public class SwaggerProcessor {
 	}
 
 	/**
+	 * Creates a collection in the given common location.
+	 *
+	 * @param commonLocation        location to create the collection.
+	 * @throws RegistryException    If fails to create a collection at given location.
+	 */
+	private void createCollection(String commonLocation) throws RegistryException {
+		Registry systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
+		//Creating a collection if not exists.
+		if (!systemRegistry.resourceExists(commonLocation)) {
+			systemRegistry.put(commonLocation, systemRegistry.newCollection());
+		}
+	}
+
+	/**
 	 * Returns the common swagger resources path.
 	 *
 	 * @param rootLocation Root location of the swagger files.
@@ -226,8 +230,7 @@ public class SwaggerProcessor {
 	 * @param docVersion   Version of the swagger document.
 	 * @return Common resource path.
 	 */
-	private String getResourcePathFromContent(String rootLocation, JsonObject content,
-	                                          String docVersion) {
+	private String getResourcePathFromContent(String rootLocation, JsonObject content, String docVersion) {
 		JsonObject infoObject = content.get(SwaggerConstants.INFO).getAsJsonObject();
 		String serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
 		String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
@@ -248,8 +251,7 @@ public class SwaggerProcessor {
 		if (swaggerElement != null) {
 			return swaggerElement.getAsJsonObject();
 		} else {
-			throw new JsonParseException(
-					"Unexpected error occurred when parsing the swagger content");
+			throw new JsonParseException("Unexpected error occurred when parsing the swagger content");
 		}
 	}
 
@@ -263,9 +265,9 @@ public class SwaggerProcessor {
 	private String getSwaggerVersion(JsonObject swaggerDocObject) throws RegistryException {
 		//Getting the swagger version
 		JsonElement swaggerVersionElement = swaggerDocObject.get(SwaggerConstants.SWAGGER_VERSION);
-		swaggerVersionElement = (swaggerVersionElement == null) ?
-		                        swaggerDocObject.get(SwaggerConstants.SWAGGER2_VERSION) :
-		                        swaggerVersionElement;
+		swaggerVersionElement =
+				(swaggerVersionElement == null) ? swaggerDocObject.get(SwaggerConstants.SWAGGER2_VERSION) :
+				swaggerVersionElement;
 		if (swaggerVersionElement == null) {
 			throw new RegistryException("Unsupported swagger version.");
 		}

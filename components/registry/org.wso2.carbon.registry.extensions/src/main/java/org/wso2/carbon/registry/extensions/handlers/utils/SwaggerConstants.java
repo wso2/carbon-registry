@@ -18,9 +18,10 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 
 public class SwaggerConstants {
 
-	/*
-	Swagger key constants
-	 */
+
+	//Swagger key constants
+	public static final String SWAGGER12_VERSION = "1.2";
+	public static final String SWAGGER_VERSION_2 = "2.0";
 
 	//common swagger constants
 	public static final String INFO = "info";

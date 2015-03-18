@@ -136,4 +136,6 @@ public class CommonConstants {
     public static final String REG_GAR_PATH_MAPPING_RESOURCE_ATTR_PATH = "path";
     public static final String REG_GAR_PATH_MAPPING_RESOURCE_TARGET = "target";
 
+	public static final String LOCATION_TAG = "location";
+
 }
