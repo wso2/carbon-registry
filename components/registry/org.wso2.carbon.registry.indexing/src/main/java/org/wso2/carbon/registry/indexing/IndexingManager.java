@@ -21,15 +21,10 @@ package org.wso2.carbon.registry.indexing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.app.Property;
-import org.wso2.carbon.registry.app.PropertyExtensionFactory;
-import org.wso2.carbon.registry.app.PropertyName;
-import org.wso2.carbon.registry.app.PropertyValue;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -47,7 +42,6 @@ import java.util.regex.Pattern;
 /**
  * This singleton class manages indexing.
  */
-@edu.umd.cs.findbugs.annotations.SuppressWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class IndexingManager {
 
     private static Log log = LogFactory.getLog(IndexingManager.class);
@@ -65,7 +59,7 @@ public class IndexingManager {
     private IndexingManager() {
         try {
             registry = Utils.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME);
-            registryConfig = new RegistryConfigLoader();
+            registryConfig = RegistryConfigLoader.getInstance();
             indexer = new AsyncIndexer();
         } catch (RegistryException e) {
             log.error("Could not initialize registry for indexing", e);
@@ -75,7 +69,9 @@ public class IndexingManager {
     public static IndexingManager getInstance() {
         if (instance == null) {
             synchronized (IndexingManager.class) {
-                instance = new IndexingManager();
+                if (instance == null) {
+                    instance = new IndexingManager();
+                }
             }
         }
         return instance;

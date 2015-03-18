@@ -22,7 +22,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.deployment.synchronizer.internal.DeploymentSynchronizerConstants;
+import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerConstants;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
 import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.event.core.subscription.Subscription;

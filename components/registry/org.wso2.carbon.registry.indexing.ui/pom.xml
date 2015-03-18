@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.3.1-SNAPSHOT</version>
+        <version>4.3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,7 +34,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -49,8 +48,7 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.lucene.*,
-                            org.apache.solr.*,
+                            org.apache.solr.*;version="[5.0.0,5.1.0)",
                             org.wso2.carbon.registry.indexing.stub.*;version="${carbon.registry.package.import.version.range}",
                             *;resolution:=optional
                         </Import-Package>
@@ -873,7 +871,7 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>solr.wso2</groupId>
+            <groupId>org.wso2.apache.solr</groupId>
             <artifactId>solr</artifactId>
         </dependency>
         <dependency>

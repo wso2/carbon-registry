@@ -77,7 +77,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
         }
     }
 
-    public void testCreateActivity() throws Exception {
+    public void test1CreateActivity() throws Exception {
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -121,7 +121,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
         assertEquals("Adding GadgetYYY",activities[1].getTitle());
     }
 
-    public void testDeleteActivity() throws Exception {
+    public void test2DeleteActivity() throws Exception {
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -161,7 +161,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
 
     }
 
-    public void testGetActivities() throws Exception {
+    public void test3GetActivities() throws Exception {
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -198,7 +198,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
 
-    public void testGetActivities2() throws Exception {
+    public void test4GetActivities2() throws Exception {
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -233,7 +233,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
 
     }
 
-    public void testDeleteActivities() throws Exception {
+    public void test5DeleteActivities() throws Exception {
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();

@@ -20,20 +20,15 @@ package org.wso2.carbon.registry.deployment.synchronizer.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
-import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
-import org.wso2.carbon.deployment.synchronizer.internal.DeploymentSynchronizerServiceImpl;
-import org.wso2.carbon.deployment.synchronizer.repository.CarbonRepositoryUtils;
-import org.wso2.carbon.deployment.synchronizer.services.DeploymentSynchronizerService;
 import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.deployment.synchronizer.RegistryBasedArtifactRepository;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 /**
+ * @scr.component name="org.wso2.carbon.registry.deployment.synchronizer" immediate="true"
  * @scr.reference name="registry.service" immediate="true"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
@@ -50,29 +45,6 @@ public class RegistryDeploymentSynchronizerComponent {
         registryDepSynServiceRegistration =
                 context.getBundleContext().registerService(ArtifactRepository.class.getName(),
                                                            registryBasedArtifactRepository, null);
-
-        // Register an observer so we can track tenant ConfigurationContext creation and
-        // do the synchronization operations as necessary
-        BundleContext bundleContext = context.getBundleContext();
-
-        // register the OSGi service
-        bundleContext.registerService(new String[]{DeploymentSynchronizerService.class.getName(),
-                                                  org.wso2.carbon.core.deployment.DeploymentSynchronizer.class.getName()},
-                                      new DeploymentSynchronizerServiceImpl(), null);
-
-        log.debug("Deployment synchronizer component activated");
-    }
-
-    private void initDeploymentSynchronizerForSuperTenant() throws DeploymentSynchronizerException {
-        if (!CarbonRepositoryUtils.isSynchronizerEnabled(MultitenantConstants.SUPER_TENANT_ID)) {
-            return;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Initializing the deployment synchronizer for super tenant");
-        }
-
-        CarbonRepositoryUtils.newCarbonRepositorySynchronizer(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     protected void deactivate(ComponentContext context) {
@@ -81,7 +53,7 @@ public class RegistryDeploymentSynchronizerComponent {
             registryDepSynServiceRegistration.unregister();
             registryDepSynServiceRegistration = null;
         }
-        log.debug("Deployment synchronizer component deactivated");
+        log.debug("Registry Deployment synchronizer component deactivated");
     }
 
     protected void setRegistryService(RegistryService service) {
