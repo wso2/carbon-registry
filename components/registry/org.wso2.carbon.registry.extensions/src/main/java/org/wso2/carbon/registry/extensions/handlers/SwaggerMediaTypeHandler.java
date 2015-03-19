@@ -102,18 +102,18 @@ public class SwaggerMediaTypeHandler extends Handler {
 		}
 		CommonUtil.acquireUpdateLock();
 
-		InputStream inputStream;
+		InputStream inputStream = null;
 		try {
 			Resource resource = requestContext.getResource();
 
 			if (resource == null) {
-				throw new RegistryException("Resource does not exist.");
+				throw new RegistryException(CommonConstants.RESOURCE_NOT_EXISTS);
 			}
 
 			Object resourceContentObj = resource.getContent();
 
 			if (resourceContentObj == null || !(resourceContentObj instanceof byte[])) {
-				throw new RegistryException("Resource content is not valid.");
+				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 
 			inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
@@ -121,7 +121,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 			processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
 			requestContext.setProcessingComplete(true);
 		} finally {
-			//TODO: Close input stream.
+			CommonUtil.closeInputStream(inputStream);
 			CommonUtil.releaseUpdateLock();
 		}
 	}
@@ -145,14 +145,13 @@ public class SwaggerMediaTypeHandler extends Handler {
 		try {
 			sourceURL = requestContext.getSourceURL();
 
-			if (sourceURL == null) {
-				throw new RegistryException("Swagger source url is null.");
+			if (sourceURL == null || sourceURL.isEmpty()) {
+				throw new RegistryException(CommonConstants.EMPTY_URL);
 			}
 
 
 			if (sourceURL.toLowerCase().startsWith("file:")) {
-				throw new RegistryException(
-						"The source URL must not be point to a file in the server's local file system. ");
+				throw new RegistryException(CommonConstants.URL_TO_LOCAL_FILE);
 			}
 			//Open a stream to the sourceURL
 			inputStream = new URL(sourceURL).openStream();
@@ -163,7 +162,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 		} catch (IOException e) {
 			throw new RegistryException("The URL " + sourceURL + " is incorrect.", e);
 		} finally {
-			//TODO: inputStream.close()
+			CommonUtil.closeInputStream(inputStream);
 			CommonUtil.releaseUpdateLock();
 		}
 	}
