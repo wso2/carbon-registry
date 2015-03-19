@@ -121,7 +121,7 @@ public class CommonConstants {
     
     public static final String POLICY_VERSION_DEFAULT_VALUE = "1.0.0";
 
-	public static final String SWAGGER_SPEC_VERSION_DEFAULT_VALUE = "1.0.0";
+	public static final String SWAGGER_DOC_VERSION_DEFAULT_VALUE = "1.0.0";
 
     public static final String VERSION_CONTAINER_MEDIA_TYPE =
             "application/vnd.wso2.version-container";
@@ -137,5 +137,12 @@ public class CommonConstants {
     public static final String REG_GAR_PATH_MAPPING_RESOURCE_TARGET = "target";
 
 	public static final String LOCATION_TAG = "location";
+
+	//Common Exception Messages
+	public static final String RESOURCE_NOT_EXISTS = "Resource does not exist.";
+	public static final String INVALID_CONTENT = "Resource content is not valid.";
+	public static final String URL_TO_LOCAL_FILE =
+			"The source URL must not be point to a file in the server's local file system. ";
+	public static final String EMPTY_URL = "Source url is empty. Cannot read content.";
 
 }
