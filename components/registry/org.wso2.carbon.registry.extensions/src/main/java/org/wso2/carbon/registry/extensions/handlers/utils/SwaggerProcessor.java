@@ -243,8 +243,8 @@ public class SwaggerProcessor {
 	/**
 	 * Parses the swagger content and return as a JsonObject
 	 *
-	 * @param swaggerContent Content as a String.
-	 * @return Swagger document as a JSON Object.
+	 * @param swaggerContent    content as a String.
+	 * @return                  Swagger document as a JSON Object.
 	 */
 	private JsonObject getSwaggerObject(String swaggerContent) {
 		JsonElement swaggerElement = parser.parse(swaggerContent);
@@ -259,9 +259,9 @@ public class SwaggerProcessor {
 	/**
 	 * Returns swagger version
 	 *
-	 * @param swaggerDocObject Swagger JSON.
-	 * @return Swagger version.
-	 * @throws RegistryException If swagger version is unsupported.
+	 * @param swaggerDocObject      swagger JSON.
+	 * @return                      Swagger version.
+	 * @throws RegistryException    If swagger version is unsupported.
 	 */
 	private String getSwaggerVersion(JsonObject swaggerDocObject) throws RegistryException {
 		//Getting the swagger version

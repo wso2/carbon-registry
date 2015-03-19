@@ -170,8 +170,8 @@ public class SwaggerMediaTypeHandler extends Handler {
 	/**
 	 * Returns the root location of the Swagger.
 	 *
-	 * @param registryContext   Registry context
-	 * @return                  the root location of the Swagger.
+	 * @param registryContext   registry context
+	 * @return                  The root location of the Swagger.
 	 */
 	private String getChrootedLocation(RegistryContext registryContext) {
 		return RegistryUtils

@@ -264,8 +264,8 @@ public class RESTServiceUtils {
 	/**
 	 * Returns the root location of the API.
 	 *
-	 * @param registryContext Registry context
-	 * @return the root location of the API artifact.
+	 * @param registryContext   registry context
+	 * @return                  The root location of the API artifact.
 	 */
 	private static String getChrootedServiceLocation(RegistryContext registryContext) {
 		return RegistryUtils.getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
