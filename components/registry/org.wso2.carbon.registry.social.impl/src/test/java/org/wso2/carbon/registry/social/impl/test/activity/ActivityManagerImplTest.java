@@ -61,6 +61,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     protected static RegistryRealm realm = null;
 
     public void setUp() throws RegistryException {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:setUp()");
         super.setUp();
 /*        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("foo.com");
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(1);*/
@@ -78,6 +80,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test1CreateActivity() throws Exception {
+        System.out.println("ActivityManagerImplTest:test1CreateActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -122,6 +125,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test2DeleteActivity() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test2DeleteActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -140,6 +145,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void testUpdateActivity() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:testUpdateActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -162,6 +169,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test3GetActivities() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test3GetActivities()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -199,6 +208,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
 
 
     public void test4GetActivities2() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test4GetActivities2()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -234,6 +245,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test5DeleteActivities() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test5DeleteActivities()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
