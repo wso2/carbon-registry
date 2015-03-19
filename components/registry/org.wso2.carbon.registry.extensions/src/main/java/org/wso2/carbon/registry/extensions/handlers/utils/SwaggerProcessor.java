@@ -39,6 +39,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class contains methods to read swagger documents from a given input stream and parse the swagger document in to
+ * a JSON object and save the document in to the registry.
+ *
+ * This class will be initialized from the {@link org.wso2.carbon.registry.extensions.handlers.SwaggerMediaTypeHandler}
+ * class when a resource that has a media type of application+swagger+json has to be processed. This class will invoke
+ * necessary methods to create a REST Service from the imported swagger definition.
+ *
+ * @see org.wso2.carbon.registry.extensions.handlers.SwaggerMediaTypeHandler
+ * @see org.wso2.carbon.registry.extensions.handlers.utils.RESTServiceUtils
+ */
 public class SwaggerProcessor {
 
 	private static final Log log = LogFactory.getLog(SwaggerProcessor.class);
