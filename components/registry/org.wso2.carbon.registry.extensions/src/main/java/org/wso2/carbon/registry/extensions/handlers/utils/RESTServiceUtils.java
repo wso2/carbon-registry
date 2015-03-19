@@ -23,6 +23,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -43,6 +45,7 @@ import java.util.*;
  */
 public class RESTServiceUtils {
 
+	private static final Log log = LogFactory.getLog(RESTServiceUtils.class);
 	private static final String OVERVIEW = "overview";
 	private static final String PROVIDER = "provider";
 	private static final String NAME = "name";
@@ -52,12 +55,11 @@ public class RESTServiceUtils {
 	private static final String DESCRIPTION = "description";
 	private static final String URI_TEMPLATE = "uritemplate";
 	private static final String URL_PATTERN = "urlPattern";
-	public static final String AUTH_TYPE = "authType";
+	private static final String AUTH_TYPE = "authType";
 	private static final String HTTP_VERB = "httpVerb";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
-
 	public static String commonRestServiceLocation;
 
 	/**
@@ -134,12 +136,12 @@ public class RESTServiceUtils {
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 
 		OMElement overview =
-				data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "overview"));
+				data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
 		String serviceVersion =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "version"))
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION))
 				        .getText();
 		String apiName =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "name")).getText();
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
 		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : serviceVersion;
 
 		//set version property.
@@ -159,7 +161,7 @@ public class RESTServiceUtils {
 		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
 		registry.put(servicePath, serviceResource);
-
+		log.info("REST Service created at "+servicePath);
 		return servicePath;
 	}
 
@@ -186,7 +188,7 @@ public class RESTServiceUtils {
 	 */
 	private static List<OMElement> createURITemplateFromSwagger12(List<JsonObject> resourceObjects) {
 
-		List<OMElement> uriTemplates = new ArrayList<OMElement>();
+		List<OMElement> uriTemplates = new ArrayList<>();
 
 		for (JsonObject resourceObject : resourceObjects) {
 			JsonArray pathResources = resourceObject.getAsJsonArray(SwaggerConstants.APIS);
@@ -230,7 +232,7 @@ public class RESTServiceUtils {
 	 */
 	private static List<OMElement> createURITemplateFromSwagger2(JsonObject swaggerDocObject) {
 
-		List<OMElement> uriTemplates = new ArrayList<OMElement>();
+		List<OMElement> uriTemplates = new ArrayList<>();
 
 		JsonObject paths = swaggerDocObject.get(SwaggerConstants.PATHS).getAsJsonObject();
 		Set<Map.Entry<String, JsonElement>> pathSet = paths.entrySet();
@@ -273,7 +275,7 @@ public class RESTServiceUtils {
 	/**
 	 * Set the restServiceLocation.
 	 *
-	 * @param restServiceLocation  the restserviceLocation
+	 * @param restServiceLocation  the restServiceLocation
 	 */
 	public static void setCommonRestServiceLocation(String restServiceLocation) {
 		RESTServiceUtils.commonRestServiceLocation = restServiceLocation;
