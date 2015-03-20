@@ -135,11 +135,9 @@ public class RESTServiceUtils {
 		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 
-		OMElement overview =
-				data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
+		OMElement overview = data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
 		String serviceVersion =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION))
-				        .getText();
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION)).getText();
 		String apiName =
 				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
 		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : serviceVersion;
@@ -161,7 +159,7 @@ public class RESTServiceUtils {
 		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
 		registry.put(servicePath, serviceResource);
-		log.info("REST Service created at "+servicePath);
+		log.info("REST Service created at " + servicePath);
 		return servicePath;
 	}
 

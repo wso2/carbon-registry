@@ -80,8 +80,8 @@ public class SwaggerProcessor {
 		createCollection(commonLocation);
 
 		//Reading resource content and content details.
-		ByteArrayOutputStream swaggerContent = CommonUtil.readSourceContent(inputStream);
-		JsonObject swaggerDocObject = getSwaggerObject(swaggerContent.toString());
+		ByteArrayOutputStream swaggerContentStream = CommonUtil.readSourceContent(inputStream);
+		JsonObject swaggerDocObject = getSwaggerObject(swaggerContentStream.toString());
 		String swaggerVersion = getSwaggerVersion(swaggerDocObject);
 		documentVersion = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 		if (documentVersion == null) {
@@ -95,14 +95,14 @@ public class SwaggerProcessor {
 		using the relevant documents.
 		 */
 		if (SwaggerConstants.SWAGGER12_VERSION.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContent, swaggerResourcePath, documentVersion);
+			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			List<JsonObject> resourceObjects =
 					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
 			data = (resourceObjects != null) ?
 			       RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, resourceObjects) : null;
 
 		} else if (SwaggerConstants.SWAGGER2_VERSION.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContent, swaggerResourcePath, documentVersion);
+			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
 		}
 
@@ -116,17 +116,19 @@ public class SwaggerProcessor {
 		} else {
 			log.warn("Service content is null. Cannot create the REST Service artifact.");
 		}
+
+		CommonUtil.closeOutputStream(swaggerContentStream);
 	}
 
 	/**
 	 * Saves a swagger document in the registry.
 	 *
-	 * @param swaggerContent        resource content.
+	 * @param contentStream         resource content.
 	 * @param path                  resource path.
 	 * @param documentVersion       version of the swagger document.
 	 * @throws RegistryException    If fails to add the swagger document to registry.
 	 */
-	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream swaggerContent, String path, String documentVersion)
+	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream contentStream, String path, String documentVersion)
 			throws RegistryException {
 		Resource resource;
 		/*
@@ -148,7 +150,7 @@ public class SwaggerProcessor {
 			} else {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
-			if (resourceContent.equals(swaggerContent.toString())) {
+			if (resourceContent.equals(contentStream.toString())) {
 				log.info("Old content is same as the new content. Skipping the put action.");
 				return;
 			}
@@ -161,7 +163,7 @@ public class SwaggerProcessor {
 
 		resource.setUUID(resourceId);
 		resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
-		resource.setContent(swaggerContent.toByteArray());
+		resource.setContent(contentStream.toByteArray());
 		resource.addProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
 		registry.put(path, resource);
 	}
@@ -200,7 +202,7 @@ public class SwaggerProcessor {
 		List<JsonObject> resourceObjects = new ArrayList<>();
 		//Adding Resource documents to registry.
 		JsonArray pathResources = swaggerDocObject.get(SwaggerConstants.APIS).getAsJsonArray();
-		ByteArrayOutputStream pathResourceContent;
+		ByteArrayOutputStream resourceContentStream = null;
 		InputStream resourceInputStream = null;
 		String path;
 
@@ -218,14 +220,16 @@ public class SwaggerProcessor {
 			} finally{
 				CommonUtil.closeInputStream(resourceInputStream);
 			}
-			pathResourceContent = CommonUtil.readSourceContent(resourceInputStream);
-			resourceObjects.add(parser.parse(pathResourceContent.toString()).getAsJsonObject());
+			resourceContentStream = CommonUtil.readSourceContent(resourceInputStream);
+			resourceObjects.add(parser.parse(resourceContentStream.toString()).getAsJsonObject());
 			path = swaggerResourcesPath + path;
 			//Save Resource document to registry
-			addSwaggerDocumentToRegistry(pathResourceContent, path, documentVersion);
+			addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion);
 			//Adding an dependency to API_DOC
 			registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
 		}
+
+		CommonUtil.closeOutputStream(resourceContentStream);
 
 		return resourceObjects;
 	}

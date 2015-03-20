@@ -43,6 +43,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -913,6 +914,21 @@ public class CommonUtil {
 				inputStream.close();
 			} catch (IOException e) {
 				log.error("Error occurred when closing the input stream", e);
+			}
+		}
+	}
+
+	/**
+	 * Closes a given output stream.
+	 *
+	 * @param outputStream   the output steam.
+	 */
+	public static void closeOutputStream(OutputStream outputStream) {
+		if(outputStream != null) {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				log.error("Error occurred when closing the output stream", e);
 			}
 		}
 	}

@@ -29,7 +29,6 @@ import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
-import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +53,10 @@ public class SwaggerMediaTypeHandler extends Handler {
 		Iterator confElements = locationConfiguration.getChildElements();
 		while (confElements.hasNext()) {
 			OMElement confElement = (OMElement)confElements.next();
-			if (confElement.getQName().equals(new QName(CommonConstants.LOCATION_TAG))) {
+			if (CommonConstants.LOCATION_TAG.equals(confElement.getLocalName())) {
 				swaggerLocation = confElement.getText();
 				if (!swaggerLocation.startsWith(RegistryConstants.PATH_SEPARATOR)) {
-					swaggerLocation = RegistryConstants.PATH_SEPARATOR + swaggerLocation;
+				swaggerLocation = RegistryConstants.PATH_SEPARATOR + swaggerLocation;
 				}
 				if (!swaggerLocation.endsWith(RegistryConstants.PATH_SEPARATOR)) {
 					swaggerLocation = swaggerLocation + RegistryConstants.PATH_SEPARATOR;
@@ -75,7 +74,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 		Iterator confElements = locationConfiguration.getChildElements();
 		while (confElements.hasNext()) {
 			OMElement confElement = (OMElement)confElements.next();
-			if (confElement.getQName().equals(new QName(CommonConstants.LOCATION_TAG))) {
+			if (CommonConstants.LOCATION_TAG.equals(confElement.getLocalName())) {
 				restServiceLocation = confElement.getText();
 				if (!restServiceLocation.startsWith(RegistryConstants.PATH_SEPARATOR)) {
 					restServiceLocation = RegistryConstants.PATH_SEPARATOR + restServiceLocation;
