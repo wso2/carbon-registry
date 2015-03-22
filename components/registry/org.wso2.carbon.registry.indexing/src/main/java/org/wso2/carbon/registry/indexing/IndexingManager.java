@@ -199,15 +199,14 @@ public class IndexingManager {
      * @return Indexer
      */
     public Indexer getIndexerForMediaType(String mimeType) {
-        Indexer resultIndexer = null;
         if (mimeType != null) {
             for (Map.Entry<String, Indexer> entry : registryConfig.getIndexerMap().entrySet()) {
                 if (Pattern.matches(entry.getKey(), mimeType)) {
-                    resultIndexer = entry.getValue();
+                    return entry.getValue();
                 }
             }
         }
-        return resultIndexer;
+        return null;
     }
 
     public UserRegistry getRegistry(int tenantId) {
