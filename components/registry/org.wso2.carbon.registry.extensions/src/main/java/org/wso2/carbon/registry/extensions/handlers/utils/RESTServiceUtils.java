@@ -94,11 +94,11 @@ public class RESTServiceUtils {
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 
-		if (SwaggerConstants.SWAGGER2_VERSION.equals(swaggerVersion)) {
+		if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			apiVersion.setText(getChildElementText(infoObject, SwaggerConstants.VERSION));
 			transports.setText(getChildElementText(swaggerDocObject, SwaggerConstants.SCHEMES));
 			uriTemplates = createURITemplateFromSwagger2(swaggerDocObject);
-		} else if (SwaggerConstants.SWAGGER12_VERSION.equals(swaggerVersion)) {
+		} else if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
 			apiVersion.setText(getChildElementText(swaggerDocObject, SwaggerConstants.API_VERSION));
 			uriTemplates = createURITemplateFromSwagger12(resourceObjects);
 		}

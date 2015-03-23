@@ -20,37 +20,31 @@ public class SwaggerConstants {
 
 
 	//Swagger key constants
-	public static final String SWAGGER12_VERSION = "1.2";
+	public static final String SWAGGER_VERSION_12 = "1.2";
 	public static final String SWAGGER_VERSION_2 = "2.0";
 
 	//common swagger constants
 	public static final String INFO = "info";
 	public static final String DESCRIPTION = "description";
-	public static final String BASE_PATH = "basepath";
 	public static final String NAME = "name";
-	public static final String PARAMETERS = "parameters";
-	public static final String SUMMARY = "summary";
 	public static final String REQUIRED = "required";
 	public static final String VERSION = "version";
 
 	//swagger 1.2 constants
-	public static final String SWAGGER_VERSION = "swaggerVersion";
+	public static final String SWAGGER_VERSION_KEY = "swaggerVersion";
 	public static final String API_VERSION = "apiVersion";
 	public static final String APIS = "apis";
-	public static final String PARAM_TYPE = "paramType";
 	public static final String OPERATIONS = "operations";
 	public static final String TYPE = "type";
 	public static final String METHOD = "method";
 
 
 	//swagger 2.0 constants
-	public static final String SWAGGER2_VERSION = "swagger";
+	public static final String SWAGGER2_VERSION_KEY = "swagger";
 	public static final String TITLE = "title";
 	public static final String PATH = "path";
-	public static final String HOST = "host";
 	public static final String SCHEMES = "schemes";
 	public static final String PATHS = "paths";
-	public static final String PARAM_IN = "in";
 
 
 }

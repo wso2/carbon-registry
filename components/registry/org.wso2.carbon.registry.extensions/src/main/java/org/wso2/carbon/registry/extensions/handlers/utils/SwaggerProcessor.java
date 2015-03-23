@@ -94,14 +94,14 @@ public class SwaggerProcessor {
 		Switches from the swagger version and process document adding process and the REST Service creation process
 		using the relevant documents.
 		 */
-		if (SwaggerConstants.SWAGGER12_VERSION.equals(swaggerVersion)) {
+		if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			List<JsonObject> resourceObjects =
 					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
 			data = (resourceObjects != null) ?
 			       RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, resourceObjects) : null;
 
-		} else if (SwaggerConstants.SWAGGER2_VERSION.equals(swaggerVersion)) {
+		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
 		}
@@ -197,6 +197,7 @@ public class SwaggerProcessor {
 		if(sourceUrl == null) {
 			log.debug(CommonConstants.EMPTY_URL);
 			log.warn("Resource paths cannot be read. Creating the REST service might fail.");
+			return null;
 		}
 
 		List<JsonObject> resourceObjects = new ArrayList<>();
@@ -217,8 +218,6 @@ public class SwaggerProcessor {
 				resourceInputStream = new URL(sourceUrl + path).openStream();
 			} catch (IOException e) {
 				throw new RegistryException("The URL " + sourceUrl + path + " is incorrect.", e);
-			} finally{
-				CommonUtil.closeInputStream(resourceInputStream);
 			}
 			resourceContentStream = CommonUtil.readSourceContent(resourceInputStream);
 			resourceObjects.add(parser.parse(resourceContentStream.toString()).getAsJsonObject());
@@ -230,7 +229,7 @@ public class SwaggerProcessor {
 		}
 
 		CommonUtil.closeOutputStream(resourceContentStream);
-
+		CommonUtil.closeInputStream(resourceInputStream);
 		return resourceObjects;
 	}
 
@@ -258,16 +257,17 @@ public class SwaggerProcessor {
 	/**
 	 * Parses the swagger content and return as a JsonObject
 	 *
-	 * @param swaggerContent    content as a String.
-	 * @return                  Swagger document as a JSON Object.
+	 * @param swaggerContent        content as a String.
+	 * @return                      Swagger document as a JSON Object.
+	 * @throws RegistryException    If fails to parse the swagger document.
 	 */
-	private JsonObject getSwaggerObject(String swaggerContent) {
+	private JsonObject getSwaggerObject(String swaggerContent) throws RegistryException {
 		JsonElement swaggerElement = parser.parse(swaggerContent);
 
-		if (swaggerElement != null) {
-			return swaggerElement.getAsJsonObject();
+		if (swaggerElement == null || swaggerElement.isJsonNull()) {
+			throw new RegistryException("Unexpected error occurred when parsing the swagger content.");
 		} else {
-			throw new JsonParseException("Unexpected error occurred when parsing the swagger content");
+			return swaggerElement.getAsJsonObject();
 		}
 	}
 
@@ -280,9 +280,9 @@ public class SwaggerProcessor {
 	 */
 	private String getSwaggerVersion(JsonObject swaggerDocObject) throws RegistryException {
 		//Getting the swagger version
-		JsonElement swaggerVersionElement = swaggerDocObject.get(SwaggerConstants.SWAGGER_VERSION);
+		JsonElement swaggerVersionElement = swaggerDocObject.get(SwaggerConstants.SWAGGER_VERSION_KEY);
 		swaggerVersionElement =
-				(swaggerVersionElement == null) ? swaggerDocObject.get(SwaggerConstants.SWAGGER2_VERSION) :
+				(swaggerVersionElement == null) ? swaggerDocObject.get(SwaggerConstants.SWAGGER2_VERSION_KEY) :
 				swaggerVersionElement;
 		if (swaggerVersionElement == null) {
 			throw new RegistryException("Unsupported swagger version.");
