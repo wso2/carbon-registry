@@ -22,12 +22,14 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -58,6 +60,11 @@ public class EndpointUtils {
     private static final String SYNAPSE_ENDPOINT_NAME_ATTRIBUTE = "name";
     private static final String SYNAPSE_ENDPOINT_ADDRESS = "address";
     private static final String SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE = "uri";
+    private static final String SYNAPSE_ENDPOINT_VERSION = "overview_version";
+    private static final String SYNAPSE_ENDPOINT_NAME = "overview_name";
+    private static final String ENDPOINT_RESOURCE_PREFIX = "ep-";
+
+    private static String endpointVersion = CommonConstants.ENDPOINT_VERSION_DEFAULT_VALUE;
 
     private static final String ENDPOINT_DEFAULT_LOCATION = "/trunk/endpoints/";
     private static String endpointLocation = ENDPOINT_DEFAULT_LOCATION;
@@ -114,6 +121,12 @@ public class EndpointUtils {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+
+        // If the version field is not blank endpointVersion is modified accordingly
+        if (StringUtils.isNotBlank(wsdlResource.getProperty("version"))) {
+            endpointVersion = wsdlResource.getProperty("version");
+        }
+
         // saving soap11 endpoints
         List<OMElement> soap11Elements;
         try {
@@ -512,7 +525,8 @@ public class EndpointUtils {
             resource = registry.get(endpointAbsolutePath);
             endpointId = resource.getUUID();
             String existingContent;
-            String newContent = getEndpointContent(url, endpointAbsolutePath);
+            String newContent = getEndpointContentWithOverview(url, endpointAbsolutePath,
+                    ((ResourceImpl) resource).getName(), endpointVersion);
             if(resource.getContent() != null) {
                 existingContent = new String((byte[])(resource.getContent()));
                 if(!existingContent.equals(newContent)) {
@@ -523,7 +537,9 @@ public class EndpointUtils {
             }
         }else {
             resource = registry.newResource();
-            resource.setContent(RegistryUtils.encodeString(getEndpointContent(url, endpointAbsolutePath)));
+            resource.setContent(RegistryUtils.encodeString(
+                    getEndpointContentWithOverview(url, endpointAbsolutePath, deriveEndpointNameFromUrl(url),
+                            endpointVersion)));
         }
         boolean endpointIdCreated = false;
         if (endpointId == null) {
@@ -667,13 +683,6 @@ public class EndpointUtils {
      * @return the path
      */
     public static String deriveEndpointFromUrl(String url) {
-        final String ENDPOINT_RESOURCE_PREFIX = "ep-";
-        String tempURL = url;
-        if (tempURL.startsWith("jms:/")) {
-            tempURL = tempURL.split("[?]")[0];
-        }
-        String name = tempURL.split("/")[tempURL.split("/").length - 1].replace(".","-").
-                replace("=", "-").replace("@", "-").replace("#", "-").replace("~", "-");
         String[] temp = url.split("[?]")[0].split("/");
         StringBuffer sb = new StringBuffer();
         for(int i=0; i<temp.length-1; i++){
@@ -684,8 +693,25 @@ public class EndpointUtils {
         if (urlToPath.length() > 1) {
             urlToPath = urlToPath.substring(1, urlToPath.length() - 1);
         }
-        urlToPath += "/" + ENDPOINT_RESOURCE_PREFIX +  name;
+        urlToPath += "/" + deriveEndpointNameFromUrl(url);
         return urlToPath;
+    }
+
+    /**
+     * Returns an endpoint name with ENDPOINT_RESOURCE_PREFIX
+     *
+     * @param url the endpoint url
+     * @return (ENDPOINT_RESOURCE_PREFIX + name) populated resource name
+     */
+    public static String deriveEndpointNameFromUrl(String url) {
+        String tempURL = url;
+        if (tempURL.startsWith("jms:/")) {
+            tempURL = tempURL.split("[?]")[0];
+        }
+        String name = tempURL.split("/")[tempURL.split("/").length - 1].replace(".", "-").
+                replace("=", "-").replace("@", "-").replace("#", "-").replace("~", "-");
+
+        return ENDPOINT_RESOURCE_PREFIX + name;
     }
 
     /**
@@ -697,20 +723,62 @@ public class EndpointUtils {
      * @throws RegistryException
      */
     public static String getEndpointContent(String endpoint, String path) throws RegistryException {
-        String p;
-        if(path.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH)){
-            p = new String("gov/" + path.substring((RegistryConstants.
-                GOVERNANCE_REGISTRY_BASE_PATH + ENDPOINT_DEFAULT_LOCATION).length()));
-        } else {
-            p = new String("gov/" + path);
-        }
+        path = setFullPath(path);
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement ep = factory.createOMElement(new QName(SYNAPSE_NAMESPACE , SYNAPSE_ENDPOINT, SYNAPSE_NAMESPACE_PREFIX));
-        ep.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, p, null);
+        ep.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
         OMElement address = factory.createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_ADDRESS));
         address.addAttribute(SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE, endpoint, null);
         ep.addChild(address);
         return ep.toString();
+    }
+
+    /**
+     * Create the endpoint content with name and version
+     *
+     * @param endpoint endpoint URI
+     * @param path endpoint location in the registry
+     * @param name resource name
+     * @param version resource version
+     * @return OMElement.toString()
+     * @throws RegistryException
+     */
+    public static String getEndpointContentWithOverview(String endpoint, String path, String name, String version)
+            throws RegistryException {
+        path = setFullPath(path);
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMElement ep = factory
+                .createOMElement(new QName(SYNAPSE_NAMESPACE, SYNAPSE_ENDPOINT, SYNAPSE_NAMESPACE_PREFIX));
+        ep.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
+        OMElement overviewName = factory.
+                createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_NAME));
+        overviewName.setText(name);
+        OMElement overviewVersion = factory.
+                createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_VERSION));
+        overviewVersion.setText(version);
+        OMElement address = factory
+                .createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_ADDRESS));
+        address.addAttribute(SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE, endpoint, null);
+        ep.addChild(overviewName);
+        ep.addChild(overviewVersion);
+        ep.addChild(address);
+        return ep.toString();
+    }
+
+    /**
+     * Create the endpoint content with name and version
+     *
+     * @param path endpoint location in the registry
+     * @return path simplified concatenated path
+     */
+    private static String setFullPath(String path) {
+        if (path.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH)) {
+            path = "gov/" + path.substring((RegistryConstants.
+                    GOVERNANCE_REGISTRY_BASE_PATH + ENDPOINT_DEFAULT_LOCATION).length());
+        } else {
+            path = "gov/" + path;
+        }
+        return path;
     }
 
     /**
