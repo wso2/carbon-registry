@@ -84,34 +84,37 @@ public class IndexDocumentCreator {
         // Set the path of the resource
         resourcePath = file2Index.path;
 
-        // Set the Resource
-        resource = registry.get(resourcePath);
-        // Set the resource name to attribute list
-        addResourceName();
-        // Set the author of the resource to the attribute list
-        addAuthor();
-        // Set the last updater of the resource to the attribute list
-        addLastUpdateUser();
-        // Set the created date of the resource to the attribute list
-        addCreatedDate();
-        // Set the last updated date of the resource to the attribute list
-        addLastUpdatedDate();
-        // Set the last mediaType of the resource to the attribute list
-        addMediaType();
-        // Set Comments of the resource to the attribute list
-        addComments();
-        // Set Tags of the resource to the attribute list
-        addTags();
-        // Set Association types and destinations of the resource to the attribute list
-        addAssociations();
-        // Set Property names and values of the resource to the attribute list
-        addPropertyData();
-        // Set the attribute fields.
-        indexDocument.setFields(attributes);
-        // Set the tenant id.
-        indexDocument.setTenantId(file2Index.tenantId);
-        // Add the document to solr server.
-        solrClient.addDocument(indexDocument);
+        //Check whether resource exists before indexing the resource
+        if (registry.resourceExists(resourcePath)) {
+            // Set the Resource
+            resource = registry.get(resourcePath);
+            // Set the resource name to attribute list
+            addResourceName();
+            // Set the author of the resource to the attribute list
+            addAuthor();
+            // Set the last updater of the resource to the attribute list
+            addLastUpdateUser();
+            // Set the created date of the resource to the attribute list
+            addCreatedDate();
+            // Set the last updated date of the resource to the attribute list
+            addLastUpdatedDate();
+            // Set the last mediaType of the resource to the attribute list
+            addMediaType();
+            // Set Comments of the resource to the attribute list
+            addComments();
+            // Set Tags of the resource to the attribute list
+            addTags();
+            // Set Association types and destinations of the resource to the attribute list
+            addAssociations();
+            // Set Property names and values of the resource to the attribute list
+            addPropertyData();
+            // Set the attribute fields.
+            indexDocument.setFields(attributes);
+            // Set the tenant id.
+            indexDocument.setTenantId(file2Index.tenantId);
+            // Add the document to solr server.
+            solrClient.addDocument(indexDocument);
+        }
     }
 
     /**
