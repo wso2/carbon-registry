@@ -61,6 +61,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     protected static RegistryRealm realm = null;
 
     public void setUp() throws RegistryException {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:setUp()");
         super.setUp();
 /*        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain("foo.com");
         PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(1);*/
@@ -78,6 +80,7 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test1CreateActivity() throws Exception {
+        System.out.println("ActivityManagerImplTest:test1CreateActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -122,6 +125,8 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
     public void test2DeleteActivity() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test2DeleteActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -139,29 +144,33 @@ public class ActivityManagerImplTest extends BaseTestCase {
         assertNull(activity2);
     }
 
-    public void testUpdateActivity() throws Exception {
+    public void test3UpdateActivity() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:testUpdateActivity()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
-        activity1.setUserId("userX");
+        activity1.setUserId("userD");
         activity1.setId("4");
         activity1.setAppId("5");
         activity1.setTitle("Adding Gadget");
-        manager.saveActivity("userX", activity1);
-        Activity activity2 = manager.getActivity("userX", "self", "5", null, "4");
+        manager.saveActivity("userD", activity1);
+        Activity activity2 = manager.getActivity("userD", "self", "5", null, "4");
         assertNotNull(activity2);
-        assertEquals("userX", activity2.getUserId());
+        assertEquals("userD", activity2.getUserId());
         assertEquals("Adding Gadget", activity2.getTitle());
         activity1.setTitle("New Comment added");
-        manager.updateActivity("userX", activity1);
-        activity2 = manager.getActivity("userX", "self", "5", null, "4");
+        manager.updateActivity("userD", activity1);
+        activity2 = manager.getActivity("userD", "self", "5", null, "4");
         assertNotNull(activity2);
-        assertEquals("userX", activity2.getUserId());
+        assertEquals("userD", activity2.getUserId());
         assertEquals("New Comment added", activity2.getTitle());
 
     }
 
-    public void test3GetActivities() throws Exception {
+    public void test4GetActivities() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test3GetActivities()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
@@ -198,26 +207,28 @@ public class ActivityManagerImplTest extends BaseTestCase {
     }
 
 
-    public void test4GetActivities2() throws Exception {
+    public void test5GetActivities2() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test4GetActivities2()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
-        activity1.setUserId("userX");
+        activity1.setUserId("userE");
         activity1.setId("9");
         activity1.setAppId("5");
         activity1.setTitle("Adding Gadget 1 ");
-        manager.saveActivity("userX", activity1);
-        activity1.setUserId("userX");
+        manager.saveActivity("userE", activity1);
+        activity1.setUserId("userE");
         activity1.setId("10");
         activity1.setAppId("5");
         activity1.setTitle("Adding Gadget 2 ");
-        manager.saveActivity("userX", activity1);
-        activity1.setUserId("userX");
+        manager.saveActivity("userE", activity1);
+        activity1.setUserId("userE");
         activity1.setId("8");
         activity1.setAppId("5");
         activity1.setTitle("Adding Gadget 3 ");
-        manager.saveActivity("userX", activity1);
-        Activity[] activities = manager.getActivities("userX", "self", "5", null, new FilterOptionsImpl(), new String[]{"8", "9", "10"});
+        manager.saveActivity("userE", activity1);
+        Activity[] activities = manager.getActivities("userE", "self", "5", null, new FilterOptionsImpl(), new String[]{"8", "9", "10"});
         assertEquals(3, activities.length);
         boolean test = false, test2 = false;
         for (Activity act : activities) {
@@ -233,7 +244,9 @@ public class ActivityManagerImplTest extends BaseTestCase {
 
     }
 
-    public void test5DeleteActivities() throws Exception {
+    public void test6DeleteActivities() throws Exception {
+        // below SOP will be removed after the testing.
+        System.out.println("ActivityManagerImplTest:test5DeleteActivities()");
         ActivityManagerImpl manager = new ActivityManagerImpl();
         manager.setRegistry(registry);
         Activity activity1 = new ActivityImpl();
