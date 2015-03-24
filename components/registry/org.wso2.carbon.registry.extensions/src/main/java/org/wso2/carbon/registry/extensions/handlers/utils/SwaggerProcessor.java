@@ -240,11 +240,16 @@ public class SwaggerProcessor {
 	 * @param content       swagger content.
 	 * @return              Common resource path.
 	 */
-	private String getSwaggerDocumentPath(String rootLocation, JsonObject content) {
+	private String getSwaggerDocumentPath(String rootLocation, JsonObject content) throws RegistryException {
 		String swaggerDocPath = requestContext.getResourcePath().getPath();
 		String swaggerDocName =
 				swaggerDocPath.substring(swaggerDocPath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
-		JsonObject infoObject = content.get(SwaggerConstants.INFO).getAsJsonObject();
+		JsonElement infoElement = content.get(SwaggerConstants.INFO);
+		JsonObject infoObject = (infoElement != null) ? infoElement.getAsJsonObject() : null;
+
+		if(infoObject == null) {
+			throw new RegistryException("Invalid swagger document.");
+		}
 		String serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
 		String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
 
