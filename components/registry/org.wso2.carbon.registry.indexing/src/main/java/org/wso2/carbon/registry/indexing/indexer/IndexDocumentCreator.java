@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Association;
+import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Comment;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.Tag;
@@ -32,6 +33,7 @@ import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
+import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,15 +54,20 @@ public class IndexDocumentCreator {
     // Instance of indexer
     private Indexer indexer;
     private boolean isMediaTypeSet = false;
-    private String resourcePath;
+    private String resourcePath = null;
     private UserRegistry registry;
-    private Resource resource;
+    private Resource resource = null;
     private static final Log log = LogFactory.getLog(IndexDocumentCreator.class);
     // Indexing fields attribute Map
     private Map<String, List<String>> attributes = new HashMap<String, List<String>>();
 
-    public IndexDocumentCreator(File2Index file2Index) {
+    public IndexDocumentCreator(File2Index file2Index, Resource resource) {
         this.file2Index = file2Index;
+        this.resource = resource;
+        // Get the user registry
+        this.registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
+        // Set the path of the resource
+        resourcePath = file2Index.path;
     }
 
     /**
@@ -71,50 +78,48 @@ public class IndexDocumentCreator {
      * @throws RegistryException
      */
     public void createIndexDocument() throws RegistryException, IndexerException {
-        // Get Solr client
-        SolrClient solrClient = SolrClient.getInstance();
-        // Get the user registry
-        registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
+        file2Index.lcName = resource.getProperty("registry.LC.name");
+        file2Index.lcState = file2Index.lcName != null ? resource.getProperty("registry.lifecycle." + file2Index.lcName + ".state") : null;
+        file2Index.mediaType = resource.getMediaType();
+        // Check for resources that can get the byte content
+        if (!(resource instanceof Collection)
+                || IndexingManager.getInstance().getIndexerForMediaType(file2Index.mediaType) != null) {
+            file2Index.data = IndexingUtils.getByteContent(resource, file2Index.sourceURL);
+        }
         // Get the indexDocument
         IndexDocument indexDocument = getIndexDocument();
         // Get the index fields
         if (indexDocument.getFields() != null) {
             attributes = indexDocument.getFields();
         }
-        // Set the path of the resource
-        resourcePath = file2Index.path;
 
-        //Check whether resource exists before indexing the resource
-        if (registry.resourceExists(resourcePath)) {
-            // Set the Resource
-            resource = registry.get(resourcePath);
-            // Set the resource name to attribute list
-            addResourceName();
-            // Set the author of the resource to the attribute list
-            addAuthor();
-            // Set the last updater of the resource to the attribute list
-            addLastUpdateUser();
-            // Set the created date of the resource to the attribute list
-            addCreatedDate();
-            // Set the last updated date of the resource to the attribute list
-            addLastUpdatedDate();
-            // Set the last mediaType of the resource to the attribute list
-            addMediaType();
-            // Set Comments of the resource to the attribute list
-            addComments();
-            // Set Tags of the resource to the attribute list
-            addTags();
-            // Set Association types and destinations of the resource to the attribute list
-            addAssociations();
-            // Set Property names and values of the resource to the attribute list
-            addPropertyData();
-            // Set the attribute fields.
-            indexDocument.setFields(attributes);
-            // Set the tenant id.
-            indexDocument.setTenantId(file2Index.tenantId);
-            // Add the document to solr server.
-            solrClient.addDocument(indexDocument);
-        }
+        // Set the resource name to attribute list
+        addResourceName();
+        // Set the author of the resource to the attribute list
+        addAuthor();
+        // Set the last updater of the resource to the attribute list
+        addLastUpdateUser();
+        // Set the created date of the resource to the attribute list
+        addCreatedDate();
+        // Set the last updated date of the resource to the attribute list
+        addLastUpdatedDate();
+        // Set the last mediaType of the resource to the attribute list
+        addMediaType();
+        // Set Comments of the resource to the attribute list
+        addComments();
+        // Set Tags of the resource to the attribute list
+        addTags();
+        // Set Association types and destinations of the resource to the attribute list
+        addAssociations();
+        // Set Property names and values of the resource to the attribute list
+        addPropertyData();
+        // Set the attribute fields.
+        indexDocument.setFields(attributes);
+        // Set the tenant id.
+        indexDocument.setTenantId(file2Index.tenantId);
+        // Add the document to solr server.
+        SolrClient.getInstance().addDocument(indexDocument);
+
     }
 
     /**
@@ -162,8 +167,8 @@ public class IndexDocumentCreator {
             log.error(message, e);
             throw new RegistryException(message, e);
         }
-        List<String> associationTypeList = new ArrayList<String>();
-        List<String> associationDestinationList = new ArrayList<String>();
+        List<String> associationTypeList = new ArrayList<>();
+        List<String> associationDestinationList = new ArrayList<>();
         if (associations != null && associations.length > 0) {
             for (Association association : associations) {
                 associationTypeList.add(association.getAssociationType());
@@ -185,7 +190,7 @@ public class IndexDocumentCreator {
         // Add resource tags
         Tag[] tags;
         tags = registry.getTags(resourcePath);
-        List<String> tagList = new ArrayList<String>();
+        List<String> tagList = new ArrayList<>();
         if (tags != null && tags.length > 0) {
             for (Tag tag : tags) {
                 tagList.add(tag.getTagName());
@@ -209,7 +214,7 @@ public class IndexDocumentCreator {
             log.error(message, e);
             throw new RegistryException(message, e);
         }
-        List<String> commentList = new ArrayList<String>();
+        List<String> commentList = new ArrayList<>();
         if (comments != null && comments.length > 0) {
             for (Comment comment : comments) {
                 commentList.add(comment.getText());
@@ -287,7 +292,7 @@ public class IndexDocumentCreator {
     private void addResourceName() {
         // Set the resource name
         String resourceName = RegistryUtils.getResourceName(resourcePath);
-        if (resourceName != null && StringUtils.isNotEmpty(resourceName)) {
+        if (StringUtils.isNotEmpty(resourceName)) {
             attributes.put(IndexingConstants.FIELD_RESOURCE_NAME, Arrays.asList(resourceName));
         }
     }

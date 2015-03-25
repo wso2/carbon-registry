@@ -164,12 +164,13 @@ public class IndexingManager {
      * @param sourceURL source url
      * @throws RegistryException
      */
-    public void submitFileForIndexing(int tenantID, String tenantDomain, Resource resource, String path,
+    public void submitFileForIndexing(int tenantID, String tenantDomain, String path,
             String sourceURL) throws RegistryException {
         if (log.isDebugEnabled()) {
             log.debug("Submitting file " + path + " for Indexing");
         }
-        String lcName = resource.getProperty("registry.LC.name");
+        // TODO: handle it inside creator
+/*        String lcName = resource.getProperty("registry.LC.name");
         String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
         String mediaType = resource.getMediaType();
         byte[] byteData = new byte[0];
@@ -177,19 +178,22 @@ public class IndexingManager {
         if (!(resource instanceof Collection)
                 || IndexingManager.getInstance().getIndexerForMediaType(mediaType) != null) {
             byteData = IndexingUtils.getByteContent(resource, sourceURL);
-        }
+        }*/
         // Add the file to AsyncIndexer
-        getIndexer().addFile(
-                new AsyncIndexer.File2Index(byteData, mediaType, path, tenantID, tenantDomain, lcName, lcState));
+/*        getIndexer().addFile(
+                new AsyncIndexer.File2Index(byteData, mediaType, path, tenantID, tenantDomain, lcName, lcState));*/
+        getIndexer().addFile(new AsyncIndexer.File2Index(path, tenantID, tenantDomain, sourceURL));
 
         // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
         // in the indexer. see CARBON-11510.
-        String symlinkPath = resource.getProperty("registry.resource.symlink.path");
+
+        // TODO: handle it inside creator
+/*        String symlinkPath = resource.getProperty("registry.resource.symlink.path");
         if (symlinkPath != null) {
             getIndexer().addFile(
                     new AsyncIndexer.File2Index(byteData, mediaType, symlinkPath, tenantID, tenantDomain, lcName,
                             lcState));
-        }
+        }*/
     }
 
     /**
