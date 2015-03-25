@@ -136,7 +136,7 @@ public class ResourceSubmitter implements Runnable {
             for (LogEntry logEntry : entries) {
                 String path = logEntry.getResourcePath();
                 try {
-                    Resource resourceToIndex;
+//                    Resource resourceToIndex = null;
                     if (path.equals(lastAccessTimeLocation)) {
                         continue;
                     }
@@ -147,57 +147,57 @@ public class ResourceSubmitter implements Runnable {
                                     " will be deleted from Indexing Server");
                         }
                     } else if (IndexingUtils.isAuthorized(registry, path, ActionConstants.GET) && registry
-                                    .resourceExists(path) && (resourceToIndex = registry.get(path)) != null) {
+                                    .resourceExists(path)) {
                         if (logEntry.getAction() == LogEntry.UPDATE) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Updated: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.DELETE_COMMENT) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource comment deleted: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.REMOVE_ASSOCIATION) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource association removed: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.REMOVE_TAG) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource tag removed: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.ADD) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Inserted: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.TAG) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource tag added: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.COMMENT) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource comment added: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == LogEntry.ADD_ASSOCIATION) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource association added: Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == (LogEntry.MOVE)) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             indexingManager.deleteFromIndex(logEntry.getActionData(), tenantId);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Moved: Resource at " + path +
@@ -205,13 +205,13 @@ public class ResourceSubmitter implements Runnable {
                             }
                         } else if (logEntry.getAction() == (LogEntry.COPY)) {
                             path = logEntry.getActionData();
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Copied : Resource at " + path +
                                         " has been submitted to the Indexing Server");
                             }
                         } else if (logEntry.getAction() == (LogEntry.RENAME)) {
-                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, resourceToIndex, path, null);
+                            indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
                             if (log.isDebugEnabled()) {
                                 log.debug("Resource Renamed : Resource at " + path +
                                         " has been submitted to the Indexing Server");

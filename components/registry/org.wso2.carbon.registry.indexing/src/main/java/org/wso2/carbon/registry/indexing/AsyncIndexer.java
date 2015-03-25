@@ -20,6 +20,8 @@ package org.wso2.carbon.registry.indexing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
@@ -52,6 +54,7 @@ public class AsyncIndexer implements Runnable {
         public String path;
         public String lcName;
         public String lcState;
+        public String sourceURL;
 
         public int tenantId;
         public String tenantDomain;
@@ -73,6 +76,13 @@ public class AsyncIndexer implements Runnable {
             this.tenantDomain = tenantDomain;
             this.lcName = lcName;
             this.lcState = lcState;
+        }
+
+        public File2Index (String path, int tenantId, String tenantDomain, String sourceURL) {
+            this.path = path;
+            this.tenantId = tenantId;
+            this.tenantDomain = tenantDomain;
+            this.sourceURL = sourceURL;
         }
     }
 
@@ -192,12 +202,26 @@ public class AsyncIndexer implements Runnable {
 
         private void createIndexDocument(File2Index file2Index) {
             try {
-                // Create the IndexDocument
-                IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index);
-                indexDocumentCreator.createIndexDocument();
-            } catch (RegistryException e) {
-                log.error("Error while indexing.", e);
-            } catch (IndexerException e) {
+                String resourcePath = file2Index.path;
+                Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
+                Resource resource;
+                //Check whether resource exists before indexing the resource
+                if(resourcePath != null && registry.resourceExists(resourcePath) && (resource = registry.get(resourcePath)) != null) {
+                    // Create the IndexDocument
+                    IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                    indexDocumentCreator.createIndexDocument();
+
+                    // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
+                    // in the indexer. see CARBON-11510.
+                    String symlinkPath = resource.getProperty("registry.resource.symlink.path");
+                    if (symlinkPath != null) {
+                        // Create the IndexDocument
+                        file2Index.path = symlinkPath;
+                        indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                        indexDocumentCreator.createIndexDocument();
+                    }
+                }
+            } catch (RegistryException | IndexerException e) {
                 log.error("Error while indexing.", e);
             }
         }
