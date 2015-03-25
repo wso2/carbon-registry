@@ -218,7 +218,8 @@ public class EndpointMediaTypeHandler extends Handler {
                 if (CommonConstants.WSDL_MEDIA_TYPE.equals(mediaType)) {
                     // so there are dependencies for wsdl media
                     dependents.add(targetPath);
-                } else if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(mediaType))) {
+                } else if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(mediaType) ||
+                            CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(mediaType))) {
                     dependents.add(targetPath);
                 }
             }
@@ -250,16 +251,16 @@ public class EndpointMediaTypeHandler extends Handler {
 
             // get the target resource.
             Resource targetResource = registry.get(targetPath);
-            if (CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) &&
-                    CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
+            if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) ||
+                 CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType())) &&
+                CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
                 // if so we are getting the service and add the endpoint to the source
                 Resource sourceResource = registry.get(sourcePath);
-                byte[] sourceContent = (byte[])sourceResource.getContent();
+                byte[] sourceContent = (byte[]) sourceResource.getContent();
                 if (sourceContent == null) {
                     return;
                 }
-                String endpointUrl = EndpointUtils.
-                        deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                String endpointUrl = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                 String endpointEnv = sourceResource.getProperty(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR);
                 if (endpointEnv == null) {
                     endpointEnv = "";
@@ -291,16 +292,16 @@ public class EndpointMediaTypeHandler extends Handler {
 
             // get the target resource.
             Resource targetResource = registry.get(targetPath);
-            if (CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) &&
-                    CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
+            if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) ||
+                 CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType())) &&
+                CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
                 // if so we are getting the service and add the endpoint to the source
                 Resource sourceResource = registry.get(sourcePath);
-                byte[] sourceContent = (byte[])sourceResource.getContent();
+                byte[] sourceContent = (byte[]) sourceResource.getContent();
                 if (sourceContent == null) {
                     return;
                 }
-                String endpointUrl = EndpointUtils.
-                        deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                String endpointUrl = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                 String endpointEnv = sourceResource.getProperty(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR);
                 if (endpointEnv == null) {
                     endpointEnv = "";
