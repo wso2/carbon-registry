@@ -164,6 +164,15 @@ public class RESTServiceUtils {
 		return servicePath;
 	}
 
+	/**
+	 * Adds the service endpoint element to the registry.
+	 *
+	 * @param requestContext        current request information.
+	 * @param endpointElement       endpoint metadata element.
+	 * @param serviceName           name of the service.
+	 * @return                      The resource path of the endpoint.
+	 * @throws RegistryException    If fails to add the endpoint to the registry.
+	 */
 	public static String addEndpointToRegistry(RequestContext requestContext, OMElement endpointElement, String serviceName)
 			throws RegistryException {
 		Registry registry = requestContext.getRegistry();

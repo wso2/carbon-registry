@@ -256,7 +256,13 @@ public class SwaggerProcessor {
 		return resourceObjects;
 	}
 
-
+	/**
+	 * Generates the service endpoint element from the swagger object.
+	 *
+	 * @param swaggerObject     swagger document object.
+	 * @param swaggerVersion    swagger version.
+	 * @return                  endpoint metadata element.
+	 */
 	private OMElement createEndpointElement(JsonObject swaggerObject, String swaggerVersion) {
 		String endpointUrl = null;
 		/*
