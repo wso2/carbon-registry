@@ -105,12 +105,14 @@ public class IndexDocumentCreator {
         addLastUpdatedDate();
         // Set the last mediaType of the resource to the attribute list
         addMediaType();
-        // Set Comments of the resource to the attribute list
-        addComments();
-        // Set Tags of the resource to the attribute list
-        addTags();
-        // Set Association types and destinations of the resource to the attribute list
-        addAssociations();
+        if (!(resource instanceof Collection)) {
+            // Set Comments of the resource to the attribute list
+            addComments();
+            // Set Tags of the resource to the attribute list
+            addTags();
+            // Set Association types and destinations of the resource to the attribute list
+            addAssociations();
+        }
         // Set Property names and values of the resource to the attribute list
         addPropertyData();
         // Set the attribute fields.
