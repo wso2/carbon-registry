@@ -57,6 +57,7 @@ public class RESTServiceUtils {
 	private static final String URL_PATTERN = "urlPattern";
 	private static final String AUTH_TYPE = "authType";
 	private static final String HTTP_VERB = "httpVerb";
+	private static final String ENDPOINT_URL = "endpointURL";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -73,7 +74,8 @@ public class RESTServiceUtils {
 	 * @throws RegistryException    If swagger content is invalid.
 	 */
 	public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
-	                                                  List<JsonObject> resourceObjects) throws RegistryException {
+	                                                  String endpointURL, List<JsonObject> resourceObjects)
+			throws RegistryException {
 
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
@@ -81,6 +83,7 @@ public class RESTServiceUtils {
 		OMElement name = factory.createOMElement(NAME, namespace);
 		OMElement context = factory.createOMElement(CONTEXT, namespace);
 		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
+		OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
 		OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
 		OMElement description = factory.createOMElement(DESCRIPTION, namespace);
 		List<OMElement> uriTemplates = null;
@@ -94,6 +97,7 @@ public class RESTServiceUtils {
 		description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+		endpoint.setText(endpointURL);
 
 		if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			apiVersion.setText(getChildElementText(infoObject, SwaggerConstants.VERSION));
@@ -110,6 +114,7 @@ public class RESTServiceUtils {
 		overview.addChild(apiVersion);
 		overview.addChild(transports);
 		overview.addChild(description);
+		overview.addChild(endpoint);
 		data.addChild(overview);
 
 		if (uriTemplates != null) {

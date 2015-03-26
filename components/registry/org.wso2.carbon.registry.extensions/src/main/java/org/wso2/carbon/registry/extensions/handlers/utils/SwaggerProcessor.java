@@ -72,6 +72,7 @@ public class SwaggerProcessor {
 	private String swaggerResourcesPath;
 	private String documentVersion;
 	private String serviceName;
+	private String endpointUrl;
 	OMElement restServiceElement = null;
 	OMElement endpointElement = null;
 
@@ -112,14 +113,15 @@ public class SwaggerProcessor {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			List<JsonObject> resourceObjects =
 					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
-			restServiceElement = (resourceObjects != null) ?
-			       RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, resourceObjects) : null;
+			restServiceElement = (resourceObjects != null) ? RESTServiceUtils
+					.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects) : null;
 
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			restServiceElement = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
 			endpointElement = createEndpointElement(swaggerDocObject, swaggerVersion);
+			restServiceElement = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
+			                                                                endpointUrl, null);
 		}
 
 		/*
@@ -127,11 +129,11 @@ public class SwaggerProcessor {
 		 */
 		if (restServiceElement != null) {
 			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
-			String endpointpath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, serviceName);
+			String endpointPath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, serviceName);
 			registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 			registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
-			registry.addAssociation(servicePath, endpointpath, CommonConstants.DEPENDS);
-			registry.addAssociation(endpointpath, servicePath, CommonConstants.USED_BY);
+			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
+			registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
 		} else {
 			log.warn("Service content is null. Cannot create the REST Service artifact.");
 		}
@@ -264,7 +266,6 @@ public class SwaggerProcessor {
 	 * @return                  endpoint metadata element.
 	 */
 	private OMElement createEndpointElement(JsonObject swaggerObject, String swaggerVersion) {
-		String endpointUrl = null;
 		/*
 		Extracting endpoint url from the swagger document.
 		 */
@@ -277,8 +278,8 @@ public class SwaggerProcessor {
 				endpointUrl = endpointUrlElement.getAsString();
 			}
 		} else if(SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
-			JsonElement transportesElement = swaggerObject.get(SwaggerConstants.SCHEMES);
-			JsonArray transports = (transportesElement != null) ? transportesElement.getAsJsonArray() : null;
+			JsonElement transportsElement = swaggerObject.get(SwaggerConstants.SCHEMES);
+			JsonArray transports = (transportsElement != null) ? transportsElement.getAsJsonArray() : null;
 			String transport = (transports != null) ? transports.get(0).getAsString() + "://" : DEFAULT_TRANSPORT;
 			JsonElement hostElement = swaggerObject.get(SwaggerConstants.HOST);
 			String host = (hostElement != null) ? hostElement.getAsString() : null;
