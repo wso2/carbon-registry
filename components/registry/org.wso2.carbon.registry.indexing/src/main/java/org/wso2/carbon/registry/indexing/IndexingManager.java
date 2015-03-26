@@ -21,12 +21,10 @@ package org.wso2.carbon.registry.indexing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
-import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.Date;
@@ -159,37 +157,16 @@ public class IndexingManager {
      * Method for submit the file for indexing
      * @param tenantID tenant id
      * @param tenantDomain tenant domain
-     * @param resource resource to be index
      * @param path resource path
      * @param sourceURL source url
      * @throws RegistryException
      */
-    public void submitFileForIndexing(int tenantID, String tenantDomain, Resource resource, String path,
+    public void submitFileForIndexing(int tenantID, String tenantDomain, String path,
             String sourceURL) throws RegistryException {
         if (log.isDebugEnabled()) {
             log.debug("Submitting file " + path + " for Indexing");
         }
-        String lcName = resource.getProperty("registry.LC.name");
-        String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
-        String mediaType = resource.getMediaType();
-        byte[] byteData = new byte[0];
-        // Check for resources that can get the byte content
-        if (!(resource instanceof Collection)
-                || IndexingManager.getInstance().getIndexerForMediaType(mediaType) != null) {
-            byteData = IndexingUtils.getByteContent(resource, sourceURL);
-        }
-        // Add the file to AsyncIndexer
-        getIndexer().addFile(
-                new AsyncIndexer.File2Index(byteData, mediaType, path, tenantID, tenantDomain, lcName, lcState));
-
-        // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
-        // in the indexer. see CARBON-11510.
-        String symlinkPath = resource.getProperty("registry.resource.symlink.path");
-        if (symlinkPath != null) {
-            getIndexer().addFile(
-                    new AsyncIndexer.File2Index(byteData, mediaType, symlinkPath, tenantID, tenantDomain, lcName,
-                            lcState));
-        }
+        getIndexer().addFile(new AsyncIndexer.File2Index(path, tenantID, tenantDomain, sourceURL));
     }
 
     /**

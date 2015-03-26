@@ -60,6 +60,7 @@ public class CommonConstants {
 	public static final String SWAGGER_MEDIA_TYPE = "application/swagger+json";
 	public static final String REST_SERVICE_MEDIA_TYPE = "application/vnd.wso2-restservice+xml";
     public static final String SERVICE_MEDIA_TYPE = RegistryConstants.SERVICE_MEDIA_TYPE;
+    public static final String SOAP_SERVICE_MEDIA_TYPE = "application/vnd.wso2-soap-service+xml";
     public static final String SERVICE_VERSION_COLLECTION_MEDIA_TYPE =
             "application/vnd.wso2-service-version.collection";
     public static final String SERVICE_MAJOR_VERSION_MEDIA_TYPE =

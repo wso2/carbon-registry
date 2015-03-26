@@ -87,7 +87,8 @@
                             org.wso2.carbon.registry.extensions.handlers.*,
                             org.wso2.carbon.registry.extensions.filters.*,
                             org.wso2.carbon.registry.extensions.aspects.*,
-                            org.wso2.carbon.registry.extensions.beans.*
+                            org.wso2.carbon.registry.extensions.beans.*,
+                            org.wso2.carbon.registry.extensions.services.*
                         </Export-Package>
                         <Private-Package>
                             common.*,

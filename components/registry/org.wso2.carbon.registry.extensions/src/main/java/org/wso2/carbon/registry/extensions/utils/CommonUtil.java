@@ -36,6 +36,7 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.ServiceDocumentsBean;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
@@ -143,6 +144,39 @@ public class CommonUtil {
         return "";
     }
 
+    /**
+     * This method returns the attribute value of the given attribute.
+     * @param element xml element(OMElement).
+     * @param attributeName name of the attribute
+     * @return  value of the attribute
+     */
+    public static String getAttributeValue(OMElement element, String attributeName) {
+        String[] parts = attributeName.split("_");
+        OMElement attributeElement = element;
+        for (int i = 0; i < parts.length; i++) {
+            attributeElement = attributeElement.getFirstChildWithName(new QName(parts[i]));
+            if (attributeElement != null && i == parts.length - 1) {
+                return attributeElement.getText();
+            } else if (attributeElement != null) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        attributeElement = element;
+        for (int i = 0; i < parts.length; i++) {
+            attributeElement = attributeElement
+                    .getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, parts[i]));
+            if (attributeElement != null && i == parts.length - 1) {
+                return attributeElement.getText();
+            } else if (attributeElement != null) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return null;
+    }
 
     public static void setServiceName(OMElement element, String serviceName) {
         OMElement overview = element.getFirstChildWithName(new QName("Overview"));
@@ -430,11 +464,17 @@ public class CommonUtil {
     public static void addService(OMElement service, RequestContext context)throws RegistryException{
         Registry registry = context.getRegistry();
         Resource resource = registry.newResource();
-        String version = context.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
-        String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
-                CommonUtil.getServiceNamespace(service));
-        String path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace + version +
-                RegistryConstants.PATH_SEPARATOR + CommonUtil.getServiceName(service);
+        String path;
+        if (Utils.getRxtService() == null){
+            String version = context.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
+            String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
+                    CommonUtil.getServiceNamespace(service));
+            path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace + version +
+                          RegistryConstants.PATH_SEPARATOR + CommonUtil.getServiceName(service);
+        } else {
+            String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.SERVICE_MEDIA_TYPE);
+            path = getPathFromPathExpression(pathExpression, service);
+        }
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
         resource.setMediaType(RegistryConstants.SERVICE_MEDIA_TYPE);
@@ -466,6 +506,107 @@ public class CommonUtil {
                 CommonUtil.getDefinitionURL(service)),path, CommonConstants.USED_BY);
     }
 
+    /**
+     * This method will populate the registry path and store the SOAP service.
+     * Afterwards create an association between WSDL and SOAP service.
+     * @param service XML representation of the SOAP service.
+     * @param context RequestContext
+     * @throws RegistryException
+     */
+    public static void addSoapService(OMElement service, RequestContext context) throws RegistryException {
+        Registry registry = context.getRegistry();
+        Resource resource = registry.newResource();
+        String path;
+        if (Utils.getRxtService() == null){
+            String version = context.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
+            String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(
+                    CommonUtil.getServiceNamespace(service));
+            path = getChrootedServiceLocation(registry, context.getRegistryContext()) + tempNamespace + version +
+                   RegistryConstants.PATH_SEPARATOR + CommonUtil.getServiceName(service);
+        } else {
+            String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.SOAP_SERVICE_MEDIA_TYPE);
+            path = getPathFromPathExpression(pathExpression, service);
+        }
+        String content = service.toString();
+        resource.setContent(RegistryUtils.encodeString(content));
+        resource.setMediaType(CommonConstants.SOAP_SERVICE_MEDIA_TYPE);
+        // when saving the resource we are expecting to call the service media type handler, so
+        // we intentionally release the lock here.
+        boolean lockAlreadyAcquired = !CommonUtil.isUpdateLockAvailable();
+        CommonUtil.releaseUpdateLock();
+        try {
+            //            We check for an existing resource and add its UUID here.
+            if (registry.resourceExists(path)) {
+                Resource existingResource = registry.get(path);
+                resource.setUUID(existingResource.getUUID());
+            } else {
+                resource.setUUID(UUID.randomUUID().toString());
+            }
+            resource.setProperty("registry.DefinitionImport", "true");
+            registry.put(path, resource);
+            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
+            if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
+                registry.associateAspect(resource.getId(), defaultLifeCycle);
+        } finally {
+            if (lockAlreadyAcquired) {
+                CommonUtil.acquireUpdateLock();
+            }
+        }
+        registry.addAssociation(path, RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                                                    CommonUtil.getDefinitionURL(service)),
+                                                                    CommonConstants.DEPENDS);
+        registry.addAssociation(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                                              CommonUtil.getDefinitionURL(service)), path,
+                                                              CommonConstants.USED_BY);
+    }
+
+    /**
+     * This method replaces annotated path with real values
+     * @param pathExpression  registry path with annotated values
+     * @param content XML representation of the meta data
+     * @return registry path with real values
+     */
+    public static String getPathFromPathExpression(String pathExpression, OMElement content) {
+        String output = replaceNameAndNamespace(pathExpression, content);
+        String[] elements = output.split("@");
+        for (int i = 1; i < elements.length; i++) {
+            if (elements[i].indexOf("}") > 0 && elements[i].indexOf("{") == 0) {
+                String key = elements[i].split("}")[0].substring(1);
+                String artifactAttribute = getAttributeValue(content, key);
+                if (artifactAttribute != null) {
+                    output = output.replace("@{" + key + "}", artifactAttribute);
+                } else {
+                    String msg = "Value for required attribute " + key + " found empty.";
+                    log.error(msg);
+                }
+            }
+        }
+        return output;
+    }
+
+    /**
+     *  This method replaces annotated namespace and name with real values
+     * @param pathExpression registry path with annotated values
+     * @param content XML representation of the meta data
+     * @return complete registry path with namespace and name information
+     */
+    private static String replaceNameAndNamespace(String pathExpression, OMElement content) {
+        String output = pathExpression;
+        String tempNamespace = CommonUtil.derivePathFragmentFromNamespace(CommonUtil.getServiceNamespace(content));
+        String name = CommonUtil.getServiceName(content);
+        if (name != null) {
+            output = output.replace("@{name}", name);
+            if (tempNamespace.startsWith("/")) {
+                tempNamespace = tempNamespace.substring(1);
+            }
+            if (tempNamespace.endsWith("/")) {
+                tempNamespace = tempNamespace.substring(0, tempNamespace.length() - 1);
+            }
+            output = output.replace("@{namespace}", tempNamespace);
+        }
+        return output;
+    }
+
     private static String getChrootedServiceLocation(Registry registry, RegistryContext registryContext) {
         return  RegistryUtils.getAbsolutePath(registryContext,
                 registry.getRegistryContext().getServicePath());  // service path contains the base
@@ -477,8 +618,8 @@ public class CommonUtil {
 
             rxtList = MediaTypesUtils.getResultPaths(registry, CommonConstants.RXT_MEDIA_TYPE);
 
-            for (String rxtcontent : rxtList) {
-            	Resource resource = registry.get(rxtcontent);
+            for (String rxtContent : rxtList) {
+            	Resource resource = registry.get(rxtContent);
             	Object content = resource.getContent();
             	String elementString;
             	if (content instanceof String) {
