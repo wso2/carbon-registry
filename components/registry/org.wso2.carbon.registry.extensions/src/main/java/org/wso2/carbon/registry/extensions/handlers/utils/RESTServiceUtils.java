@@ -60,7 +60,8 @@ public class RESTServiceUtils {
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
-	public static String commonRestServiceLocation;
+	private static String commonRestServiceLocation;
+	private static String commonEndpointLocation;
 
 	/**
 	 * Extracts the data from swagger and creates an REST Service registry artifact.
@@ -161,6 +162,40 @@ public class RESTServiceUtils {
 		registry.put(servicePath, serviceResource);
 		log.info("REST Service created at " + servicePath);
 		return servicePath;
+	}
+
+	public static String addEndpointToRegistry(RequestContext requestContext, OMElement endpointElement, String serviceName)
+			throws RegistryException {
+		Registry registry = requestContext.getRegistry();
+		//Creating new resource.
+		Resource endpointResource = new ResourceImpl();
+		//setting endpoint media type.
+		endpointResource.setMediaType(CommonConstants.ENDPOINT_MEDIA_TYPE);
+
+		OMElement overview = endpointElement.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
+		String endpointVersion =
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION)).getText();
+		String endpointName =
+				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
+		endpointVersion = (endpointVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : endpointVersion;
+
+		//set version property.
+		endpointResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, endpointVersion);
+		//set content.
+		endpointResource.setContent(RegistryUtils.encodeString(endpointElement.toString()));
+
+		String resourceId = endpointResource.getUUID();
+		//set resource UUID
+		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
+
+		endpointResource.setUUID(resourceId);
+		String endpointPath = getChrootedEndpointLocation(requestContext.getRegistryContext()) + serviceName +
+		                     RegistryConstants.PATH_SEPARATOR + endpointVersion +
+		                     RegistryConstants.PATH_SEPARATOR + endpointName;
+		//saving the api resource to repository.
+		registry.put(endpointPath, endpointResource);
+		log.info("Endpoint created at " + endpointPath);
+		return endpointPath;
 	}
 
 	/**
@@ -271,11 +306,31 @@ public class RESTServiceUtils {
 	}
 
 	/**
+	 * Returns the root location of the endpoint.
+	 *
+	 * @param registryContext   registry context
+	 * @return                  The root location of the Endpoint artifact.
+	 */
+	private static String getChrootedEndpointLocation(RegistryContext registryContext) {
+		return RegistryUtils.getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+		                                                      commonEndpointLocation);
+	}
+
+	/**
 	 * Set the restServiceLocation.
 	 *
 	 * @param restServiceLocation  the restServiceLocation
 	 */
 	public static void setCommonRestServiceLocation(String restServiceLocation) {
 		RESTServiceUtils.commonRestServiceLocation = restServiceLocation;
+	}
+
+	/**
+	 * Set the endpointLocation.
+	 *
+	 * @param endpointLocation  the endpointLocation
+	 */
+	public static void setCommonEndpointLocation(String endpointLocation) {
+		RESTServiceUtils.commonEndpointLocation = endpointLocation;
 	}
 }

@@ -16,8 +16,14 @@
 
 package org.wso2.carbon.registry.extensions.handlers.utils;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -53,12 +59,21 @@ import java.util.UUID;
 public class SwaggerProcessor {
 
 	private static final Log log = LogFactory.getLog(SwaggerProcessor.class);
+	private static final String DEFAULT_TRANSPORT = "http://";
+	private static final String DEFAULT_BASE_PATH = "/";
+	private static final String OVERVIEW = "overview";
+	private static final String NAME = "name";
+	private static final String VERSION = "version";
+	private static final String ADDRESS = "address";
 
 	private RequestContext requestContext;
 	private Registry registry;
 	private JsonParser parser;
 	private String swaggerResourcesPath;
 	private String documentVersion;
+	private String serviceName;
+	OMElement restServiceElement = null;
+	OMElement endpointElement = null;
 
 	public SwaggerProcessor(RequestContext requestContext) {
 		this.parser = new JsonParser();
@@ -89,7 +104,6 @@ public class SwaggerProcessor {
 		}
 		String swaggerResourcePath = getSwaggerDocumentPath(commonLocation, swaggerDocObject);
 
-		OMElement data = null;
 		/*
 		Switches from the swagger version and process document adding process and the REST Service creation process
 		using the relevant documents.
@@ -98,21 +112,26 @@ public class SwaggerProcessor {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
 			List<JsonObject> resourceObjects =
 					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
-			data = (resourceObjects != null) ?
+			restServiceElement = (resourceObjects != null) ?
 			       RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, resourceObjects) : null;
+
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			data = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
+			restServiceElement = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, null);
+			endpointElement = createEndpointElement(swaggerDocObject, swaggerVersion);
 		}
 
 		/*
 		If REST Service content is not empty, saves the REST service and adds the relevant associations.
 		 */
-		if (data != null) {
-			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, data);
+		if (restServiceElement != null) {
+			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
+			String endpointpath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, serviceName);
 			registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 			registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
+			registry.addAssociation(servicePath, endpointpath, CommonConstants.DEPENDS);
+			registry.addAssociation(endpointpath, servicePath, CommonConstants.USED_BY);
 		} else {
 			log.warn("Service content is null. Cannot create the REST Service artifact.");
 		}
@@ -220,7 +239,11 @@ public class SwaggerProcessor {
 				throw new RegistryException("The URL " + sourceUrl + path + " is incorrect.", e);
 			}
 			resourceContentStream = CommonUtil.readSourceContent(resourceInputStream);
-			resourceObjects.add(parser.parse(resourceContentStream.toString()).getAsJsonObject());
+			JsonObject resourceObject = parser.parse(resourceContentStream.toString()).getAsJsonObject();
+			resourceObjects.add(resourceObject);
+			if(endpointElement == null) {
+				endpointElement = createEndpointElement(resourceObject, SwaggerConstants.SWAGGER_VERSION_12);
+			}
 			path = swaggerResourcesPath + path;
 			//Save Resource document to registry
 			addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion);
@@ -231,6 +254,62 @@ public class SwaggerProcessor {
 		CommonUtil.closeOutputStream(resourceContentStream);
 		CommonUtil.closeInputStream(resourceInputStream);
 		return resourceObjects;
+	}
+
+
+	private OMElement createEndpointElement(JsonObject swaggerObject, String swaggerVersion) {
+		String endpointUrl = null;
+		/*
+		Extracting endpoint url from the swagger document.
+		 */
+		if(SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
+			JsonElement endpointUrlElement = swaggerObject.get(SwaggerConstants.BASE_PATH);
+			if(endpointUrlElement == null) {
+				log.warn("Endpoint url is not specified in the swagger document. Endpoint creation might fail. ");
+				return null;
+			} else {
+				endpointUrl = endpointUrlElement.getAsString();
+			}
+		} else if(SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
+			JsonElement transportesElement = swaggerObject.get(SwaggerConstants.SCHEMES);
+			JsonArray transports = (transportesElement != null) ? transportesElement.getAsJsonArray() : null;
+			String transport = (transports != null) ? transports.get(0).getAsString() + "://" : DEFAULT_TRANSPORT;
+			JsonElement hostElement = swaggerObject.get(SwaggerConstants.HOST);
+			String host = (hostElement != null) ? hostElement.getAsString() : null;
+			if(host == null) {
+				log.warn("Endpoint url is not specified in the swagger document. Endpoint creation might fail. ");
+				return null;
+			}
+			JsonElement basePathElement = swaggerObject.get(SwaggerConstants.BASE_PATH);
+			String basePath = (basePathElement != null) ? basePathElement.getAsString() : DEFAULT_BASE_PATH;
+
+			endpointUrl = transport + host + basePath;
+		}
+		/*
+		Creating endpoint artifact
+		 */
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
+		OMElement endpointElement = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
+		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
+		OMElement name = factory.createOMElement(NAME, namespace);
+		OMElement version = factory.createOMElement(VERSION, namespace);
+		OMElement address = factory.createOMElement(ADDRESS, namespace);
+
+		name.setText(serviceName + "-endpoint");
+
+		if(documentVersion != null) {
+			version.setText(documentVersion);
+		} else {
+			version.setText(CommonConstants.SWAGGER_DOC_VERSION_DEFAULT_VALUE);
+		}
+		address.setText(endpointUrl);
+		overview.addChild(name);
+		overview.addChild(version);
+		overview.addChild(address);
+		endpointElement.addChild(overview);
+
+		return endpointElement;
 	}
 
 	/**
@@ -247,10 +326,10 @@ public class SwaggerProcessor {
 		JsonElement infoElement = content.get(SwaggerConstants.INFO);
 		JsonObject infoObject = (infoElement != null) ? infoElement.getAsJsonObject() : null;
 
-		if(infoObject == null) {
+		if(infoObject == null || infoElement.isJsonNull()) {
 			throw new RegistryException("Invalid swagger document.");
 		}
-		String serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
+		serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
 		String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
 
 		swaggerResourcesPath =  rootLocation + serviceProvider + RegistryConstants.PATH_SEPARATOR + serviceName +

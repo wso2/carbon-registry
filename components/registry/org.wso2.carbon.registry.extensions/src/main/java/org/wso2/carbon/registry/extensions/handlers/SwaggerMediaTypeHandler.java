@@ -43,6 +43,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 
 	private String swaggerLocation;
 	private String restServiceLocation;
+	private String endpointLocation;
 
 	/**
 	 * Extracts the common location for swagger docs from registry.xml entry
@@ -85,6 +86,28 @@ public class SwaggerMediaTypeHandler extends Handler {
 			}
 		}
 		RESTServiceUtils.setCommonRestServiceLocation(restServiceLocation);
+	}
+
+	/**
+	 * Extracts the common location for REST API Endpoint artifacts from registry.xml entry.
+	 *
+	 * @param locationConfiguration location configuration element
+	 */
+	public void setEndpointLocationConfiguration(OMElement locationConfiguration) {
+		Iterator confElements = locationConfiguration.getChildElements();
+		while (confElements.hasNext()) {
+			OMElement confElement = (OMElement)confElements.next();
+			if (CommonConstants.LOCATION_TAG.equals(confElement.getLocalName())) {
+				endpointLocation = confElement.getText();
+				if (!endpointLocation.startsWith(RegistryConstants.PATH_SEPARATOR)) {
+					endpointLocation = RegistryConstants.PATH_SEPARATOR + endpointLocation;
+				}
+				if (!endpointLocation.endsWith(RegistryConstants.PATH_SEPARATOR)) {
+					endpointLocation = endpointLocation + RegistryConstants.PATH_SEPARATOR;
+				}
+			}
+		}
+		RESTServiceUtils.setCommonEndpointLocation(endpointLocation);
 	}
 
 	/**

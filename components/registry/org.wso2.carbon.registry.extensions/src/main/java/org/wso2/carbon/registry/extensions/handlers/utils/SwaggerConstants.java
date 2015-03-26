@@ -29,6 +29,7 @@ public class SwaggerConstants {
 	public static final String NAME = "name";
 	public static final String REQUIRED = "required";
 	public static final String VERSION = "version";
+	public static final String BASE_PATH = "basePath";
 
 	//swagger 1.2 constants
 	public static final String SWAGGER_VERSION_KEY = "swaggerVersion";
@@ -45,6 +46,5 @@ public class SwaggerConstants {
 	public static final String PATH = "path";
 	public static final String SCHEMES = "schemes";
 	public static final String PATHS = "paths";
-
-
+	public static final String HOST = "host";
 }
