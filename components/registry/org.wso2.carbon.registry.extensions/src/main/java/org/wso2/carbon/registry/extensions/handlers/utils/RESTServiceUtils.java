@@ -77,6 +77,10 @@ public class RESTServiceUtils {
 	                                                  String endpointURL, List<JsonObject> resourceObjects)
 			throws RegistryException {
 
+		if(swaggerDocObject == null || swaggerVersion == null) {
+			throw new IllegalArgumentException("Arguments are invalid. cannot create the REST service artifact. ");
+		}
+
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
 		OMElement provider = factory.createOMElement(PROVIDER, namespace);
@@ -135,6 +139,10 @@ public class RESTServiceUtils {
 	 */
 	public static String addServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
 
+		if(requestContext == null || data == null) {
+			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the rest service to registry. ");
+		}
+
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
 		Resource serviceResource = new ResourceImpl();
@@ -180,6 +188,11 @@ public class RESTServiceUtils {
 	 */
 	public static String addEndpointToRegistry(RequestContext requestContext, OMElement endpointElement, String serviceName)
 			throws RegistryException {
+
+		if(requestContext == null || endpointElement == null || serviceName == null) {
+			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the endpoint to registry. ");
+		}
+
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
 		Resource endpointResource = new ResourceImpl();
@@ -219,7 +232,7 @@ public class RESTServiceUtils {
 	 * @param key       element key
 	 * @return          Element value
 	 */
-	public static String getChildElementText(JsonObject object, String key) {
+	private static String getChildElementText(JsonObject object, String key) {
 		JsonElement element = object.get(key);
 		if (element != null) {
 			return object.get(key).getAsString();
