@@ -54,16 +54,16 @@ public class EndpointUtils {
     private static final String SERVICE_ENDPOINTS_ENTRY_ELEMENT = "entry";
     private static final String LOCATION_ATTR = "location";
 
-    private static final String SYNAPSE_NAMESPACE = "http://ws.apache.org/ns/synapse";
-    private static final String SYNAPSE_NAMESPACE_PREFIX = "ns";
     private static final String SYNAPSE_ENDPOINT = "endpoint";
     private static final String SYNAPSE_ENDPOINT_NAME_ATTRIBUTE = "name";
     private static final String SYNAPSE_ENDPOINT_ADDRESS = "address";
     private static final String SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE = "uri";
-    private static final String SYNAPSE_ENDPOINT_VERSION = "overview_version";
-    private static final String SYNAPSE_ENDPOINT_NAME = "overview_name";
+    private static final String SYNAPSE_ENDPOINT_OVERVIEW = "overview";
+    private static final String SYNAPSE_ENDPOINT_VERSION = "version";
+    private static final String SYNAPSE_ENDPOINT_NAME = "name";
     private static final String ENDPOINT_RESOURCE_PREFIX = "ep-";
-
+    private static final String ENDPOINT_NAMESPACE_ATTRIBUTE = "xmlns";
+    private static final String ENDPOINT_ELEMENT_NAMESPACE = "http://www.wso2.org/governance/metadata";
     private static String endpointVersion = CommonConstants.ENDPOINT_VERSION_DEFAULT_VALUE;
 
     private static final String ENDPOINT_DEFAULT_LOCATION = "/trunk/endpoints/";
@@ -683,6 +683,9 @@ public class EndpointUtils {
      * @return the path
      */
     public static String deriveEndpointFromUrl(String url) {
+        if (isArgumentsNull(url, "null", "null", "null")) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
+        }
         String[] temp = url.split("[?]")[0].split("/");
         StringBuffer sb = new StringBuffer();
         for(int i=0; i<temp.length-1; i++){
@@ -704,6 +707,9 @@ public class EndpointUtils {
      * @return (ENDPOINT_RESOURCE_PREFIX + name) populated resource name
      */
     public static String deriveEndpointNameFromUrl(String url) {
+        if (isArgumentsNull(url, "null", "null", "null")) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
+        }
         String tempURL = url;
         if (tempURL.startsWith("jms:/")) {
             tempURL = tempURL.split("[?]")[0];
@@ -722,15 +728,20 @@ public class EndpointUtils {
      * @return
      * @throws RegistryException
      */
+    @Deprecated
     public static String getEndpointContent(String endpoint, String path) throws RegistryException {
+        if (isArgumentsNull(endpoint, path, "null", "null")) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
+        }
         path = setFullPath(path);
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement ep = factory.createOMElement(new QName(SYNAPSE_NAMESPACE , SYNAPSE_ENDPOINT, SYNAPSE_NAMESPACE_PREFIX));
-        ep.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
-        OMElement address = factory.createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_ADDRESS));
+        OMElement endpointElement = factory
+                .createOMElement(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT, null));
+        endpointElement.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
+        OMElement address = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_ADDRESS));
         address.addAttribute(SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE, endpoint, null);
-        ep.addChild(address);
-        return ep.toString();
+        endpointElement.addChild(address);
+        return endpointElement.toString();
     }
 
     /**
@@ -745,24 +756,27 @@ public class EndpointUtils {
      */
     public static String getEndpointContentWithOverview(String endpoint, String path, String name, String version)
             throws RegistryException {
+        if (isArgumentsNull(endpoint, path, name, version)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for content creation.");
+        }
         path = setFullPath(path);
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement ep = factory
-                .createOMElement(new QName(SYNAPSE_NAMESPACE, SYNAPSE_ENDPOINT, SYNAPSE_NAMESPACE_PREFIX));
-        ep.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
-        OMElement overviewName = factory.
-                createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_NAME));
+        OMElement endpointElement = factory.createOMElement(new QName(SYNAPSE_ENDPOINT));
+        // Workaround for manually set xml namespace value.
+        endpointElement.addAttribute(ENDPOINT_NAMESPACE_ATTRIBUTE, ENDPOINT_ELEMENT_NAMESPACE, null);
+        endpointElement.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
+        OMElement endpointElementOverview = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_OVERVIEW));
+        OMElement overviewName = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_NAME));
         overviewName.setText(name);
-        OMElement overviewVersion = factory.
-                createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_VERSION));
+        OMElement overviewVersion = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_VERSION));
         overviewVersion.setText(version);
-        OMElement address = factory
-                .createOMElement(new QName(SYNAPSE_NAMESPACE_PREFIX + ":" + SYNAPSE_ENDPOINT_ADDRESS));
-        address.addAttribute(SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE, endpoint, null);
-        ep.addChild(overviewName);
-        ep.addChild(overviewVersion);
-        ep.addChild(address);
-        return ep.toString();
+        OMElement overviewAddress = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_ADDRESS));
+        overviewAddress.setText(endpoint);
+        endpointElementOverview.addChild(overviewName);
+        endpointElementOverview.addChild(overviewVersion);
+        endpointElementOverview.addChild(overviewAddress);
+        endpointElement.addChild(endpointElementOverview);
+        return endpointElement.toString();
     }
 
     /**
@@ -785,20 +799,34 @@ public class EndpointUtils {
      * Extract endpoint URL from content
      *
      * @param endpointContent endpoint content
-     * @return
+     * @return addressElement.getText() String
      * @throws RegistryException
      */
     public static String deriveEndpointFromContent(String endpointContent) throws RegistryException {
+        if (isArgumentsNull(endpointContent, "null", "null", "null")) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint from content.");
+        }
         try {
             OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
-            OMElement addressElement = endpointElement.getFirstChildWithName
-                    (new QName(SYNAPSE_NAMESPACE, SYNAPSE_ENDPOINT_ADDRESS));
-            return addressElement.getAttribute(new QName(SYNAPSE_ENDPOINT_ADDRESS_URI_ATTRIBUTE)).getAttributeValue();
-        } catch (Exception e) {
+            OMElement overviewElement = endpointElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_OVERVIEW));
+            OMElement addressElement = overviewElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_ADDRESS));
+            return addressElement.getText();
+        } catch (XMLStreamException e) {
             throw new RegistryException("Invalid endpoint content", e);
         }
     }
 
-
-
+    /**
+     * Check whether all the parameters are null or not
+     * "null" is considered as a valid string.
+     *
+     * @param value1,value2,value3,value4 argument String values
+     * @return boolean value of isBlank()
+     */
+    private static boolean isArgumentsNull(String value1, String value2, String value3, String value4) {
+        return StringUtils.isBlank(value1) || StringUtils.isBlank(value2) || StringUtils.isBlank(value3) ||
+                StringUtils.isBlank(value4);
+    }
 }
