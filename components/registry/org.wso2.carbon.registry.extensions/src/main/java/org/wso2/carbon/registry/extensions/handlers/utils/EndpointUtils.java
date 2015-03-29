@@ -722,6 +722,7 @@ public class EndpointUtils {
 
     /**
      * Create the endpoint content
+     * This method is replaced by getEndpointContentWithOverview() below.
      *
      * @param endpoint endpoint URI
      * @param path endpoint location in the registry
