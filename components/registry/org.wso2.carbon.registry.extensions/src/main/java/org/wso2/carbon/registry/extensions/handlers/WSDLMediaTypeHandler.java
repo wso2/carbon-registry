@@ -65,6 +65,16 @@ public class WSDLMediaTypeHandler extends Handler {
 
     private boolean createService = true;
 
+    private boolean createSOAPService = true;
+
+    public boolean isCreateSOAPService() {
+        return createSOAPService;
+    }
+
+    public void setCreateSOAPService(String createSOAPService) {
+        this.createSOAPService = Boolean.valueOf(createSOAPService);
+    }
+
     private boolean disableWSDLValidation = false;
 
     public OMElement getWsdlLocationConfiguration() {
@@ -477,6 +487,7 @@ public class WSDLMediaTypeHandler extends Handler {
     protected WSDLProcessor buildWSDLProcessor(RequestContext requestContext) {
         WSDLProcessor wsdlProcessor = new WSDLProcessor(requestContext);
         wsdlProcessor.setCreateService(getCreateService());
+        wsdlProcessor.setCreateSOAPService(isCreateSOAPService());
         return wsdlProcessor;
     }
 
@@ -490,6 +501,7 @@ public class WSDLMediaTypeHandler extends Handler {
     protected WSDLProcessor buildWSDLProcessor(RequestContext requestContext, boolean useOriginalSchema) {
         WSDLProcessor wsdlProcessor = new WSDLProcessor(requestContext, useOriginalSchema);
         wsdlProcessor.setCreateService(getCreateService());
+        wsdlProcessor.setCreateSOAPService(isCreateSOAPService());
         return wsdlProcessor;
     }
 

@@ -108,7 +108,17 @@ public class WSDLProcessor {
 
     private boolean createService = true;
 
-    public WSDLProcessor(RequestContext requestContext) {
+	private boolean createSOAPService = true;
+
+	public boolean isCreateSOAPService() {
+		return createSOAPService;
+	}
+
+	public void setCreateSOAPService(boolean createSOAPService) {
+		this.createSOAPService = createSOAPService;
+	}
+
+	public WSDLProcessor(RequestContext requestContext) {
         this.registry = requestContext.getRegistry();
         try {
             this.systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
@@ -185,7 +195,7 @@ public class WSDLProcessor {
         String currentEnvironment = null;
         String masterVersion= null;
         
-        List<String> dependeinciesList = new ArrayList<String>();
+        List<String> listOfDependencies = new ArrayList<String>();
         String version = context.getResource().getProperty("version");
 
         if(version == null){
@@ -278,7 +288,7 @@ public class WSDLProcessor {
                     Association[] associations = registry.getAssociations(wsdlPath,CommonConstants.DEPENDS);
                     for (Association association : associations) {
                         if(association.getSourcePath().equals(wsdlPath)){
-                            dependeinciesList.add(association.getDestinationPath());
+                            listOfDependencies.add(association.getDestinationPath());
                         }
                     }
                 }
@@ -296,17 +306,17 @@ public class WSDLProcessor {
         String masterWSDLPath;
         if (!isDefaultEnvironment) {
             schemaProcessor.saveSchemasToRegistry(context, currentSchemaLocation,
-                    null, null,masterVersion,dependeinciesList,disableSymLinkCreation);
+                    null, null,masterVersion,listOfDependencies,disableSymLinkCreation);
             updateWSDLSchemaLocations();
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,currentEndpointLocation
-                    ,dependeinciesList,masterVersion,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
+                    ,listOfDependencies,masterVersion,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
 
             addPolicyImportys(context, version);
 
             saveAssociations();
         } else {
             schemaProcessor.saveSchemasToRegistry(context, getChrootedSchemaLocation(registryContext),
-                    null, null, version, dependeinciesList, disableSymLinkCreation);
+                    null, null, version, listOfDependencies, disableSymLinkCreation);
             updateWSDLSchemaLocations();
 
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
@@ -317,8 +327,11 @@ public class WSDLProcessor {
             if (addService && getCreateService()) {
                 List<OMElement> serviceContentBeans = createServiceContent(masterWSDLPath, metadata);
                 for (OMElement serviceContentBean : serviceContentBeans) {
-                    CommonUtil.addService(serviceContentBean, context);
-
+                    if (isCreateSOAPService()) {
+                        CommonUtil.addSoapService(serviceContentBean, context);
+                    } else {
+                        CommonUtil.addService(serviceContentBean, context);
+                    }
                 }
             }
         }

@@ -18,7 +18,6 @@ package org.wso2.carbon.registry.indexing.service;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrDocument;
@@ -43,9 +42,7 @@ import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.utils.ServerConstants;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -140,28 +137,46 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return authorizedPaths;
     }
 
+    /**
+     * Method to get the SolrDocumentList
+     * @param searchQuery search query
+     * @param attributes search attributes map
+     * @param registry Registry
+     * @return SearchResultsBean
+     * @throws IndexerException
+     * @throws RegistryException
+     */
     private SearchResultsBean searchContentInternal(String searchQuery, Map<String, String> attributes,
-                                           UserRegistry registry) throws IndexerException, RegistryException {
+            UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
+        // To verify advance search and metadata search
+        boolean isMetaDataSearch = true;
+        String advanceSearchAttribute = attributes.get(IndexingConstants.ADVANCE_SEARCH);
+        if (advanceSearchAttribute != null && advanceSearchAttribute.equals("true")) {
+            isMetaDataSearch = false;
+            attributes.remove(IndexingConstants.ADVANCE_SEARCH);
+        }
         SolrDocumentList results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
                 client.query(searchQuery, registry.getTenantId());
 
-        if (log.isDebugEnabled()) log.debug("result received "+ results);
+        if (log.isDebugEnabled())
+            log.debug("result received " + results);
 
         List<ResourceData> filteredResults = new ArrayList<ResourceData>();
-// TODO: Proper mechanism once authroizations are fixed - senaka
-//        for (SolrDocument solrDocument : results){
-//            String path = getPathFromId((String)solrDocument.getFirstValue("id"));
-//            if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
-//                filteredResults.add(loadResourceByPath(registry, path));
-//            }
-//        }
-// -- end of proper mechanism
+        // TODO: Proper mechanism once authroizations are fixed - senaka
+        //        for (SolrDocument solrDocument : results){
+        //            String path = getPathFromId((String)solrDocument.getFirstValue("id"));
+        //            if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
+        //                filteredResults.add(loadResourceByPath(registry, path));
+        //            }
+        //        }
+        // -- end of proper mechanism
 
         MessageContext messageContext = MessageContext.getCurrentMessageContext();
 
-        if ((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)) || PaginationContext.getInstance() != null) {
+        if (((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext))
+                || PaginationContext.getInstance() != null) && isMetaDataSearch) {
             try {
                 PaginationContext paginationContext;
                 if (messageContext != null) {
@@ -170,11 +185,11 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     paginationContext = PaginationContext.getInstance();
                 }
                 List<String> authorizedPathList = new ArrayList<String>();
-                for (SolrDocument solrDocument : results){
+                for (SolrDocument solrDocument : results) {
                     if (paginationContext.getLimit() > 0 && authorizedPathList.size() == paginationContext.getLimit()) {
                         break;
                     }
-                    String path = getPathFromId((String)solrDocument.getFirstValue("id"));
+                    String path = getPathFromId((String) solrDocument.getFirstValue("id"));
                     if (registry.resourceExists(path) && isAuthorized(registry, path, ActionConstants.GET)) {
                         authorizedPathList.add(path);
                     }
@@ -211,14 +226,14 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     }
                 }
             } finally {
-                if(messageContext!=null){
+                if (messageContext != null) {
                     PaginationContext.destroy();
                 }
             }
 
         } else {
-            for (SolrDocument solrDocument : results){
-                String path = getPathFromId((String)solrDocument.getFirstValue("id"));
+            for (SolrDocument solrDocument : results) {
+                String path = getPathFromId((String) solrDocument.getFirstValue("id"));
                 if ((isAuthorized(registry, path, ActionConstants.GET))) {
                     ResourceData resourceData = loadResourceByPath(registry, path);
                     if (resourceData != null) {
@@ -228,7 +243,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("filtered results "+ filteredResults + " for user "+ registry.getUserName());
+            log.debug("filtered results " + filteredResults + " for user " + registry.getUserName());
         }
         resultsBean.setResourceDataList(filteredResults.toArray(new ResourceData[filteredResults.size()]));
         return resultsBean;
