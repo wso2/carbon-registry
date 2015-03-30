@@ -23,7 +23,7 @@ import com.google.gson.JsonParser;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -37,6 +37,7 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,10 +72,10 @@ public class SwaggerProcessor {
 	private JsonParser parser;
 	private String swaggerResourcesPath;
 	private String documentVersion;
-	private String serviceName;
 	private String endpointUrl;
 	OMElement restServiceElement = null;
 	OMElement endpointElement = null;
+	private String endpointLocation;
 
 	public SwaggerProcessor(RequestContext requestContext) {
 		this.parser = new JsonParser();
@@ -119,7 +120,7 @@ public class SwaggerProcessor {
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
 			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			endpointElement = createEndpointElement(swaggerDocObject, swaggerVersion);
+			createEndpointElement(swaggerDocObject, swaggerVersion);
 			restServiceElement = RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion,
 			                                                                endpointUrl, null);
 		}
@@ -129,7 +130,7 @@ public class SwaggerProcessor {
 		 */
 		if (restServiceElement != null) {
 			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
-			String endpointPath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, serviceName);
+			String endpointPath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
 			registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 			registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
 			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
@@ -244,7 +245,7 @@ public class SwaggerProcessor {
 			JsonObject resourceObject = parser.parse(resourceContentStream.toString()).getAsJsonObject();
 			resourceObjects.add(resourceObject);
 			if(endpointElement == null) {
-				endpointElement = createEndpointElement(resourceObject, SwaggerConstants.SWAGGER_VERSION_12);
+				createEndpointElement(resourceObject, SwaggerConstants.SWAGGER_VERSION_12);
 			}
 			path = swaggerResourcesPath + path;
 			//Save Resource document to registry
@@ -263,9 +264,8 @@ public class SwaggerProcessor {
 	 *
 	 * @param swaggerObject     swagger document object.
 	 * @param swaggerVersion    swagger version.
-	 * @return                  endpoint metadata element.
 	 */
-	private OMElement createEndpointElement(JsonObject swaggerObject, String swaggerVersion) {
+	private void createEndpointElement(JsonObject swaggerObject, String swaggerVersion) throws RegistryException {
 		/*
 		Extracting endpoint url from the swagger document.
 		 */
@@ -273,7 +273,7 @@ public class SwaggerProcessor {
 			JsonElement endpointUrlElement = swaggerObject.get(SwaggerConstants.BASE_PATH);
 			if(endpointUrlElement == null) {
 				log.warn("Endpoint url is not specified in the swagger document. Endpoint creation might fail. ");
-				return null;
+				return;
 			} else {
 				endpointUrl = endpointUrlElement.getAsString();
 			}
@@ -285,7 +285,7 @@ public class SwaggerProcessor {
 			String host = (hostElement != null) ? hostElement.getAsString() : null;
 			if(host == null) {
 				log.warn("Endpoint url is not specified in the swagger document. Endpoint creation might fail. ");
-				return null;
+				return;
 			}
 			JsonElement basePathElement = swaggerObject.get(SwaggerConstants.BASE_PATH);
 			String basePath = (basePathElement != null) ? basePathElement.getAsString() : DEFAULT_BASE_PATH;
@@ -296,27 +296,14 @@ public class SwaggerProcessor {
 		Creating endpoint artifact
 		 */
 		OMFactory factory = OMAbstractFactory.getOMFactory();
-		OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
-		OMElement endpointElement = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
-		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
-		OMElement name = factory.createOMElement(NAME, namespace);
-		OMElement version = factory.createOMElement(VERSION, namespace);
-		OMElement address = factory.createOMElement(ADDRESS, namespace);
-
-		name.setText(serviceName + "-endpoint");
-
-		if(documentVersion != null) {
-			version.setText(documentVersion);
-		} else {
-			version.setText(CommonConstants.SWAGGER_DOC_VERSION_DEFAULT_VALUE);
+		endpointLocation = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
+		String endpointContent = EndpointUtils.getEndpointContent(endpointUrl, endpointLocation);
+		try {
+			endpointElement = AXIOMUtil.stringToOM(factory, endpointContent);
+		} catch (XMLStreamException e) {
+			throw new RegistryException("Error in creating the endpoint element. ", e);
 		}
-		address.setText(endpointUrl);
-		overview.addChild(name);
-		overview.addChild(version);
-		overview.addChild(address);
-		endpointElement.addChild(overview);
 
-		return endpointElement;
 	}
 
 	/**
@@ -336,7 +323,7 @@ public class SwaggerProcessor {
 		if(infoObject == null || infoElement.isJsonNull()) {
 			throw new RegistryException("Invalid swagger document.");
 		}
-		serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
+		String serviceName = infoObject.get(SwaggerConstants.TITLE).getAsString().replaceAll("\\s", "");
 		String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
 
 		swaggerResourcesPath =  rootLocation + serviceProvider + RegistryConstants.PATH_SEPARATOR + serviceName +

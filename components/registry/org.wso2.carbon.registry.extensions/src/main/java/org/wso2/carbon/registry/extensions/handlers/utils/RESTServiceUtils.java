@@ -182,14 +182,14 @@ public class RESTServiceUtils {
 	 *
 	 * @param requestContext        current request information.
 	 * @param endpointElement       endpoint metadata element.
-	 * @param serviceName           name of the service.
+	 * @param endpointPath          endpoint location.
 	 * @return                      The resource path of the endpoint.
 	 * @throws RegistryException    If fails to add the endpoint to the registry.
 	 */
-	public static String addEndpointToRegistry(RequestContext requestContext, OMElement endpointElement, String serviceName)
+	public static String addEndpointToRegistry(RequestContext requestContext, OMElement endpointElement, String endpointPath)
 			throws RegistryException {
 
-		if(requestContext == null || endpointElement == null || serviceName == null) {
+		if(requestContext == null || endpointElement == null || endpointPath == null) {
 			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the endpoint to registry. ");
 		}
 
@@ -198,27 +198,16 @@ public class RESTServiceUtils {
 		Resource endpointResource = new ResourceImpl();
 		//setting endpoint media type.
 		endpointResource.setMediaType(CommonConstants.ENDPOINT_MEDIA_TYPE);
-
-		OMElement overview = endpointElement.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
-		String endpointVersion =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION)).getText();
-		String endpointName =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
-		endpointVersion = (endpointVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : endpointVersion;
-
-		//set version property.
-		endpointResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, endpointVersion);
 		//set content.
 		endpointResource.setContent(RegistryUtils.encodeString(endpointElement.toString()));
+		//set path
+		endpointPath = getChrootedEndpointLocation(requestContext.getRegistryContext()) + endpointPath;
 
 		String resourceId = endpointResource.getUUID();
 		//set resource UUID
 		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
 
 		endpointResource.setUUID(resourceId);
-		String endpointPath = getChrootedEndpointLocation(requestContext.getRegistryContext()) + serviceName +
-		                     RegistryConstants.PATH_SEPARATOR + endpointVersion +
-		                     RegistryConstants.PATH_SEPARATOR + endpointName;
 		//saving the api resource to repository.
 		registry.put(endpointPath, endpointResource);
 		log.info("Endpoint created at " + endpointPath);
