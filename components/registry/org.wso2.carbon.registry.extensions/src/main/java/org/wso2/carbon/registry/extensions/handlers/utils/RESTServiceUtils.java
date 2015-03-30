@@ -58,6 +58,11 @@ public class RESTServiceUtils {
 	private static final String AUTH_TYPE = "authType";
 	private static final String HTTP_VERB = "httpVerb";
 	private static final String ENDPOINT_URL = "endpointURL";
+	private static final String WADL = "wadl";
+	private static final String PATH_SEPERATOR = "/";
+	private static final String METHOD = "method";
+	private static final String PATH = "path";
+	private static final String RESOURCE = "resource";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -118,6 +123,62 @@ public class RESTServiceUtils {
 		overview.addChild(apiVersion);
 		overview.addChild(transports);
 		overview.addChild(description);
+		overview.addChild(endpoint);
+		data.addChild(overview);
+
+		if (uriTemplates != null) {
+			for (OMElement uriTemplate : uriTemplates) {
+				data.addChild(uriTemplate);
+			}
+		}
+
+		return data;
+	}
+
+	public static OMElement createRestServiceArtifact(OMElement wadlElement, String wadlName, String version, String wadlPath) {
+		if(wadlElement == null) {
+			throw new IllegalArgumentException("WADL content cannot be null." );
+		}
+		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
+		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
+		OMElement provider = factory.createOMElement(PROVIDER, namespace);
+		OMElement name = factory.createOMElement(NAME, namespace);
+		OMElement context = factory.createOMElement(CONTEXT, namespace);
+		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
+		OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
+		OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
+		OMElement wadl = factory.createOMElement(WADL, namespace);
+		List<OMElement> uriTemplates = null;
+
+		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+		String serviceName = wadlName.contains(".") ? wadlName.substring(0, wadlName.lastIndexOf(".")) : wadlName;
+		name.setText(serviceName);
+		context.setText("/"+serviceName);
+		apiVersion.setText(version);
+		wadl.setText(wadlPath);
+		OMNamespace wadlNamespace = wadlElement.getNamespace();
+		String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
+		String wadlNamespacePrefix = wadlNamespace.getPrefix();
+		OMElement resourcesElement =
+				wadlElement.getFirstChildWithName(new QName(wadlNamespaceURI, "resources", wadlNamespacePrefix));
+		if(resourcesElement != null) {
+			String endpointUrl =
+					resourcesElement.getAttributeValue(new QName("base"));
+			endpoint.setText(endpointUrl);
+			if(endpointUrl != null) {
+				transports.setText(endpointUrl.substring(0, endpointUrl.indexOf("://")));
+			}
+			uriTemplates = createURITemplateFromWADL(resourcesElement);
+		} else {
+			log.warn("WADL does not contains any resource paths. ");
+		}
+
+		overview.addChild(provider);
+		overview.addChild(name);
+		overview.addChild(context);
+		overview.addChild(apiVersion);
+		overview.addChild(transports);
+		overview.addChild(wadl);
 		overview.addChild(endpoint);
 		data.addChild(overview);
 
@@ -306,6 +367,62 @@ public class RESTServiceUtils {
 				uriTemplates.add(uriTemplateElement);
 			}
 
+		}
+		return uriTemplates;
+	}
+
+	/**
+	 * Contains the logic to create URITemplate XML Element from wadl resource.
+	 *
+	 * @param resourcesElement  wadl document
+	 * @return                  URITemplate element.
+	 */
+	private static List<OMElement> createURITemplateFromWADL(OMElement resourcesElement) {
+		List<OMElement> uriTemplates = new ArrayList<>();
+
+		Iterator resources = resourcesElement.getChildrenWithLocalName(RESOURCE);
+		while(resources.hasNext()) {
+			OMElement resource = (OMElement) resources.next();
+			String path = resource.getAttributeValue(new QName(PATH));
+			path = path.endsWith(PATH_SEPERATOR) ? path : path + PATH_SEPERATOR;
+			Iterator methods = resource.getChildrenWithLocalName(METHOD);
+			uriTemplates.addAll(getUriTemplateElementFromMethods(path, methods));
+			Iterator subResources = resource.getChildrenWithLocalName(RESOURCE);
+			while (subResources.hasNext()) {
+				OMElement subResource = (OMElement) subResources.next();
+				String subPath = subResource.getAttributeValue(new QName(PATH));
+				subPath = subPath.startsWith(PATH_SEPERATOR) ? subPath.substring(1) : subPath;
+				Iterator subMethods = resource.getChildrenWithLocalName(METHOD);
+				uriTemplates.addAll(getUriTemplateElementFromMethods(subPath, subMethods));
+			}
+		}
+		return uriTemplates;
+	}
+
+	/**
+	 * Creates uri template elements for HTTP action verbs.
+	 *
+	 * @param resourcePath  resource path.
+	 * @param methods       http verbs.
+	 * @return              Uri template element list.
+	 */
+	private static List<OMElement> getUriTemplateElementFromMethods(String resourcePath, Iterator methods) {
+		List<OMElement> uriTemplates = new ArrayList<>();
+		while(methods.hasNext()) {
+			OMElement method = (OMElement) methods.next();
+			String httpVerb = method.getAttributeValue(new QName(NAME));
+			OMElement uriTemplateElement = factory.createOMElement(URI_TEMPLATE, namespace);
+			OMElement urlPatternElement = factory.createOMElement(URL_PATTERN, namespace);
+			OMElement httpVerbElement = factory.createOMElement(HTTP_VERB, namespace);
+			OMElement authTypeElement = factory.createOMElement(AUTH_TYPE, namespace);
+
+			urlPatternElement.setText(resourcePath);
+			httpVerbElement.setText(httpVerb);
+			uriTemplateElement.addChild(urlPatternElement);
+			uriTemplateElement.addChild(httpVerbElement);
+			uriTemplateElement.addChild(authTypeElement);
+
+			uriTemplates.add(uriTemplateElement);
 		}
 		return uriTemplates;
 	}
