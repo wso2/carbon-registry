@@ -135,6 +135,15 @@ public class RESTServiceUtils {
 		return data;
 	}
 
+	/**
+	 * Extracts the data from wadl and creates an REST Service registry artifact.
+	 *
+	 * @param wadlElement   wadl content.
+	 * @param wadlName      wadl name.
+	 * @param version       wadl version.
+	 * @param wadlPath      wadl path.
+	 * @return              REST Service element.
+	 */
 	public static OMElement createRestServiceArtifact(OMElement wadlElement, String wadlName, String version, String wadlPath) {
 		if(wadlElement == null) {
 			throw new IllegalArgumentException("WADL content cannot be null." );
