@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -17,17 +17,16 @@
  */
 package org.wso2.carbon.registry.indexing;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.indexing.indexer.Indexer;
+import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +54,7 @@ public class AsyncIndexer implements Runnable {
         public String path;
         public String lcName;
         public String lcState;
+        public String sourceURL;
 
         public int tenantId;
         public String tenantDomain;
@@ -76,6 +76,13 @@ public class AsyncIndexer implements Runnable {
             this.tenantDomain = tenantDomain;
             this.lcName = lcName;
             this.lcState = lcState;
+        }
+
+        public File2Index (String path, int tenantId, String tenantDomain, String sourceURL) {
+            this.path = path;
+            this.tenantId = tenantId;
+            this.tenantDomain = tenantDomain;
+            this.sourceURL = sourceURL;
         }
     }
 
@@ -186,30 +193,37 @@ public class AsyncIndexer implements Runnable {
                 PrivilegedCarbonContext.startTenantFlow();
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(fileData.tenantId);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(fileData.tenantDomain);
-                doWork(fileData);
+                createIndexDocument(fileData);
 
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
         }
 
-        private boolean doWork(File2Index file2Index) {
-            AsyncIndexer asyncIndexer;
+        private void createIndexDocument(File2Index file2Index) {
             try {
-                Indexer indexer = IndexingManager.getInstance().getIndexerForMediaType(
-                        file2Index.mediaType);
-                try {
-                    asyncIndexer = new AsyncIndexer();
-                    asyncIndexer.getClient().indexDocument(file2Index, indexer);
-                } catch (Exception e) {
-                    log.error("Could not index the resource: path=" + file2Index.path +
-                            ", media type=" + file2Index.mediaType,e); // to ease debugging
-                }
+                String resourcePath = file2Index.path;
+                Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
+                Resource resource;
+                //Check whether resource exists before indexing the resource
+                if(resourcePath != null && registry.resourceExists(resourcePath) && (resource = registry.get(resourcePath)) != null) {
+                    // Create the IndexDocument
+                    IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                    indexDocumentCreator.createIndexDocument();
 
-            } catch (Throwable e) { // Throwable is caught to prevent the executor termination
+                    // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
+                    // in the indexer. see CARBON-11510.
+                    String symlinkPath = resource.getProperty("registry.resource.symlink.path");
+                    if (symlinkPath != null) {
+                        // Create the IndexDocument
+                        file2Index.path = symlinkPath;
+                        indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                        indexDocumentCreator.createIndexDocument();
+                    }
+                }
+            } catch (RegistryException | IndexerException e) {
                 log.error("Error while indexing.", e);
             }
-            return true;
         }
     }
 }
