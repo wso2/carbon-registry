@@ -364,15 +364,15 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         }
 
                         String mediaType = resource.getProperty("registry.mediaType");
+                        // since all the wsdl/wadl and schemas are captured above
+                        // there couldn't be any other wsdl/wadl and schemas left in the zip file
+                        // therefore setting media.type to null below. (REGISTRY-2191)
                         if (mediaType != null) {
                             for (String uri : uriList) {
                                 tasks.add(new UploadFileTask(requestContext, uri,
                                         CurrentSession.getTenantId(),
                                         CurrentSession.getUserRegistry(), CurrentSession.getUserRealm(),
                                         CurrentSession.getUser(), CurrentSession.getCallerTenantId(),
-                                        // since all the wsdl/wadl and schemas are captured above
-                                        // there couldn't be any other wsdl/wadl and schemas left in the zip file
-                                        // therefore setting media.type null. (REGISTRY-2191)
                                         localPathMap, null));
                             }
                             uriList.clear();
