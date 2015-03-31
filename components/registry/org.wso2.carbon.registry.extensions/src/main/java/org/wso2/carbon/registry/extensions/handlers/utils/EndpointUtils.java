@@ -683,7 +683,7 @@ public class EndpointUtils {
      * @return the path
      */
     public static String deriveEndpointFromUrl(String url) {
-        if (isArgumentsNull(url, "null", "null", "null")) {
+        if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
         }
         String[] temp = url.split("[?]")[0].split("/");
@@ -707,7 +707,7 @@ public class EndpointUtils {
      * @return (ENDPOINT_RESOURCE_PREFIX + name) populated resource name
      */
     public static String deriveEndpointNameFromUrl(String url) {
-        if (isArgumentsNull(url, "null", "null", "null")) {
+        if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
         }
         String tempURL = url;
@@ -731,7 +731,7 @@ public class EndpointUtils {
      */
     @Deprecated
     public static String getEndpointContent(String endpoint, String path) throws RegistryException {
-        if (isArgumentsNull(endpoint, path, "null", "null")) {
+        if (StringUtils.isBlank(endpoint) || StringUtils.isBlank(path)) {
             throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
         }
         path = setFullPath(path);
@@ -804,7 +804,7 @@ public class EndpointUtils {
      * @throws RegistryException
      */
     public static String deriveEndpointFromContent(String endpointContent) throws RegistryException {
-        if (isArgumentsNull(endpointContent, "null", "null", "null")) {
+        if (StringUtils.isBlank(endpointContent)) {
             throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint from content.");
         }
         try {
