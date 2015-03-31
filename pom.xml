@@ -976,7 +976,7 @@
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.tatws.commons.schema</groupId>
+                <groupId>org.apache.ws.commons.schema</groupId>
                 <artifactId>XmlSchema</artifactId>
                 <version>${xmlschema.version}</version>
             </dependency>
