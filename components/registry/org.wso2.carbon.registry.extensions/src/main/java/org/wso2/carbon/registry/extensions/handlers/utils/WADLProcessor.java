@@ -249,12 +249,10 @@ public class WADLProcessor {
 					                                                                              .getRegistryContext(),
 			                                                                              actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
-	        registry.addAssociation(servicePath, actualPath, CommonConstants.DEPENDS);
-	        registry.addAssociation(actualPath, servicePath, CommonConstants.USED_BY);
+	        addDependency(servicePath, actualPath);
 			String endpointPath = createEndpointElement(requestContext, wadlElement, version);
 	        if(endpointPath != null) {
-		        registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
-		        registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
+		        addDependency(servicePath, endpointPath);
 	        }
         }
 
