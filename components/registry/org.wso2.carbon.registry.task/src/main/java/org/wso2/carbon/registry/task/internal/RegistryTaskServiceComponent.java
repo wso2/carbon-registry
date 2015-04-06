@@ -75,9 +75,9 @@ public class RegistryTaskServiceComponent {
             TaskManager taskManager = null;
             PrivilegedCarbonContext.startTenantFlow();
             try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                        MultitenantConstants.SUPER_TENANT_ID);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
                 taskManager = taskService.getTaskManager(REGISTRY_TASK_MANAGER);
+                taskService.registerTaskType(REGISTRY_TASK_MANAGER);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
