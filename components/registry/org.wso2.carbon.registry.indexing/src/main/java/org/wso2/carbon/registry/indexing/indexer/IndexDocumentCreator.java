@@ -143,7 +143,7 @@ public class IndexDocumentCreator {
 
                 if (values != null) {
                     for (Object value : values) {
-                        propertyValue = value + ",";
+                        propertyValue += value + ",";
                     }
                 } else {
                     propertyValue = ",";
