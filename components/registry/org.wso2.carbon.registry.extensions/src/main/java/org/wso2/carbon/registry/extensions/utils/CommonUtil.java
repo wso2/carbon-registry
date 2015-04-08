@@ -20,18 +20,16 @@ package org.wso2.carbon.registry.extensions.utils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.api.Collection;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Association;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.core.pagination.PaginationContext;
-import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
@@ -43,6 +41,10 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -1019,5 +1021,57 @@ public class CommonUtil {
         }
         return dependencies.toArray(new Association[dependencies.size()]);
     }
+
+	/**
+	 * Reading content form the provided input stream.
+	 *
+	 * @param inputStream           input stream to read.
+	 * @return                      Content as a {@link java.io.ByteArrayOutputStream}
+	 * @throws RegistryException    If a failure occurs when reading the content.
+	 */
+	public static ByteArrayOutputStream readSourceContent(InputStream inputStream) throws RegistryException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		int nextChar;
+		try {
+			while ((nextChar = inputStream.read()) != -1) {
+				outputStream.write(nextChar);
+			}
+			outputStream.flush();
+		} catch (IOException e) {
+			throw new RegistryException("Exception occurred while reading content", e);
+		}
+
+		return outputStream;
+	}
+
+	/**
+	 * Closes a given input stream.
+	 *
+	 * @param inputStream   the input steam.
+	 */
+	public static void closeInputStream(InputStream inputStream) {
+		if(inputStream != null) {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				log.error("Error occurred when closing the input stream", e);
+			}
+		}
+	}
+
+	/**
+	 * Closes a given output stream.
+	 *
+	 * @param outputStream   the output steam.
+	 */
+	public static void closeOutputStream(OutputStream outputStream) {
+		if(outputStream != null) {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				log.error("Error occurred when closing the output stream", e);
+			}
+		}
+	}
 
 }
