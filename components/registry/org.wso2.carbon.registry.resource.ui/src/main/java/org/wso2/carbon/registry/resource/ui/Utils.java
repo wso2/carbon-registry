@@ -254,4 +254,23 @@ public class Utils {
         return new String[0][];
     }
 
+    /**
+     * return the concatenated full path of the resource
+     *
+     * @param parentPath location of the resource in registry
+     * @param resourceName resource name which entered by user
+     * @return resourcePath.toString() full path of the resource going to be saved
+     */
+    public static String calculatePath(String parentPath, String resourceName) {
+        StringBuilder resourcePath = new StringBuilder();
+        if (!parentPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
+            parentPath = RegistryConstants.PATH_SEPARATOR + parentPath;
+        }
+        if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
+            resourcePath.append(parentPath).append(resourceName);
+        } else {
+            resourcePath.append(parentPath).append(RegistryConstants.PATH_SEPARATOR).append(resourceName);
+        }
+        return resourcePath.toString();
+    }
 }

@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.resource.services.utils;
 
+import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
@@ -23,11 +24,21 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.sql.SQLException;
 
 public class GetTextContentUtil {
 
     private static final Log log = LogFactory.getLog(GetTextContentUtil.class);
+    private static final String URL_SOURCE_REGEX = "(http|https|ftp|file)://[^\\s]*?.*";
+    private static final String ENCODING = System.getProperty("carbon.registry.character.encoding");
+    private static final String DECODE_TYPE = "text/plain; charset=UTF-8";
 
     public static String getTextContent(String path, Registry registry) throws Exception {
 
@@ -52,5 +63,73 @@ public class GetTextContentUtil {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+    }
+
+    /**
+     * return the byte content of the wsdl/wadl/xsd/xml source as a DataHandler
+     *
+     * @param fetchURL source URL
+     * @return handler    byte DataHandler of the wsdl content
+     * @throws RegistryException
+     */
+    public static DataHandler getByteContent(String fetchURL) throws RegistryException {
+        StringBuilder sb = new StringBuilder();
+        DataHandler handler = null;
+        BufferedReader in = null;
+        if (fetchURL.matches(URL_SOURCE_REGEX)) {
+            try {
+                URL sourceURL = new URL(fetchURL);
+                in = new BufferedReader(
+                        new InputStreamReader(sourceURL.openConnection().getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    sb.append(inputLine);
+                }
+                DataSource ds = new ByteArrayDataSource(
+                        encodeString(sb.toString()), DECODE_TYPE);
+                handler = new DataHandler(ds);
+            } catch (IOException e) {
+                String msg = "Wrong or unavailable source URL " + fetchURL + ".";
+                throw new RegistryException(msg, e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        String msg = "Error occurred while trying to close the BufferedReader";
+                        log.warn(msg, e);
+                    }
+                }
+            }
+        } else {
+            String msg = "Invalid source URL format " + fetchURL + ".";
+            log.error(msg);
+            throw new RegistryException(msg);
+        }
+        return handler;
+    }
+
+    /**
+     * return the byte array of converted string content.
+     *
+     * @param content string content of the resource
+     * @return bytes
+     * @throws RegistryException
+     */
+    private static byte[] encodeString(String content) throws RegistryException {
+        byte[] bytes;
+        try {
+            if (ENCODING == null) {
+                bytes = content.getBytes();
+            } else {
+                bytes = content.getBytes(ENCODING);
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            String msg = ENCODING + " is unsupported encoding type";
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
+        return bytes;
     }
 }

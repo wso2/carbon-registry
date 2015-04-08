@@ -3,6 +3,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -117,38 +118,60 @@ public class WADLProcessor {
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
-        if (grammarsElement != null) {
-            //This is to avoid evaluating the grammars import when building AST
-            grammarsElement.detach();
-        }
 
-        if(!skipValidation)  {
-            File tempFile = null;
-            BufferedWriter bufferedWriter = null;
-            try{
-                tempFile = File.createTempFile(wadlName, null);
-                bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
-                bufferedWriter.write(wadlElement.toString());
-                bufferedWriter.flush();
-            } catch (IOException e) {
-                String msg = "Error occured while reading the WADL File";
-                log.error(msg);
-                throw new RegistryException(msg, e);
-            } finally {
-                if (bufferedWriter != null) {
-                    try {
-                        bufferedWriter.close();
-                    } catch (IOException e) {
-                        log.error("Error occurred while closing File writer");
+        if (StringUtils.isNotBlank(requestContext.getSourceURL())) {
+            String uri = requestContext.getSourceURL();
+            if (!skipValidation) {
+                validateWADL(uri);
+            }
+
+            if (resource.getUUID() == null) {
+                resource.setUUID(UUID.randomUUID().toString());
+            }
+
+            String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
+            if (grammarsElement != null) {
+                //This is to avoid evaluating the grammars import when building AST
+                grammarsElement.detach();
+                wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version));
+            }
+        } else {
+            if (!skipValidation) {
+                File tempFile = null;
+                BufferedWriter bufferedWriter = null;
+                try {
+                    tempFile = File.createTempFile(wadlName, null);
+                    bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
+                    bufferedWriter.write(wadlElement.toString());
+                    bufferedWriter.flush();
+                } catch (IOException e) {
+                    String msg = "Error occurred while reading the WADL File";
+                    log.error(msg, e);
+                    throw new RegistryException(msg, e);
+                } finally {
+                    if (bufferedWriter != null) {
+                        try {
+                            bufferedWriter.close();
+                        } catch (IOException e) {
+                            String msg = "Error occurred while closing File writer";
+                            log.warn(msg, e);
+                        }
                     }
                 }
+                validateWADL(tempFile.toURI().toString());
+                try {
+                    delete(tempFile);
+                } catch (IOException e) {
+                    String msg = "An error occurred while deleting the temporary files from local file system.";
+                    log.warn(msg, e);
+                    throw new RegistryException(msg, e);
+                }
             }
-            validateWADL(tempFile.toURI().toString());
-        }
 
-        if(grammarsElement != null){
-            grammarsElement = resolveImports(grammarsElement, null, version);
-            wadlElement.addChild(grammarsElement);
+            if (grammarsElement != null) {
+                grammarsElement = resolveImports(grammarsElement, null, version);
+                wadlElement.addChild(grammarsElement);
+            }
         }
 
         requestContext.setResourcePath(new ResourcePath(actualPath));
@@ -171,6 +194,19 @@ public class WADLProcessor {
         }
 
         return resource.getPath();
+    }
+
+    /**
+     * This method try to delete the temporary file,
+     * If it fails it will just log a warning msg.
+     *
+     * @param file
+     * @throws IOException
+     */
+    private void delete(File file) throws IOException {
+        if (file != null && file.exists() && !file.delete()) {
+            log.warn("Failed to delete file/directory at path: " + file.getAbsolutePath());
+        }
     }
 
     public String importWADLToRegistry(RequestContext requestContext, String commonLocation, boolean skipValidation)
