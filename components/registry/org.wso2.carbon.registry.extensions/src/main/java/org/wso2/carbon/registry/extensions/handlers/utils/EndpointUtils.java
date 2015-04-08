@@ -800,7 +800,7 @@ public class EndpointUtils {
      * Extract endpoint URL from content
      *
      * @param endpointContent endpoint content
-     * @return addressElement.getText() String
+     * @return addressElement.getText() String endpoint content
      * @throws RegistryException
      */
     public static String deriveEndpointFromContent(String endpointContent) throws RegistryException {
@@ -810,9 +810,55 @@ public class EndpointUtils {
         try {
             OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
             OMElement overviewElement = endpointElement
-                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_OVERVIEW));
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
             OMElement addressElement = overviewElement
-                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_ADDRESS));
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_ADDRESS));
+            return addressElement.getText();
+        } catch (XMLStreamException e) {
+            throw new RegistryException("Invalid endpoint content", e);
+        }
+    }
+
+    /**
+     * Extract endpoint version from content
+     *
+     * @param endpointContent endpoint content
+     * @return addressElement.getText() String endpoint version
+     * @throws RegistryException
+     */
+    public static String deriveVersionFromContent(String endpointContent) throws RegistryException {
+        if (StringUtils.isBlank(endpointContent)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint version from content.");
+        }
+        try {
+            OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
+            OMElement overviewElement = endpointElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
+            OMElement addressElement = overviewElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_VERSION));
+            return addressElement.getText();
+        } catch (XMLStreamException e) {
+            throw new RegistryException("Invalid endpoint content", e);
+        }
+    }
+
+    /**
+     * Extract endpoint name from content
+     *
+     * @param endpointContent endpoint content
+     * @return addressElement.getText() String endpoint name
+     * @throws RegistryException
+     */
+    public static String deriveNameFromContent(String endpointContent) throws RegistryException {
+        if (StringUtils.isBlank(endpointContent)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from content.");
+        }
+        try {
+            OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
+            OMElement overviewElement = endpointElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
+            OMElement addressElement = overviewElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_NAME));
             return addressElement.getText();
         } catch (XMLStreamException e) {
             throw new RegistryException("Invalid endpoint content", e);
