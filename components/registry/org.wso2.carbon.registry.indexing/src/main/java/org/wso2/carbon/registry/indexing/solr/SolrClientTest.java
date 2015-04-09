@@ -22,7 +22,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer.File2Index;
-import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.indexer.MimeTypeConstants;
 
 
@@ -34,7 +33,7 @@ public class SolrClientTest {
 //		SolrClient client = new SolrClient("http://ec2-174-129-248-197.compute-1.amazonaws.com:8080/solr");
 		SolrClient client = new SolrClient();
 		File2Index file = new File2Index(RegistryUtils.encodeString("<a att=\"xml\">This is a test</a>"), MimeTypeConstants.XML, "/testpath", MultitenantConstants.SUPER_TENANT_ID, MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-		client.indexDocument(file, IndexingManager.getInstance().getIndexerForMediaType(MimeTypeConstants.XML));
+		//client.indexDocument(file, IndexingManager.getInstance().getIndexerForMediaType(MimeTypeConstants.XML));
 		
 		SolrDocumentList list = client.query("xml", MultitenantConstants.SUPER_TENANT_ID);
 		SolrDocument document = list.iterator().next();

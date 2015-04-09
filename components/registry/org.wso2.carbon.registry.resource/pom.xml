@@ -119,6 +119,12 @@
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
         </dependency>
+        <!-- Junit testing environment-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

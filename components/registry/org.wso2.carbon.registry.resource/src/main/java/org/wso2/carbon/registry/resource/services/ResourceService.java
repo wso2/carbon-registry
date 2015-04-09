@@ -17,7 +17,9 @@
 package org.wso2.carbon.registry.resource.services;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.registry.admin.api.resource.IResourceService;
+import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.common.utils.RegistryUtil;
@@ -138,9 +140,21 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
-        ImportResourceUtil.
-                importResource(parentPath, resourceName, mediaType, description, fetchURL,
-                        symlinkLocation, registry, properties);
+
+        // Fix for file importation security verification - FileSystemImportationSecurityHotFixTestCase
+        if (StringUtils.isNotBlank(fetchURL) && fetchURL.toLowerCase().startsWith("file:")) {
+            String msg = "The source URL must not be file in the server's local file system";
+            throw new RegistryException(msg);
+        }
+
+        // Adding Source URL as property to end of the properties array.
+        String[][] newProperties = CommonUtil.setProperties(properties, "sourceURL", fetchURL);
+
+        // Data is directed to below AddResourceUtil.addResource from ImportResourceUtil.importResource
+        // Hence resource upload path will now go through put.
+        AddResourceUtil.addResource(CommonUtil.calculatePath(parentPath, resourceName),
+                mediaType, description, GetTextContentUtil.getByteContent(fetchURL),
+                symlinkLocation, registry, newProperties);
         return true;
     }
 

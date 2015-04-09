@@ -32,7 +32,7 @@ function validateRegex(regexStr, fldEleArr, fldName) {
 function validateUrl(fld,fldName) {
 
 	var error = "";
-	var regx = RegExp("(http|https|ftp|file)://.*");
+	var regx = RegExp("(http|https|ftp|file)://[^\\s]*?.*");
 	if(!(fld.value.match(regx))){
 		error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.valid.url"] + "<br />";
 	}
@@ -186,5 +186,113 @@ function validateEmail(fld) {
     } else {
 //        fld.style.background = 'White';
     }
+    return error;
+}
+
+function validateSimpleSearch() {
+    // JS injection validation
+    if (!validateTextForIllegal(document.forms["searchForm"]["criteria"], "resource path")) {
+        CARBON.showWarningDialog(org_wso2_carbon_registry_common_ui_jsi18n["the"] +
+        " " + "search content" + " " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"]);
+        return false;
+    }
+
+    var searchText = document.forms["searchForm"]["criteria"].value;
+    if (searchText == null || searchText == "") {
+        CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["validate.simple.search"]);
+        return false;
+    }
+    document.forms['searchForm'].submit();
+    return true;
+}
+
+function validateFilterName(fld, fldName) {
+
+    var illegalChars = /\//; // do not allow slash
+    var fnReason = "";
+
+    fnReason += validateEmpty(fld, fldName);
+
+    if (fnReason == "") {
+        fnReason += validateForInput(fld, fldName);
+    }
+    if (fnReason == "") {
+        fnReason += validateIllegal(fld, fldName);
+    }
+    if (fnReason == "" && illegalChars.test(fld.value)) {
+        fnReason += org_wso2_carbon_registry_search_ui_jsi18n["filter.name.cannot.contain.slash"];
+    }
+
+    return fnReason;
+}
+
+function validatePropertyValues() {
+    var leftVal = parseInt(document.getElementById('valueLeft').value);
+    var rightVal = parseInt(document.getElementById('valueRight').value);
+
+    if (leftVal != "" && rightVal != "") {
+        if (leftVal >= rightVal) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+function validateEmptyPropertyValues() {
+
+    var leftVal = document.getElementById('valueLeft').value;
+    var rightVal = document.getElementById('valueRight').value;
+    var opRight = document.getElementById('opRight');
+    var propertyName = document.getElementById('#_propertyName').value;
+
+    if (leftVal != "" || rightVal != "") {
+        if (propertyName == "") {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+function validateIllegalContentSearchString(fld, fldName) {
+    var error = "";
+    //var illegalChars = /([^a-zA-Z0-9_\-\x2E\&\?\/\:\,\s\(\)\[\]])/;
+    var illegalChars = /([~!@#$;%^*+{}\|\\<>\"\',\[\]\(\)])/; // disallow ~!@#$;%^*+={}|\<>"',[]()
+    var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
+    if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] +
+        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars"] + "<br />";
+    } else {
+//        fld.style.background = 'White';
+    }
+
+    return error;
+}
+
+function validateTagsInput(fld, fldName) {
+    var error = "";
+    var illegalChars = /(^,+$)/; // match any starting tag
+
+    if (illegalChars.test(fld.value)) {
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] +
+        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.invalid.tag.search"] + "<br />";
+    } else {
+//        fld.style.background = 'White';
+    }
+    if (error != "") {
+        return error;
+    }
+
+    return validateForInput(fld, fldName);
+}
+
+function validateIllegalSearchString(fld, fldName) {
+    var error = "";
+    var illegalChars = /([~!@#$;^*+{}\|\\<>\"\',\[\]\(\)])/;
+    var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
+    if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] + "<br />";
+    }
+
     return error;
 }

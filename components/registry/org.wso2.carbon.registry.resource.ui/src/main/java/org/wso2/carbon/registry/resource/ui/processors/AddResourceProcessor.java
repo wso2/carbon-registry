@@ -29,7 +29,6 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient;
 import org.wso2.carbon.ui.transports.fileupload.AbstractFileUploadExecutor;
 import org.wso2.carbon.ui.CarbonUIMessage;
-import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.ui.transports.fileupload.FileSizeLimitExceededException;
 import org.wso2.carbon.ui.transports.fileupload.FileUploadFailedException;
 import org.wso2.carbon.utils.FileItemData;
@@ -124,10 +123,7 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
             if (formFieldsMap.get("properties") != null) {
                 properties = formFieldsMap.get("properties").get(0);
             }
-            IServerAdmin adminClient =
-                    (IServerAdmin) CarbonUIUtil.
-                            getServerProxy(new ServerAdminClient(configurationContext,
-                                    serverURL, cookie, session), IServerAdmin.class, session);
+            IServerAdmin adminClient = new ServerAdminClient(configurationContext, serverURL, cookie, session);
             ServerData data = null;
             String chroot = "";
             try {
@@ -177,8 +173,8 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
             }
 
             client.addResource(
-                    calculatePath(parentPath, resourceName), mediaType, description, dataHandler,
-                    symlinkLocation, Utils.getProperties(properties));
+                    Utils.calculatePath(parentPath, resourceName), mediaType, description,
+                    dataHandler, symlinkLocation, Utils.getProperties(properties));
 
             response.setContentType("text/html; charset=utf-8");
             String msg = "Successfully uploaded content.";
@@ -249,18 +245,5 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
                     getContextRoot(request) + "/" + webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
                             == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"));
         }
-    }
-
-    private static String calculatePath(String parentPath, String resourceName) {
-        String resourcePath;
-        if (!parentPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
-            parentPath = RegistryConstants.PATH_SEPARATOR + parentPath;
-        }
-        if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
-            resourcePath = parentPath + resourceName;
-        } else {
-            resourcePath = parentPath + RegistryConstants.PATH_SEPARATOR + resourceName;
-        }
-        return resourcePath;
     }
 }

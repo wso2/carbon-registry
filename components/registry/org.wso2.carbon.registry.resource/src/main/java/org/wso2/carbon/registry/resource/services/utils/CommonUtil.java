@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.resource.services.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -63,5 +64,49 @@ public class CommonUtil {
         } catch (RegistryException e) {
             log.error("Unable to send notification", e);
         }
+    }
+
+    /**
+     * Return the concatenated full path of the resource where
+     * it need to be stored. This will decrease the memory usage.
+     * This method use StringBuilder to construct the string.
+     * Therefore this method is not thread safe.
+     *
+     * @param parentPath ex: x /x /x/y x/y x/y/
+     * @param resourceName ex: resourceName
+     * @return resourcePath ex: /x/resourceName /x/resourceName /x/y/resourceName /x/y/resourceName /x/y/resourceName
+     */
+    public static String calculatePath(String parentPath, String resourceName) {
+        StringBuilder resourcePath = new StringBuilder();
+        if (!parentPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
+            parentPath = RegistryConstants.PATH_SEPARATOR + parentPath;
+        }
+        if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
+            resourcePath.append(parentPath).append(resourceName);
+        } else {
+            resourcePath.append(parentPath).append(RegistryConstants.PATH_SEPARATOR).append(resourceName);
+        }
+        return resourcePath.toString();
+    }
+
+    /**
+     * Adding new properties to end of the properties array
+     *
+     * @param properties String[][] of properties
+     * @return propertyArray    updated String[][] of properties
+     */
+    public static String[][] setProperties(String[][] properties, String key, String value) {
+        String[][] propertyArray = new String[properties.length + 1][2];
+        for (int i = 0; i <= properties.length; i++) {
+            if (i < properties.length) {
+                propertyArray[i][0] = properties[i][0];
+                propertyArray[i][1] = properties[i][1];
+            } else {
+                propertyArray[properties.length][0] = key;
+                propertyArray[properties.length][1] = value;
+                return propertyArray;
+            }
+        }
+        return new String[0][];
     }
 }

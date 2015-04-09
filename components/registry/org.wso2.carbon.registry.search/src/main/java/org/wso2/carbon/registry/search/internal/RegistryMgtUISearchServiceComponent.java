@@ -21,13 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
-import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.queries.QueryProcessorManager;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.indexing.service.ContentBasedSearchService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
@@ -37,10 +36,6 @@ import org.wso2.carbon.registry.search.services.XPathQueryProcessor;
 import org.wso2.carbon.registry.search.services.utils.AdvancedSearchResultsBeanPopulator;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-
-
-import javax.swing.text.AbstractDocument;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +48,10 @@ import java.util.Map;
  *  @scr.reference name="registry.indexing"
  *  interface="org.wso2.carbon.registry.indexing.service.ContentSearchService" cardinality="1..1"
  *  policy="dynamic" bind="setIndexingService" unbind="unsetIndexingService"
+ *   * @scr.reference name="registry.attribute.service"
+ *   @scr.reference name="registry.attribute.indexing"
+ * interface="org.wso2.carbon.registry.common.AttributeSearchService" cardinality="1..1"
+ * policy="dynamic" bind="setAttributeIndexingService" unbind="unsetAttributeIndexingService"
  */
 
 public class RegistryMgtUISearchServiceComponent {
@@ -102,6 +101,14 @@ public class RegistryMgtUISearchServiceComponent {
 
     protected void unsetIndexingService(ContentSearchService contentSearchService){
          Utils.setContentSearchService(null);
+    }
+
+    protected void setAttributeIndexingService(AttributeSearchService attributeIndexingService) {
+        Utils.setAttributeIndexingService(attributeIndexingService);
+    }
+
+    protected void unsetAttributeIndexingService(AttributeSearchService attributeIndexingService) {
+        Utils.setAttributeIndexingService(null);
     }
 
     private static class MetadataSearchServiceImpl implements MetadataSearchService {
