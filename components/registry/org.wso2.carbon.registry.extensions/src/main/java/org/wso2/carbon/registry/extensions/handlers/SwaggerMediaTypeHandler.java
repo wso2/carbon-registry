@@ -17,6 +17,7 @@
 package org.wso2.carbon.registry.extensions.handlers;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.config.RegistryContext;
@@ -138,11 +139,26 @@ public class SwaggerMediaTypeHandler extends Handler {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 
-			inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
-			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-			processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
-			requestContext.setProcessingComplete(true);
-		} finally {
+            requestContext.setSourceURL(
+                    requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
+            String sourceURL = requestContext.getSourceURL();
+
+
+            if (StringUtils.isBlank(sourceURL)) {
+                inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
+            } else {
+                //Open a stream to the sourceURL
+                inputStream = new URL(sourceURL).openStream();
+
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
+            }
+            requestContext.setProcessingComplete(true);
+		}catch (IOException e) {
+            throw new RegistryException("The URL " + requestContext.getSourceURL() + " is incorrect.", e);
+        } finally {
 			CommonUtil.closeInputStream(inputStream);
 			CommonUtil.releaseUpdateLock();
 		}
