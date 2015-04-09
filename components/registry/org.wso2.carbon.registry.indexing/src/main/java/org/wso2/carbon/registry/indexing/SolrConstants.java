@@ -72,10 +72,6 @@ public final class SolrConstants {
     public static final String SOLR_DOUBLE_FIELD_KEY_SUFFIX = "_d";
     // Constant for solr multivalued string field key suffix
     public static final String SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX = "_ss";
-    //Constant for solr multivalued int field key suffix
-    public static final String SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX = "_is";
-    //Constant for solr multivalued double field key suffix
-    public static final String SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX = "_ds";
     // Constant for String type
     public static final String TYPE_STRING = "string";
     // Constant for Integer type
