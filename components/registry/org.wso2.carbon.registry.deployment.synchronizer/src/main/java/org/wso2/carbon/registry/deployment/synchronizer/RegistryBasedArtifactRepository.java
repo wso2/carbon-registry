@@ -24,7 +24,6 @@ import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerConstants;
 import org.wso2.carbon.deployment.synchronizer.util.RepositoryConfigParameter;
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -92,10 +91,23 @@ public class RegistryBasedArtifactRepository implements ArtifactRepository {
 //        }
     }
 
+    /**
+     * This method is used to get configuration registry.
+     *
+     * @param tenantId              tenant id.
+     * @return                      UserRegistry.
+     * @throws RegistryException    Throws when an registry error occurs when getting SystemConfiguration registry.
+     */
     private static UserRegistry getConfigurationRegistry(int tenantId) throws RegistryException {
-        return ServiceReferenceHolder.getRegistryService().getConfigSystemRegistry(tenantId);
+        return RegistryServiceReferenceHolder.getRegistryService().getConfigSystemRegistry(tenantId);
     }
 
+    /**
+     * This method is used to get registry path.
+     *
+     * @param tenantId  tenant id.
+     * @return          registry path.
+     */
     private static String getRegistryPath(int tenantId) {
         if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
             return DeploymentSynchronizerConstants.SUPER_TENANT_REGISTRY_PATH;
