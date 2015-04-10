@@ -1320,9 +1320,8 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
-        </carbon.kernel.package.import.version.range>
+        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
@@ -1428,8 +1427,8 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.3.5</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.0</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
@@ -1439,6 +1438,7 @@
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     </properties>
 </project>
