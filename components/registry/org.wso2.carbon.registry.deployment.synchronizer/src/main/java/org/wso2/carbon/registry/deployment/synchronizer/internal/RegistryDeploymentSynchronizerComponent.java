@@ -23,12 +23,16 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.deployment.synchronizer.RegistryBasedArtifactRepository;
+import org.wso2.carbon.registry.deployment.synchronizer.internal.utils.RegistryServiceReferenceHolder;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.deployment.synchronizer" immediate="true"
+ * @scr.reference name="configuration.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
+ * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  * @scr.reference name="registry.service" immediate="true"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
@@ -56,18 +60,34 @@ public class RegistryDeploymentSynchronizerComponent {
         log.debug("Registry Deployment synchronizer component deactivated");
     }
 
+    protected void setConfigurationContextService(ConfigurationContextService service) {
+        if (log.isDebugEnabled()) {
+            log.debug("Registry deployment synchronizer component bound to the " +
+                    "configuration context service");
+        }
+        RegistryServiceReferenceHolder.setConfigurationContextService(service);
+    }
+
+    protected void unsetConfigurationContextService(ConfigurationContextService service) {
+        if (log.isDebugEnabled()) {
+            log.debug("Registry deployment synchronizer component unbound from the " +
+                    "configuration context service");
+        }
+        RegistryServiceReferenceHolder.setConfigurationContextService(null);
+    }
+
     protected void setRegistryService(RegistryService service) {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment synchronizer component bound to the registry service");
+            log.debug("Registry deployment synchronizer component bound to the registry service");
         }
-        ServiceReferenceHolder.setRegistryService(service);
+        RegistryServiceReferenceHolder.setRegistryService(service);
     }
 
     protected void unsetRegistryService(RegistryService service) {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment synchronizer component unbound from the registry service");
+            log.debug("Registry deployment synchronizer component unbound from the registry service");
         }
-        ServiceReferenceHolder.setRegistryService(null);
+        RegistryServiceReferenceHolder.setRegistryService(null);
     }
 
     /**

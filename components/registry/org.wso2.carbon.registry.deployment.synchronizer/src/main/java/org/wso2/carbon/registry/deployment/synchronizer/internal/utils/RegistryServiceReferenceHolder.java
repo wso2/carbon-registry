@@ -16,9 +16,8 @@
 * under the License.
 */
 
-package org.wso2.carbon.registry.deployment.synchronizer.utils;
+package org.wso2.carbon.registry.deployment.synchronizer.internal.utils;
 
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.eventing.services.EventingService;
 import org.wso2.carbon.utils.ConfigurationContextService;
@@ -38,7 +37,7 @@ public final class RegistryServiceReferenceHolder {
     }
 
     public static void setConfigurationContextService(ConfigurationContextService configurationContextService) {
-        configurationContextService = configurationContextService;
+        RegistryServiceReferenceHolder.configurationContextService = configurationContextService;
     }
 
     public static RegistryService getRegistryService() {
@@ -46,7 +45,7 @@ public final class RegistryServiceReferenceHolder {
     }
 
     public static void setRegistryService(RegistryService registryService) {
-        registryService = registryService;
+        RegistryServiceReferenceHolder.registryService = registryService;
     }
 
     public static EventingService getEventingService() {
