@@ -53,6 +53,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -297,8 +298,8 @@ public class SolrClient {
                         for (String value : fieldList.getValue()) {
                             String[] propertyValArray = value.split(",");
                             fieldKey = propertyValArray[0];
-                            value = propertyValArray[1];
-                            addPropertyField(fieldKey, value, solrInputDocument);
+                            String [] propValues = Arrays.copyOfRange(propertyValArray, 1, propertyValArray.length);
+                            addPropertyField(fieldKey, propValues, solrInputDocument);
                         }
                     } else {
                         fieldKey = fieldList.getKey() + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
@@ -337,22 +338,28 @@ public class SolrClient {
     /**
      * Method to add property values
      * @param fieldKey property field key value
-     * @param value property field value
+     * @param values property field value
      * @param solrInputDocument Solr InputDocument
      */
-    private void addPropertyField(String fieldKey, String value, SolrInputDocument solrInputDocument) {
+    private void addPropertyField(String fieldKey, String[] values, SolrInputDocument solrInputDocument) {
         int intValue;
         double doubleValue;
         // Check whether the value is an Int or decimal or string
-        String valueType = getType(value);
-        if (valueType.equals(SolrConstants.TYPE_INT)) {
-            intValue = Integer.parseInt(value);
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX, intValue);
-        } else if (valueType.equals(SolrConstants.TYPE_DOUBLE)) {
-            doubleValue = Double.parseDouble(value);
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX, doubleValue);
-        } else if (valueType.equals(SolrConstants.TYPE_STRING)) {
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX, value);
+        String valueType = getType(values[0]);
+        for (String propValue : values) {
+            switch (valueType) {
+                case SolrConstants.TYPE_INT:
+                    intValue = Integer.parseInt(propValue);
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX, intValue);
+                    break;
+                case SolrConstants.TYPE_DOUBLE:
+                    doubleValue = Double.parseDouble(propValue);
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX, doubleValue);
+                    break;
+                case SolrConstants.TYPE_STRING:
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX, propValue);
+                    break;
+            }
         }
     }
 
@@ -729,9 +736,9 @@ public class SolrClient {
                 double rightDoubleValue = 0;
                 // No operation values only check the property name
                 if (StringUtils.isEmpty(leftPropertyValue) && StringUtils.isEmpty(rightPropertyValue)) {
-                    String fieldKeyInt = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
-                    String fieldKeyDouble = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
-                    String fieldKeyString = propertyName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyInt = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyDouble = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyString = propertyName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
                     query.addFilterQuery(fieldKeyInt + "* | " + fieldKeyDouble + "* | " + fieldKeyString + "*");
                 }
                 // check foe equal operation
@@ -784,7 +791,7 @@ public class SolrClient {
         if (StringUtils.isNotEmpty(leftPropertyValue)) {
             leftDoubleValue = Double.parseDouble(leftPropertyValue);
         }
-        String fieldKey = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
+        String fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
         if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp
                 .equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
                 || leftOp.equals(SolrConstants.OPERATION_NA)) {
@@ -826,7 +833,7 @@ public class SolrClient {
         if (StringUtils.isNotEmpty(leftPropertyValue)) {
             leftIntValue = Integer.parseInt(leftPropertyValue);
         }
-        String fieldKey = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
+        String fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
         if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp
                 .equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
                 || leftOp.equals(SolrConstants.OPERATION_NA)) {
@@ -863,17 +870,17 @@ public class SolrClient {
         if (valueType.equals(SolrConstants.TYPE_INT)) {
             // Get the integer value
             int intValue = Integer.parseInt(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + intValue);
         } else if (valueType.equals(SolrConstants.TYPE_DOUBLE)) {
             // Get the float value
             double doubleValue = Double.parseDouble(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + doubleValue);
         } else if (valueType.equals(SolrConstants.TYPE_STRING)) {
             // Get the string value
             rightPropertyValue = getWildcardSearchQueryValue(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + rightPropertyValue);
         }
     }
