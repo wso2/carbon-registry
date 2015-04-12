@@ -9,7 +9,7 @@
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.2-SNAPSHOT</version>
+    <version>4.3.4-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -1320,29 +1320,28 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
-        </carbon.kernel.package.import.version.range>
+        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v11</axis2.version>
-        <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>
-        <axis2.osgi.version>1.6.1.wso2v11</axis2.osgi.version>
-        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
-        <axis2-transports.version>1.1.0-wso2v10</axis2-transports.version>
-        <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
+        <axis2.version>1.6.1-wso2v12</axis2.version>
+        <axis2.wso2.version>1.6.1.wso2v12</axis2.wso2.version>
+        <axis2.osgi.version>1.6.1.wso2v12</axis2.osgi.version>
+        <orbit.version.axis2>1.6.1.wso2v12</orbit.version.axis2>
+        <axis2-transports.version>1.1.0-wso2v12</axis2-transports.version>
+        <axis2.osgi.version.range>[1.6.1.wso2v12, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
         <rampart.wso2.version>1.6.1-wso2v13</rampart.wso2.version>
 
         <!-- Axiom Version -->
-        <axiom.version>1.2.11-wso2v5</axiom.version>
-        <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
-        <axiom.osgi.version>1.2.11.wso2v5</axiom.osgi.version>
-        <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
-        <axiom.osgi.version.range>[1.2.11.wso2v5, 1.3.0)</axiom.osgi.version.range>
+        <axiom.version>1.2.11-wso2v6</axiom.version>
+        <axiom.wso2.version>1.2.11.wso2v6</axiom.wso2.version>
+        <axiom.osgi.version>1.2.11.wso2v6</axiom.osgi.version>
+        <orbit.version.axiom>1.2.11.wso2v6</orbit.version.axiom>
+        <axiom.osgi.version.range>[1.2.11.wso2v6, 1.3.0)</axiom.osgi.version.range>
 
         <!-- Servet Version -->
         <version.javax.servlet.jsp>2.2.0.v201112011158</version.javax.servlet.jsp>
@@ -1428,17 +1427,18 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.3.5</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.0</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.3.4-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.3.0, 4.4.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     </properties>
 </project>
