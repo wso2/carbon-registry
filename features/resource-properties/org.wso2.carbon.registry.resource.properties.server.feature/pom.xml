@@ -61,6 +61,7 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.properties</bundleDef>
+                                <bundleDef>commons-io.wso2:commons-io</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}
