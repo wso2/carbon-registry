@@ -70,6 +70,7 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.servlet</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.resource</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.search</bundleDef>
+                                <bundleDef>commons-io.wso2:commons-io</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
