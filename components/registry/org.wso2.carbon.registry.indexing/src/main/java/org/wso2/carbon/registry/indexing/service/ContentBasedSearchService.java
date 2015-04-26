@@ -27,6 +27,7 @@ import org.wso2.carbon.registry.admin.api.indexing.IContentBasedSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
+import org.wso2.carbon.registry.common.utils.UserUtil;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -321,6 +322,21 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 		createdDateTime.setTime(child.getCreatedTime());
 		resourceData.setCreatedOn(createdDateTime);
 		CommonUtil.populateAverageStars(resourceData);
+
+		String user = child.getProperty("registry.user");
+
+		if (registry.getUserName().equals(user)) {
+			resourceData.setPutAllowed(true);
+			resourceData.setDeleteAllowed(true);
+			resourceData.setGetAllowed(true);
+		} else {
+			resourceData.setPutAllowed(
+				UserUtil.isPutAllowed(registry.getUserName(), path, registry));
+			resourceData.setDeleteAllowed(
+				UserUtil.isDeleteAllowed(registry.getUserName(), path, registry));
+			resourceData.setGetAllowed(
+				UserUtil.isGetAllowed(registry.getUserName(), path, registry));
+		}
 
 		child.discard();
 
