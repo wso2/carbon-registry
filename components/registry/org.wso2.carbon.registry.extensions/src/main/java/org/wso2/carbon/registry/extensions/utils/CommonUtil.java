@@ -490,6 +490,7 @@ public class CommonUtil {
             } else {
                 resource.setUUID(UUID.randomUUID().toString());
             }
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
             String defaultLifeCycle = getDefaultServiceLifecycle(registry);
@@ -542,6 +543,7 @@ public class CommonUtil {
             } else {
                 resource.setUUID(UUID.randomUUID().toString());
             }
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport", "true");
             registry.put(path, resource);
             String defaultLifeCycle = getDefaultServiceLifecycle(registry);

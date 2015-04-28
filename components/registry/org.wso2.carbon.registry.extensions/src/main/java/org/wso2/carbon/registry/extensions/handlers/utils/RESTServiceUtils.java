@@ -218,6 +218,7 @@ public class RESTServiceUtils {
 		Resource serviceResource = new ResourceImpl();
 		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
+		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
 
 		OMElement overview = data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
 		String serviceVersion =

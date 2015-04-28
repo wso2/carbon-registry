@@ -156,6 +156,10 @@ public class EndpointMediaTypeHandler extends Handler {
             if (!systemRegistry.resourceExists(basePath)) {
                 systemRegistry.put(basePath, systemRegistry.newCollection());
             }
+
+            if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+                resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            }
             registry.put(path, resource);
 
 //            if (!(resource instanceof Collection) &&

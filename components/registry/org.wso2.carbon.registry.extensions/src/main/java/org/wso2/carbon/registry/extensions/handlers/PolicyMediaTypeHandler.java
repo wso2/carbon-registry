@@ -225,6 +225,11 @@ public class PolicyMediaTypeHandler extends Handler {
             }
         }
         newResource.setMediaType("application/policy+xml");
+        if (policyResource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            newResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+        }else {
+            newResource.setProperty(CommonConstants.SOURCE_PROPERTY, policyResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+        }
         String policyId = policyResource.getUUID();
         if (policyId == null) {
             // generate a service id

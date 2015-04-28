@@ -724,6 +724,19 @@ public class WSDLProcessor {
                     wsdlResource.setDescription(metaDataResource.getDescription());
                 }
                 boolean newWSDLUpload = !registry.resourceExists(wsdlPath);
+                if (metaDataResource != null && metaDataResource.getProperty(CommonConstants.SOURCE_PROPERTY) != null) {
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, metaDataResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+                } else {
+                    if (context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY) != null) {
+                        if (context.getResource().getMediaType() != null &&
+                            context.getResource().getMediaType().equals(wsdlResource.getMediaType())) {
+                            wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY,
+                                                     context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY));
+                        } else {
+                            wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                        }
+                    }
+                }
 
                 deleteOldResource(context, metaDataResource, wsdlInfo, wsdlPath, wsdlResource);
                 saveResource(context, wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, true);
@@ -939,6 +952,11 @@ public class WSDLProcessor {
                             }
                         }
                     }
+                }
+                if (context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY) != null){
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                } else {
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, "undefined");
                 }
 
                 if(registry.resourceExists(wsdlPath)){

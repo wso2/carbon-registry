@@ -44,4 +44,10 @@ public class CommonConstants {
         }
     };
 
+    public static final String SOURCE_PROPERTY = "resource.source";
+
+    public static final String SOURCE_ADMIN_CONSOLE = "AdminConsole";
+
+    public static final String SOURCE_AUTO = "Auto";
+
 }

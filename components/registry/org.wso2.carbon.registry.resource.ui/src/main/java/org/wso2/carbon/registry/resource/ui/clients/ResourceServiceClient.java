@@ -33,6 +33,7 @@ import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.resource.stub.ResourceAdminServiceCallbackHandler;
 import org.wso2.carbon.registry.resource.stub.ResourceAdminServiceStub;
 import org.wso2.carbon.registry.resource.stub.beans.xsd.*;
@@ -454,12 +455,15 @@ public class
         if (properties == null) {
             return new ArrayOfString[0];
         }
-        ArrayOfString[] props = new ArrayOfString[properties.length];
-        for (int i = 0; i < props.length; i++) {
+        ArrayOfString[] props = new ArrayOfString[properties.length+1];
+        for (int i = 0; i < props.length-1; i++) {
             ArrayOfString arrayOfString = new ArrayOfString();
             arrayOfString.setArray(new String[]{properties[i][0], properties[i][1]});
             props[i] = arrayOfString;
         }
+        ArrayOfString arrayOfString2 = new ArrayOfString();
+        arrayOfString2.setArray(new String[]{ CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE});
+        props[properties.length]  = arrayOfString2;
         return props;
     }
 

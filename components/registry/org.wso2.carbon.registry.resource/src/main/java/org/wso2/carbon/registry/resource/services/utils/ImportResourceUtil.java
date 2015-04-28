@@ -22,6 +22,7 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import java.sql.SQLException;
 
@@ -64,7 +65,7 @@ public class ImportResourceUtil {
                     metadataResource.setProperty(p[0], p[1]);
                 }
             }
-
+            metadataResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
             String path = userRegistry.importResource(resourcePath, fetchURL, metadataResource);
            /* if (properties != null && properties.length > 0) {
                 Resource resource = userRegistry.get(path);

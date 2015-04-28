@@ -23,6 +23,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import java.sql.SQLException;
 
@@ -52,7 +53,7 @@ public class AddTextResourceUtil {
 
         try {
             Resource resource = userRegistry.newResource();
-
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
             resource.setMediaType(mediaType);
             resource.setDescription(description);
             resource.setContent(RegistryUtils.decodeBytes(content));
