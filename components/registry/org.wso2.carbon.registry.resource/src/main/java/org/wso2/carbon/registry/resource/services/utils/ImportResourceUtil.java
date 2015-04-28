@@ -30,7 +30,7 @@ public class ImportResourceUtil {
 
     private static final Log log = LogFactory.getLog(ImportResourceUtil.class);
 
-    public static void importResource(
+    public static String importResource(
                 String parentPath,
                 String resourceName,
                 String mediaType,
@@ -75,6 +75,8 @@ public class ImportResourceUtil {
                 userRegistry.put(path, resource);
             }*/
             metadataResource.discard();
+
+            return path;
 
         } catch (RegistryException e) {
             String msg = "Failed to import resource from the URL " + fetchURL + " to path " +
