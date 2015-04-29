@@ -145,4 +145,9 @@ public class CommonConstants {
 
     public static final String SOURCE_REMOTE = "remote";
 
+    public static final String OVERVIEW_NAME = "overview_name";
+    public static final String OVERVIEW_VERSION = "overview_version";
+    public static final String OVERVIEW_ADDRESS = "overview_address";
+
+
 }

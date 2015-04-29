@@ -565,6 +565,10 @@ public class EndpointUtils {
             }
         }
 
+        resource.setProperty(CommonConstants.OVERVIEW_NAME, deriveEndpointNameFromUrl(url));
+        resource.setProperty(CommonConstants.OVERVIEW_VERSION, endpointVersion);
+        resource.setProperty(CommonConstants.OVERVIEW_ADDRESS, url);
+
         if (endpointIdCreated || propertiesChanged) {
             // this will be definitely false for a brand new resource
             resource.setMediaType(endpointMediaType);
