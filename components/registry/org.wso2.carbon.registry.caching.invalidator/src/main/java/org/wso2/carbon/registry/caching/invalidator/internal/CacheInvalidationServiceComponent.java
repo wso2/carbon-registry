@@ -57,7 +57,7 @@ public class CacheInvalidationServiceComponent {
     }
 
     protected void deactivate(ComponentContext ctxt) {
-        log.info("Cache Invalidation Service stopped");
+        log.debug("Cache Invalidation Service stopped");
         try{
             if(serviceRegistration != null) {
                 serviceRegistration.unregister();
