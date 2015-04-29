@@ -63,7 +63,7 @@
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ntask</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.ntask:${carbon.commons.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>
