@@ -39,6 +39,7 @@
         <module>features/jcr</module>
         <module>features/uddi</module>
         <module>features/deployment-synchronizer</module>
+	    <module>features/caching-invalidator</module>
     </modules>
 
     <repositories>
@@ -353,6 +354,11 @@
                         <artifactId>javax.servlet</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>javax.cache.wso2</artifactId>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
@@ -759,6 +765,11 @@
             <dependency>
                 <groupId>org.wso2.carbon.registry</groupId>
                 <artifactId>org.wso2.carbon.registry.deployment.synchronizer</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.caching.invalidator</artifactId>
                 <version>${carbon.registry.version}</version>
             </dependency>
 
@@ -1246,7 +1257,11 @@
                 <artifactId>oauth2-client</artifactId>
                 <version>${amber.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.geronimo.specs.wso2</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>${orbit.version.geronimo-jms_1.1_spec}</version>
+            </dependency>
             <!-- Test Scope -->
             <dependency>
                 <groupId>junit</groupId>
@@ -1429,6 +1444,9 @@
         <!-- Carbon Commons -->        
         <carbon.commons.version>4.4.0</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
+
+        <!-- jms -->
+        <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 
         <!-- Carbon Registry -->
         <carbon.registry.version>4.4.2-SNAPSHOT</carbon.registry.version>
