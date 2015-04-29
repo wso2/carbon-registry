@@ -137,4 +137,12 @@ public class CommonConstants {
     // This constant will use to identify the property key of resources uploaded using URL
     public static final String SOURCEURL_PARAMETER_NAME="sourceURL";
 
+    public static final String SOURCE_PROPERTY = org.wso2.carbon.registry.common.CommonConstants.SOURCE_PROPERTY;
+
+    public static final String SOURCE_ADMIN_CONSOLE = org.wso2.carbon.registry.common.CommonConstants.SOURCE_ADMIN_CONSOLE;
+
+    public static final String SOURCE_AUTO = org.wso2.carbon.registry.common.CommonConstants.SOURCE_AUTO;
+
+    public static final String SOURCE_REMOTE = "remote";
+
 }

@@ -175,6 +175,9 @@ public class WADLProcessor {
         }
 
         requestContext.setResourcePath(new ResourcePath(actualPath));
+        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+        }
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(getCreateService()){
@@ -273,6 +276,9 @@ public class WADLProcessor {
             actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
                     commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
         }
+        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+        }
 
         resource.setContent(wadlElement.toString());
         requestContext.setResourcePath(new ResourcePath(actualPath));
@@ -368,6 +374,7 @@ public class WADLProcessor {
                     new RequestContext(registry, repository, versionRepository);
             Resource local = requestContext.getRegistry().newResource();
             local.setMediaType(xsdMediaType);
+            local.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             requestContext.setSourceURL(schemaUrl);
             requestContext.setResource(local);
 

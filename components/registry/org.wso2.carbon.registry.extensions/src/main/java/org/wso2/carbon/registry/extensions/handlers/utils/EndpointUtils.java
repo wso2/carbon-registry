@@ -140,6 +140,7 @@ public class EndpointUtils {
             String locationUrl = soap11Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
@@ -156,6 +157,7 @@ public class EndpointUtils {
             String locationUrl = soap12Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
@@ -172,6 +174,7 @@ public class EndpointUtils {
             String locationUrl = httpElement.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
     }
@@ -204,6 +207,7 @@ public class EndpointUtils {
             String locationUrl = soap11Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
@@ -220,6 +224,7 @@ public class EndpointUtils {
             String locationUrl = soap12Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
@@ -236,6 +241,7 @@ public class EndpointUtils {
             String locationUrl = httpElement.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
     }

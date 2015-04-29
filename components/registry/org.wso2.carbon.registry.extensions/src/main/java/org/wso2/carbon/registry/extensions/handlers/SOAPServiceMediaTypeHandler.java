@@ -277,6 +277,7 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     context.setSourceURL(definitionURL);
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
+                    tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
 
                     definitionPath = wsdl.addWSDLToRegistry(context, definitionURL, null, false, false,
@@ -291,6 +292,7 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     context.setSourceURL(definitionURL);
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
+                    tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
                     definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
                 } else {

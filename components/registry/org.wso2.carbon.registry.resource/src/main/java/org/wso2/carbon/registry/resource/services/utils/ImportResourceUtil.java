@@ -22,6 +22,7 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 
 import java.sql.SQLException;
 
@@ -29,7 +30,7 @@ public class ImportResourceUtil {
 
     private static final Log log = LogFactory.getLog(ImportResourceUtil.class);
 
-    public static void importResource(
+    public static String importResource(
                 String parentPath,
                 String resourceName,
                 String mediaType,
@@ -64,7 +65,7 @@ public class ImportResourceUtil {
                     metadataResource.setProperty(p[0], p[1]);
                 }
             }
-
+            metadataResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
             String path = userRegistry.importResource(resourcePath, fetchURL, metadataResource);
            /* if (properties != null && properties.length > 0) {
                 Resource resource = userRegistry.get(path);
@@ -74,6 +75,8 @@ public class ImportResourceUtil {
                 userRegistry.put(path, resource);
             }*/
             metadataResource.discard();
+
+            return path;
 
         } catch (RegistryException e) {
             String msg = "Failed to import resource from the URL " + fetchURL + " to path " +

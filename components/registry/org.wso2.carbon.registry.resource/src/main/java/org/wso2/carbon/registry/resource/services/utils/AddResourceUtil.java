@@ -84,6 +84,7 @@ public class AddResourceUtil {
                     }
                 }
             }
+            resourceImpl.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_ADMIN_CONSOLE);
             registry.put(path, resourceImpl);
             resourceImpl.discard();
 
