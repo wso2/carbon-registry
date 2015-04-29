@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,6 @@ import java.util.Properties;
 public class ConfigurationManager {
     private static final Log log = LogFactory.getLog(ConfigurationManager.class);
 
-/*    private static String initialContextFactory = null;
-    private static String providerUrl = null;
-    private static String topicName = null;
-    private static String securityPrincipal = null;
-    private static String securityCredentials = null;*/
-
     private static boolean subscribed = false;
 
     private static boolean enabled = false;
@@ -59,56 +53,6 @@ public class ConfigurationManager {
                 enabled = Boolean.parseBoolean(cacheConfiguration.getProperty("enabled"));
             }
 
-/*            StAXOMBuilder stAXOMBuilder = new StAXOMBuilder(new FileInputStream(configFilePath));
-            OMElement documentElement = stAXOMBuilder.getDocumentElement();
-            Iterator iterator;
-
-            iterator = documentElement.getChildrenWithName(new QName("initialContextFactory"));
-
-            if(iterator.hasNext()){
-                OMElement cache = (OMElement) iterator.next();
-                initialContextFactory = cache.getText();
-            }
-
-            iterator = documentElement.getChildrenWithName(new QName("providerUrl"));
-
-            if(iterator.hasNext()){
-                OMElement cache = (OMElement) iterator.next();
-                providerUrl = cache.getText();
-            }
-
-            iterator = documentElement.getChildrenWithName(new QName("cacheInvalidateTopic"));
-
-            if(iterator.hasNext()){
-                OMElement cache = (OMElement) iterator.next();
-                topicName = cache.getText();
-            }
-
-            iterator = documentElement.getChildrenWithName(new QName("securityPrincipal"));
-
-            if(iterator.hasNext()){
-                OMElement cache = (OMElement) iterator.next();
-                securityPrincipal = cache.getText();
-            }
-
-            if (securityPrincipal == null || securityPrincipal.equals("")) {
-                securityPrincipal = "guest"; //default
-            }
-
-            iterator = documentElement.getChildrenWithName(new QName("securityCredentials"));
-
-            if (iterator.hasNext()) {
-                OMElement cache = (OMElement) iterator.next();
-                securityCredentials = cache.getText();
-            }
-
-            if (securityCredentials == null || securityCredentials.equals("")) {
-                securityCredentials = "guest"; //default
-            }
-
-            propertyExists = providerUrl != null && !providerUrl.equals("");
-            propertyExists &= topicName != null && !topicName.equals("");*/
-
             if(!enabled){
                 log.info("Global cache invalidation is offline according to cache.properties configurations");
             }
@@ -127,33 +71,12 @@ public class ConfigurationManager {
         return enabled;
     }
 
-/*    public static String getTopicName() {
-        return topicName;
-    }
-
-    public static String getProviderUrl() {
-        return providerUrl;
-    }*/
-
-
     public static List<String> getSentMsgBuffer() {
         if(sentMsgBuffer == null){
             sentMsgBuffer = new ArrayList<String>();
         }
         return sentMsgBuffer;
     }
-
-/*    public static String getInitialContextFactory() {
-        return initialContextFactory;
-    }
-
-    public static String getSecurityPrincipal() {
-        return securityPrincipal;
-    }
-
-    public static String getSecurityCredentials() {
-        return securityCredentials;
-    }*/
 
     public static Properties getCacheConfiguration() {
         return cacheConfiguration;
@@ -165,10 +88,6 @@ public class ConfigurationManager {
 
     public static void setSubscribed(boolean subscribed) {
         ConfigurationManager.subscribed = subscribed;
-    }
-
-    public static void setEnabled(boolean enabled) {
-        ConfigurationManager.enabled = enabled;
     }
 
     public static boolean isEnabled() {

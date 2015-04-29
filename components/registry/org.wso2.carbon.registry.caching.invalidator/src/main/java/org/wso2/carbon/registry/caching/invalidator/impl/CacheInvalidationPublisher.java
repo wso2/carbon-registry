@@ -23,14 +23,6 @@ import org.wso2.carbon.registry.caching.invalidator.connection.InvalidationConne
 import org.wso2.carbon.registry.caching.invalidator.internal.CacheInvalidationDataHolder;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TopicSession;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -76,42 +68,6 @@ public class CacheInvalidationPublisher implements CacheInvalidator {
                 log.error("Error while publishing data, connection couldn't establish", e);
             }
         }
-        // Setup the pub/sub connection, session
-        // Send the msg (byte stream)
-/*        Connection connection = null;
-        try {
-            Properties props = new Properties();
-            props.put(Context.INITIAL_CONTEXT_FACTORY, ConfigurationManager.getInitialContextFactory());
-            props.put(Context.PROVIDER_URL, ConfigurationManager.getProviderUrl());
-            props.put(Context.SECURITY_PRINCIPAL, ConfigurationManager.getSecurityPrincipal());
-            props.put(Context.SECURITY_CREDENTIALS, ConfigurationManager.getSecurityCredentials());
-            props.put("topic.MyTopic", ConfigurationManager.getTopicName());
-            InitialContext jndi = new InitialContext(props);
-            ConnectionFactory connectionFactory = (ConnectionFactory) jndi.lookup("ConnectionFactory");
-            Destination destination = (Destination)jndi.lookup("MyTopic");
-
-            connection = connectionFactory.createConnection(ConfigurationManager.getSecurityPrincipal(),
-                    ConfigurationManager.getSecurityCredentials());
-            connection.start();
-            Session pubSession = connection.createSession(false, TopicSession.AUTO_ACKNOWLEDGE);
-            MessageProducer publisher = pubSession.createProducer(destination);
-            BytesMessage bytesMessage = pubSession.createBytesMessage();
-            bytesMessage.writeBytes(data);
-            publisher.send(bytesMessage);
-
-        } catch (JMSException e) {
-            log.error("Global cache invalidation: Error message broker initialization", e);
-        } catch (NamingException e) {
-            log.error("Global cache invalidation: Error message broker initialization", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (Exception e) {
-                    log.error("Global cache invalidation: error close publish connection", e);
-                }
-            }
-        }*/
     }
 
     private byte[] serialize(Object obj) throws IOException {

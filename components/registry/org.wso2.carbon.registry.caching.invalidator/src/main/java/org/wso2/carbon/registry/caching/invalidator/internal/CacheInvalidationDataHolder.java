@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 package org.wso2.carbon.registry.caching.invalidator.internal;
 
 import org.apache.axis2.context.ConfigurationContext;
-import org.wso2.carbon.registry.caching.invalidator.connection.BaseConnection;
-import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.registry.caching.invalidator.connection.InvalidNotification;
 
 /**
  * Cache Invalidation data holder
  */
 public class CacheInvalidationDataHolder {
     private static ConfigurationContext configContext;
-    private static BaseConnection connection;
+    private static InvalidNotification connection;
 
     public static void setConfigContext(ConfigurationContext configContext) {
         CacheInvalidationDataHolder.configContext = configContext;
@@ -34,11 +33,11 @@ public class CacheInvalidationDataHolder {
         return configContext;
     }
 
-    public static void setConnection(BaseConnection connection) {
+    public static void setConnection(InvalidNotification connection) {
         CacheInvalidationDataHolder.connection = connection;
     }
 
-    public static BaseConnection getConnection() {
+    public static InvalidNotification getConnection() {
         return connection;
     }
 }

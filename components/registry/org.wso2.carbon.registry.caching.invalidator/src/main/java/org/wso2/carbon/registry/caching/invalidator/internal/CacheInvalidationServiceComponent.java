@@ -41,7 +41,7 @@ public class CacheInvalidationServiceComponent {
     CacheInvalidationPublisher publisher;
 
     protected void activate(ComponentContext ctxt) {
-        log.info("Initializing the CacheInvalidationServiceComponent...");
+        log.debug("Cache Invalidation Service activation started");
         try {
             if(ConfigurationManager.init()) {
                 InvalidationConnectionFactory.createMessageBrokerConnection();
@@ -51,19 +51,19 @@ public class CacheInvalidationServiceComponent {
                 serviceRegistration = ctxt.getBundleContext().registerService(CoordinatedActivity.class, subscriber, null);
             }
         } catch (Exception e) {
-            String msg = "Failed to initialize the CacheInvalidationServiceComponent.";
+            String msg = "Failed to initialize the Cache Invalidation Service";
             log.error(msg, e);
         }
     }
 
     protected void deactivate(ComponentContext ctxt) {
-        log.info("Stopping the CacheInvalidationServiceComponent");
+        log.info("Cache Invalidation Service stopped");
         try{
             if(serviceRegistration != null) {
                 serviceRegistration.unregister();
             }
         }catch (Exception e){
-            String msg = "Failed to Stop the CacheInvalidationServiceComponent.";
+            String msg = "Failed to Stop the Cache Invalidation Service";
             log.error(msg, e);
         }
     }

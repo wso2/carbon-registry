@@ -15,12 +15,15 @@
  */
 package org.wso2.carbon.registry.caching.invalidator.connection;
 
-public class CacheInvalidationException extends Exception {
-    public CacheInvalidationException(String message,  Throwable cause) {
-        super(message,cause);
-    }
+import java.util.Properties;
 
-    public CacheInvalidationException(String message) {
-        super(message);
-    }
+public interface InvalidNotification {
+
+    public void createConnection(Properties config);
+
+    public void closeConnection();
+
+    public void publish(Object message);
+
+    public void subscribe();
 }

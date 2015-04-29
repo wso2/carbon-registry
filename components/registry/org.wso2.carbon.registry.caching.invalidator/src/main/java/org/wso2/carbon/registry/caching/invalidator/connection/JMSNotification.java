@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wso2.carbon.registry.caching.invalidator.connection;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +35,7 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TopicSession;
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.ByteArrayInputStream;
@@ -27,7 +43,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Properties;
 
-public class JMSConnection implements BaseConnection, MessageListener{
+public class JMSNotification implements InvalidNotification, MessageListener{
 
     // Setup the pub/sub connection, session
     // Send the msg (byte stream)
@@ -35,13 +51,19 @@ public class JMSConnection implements BaseConnection, MessageListener{
 
     private static Destination destination = null;
 
-    private static final Log log = LogFactory.getLog(JMSConnection.class);
+    private static final Log log = LogFactory.getLog(JMSNotification.class);
     @Override
     public void createConnection(Properties config) {
         try {
-            InitialContext jndi = new InitialContext(config);
+            Properties props = new Properties();
+            props.put(Context.INITIAL_CONTEXT_FACTORY, config.getProperty("initialContextFactory"));
+            props.put(Context.PROVIDER_URL, config.getProperty("providerUrl"));
+            props.put(Context.SECURITY_PRINCIPAL, config.getProperty("securityPrincipal"));
+            props.put(Context.SECURITY_CREDENTIALS, config.getProperty("securityCredentials"));
+            props.put("topic.cacheInvalidateTopic", config.getProperty("cacheInvalidateTopic"));
+            InitialContext jndi = new InitialContext(props);
             ConnectionFactory connectionFactory = (ConnectionFactory) jndi.lookup("ConnectionFactory");
-            destination = (Destination)jndi.lookup("CacheInvalidationTopic");
+            destination = (Destination)jndi.lookup("cacheInvalidateTopic");
 
             connection = connectionFactory.createConnection(config.getProperty("securityPrincipal"),
                     config.getProperty("securityCredentials"));

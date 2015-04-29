@@ -35,16 +35,16 @@ public class CacheInvalidationSubscriber implements CoordinatedActivity {
             if (isCoordinator && !ConfigurationManager.isSubscribed()) {
                 if (CacheInvalidationDataHolder.getConnection() != null) {
                     CacheInvalidationDataHolder.getConnection().subscribe();
+                    ConfigurationManager.setSubscribed(true);
                 } else {
                     try {
                         InvalidationConnectionFactory.createMessageBrokerConnection();
                         CacheInvalidationDataHolder.getConnection().subscribe();
+                        ConfigurationManager.setSubscribed(true);
                     } catch (CacheInvalidationException e) {
                         log.error("Error while subscribing to the queue, connection couldn't establish", e);
-                        return;
                     }
                 }
-                ConfigurationManager.setSubscribed(true);
             }
         }
     }
@@ -74,87 +74,4 @@ public class CacheInvalidationSubscriber implements CoordinatedActivity {
         }
     }
 
-/*    private void subscribe() {
-        log.debug("Global cache invalidation: initializing the subscription");
-        try {
-            Properties props = new Properties();
-            props.put(Context.INITIAL_CONTEXT_FACTORY, ConfigurationManager.getInitialContextFactory());
-            props.put(Context.PROVIDER_URL, ConfigurationManager.getProviderUrl());
-            props.put(Context.SECURITY_PRINCIPAL, ConfigurationManager.getSecurityPrincipal());
-            props.put(Context.SECURITY_CREDENTIALS, ConfigurationManager.getSecurityCredentials());
-            props.put("topic.MyTopic", ConfigurationManager.getTopicName());
-            InitialContext jndi = new InitialContext(props);
-            ConnectionFactory connectionFactory = (ConnectionFactory) jndi.lookup("ConnectionFactory");
-            Destination destination = (Destination)jndi.lookup("MyTopic");
-            Connection connection = connectionFactory.createConnection(ConfigurationManager.getSecurityPrincipal(), ConfigurationManager.getSecurityCredentials());
-            Session subSession = connection.createSession(false, TopicSession.AUTO_ACKNOWLEDGE);
-
-            MessageConsumer messageConsumer = subSession.createConsumer(destination);
-            messageConsumer.setMessageListener(this);
-            connection.start();
-            log.info("Global cache invalidation is online");
-        } catch (JMSException e) {
-            log.error("Global cache invalidation: Error message broker initialization", e);
-        } catch (NamingException e) {
-            log.error("Global cache invalidation: Error message broker initialization", e);
-        }
-    }*/
-
-/*    private Object deserialize(byte[] bytes) throws Exception {
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-        return objectInputStream.readObject();
-    }*/
-
-/*    @Override
-    public void onMessage(Message message) {
-        BytesMessage bytesMessage = (BytesMessage)message;
-        byte[] data;
-        try {
-            data = new byte[(int)bytesMessage.getBodyLength()];
-            for (int i = 0; i < (int) bytesMessage.getBodyLength(); i++) {
-                data[i] = bytesMessage.readByte();
-            }
-            log.debug("Cache invalidation message received: " + new String(data));
-        } catch (JMSException jmsException) {
-            log.error("Error while reading the received message" , jmsException);
-            return;
-        }
-
-        boolean isCoordinator = false;
-        if(CacheInvalidationDataHolder.getConfigContext() != null) {
-            isCoordinator = CacheInvalidationDataHolder.getConfigContext().getAxisConfiguration()
-                    .getClusteringAgent().isCoordinator();
-        }
-        if(isCoordinator) {
-            PrivilegedCarbonContext.startTenantFlow();
-            try {
-                log.debug("Global cache invalidation: deserializing data to object");
-                GlobalCacheInvalidationEvent event = (GlobalCacheInvalidationEvent) deserialize(data);
-                log.debug("Global cache invalidation: deserializing complete");
-                if (!ConfigurationManager.getSentMsgBuffer().contains(event.getUuid().trim())) { // Ignore own messages
-                    PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(event.getTenantId(), true);
-                    CacheManager cacheManager = Caching.getCacheManagerFactory().getCacheManager(event.getCacheManagerName());
-                    if (cacheManager != null) {
-                        if (cacheManager.getCache(event.getCacheName()) != null) {
-                            cacheManager.getCache(event.getCacheName()).remove(event.getCacheKey());
-                            log.debug("Global cache invalidated: " + event.getCacheKey());
-                        } else {
-                            log.error("Global cache invalidation: error cache is null");
-                        }
-                    } else {
-                        log.error("Global cache invalidation: error cache manager is null");
-                    }
-                } else {
-                    // To resolve future performance issues
-                    ConfigurationManager.getSentMsgBuffer().remove(event.getUuid().trim());
-                    log.debug("Global cache invalidation: own message ignored");
-                }
-            } catch (Exception e) {
-                log.error("Global cache invalidation: error local cache update", e);
-            } finally {
-                PrivilegedCarbonContext.endTenantFlow();
-            }
-        }
-    }*/
 }
