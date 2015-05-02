@@ -403,7 +403,7 @@ public class ServiceMediaTypeHandler extends Handler {
 
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                     requestContext.getResource().getProperty(RegistryConstants.SYMLINK_PROPERTY_NAME));
-            if (!servicePath.equals(originalServicePath)) {
+            if (!servicePath.equals(originalServicePath) && requestContext.getRegistry().resourceExists(originalServicePath)) {
                 // we are creating a sym link from service path to original service path.
                 Resource serviceResource = requestContext.getRegistry().get(
                         RegistryUtils.getParentPath(originalServicePath));
