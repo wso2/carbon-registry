@@ -21,32 +21,33 @@ package org.wso2.carbon.registry.eventing.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourcePath;
-import org.wso2.carbon.registry.core.session.CurrentSession;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.eventing.internal.Utils;
 import org.wso2.carbon.registry.eventing.events.*;
-import org.wso2.carbon.registry.common.eventing.RegistryEvent;
+import org.wso2.carbon.registry.eventing.internal.Utils;
+
+import java.util.List;
 
 public class RegistryEventingHandler extends Handler {
     private static final Log log = LogFactory.getLog(RegistryEventingHandler.class);
 
     public void put(RequestContext requestContext) throws RegistryException {
     	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
-        boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+           return;
+        }
+    	boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
         Resource resource = requestContext.getOldResource();
         RegistryEvent<String> event;
         if (resource == null) {
@@ -77,14 +78,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void delete(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         String parentPath = RegistryUtils.getParentPath(relativePath);
         boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
         RegistryEvent<String> childDeletedEvent;
@@ -120,14 +120,14 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void createVersion(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
+        boolean isMountPath = false;
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         boolean isNotCollection = !(requestContext.getRepository().get(path) instanceof Collection);
         RegistryEvent<String> event;
         if (isNotCollection) {
@@ -149,14 +149,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void applyTag(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         String tag = requestContext.getTag();
         boolean isNotCollection = !(requestContext.getRepository().get(path) instanceof Collection);
         RegistryEvent<String> event;
@@ -180,14 +179,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void removeTag(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         String tag = requestContext.getTag();
         boolean isNotCollection = !(requestContext.getRepository().get(path) instanceof Collection);
         RegistryEvent<String> event;
@@ -210,14 +208,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String addComment(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return null;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return null;
+        }
+
         if (requestContext.getComment() == null) {
             return null;
         }
@@ -244,14 +241,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void rateResource(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         int rating = requestContext.getRating();
         boolean isNotCollection = !(requestContext.getRepository().get(path) instanceof Collection);
         RegistryEvent<String> event;
@@ -280,14 +276,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void addAssociation(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = getPathWithoutVersion(requestContext.getSourcePath());
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
+
         String targetPath = getPathWithoutVersion(requestContext.getTargetPath());
         String relativeTargetPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 targetPath);
@@ -323,13 +318,11 @@ public class RegistryEventingHandler extends Handler {
 
     public void removeAssociation(RequestContext requestContext) throws RegistryException {
     	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
         String path = getPathWithoutVersion(requestContext.getSourcePath());
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
         String targetPath = getPathWithoutVersion(requestContext.getTargetPath());
         String relativeTargetPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 targetPath);
@@ -364,14 +357,13 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void createLink(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
         String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
         String parentPath = RegistryUtils.getParentPath(relativePath);
         String target = requestContext.getTargetPath();
         String relativeTarget = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
@@ -392,13 +384,12 @@ public class RegistryEventingHandler extends Handler {
 
     public void removeLink(RequestContext requestContext) throws RegistryException {
     	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
         String parentPath = RegistryUtils.getParentPath(relativePath);
         RegistryEvent<String> event = new CollectionUpdatedEvent<String>("The link at " + relativePath + " was removed.");
         ((CollectionUpdatedEvent)event).setResourcePath(parentPath);
@@ -413,14 +404,12 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void putChild(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
-    	
+
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
         boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
         String parentPath = RegistryUtils.getParentPath(relativePath);
         Resource resource = requestContext.getOldResource();
@@ -456,14 +445,12 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String move(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return null;
-    	}
-    	
+
         String path = requestContext.getSourcePath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return null;
+        }
         String targetPath = requestContext.getTargetPath();
         String relativeTargetPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 targetPath);
@@ -561,13 +548,11 @@ public class RegistryEventingHandler extends Handler {
 
     public String copy(RequestContext requestContext) throws RegistryException {
     	
-    	if(getRequestDepth(requestContext) != 1){
-    		return null;
-    	}
-    	
-        String path = requestContext.getSourcePath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+ 	    String path = requestContext.getSourcePath();
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return null;
+        }
         String targetPath = requestContext.getTargetPath();
         String relativeTargetPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 targetPath);
@@ -635,14 +620,12 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public String rename(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return null;
-    	}
-    	
+
         String path = requestContext.getSourcePath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return null;
+        }
         String targetPath = requestContext.getTargetPath();
         String relativeTargetPath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
                 targetPath);
@@ -688,13 +671,11 @@ public class RegistryEventingHandler extends Handler {
     }
 
     public void restore(RequestContext requestContext) throws RegistryException {
-    	
-    	if(getRequestDepth(requestContext) != 1){
-    		return;
-    	}
         String path = requestContext.getResourcePath().getPath();
-        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(),
-                path);
+        String relativePath = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), path);
+        if (!sendNotifications(requestContext, relativePath)){
+            return;
+        }
         boolean isNotCollection = !(requestContext.getResource() instanceof Collection);
         RegistryEvent<String> event;
         if (isNotCollection) {
@@ -754,5 +735,31 @@ public class RegistryEventingHandler extends Handler {
             requestDepth = requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction().getNestedDepth();
         }
         return requestDepth;
+    }
+
+    private boolean sendNotifications(RequestContext requestContext, String relativePath){
+        boolean isMountPath = false;
+        List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
+        for (Mount mount: mounts) {
+            String mountPath = mount.getPath();
+            if (relativePath.startsWith(mountPath)){
+                isMountPath = true;
+            }
+        }
+        if (isMountPath){
+            if(getRequestDepth(requestContext) != 1){
+                return false;
+            } else{
+                return true;
+            }
+        }  else {
+            int requestDepth = getRequestDepth(requestContext);
+            if(!(requestDepth == 1 || requestDepth == 3)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+
     }
 }
