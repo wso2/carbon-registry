@@ -59,24 +59,27 @@ import java.util.List;
  * operations, and is design to work as a background operation.
  */
 public class IndexingHandler extends Handler {
-    private static Log log = LogFactory.getLog(AsyncIndexer.class);
+    private static Log log = LogFactory.getLog(IndexingHandler.class);
     private volatile static AsyncIndexer asyncIndexer;
 
     /**
      * <property name="indexingUrl" type="xml" value="url"/>
      */
-    private String indexingUrl;
-
-    public Resource get(RequestContext requestContext) throws RegistryException {
-        return null;
-    }
 
     public void put(RequestContext requestContext) throws RegistryException {
+        if (log.isDebugEnabled()){
+            log.debug(" Before put resources into indexer");
+        }
         if (isIndexable(requestContext)) {
             return;
         }
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+
         submitFileForIndexing(getIndexer(), requestContext.getResource(), requestContext.getResourcePath().getPath(),
-                null);
+                null,carbonContext.getTenantId(), carbonContext.getTenantDomain() );
+        if (log.isDebugEnabled()){
+            log.debug(" After put resources into indexer");
+        }
     }
 
     @Override
@@ -95,7 +98,8 @@ public class IndexingHandler extends Handler {
             log.error("Could not delete file for Solr server", e);
         }
         Resource resource = requestContext.getRegistry().get(oldPath);
-        submitFileForIndexing(getIndexer(), resource, newPath, null);
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
         return super.move(requestContext);
     }
 
@@ -119,7 +123,8 @@ public class IndexingHandler extends Handler {
             log.error("Could not delete file for Solr server", e);
         }
         Resource resource = requestContext.getRegistry().get(oldPath);
-        submitFileForIndexing(getIndexer(), resource, newPath, null);
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
         return super.rename(requestContext);
     }
 
@@ -131,7 +136,9 @@ public class IndexingHandler extends Handler {
         String oldPath = requestContext.getSourcePath();
         String newPath = requestContext.getTargetPath();
         Resource resource = requestContext.getRegistry().get(oldPath);
-        submitFileForIndexing(getIndexer(), resource, newPath, null);
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+
+        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
         return super.copy(requestContext);
     }
 
@@ -188,7 +195,6 @@ public class IndexingHandler extends Handler {
     private boolean isAuthorized(UserRegistry registry, String resourcePath, String action) throws RegistryException {
         UserRealm userRealm = registry.getUserRealm();
         String userName = getLoggedInUserName();
-
         try {
             if (!userRealm.getAuthorizationManager().isUserAuthorized(userName,
                     resourcePath, action)) {
@@ -210,7 +216,10 @@ public class IndexingHandler extends Handler {
         if (isIndexable(requestContext)) {
             return;
         }
-        submitFileForIndexing(getIndexer(), requestContext.getResource(), requestContext.getResourcePath().getPath(), requestContext.getSourceURL() );
+
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+
+        submitFileForIndexing(getIndexer(), requestContext.getResource(), requestContext.getResourcePath().getPath(), requestContext.getSourceURL(), carbonContext.getTenantId(), carbonContext.getTenantDomain() );
     }
 
     public void delete(RequestContext requestContext) throws RegistryException {
@@ -237,16 +246,13 @@ public class IndexingHandler extends Handler {
     public void importChild(RequestContext requestContext) throws RegistryException {
     }
 
-    public String getIndexingUrl() {
-        return indexingUrl;
-    }
-
     private AsyncIndexer getIndexer() throws RegistryException {
         try {
             if (asyncIndexer == null) {
                 synchronized (this) {
                     if (asyncIndexer == null) {
                         asyncIndexer = null;//AsyncIndexer.getInstance();
+                        asyncIndexer = new AsyncIndexer();
                         new Thread(asyncIndexer).start();
                     }
                 }
@@ -257,7 +263,7 @@ public class IndexingHandler extends Handler {
         }
     }
 
-    private void submitFileForIndexing(AsyncIndexer indexer, Resource resource, String path, String sourceURL) {
+    private void submitFileForIndexing(AsyncIndexer indexer, Resource resource, String path, String sourceURL, int tenantId, String tenantDomain) {
         //if media type is null, mostly it is not a file. We will skip.
         String mediaType = resource.getMediaType();
         if (mediaType == null && path != null) {
@@ -278,15 +284,11 @@ public class IndexingHandler extends Handler {
             String lcName = resource.getProperty("registry.LC.name");
             String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
             indexer.addFile(new File2Index(IndexingUtils.getByteContent(resource, sourceURL),mediaType,path,
-                    CurrentSession.getTenantId(), MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, lcName, lcState));
+                    CurrentSession.getTenantId(), tenantDomain, lcName, lcState));
+
         } catch (RegistryException e) {
             log.error("An error occurred while submitting file for indexing", e);
         }
-    }
-
-    public void setIndexingUrl(String indexingUrl) {
-        if (log.isDebugEnabled()) log.debug("Indexing Url Set to "+ indexingUrl);
-        this.indexingUrl = indexingUrl;
     }
 
 }
