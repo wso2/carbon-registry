@@ -22,10 +22,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -565,6 +567,35 @@ public class SolrClient {
         } catch (SolrServerException e) {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
+        }
+    }
+
+    public List<TermsResponse.Term> query(Map<String, String> fields) throws SolrException {
+        final SolrQuery query =new SolrQuery();
+        query.setTerms(true);
+        String fieldName = fields.get("query.field");
+        String queryField = null;
+        if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
+                IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
+                IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
+            queryField = fields.get("query.field") + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
+            query.addTermsField(queryField);
+        } else {
+            queryField = fields.get("query.field") + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
+            query.addTermsField(queryField);
+        }
+        query.setTermsLimit(Integer.parseInt(fields.get("query.limit")));
+        query.setTermsLower(fields.get("query.prefix"));
+        query.setTermsPrefix(fields.get("query.prefix"));
+
+        try {
+            QueryResponse qr = server.query(query);
+            TermsResponse termsResponse = qr.getTermsResponse();
+            return termsResponse.getTerms(queryField);
+        } catch (SolrServerException e) {
+            String message = "Failure at query ";
+            throw new SolrException(ErrorCode.SERVER_ERROR, message + fieldName, e);
         }
     }
 

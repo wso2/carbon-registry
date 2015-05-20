@@ -28,6 +28,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -38,6 +39,7 @@ import org.wso2.carbon.registry.indexing.service.ContentBasedSearchService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
 import org.wso2.carbon.registry.indexing.service.SearchResultsBean;
 import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
@@ -72,6 +74,8 @@ public class IndexingServiceComponent {
                 ContentSearchService.class.getName(), new ContentSearchServiceImpl(), null));
         registrations.push(context.getBundleContext().registerService(
                 AttributeSearchService.class.getName(), new AttributeSearchServiceImpl(), null));
+        registrations.push(context.getBundleContext().registerService(
+                TermsSearchService.class.getName(), new TermsSearchServiceImpl(), null));
         registrations.push(context.getBundleContext().registerService(
                 WaitBeforeShutdownObserver.class.getName(), new WaitBeforeShutdownObserver() {
             boolean status = false;
@@ -187,6 +191,46 @@ public class IndexingServiceComponent {
             return search(tenantId, query);
         }
     }
+
+    private static class TermsSearchServiceImpl implements TermsSearchService {
+
+        @Override
+        public TermData[] search(UserRegistry registry, Map<String, String> query) throws RegistryException {
+            SearchResultsBean resultsBean;
+            try {
+                resultsBean = new ContentBasedSearchService().searchTerms(query, registry);
+            } catch (IndexerException e) {
+                throw new RegistryException("Unable to obtain an instance of a Solr client", e);
+            }
+            String errorMessage = resultsBean.getErrorMessage();
+            if (errorMessage != null) {
+                throw new RegistryException(errorMessage);
+            }
+            return resultsBean.getTermDataList();
+        }
+
+        @Override
+        public TermData[] search(int tenantId, Map<String, String> query) throws RegistryException {
+            return search(Utils.getRegistryService().getRegistry(
+                    CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId), query);
+        }
+
+        public TermData[] search(Map<String, String> query) throws RegistryException {
+            int tenantId;
+            try {
+                tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            } catch (Exception ignored) {
+                tenantId = MultitenantConstants.SUPER_TENANT_ID;
+            }
+            if (tenantId == MultitenantConstants.INVALID_TENANT_ID) {
+                tenantId = MultitenantConstants.SUPER_TENANT_ID;
+            }
+            return search(tenantId, query);
+        }
+    }
+
+
+
 
     // An implementation of an Axis2 Configuration Context observer,
     // which is used to handle the requirement of initializing the indexer for a tenant.

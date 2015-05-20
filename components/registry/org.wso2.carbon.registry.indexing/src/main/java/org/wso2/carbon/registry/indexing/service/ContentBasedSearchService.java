@@ -20,11 +20,14 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.admin.api.indexing.IContentBasedSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
 import org.wso2.carbon.registry.common.utils.UserUtil;
@@ -346,5 +349,23 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 	public static String getLoggedInUserName(){
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
 	}
+
+    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException {
+        SearchResultsBean resultsBean = new SearchResultsBean();
+        SolrClient client = SolrClient.getInstance();
+
+        List<TermsResponse.Term> results = client.query(attributes);
+
+        if (log.isDebugEnabled()) {
+            log.debug("result for the term search: " + results);
+        }
+
+        List<TermData> termDataList = new ArrayList<>();
+        for (TermsResponse.Term term : results) {
+            termDataList.add(new TermData(term.getTerm(),term.getFrequency()));
+        }
+        resultsBean.setTermDataList(termDataList.toArray(new TermData[termDataList.size()]));
+        return resultsBean;
+    }
 
 }
