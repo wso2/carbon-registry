@@ -69,9 +69,9 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing</bundleDef>
                                 <bundleDef>org.wso2.apache.solr:solr</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io</bundleDef>
-                                <bundleDef>org.wso2.apache.httpcomponents:httpmime</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpmime</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpcore</bundleDef>
-                                <bundleDef>org.wso2.apache.httpcomponents:httpclient</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpclient</bundleDef>
                                 <bundleDef>org.wso2.noggit:noggit</bundleDef>
                                 <bundleDef>org.wso2.restlet.jee:org.restlet</bundleDef>
                                 <bundleDef>org.wso2.apache.lucene:lucene</bundleDef>
