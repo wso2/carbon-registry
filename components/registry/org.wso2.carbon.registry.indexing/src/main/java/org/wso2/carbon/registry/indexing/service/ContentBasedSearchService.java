@@ -21,6 +21,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -354,15 +355,15 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
 
-        List<TermsResponse.Term> results = client.query(attributes);
+        List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 
         if (log.isDebugEnabled()) {
             log.debug("result for the term search: " + results);
         }
 
         List<TermData> termDataList = new ArrayList<>();
-        for (TermsResponse.Term term : results) {
-            termDataList.add(new TermData(term.getTerm(),term.getFrequency()));
+        for (FacetField.Count count : results) {
+            termDataList.add(new TermData(count.getName(),count.getCount()));
         }
         resultsBean.setTermDataList(termDataList.toArray(new TermData[termDataList.size()]));
         return resultsBean;
