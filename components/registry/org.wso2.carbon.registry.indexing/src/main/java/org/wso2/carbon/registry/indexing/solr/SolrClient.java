@@ -575,7 +575,6 @@ public class SolrClient {
         String facetField = null;
         try {
             SolrQuery query = new SolrQuery("* TO *");
-
             // Set no of rows
             query.setRows(Integer.MAX_VALUE);
             // Solr does not allow to search with special characters ,therefore this fix allow
@@ -602,6 +601,7 @@ public class SolrClient {
             if (log.isDebugEnabled()) {
                 log.debug("Solr index faceted query: " + query);
             }
+
             QueryResponse queryresponse = server.query(query);
             return queryresponse.getFacetField(facetField).getValues();
 
@@ -614,38 +614,41 @@ public class SolrClient {
     private String addFacetFields(Map<String, String> fields, SolrQuery query) {
         //set the facet true to enable facet
         query.setFacet(true);
-        String fieldName = fields.get("facet.field");
+        String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
         String queryField = null;
-        //set the field for the facet
-        if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
-                IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
-                IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
-                IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
-            queryField = fieldName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
-            query.addFacetField(queryField);
-        } else {
-            queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
-            query.addFacetField(queryField);
+        if (fieldName != null) {
+            //set the field for the facet
+            if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                    IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
+                queryField = fieldName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            } else {
+                queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            }
+            //set the limit for the facet
+            if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
+                query.setFacetLimit(Integer.parseInt(fields.get(IndexingConstants.FACET_LIMIT)));
+            } else {
+                query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
+            }
+            //set the mincount for the facet
+            if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
+                query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
+            } else {
+                query.setFacetMinCount(IndexingConstants.FACET_LIMIT_DEFAULT);
+            }
+            //set the sort value for facet: possible values : index or count
+            if (fields.get(IndexingConstants.FACET_SORT) != null) {
+                query.setFacetSort(fields.get(IndexingConstants.FACET_SORT));
+            }
+            // set the prefix value for facet
+            if (fields.get(IndexingConstants.FACET_PREFIX) != null) {
+                query.setFacetPrefix(fields.get(IndexingConstants.FACET_PREFIX));
+            }
         }
-        //set the limit for the facet
-        if (fields.get("facet.limit") != null) {
-            query.setFacetLimit(Integer.parseInt(fields.get("facet.limit")));
-        }
-        //set the mincount for the facet
-        if (fields.get("facet.mincount") != null) {
-            query.setFacetMinCount(Integer.parseInt(fields.get("facet.mincount")));
-        } else {
-            query.setFacetMinCount(1);
-        }
-        //set the sort value for facet: possible values : index or count
-        if (fields.get("facet.sort") != null) {
-            query.setFacetSort(fields.get("facet.sort"));
-        }
-        // set the prefix value for facet
-        if (fields.get("facet.prefix") != null) {
-            query.setFacetPrefix(fields.get("facet.prefix"));
-        }
-
         return queryField;
     }
 

@@ -354,7 +354,6 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
     public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
-
         List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 
         if (log.isDebugEnabled()) {
