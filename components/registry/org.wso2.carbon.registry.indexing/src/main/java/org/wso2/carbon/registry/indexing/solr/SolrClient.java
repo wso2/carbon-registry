@@ -594,10 +594,10 @@ public class SolrClient {
 
                 }
             }
-            // Add query filters
-            addQueryFilters(fields, query);
             // Add facet fields
             facetField = addFacetFields(fields, query);
+            // Add query filters
+            addQueryFilters(fields, query);
             if (log.isDebugEnabled()) {
                 log.debug("Solr index faceted query: " + query);
             }
@@ -628,25 +628,30 @@ public class SolrClient {
                 queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
                 query.addFacetField(queryField);
             }
+            fields.remove(IndexingConstants.FACET_FIELD_NAME);
             //set the limit for the facet
             if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
                 query.setFacetLimit(Integer.parseInt(fields.get(IndexingConstants.FACET_LIMIT)));
+                fields.remove(IndexingConstants.FACET_LIMIT);
             } else {
                 query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
             }
             //set the mincount for the facet
             if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
                 query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
+                fields.remove(IndexingConstants.FACET_MIN_COUNT);
             } else {
-                query.setFacetMinCount(IndexingConstants.FACET_LIMIT_DEFAULT);
+                query.setFacetMinCount(IndexingConstants.FACET_MIN_COUNT_DEFAULT);
             }
             //set the sort value for facet: possible values : index or count
             if (fields.get(IndexingConstants.FACET_SORT) != null) {
                 query.setFacetSort(fields.get(IndexingConstants.FACET_SORT));
+                fields.remove(IndexingConstants.FACET_SORT);
             }
             // set the prefix value for facet
             if (fields.get(IndexingConstants.FACET_PREFIX) != null) {
                 query.setFacetPrefix(fields.get(IndexingConstants.FACET_PREFIX));
+                fields.remove(IndexingConstants.FACET_PREFIX);
             }
         }
         return queryField;
