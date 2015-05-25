@@ -60,7 +60,9 @@ public class ReportingServiceComponent {
             PrivilegedCarbonContext.startTenantFlow();
             try {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
-                return taskService.getTaskManager(REPORTING_TASK_MANAGER);
+                TaskManager taskManager =  taskService.getTaskManager(REPORTING_TASK_MANAGER);
+                taskService.registerTaskType(REPORTING_TASK_MANAGER);
+                return taskManager;
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
