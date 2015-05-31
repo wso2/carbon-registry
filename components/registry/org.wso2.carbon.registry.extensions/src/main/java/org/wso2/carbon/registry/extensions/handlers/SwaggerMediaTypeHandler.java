@@ -139,10 +139,9 @@ public class SwaggerMediaTypeHandler extends Handler {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 
-            requestContext.setSourceURL(
-                    requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
+            requestContext
+                    .setSourceURL(requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
             String sourceURL = requestContext.getSourceURL();
-
 
             if (StringUtils.isBlank(sourceURL)) {
                 inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
@@ -153,16 +152,17 @@ public class SwaggerMediaTypeHandler extends Handler {
                 inputStream = new URL(sourceURL).openStream();
 
                 SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
+                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()),
+                        sourceURL);
             }
             requestContext.setProcessingComplete(true);
-		}catch (IOException e) {
+        } catch (IOException e) {
             throw new RegistryException("The URL " + requestContext.getSourceURL() + " is incorrect.", e);
         } finally {
-			CommonUtil.closeInputStream(inputStream);
-			CommonUtil.releaseUpdateLock();
-		}
-	}
+            CommonUtil.closeInputStream(inputStream);
+            CommonUtil.releaseUpdateLock();
+        }
+    }
 
 	/**
 	 * Creates a resource in the given path by fetching the resource content from the given URL.

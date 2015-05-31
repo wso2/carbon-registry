@@ -256,14 +256,11 @@ function validateEmptyPropertyValues() {
 
 function validateIllegalContentSearchString(fld, fldName) {
     var error = "";
-    //var illegalChars = /([^a-zA-Z0-9_\-\x2E\&\?\/\:\,\s\(\)\[\]])/;
     var illegalChars = /([~!@#$;%^*+{}\|\\<>\"\',\[\]\(\)])/; // disallow ~!@#$;%^*+={}|\<>"',[]()
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
         error = org_wso2_carbon_registry_search_ui_jsi18n["the"] +
         " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars"] + "<br />";
-    } else {
-//        fld.style.background = 'White';
     }
 
     return error;

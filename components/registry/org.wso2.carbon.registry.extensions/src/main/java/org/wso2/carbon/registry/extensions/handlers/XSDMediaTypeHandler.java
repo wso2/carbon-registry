@@ -158,7 +158,7 @@ public class XSDMediaTypeHandler extends Handler {
                     }
                 } catch (Exception e) {
                     // Since SchemaValidator.validate method is throwing Exception need to catch it here
-                    throw new RegistryException("Exception occurred while validating the schema", e);
+                    throw new RegistryException("Exception occurred while validating the schema " + sourceURL, e);
                 }
 
                 savedName = processSchemaImport(requestContext, resourcePath, validationInfo);
