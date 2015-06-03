@@ -69,18 +69,8 @@ public class EndpointUtilsTest extends TestCase {
 
         assertTrue(generatedEndpointcontent1.equals(endpointContent1.toString()) || generatedEndpointcontent1
                 .equals(endpointContent1_2.toString()));
-        System.out.println("getEndpointContentWithOverview 1: " + EndpointUtils
-                .getEndpointContentWithOverview("http://www.webservicex.net/convertVolume.asmx",
-                        "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertVolume-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertVolume.asmx"),
-                        "1.0.0"));
 
         assertTrue(generatedEndpointcontent2.equals(endpointContent2.toString()) || generatedEndpointcontent1
                 .equals(endpointContent2_2.toString()));
-        System.out.println("getEndpointContentWithOverview 1: " + EndpointUtils
-                .getEndpointContentWithOverview("http://www.webservicex.net/convertMetricWeight.asmx",
-                        "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertMetricWeight-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertMetricWeight.asmx"),
-                        "1.0.0"));
     }
 }
