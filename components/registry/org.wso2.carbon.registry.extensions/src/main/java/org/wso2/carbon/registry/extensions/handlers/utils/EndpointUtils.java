@@ -118,7 +118,6 @@ public class EndpointUtils {
             wsdlElement = buildOMElement(RegistryUtils.decodeBytes(wsdlContentBytes));
         } catch (Exception e) {
             String msg = "Error in building the wsdl element for path: " + wsdlPath + ".";
-            log.error(msg, e);
             throw new RegistryException(msg, e);
         }
 
