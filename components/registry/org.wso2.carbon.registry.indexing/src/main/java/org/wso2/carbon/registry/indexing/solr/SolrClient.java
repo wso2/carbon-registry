@@ -22,10 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -566,6 +569,92 @@ public class SolrClient {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
         }
+    }
+
+    public List<FacetField.Count> facetQuery(int tenantId, Map<String, String> fields) throws SolrException {
+        String facetField = null;
+        try {
+            SolrQuery query = new SolrQuery("* TO *");
+            // Set no of rows
+            query.setRows(Integer.MAX_VALUE);
+            // Solr does not allow to search with special characters ,therefore this fix allow
+            // to contain "-" in super tenant id.
+            if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + "\\" + tenantId);
+            } else {
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + tenantId);
+            }
+            if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
+                // This is for fixing  REGISTRY-1695, This is temporary solution until
+                // the default security polices also stored in Governance registry.
+                if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                        RegistryConstants.POLICY_MEDIA_TYPE)) {
+                    query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
+                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+
+                }
+            }
+            // Add facet fields
+            facetField = addFacetFields(fields, query);
+            // Add query filters
+            addQueryFilters(fields, query);
+            if (log.isDebugEnabled()) {
+                log.debug("Solr index faceted query: " + query);
+            }
+
+            QueryResponse queryresponse = server.query(query);
+            return queryresponse.getFacetField(facetField).getValues();
+
+        } catch (SolrServerException e) {
+            String message = "Failure at query ";
+            throw new SolrException(ErrorCode.SERVER_ERROR, message + facetField, e);
+        }
+    }
+
+    private String addFacetFields(Map<String, String> fields, SolrQuery query) {
+        //set the facet true to enable facet
+        query.setFacet(true);
+        String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
+        String queryField = null;
+        if (fieldName != null) {
+            //set the field for the facet
+            if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                    IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
+                queryField = fieldName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            } else {
+                queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            }
+            fields.remove(IndexingConstants.FACET_FIELD_NAME);
+            //set the limit for the facet
+            if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
+                query.setFacetLimit(Integer.parseInt(fields.get(IndexingConstants.FACET_LIMIT)));
+                fields.remove(IndexingConstants.FACET_LIMIT);
+            } else {
+                query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
+            }
+            //set the mincount for the facet
+            if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
+                query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
+                fields.remove(IndexingConstants.FACET_MIN_COUNT);
+            } else {
+                query.setFacetMinCount(IndexingConstants.FACET_MIN_COUNT_DEFAULT);
+            }
+            //set the sort value for facet: possible values : index or count
+            if (fields.get(IndexingConstants.FACET_SORT) != null) {
+                query.setFacetSort(fields.get(IndexingConstants.FACET_SORT));
+                fields.remove(IndexingConstants.FACET_SORT);
+            }
+            // set the prefix value for facet
+            if (fields.get(IndexingConstants.FACET_PREFIX) != null) {
+                query.setFacetPrefix(fields.get(IndexingConstants.FACET_PREFIX));
+                fields.remove(IndexingConstants.FACET_PREFIX);
+            }
+        }
+        return queryField;
     }
 
     /**
