@@ -26,7 +26,6 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.eventing.RegistryEventingConstants;
 import org.wso2.carbon.registry.eventing.handlers.SubscriptionManagerHandler;
-import org.wso2.carbon.registry.eventing.internal.Utils;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
