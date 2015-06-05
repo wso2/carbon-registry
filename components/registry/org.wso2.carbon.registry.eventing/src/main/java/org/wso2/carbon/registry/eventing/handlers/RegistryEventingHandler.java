@@ -33,7 +33,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.eventing.events.*;
-import org.wso2.carbon.registry.eventing.internal.Utils;
+import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
 
 import java.util.List;
 
@@ -422,7 +422,8 @@ public class RegistryEventingHandler extends Handler {
                 childCreatedEvent.setParameter("ChildPath", relativePath);
                 ((ChildCreatedEvent)childCreatedEvent).setResourcePath(parentPath);
             } else {
-                childCreatedEvent = new ChildCreatedEvent<String>("A collection was added to the collection " + parentPath + " at Path: " + relativePath);
+                childCreatedEvent = new ChildCreatedEvent<String>(
+                        "A collection was added to the collection " + parentPath + " at Path: " + relativePath);
                 childCreatedEvent.setParameter("ChildPath", relativePath);
                 ((ChildCreatedEvent)childCreatedEvent).setResourcePath(parentPath);
             }
@@ -699,20 +700,22 @@ public class RegistryEventingHandler extends Handler {
     protected void notify(RegistryEvent event, Registry registry, String path)
             throws Exception {
         try {
-            if (Utils.getRegistryEventingService() == null) {
+            if (EventingDataHolder.getInstance().getRegistryEventingService() == null) {
                 log.debug("Eventing service is unavailable.");
                 return;
             }
             if (registry == null || registry.getEventingServiceURL(path) == null) {
-                Utils.getRegistryEventingService().notify(event);
+                EventingDataHolder.getInstance().getRegistryEventingService().notify(event);
                 return;
-            } else if (Utils.getDefaultEventingServiceURL() == null) {
+            } else if (EventingDataHolder.getInstance().getDefaultEventingServiceURL() == null) {
                 log.error("Registry Eventing Handler is not properly initialized");
-            } else if (registry.getEventingServiceURL(path).equals(Utils.getDefaultEventingServiceURL())) {
-                Utils.getRegistryEventingService().notify(event);
+            } else if (registry.getEventingServiceURL(path)
+                               .equals(EventingDataHolder.getInstance().getDefaultEventingServiceURL())) {
+                EventingDataHolder.getInstance().getRegistryEventingService().notify(event);
                 return;
             } else {
-                Utils.getRegistryEventingService().notify(event, registry.getEventingServiceURL(path));
+                EventingDataHolder.getInstance().getRegistryEventingService()
+                                  .notify(event, registry.getEventingServiceURL(path));
                 return;
             }
         } catch (RegistryException e) {
@@ -728,16 +731,22 @@ public class RegistryEventingHandler extends Handler {
 
     /**
      * Method to get the actual depth of the request
+     * @param requestContext Request Context
      */
     private int getRequestDepth(RequestContext requestContext){
         int requestDepth = -1;
-        if(requestContext.getRegistry().getRegistryContext() != null && requestContext.getRegistry().getRegistryContext().getDataAccessManager() != null && requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction() != null){
-            requestDepth = requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction().getNestedDepth();
+        if (requestContext.getRegistry().getRegistryContext() != null &&
+            requestContext.getRegistry().getRegistryContext().getDataAccessManager() != null &&
+            requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction() != null) {
+            requestDepth =
+                    requestContext.getRegistry().getRegistryContext().getDataAccessManager().getDatabaseTransaction()
+                                  .getNestedDepth();
         }
         return requestDepth;
     }
 
     private boolean sendNotifications(RequestContext requestContext, String relativePath){
+
         boolean isMountPath = false;
         List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
         for (Mount mount: mounts) {

@@ -79,4 +79,13 @@ public final class IndexingConstants {
     public static final String FIELD_RIGHT_OP = "rightOp";
     public static final String FIELD_LEFT_OP = "leftOp";
 
+    //Constants for facet search
+    public static final String FACET_FIELD_NAME = "facet.field";
+    public static final String FACET_LIMIT = "facet.limit";
+    public static final int FACET_LIMIT_DEFAULT = -1;
+    public static final String FACET_MIN_COUNT =  "facet.mincount";
+    public static final int FACET_MIN_COUNT_DEFAULT = 1;
+    public static final String FACET_SORT = "facet.sort";
+    public static final String FACET_PREFIX = "facet.prefix";
+
 }

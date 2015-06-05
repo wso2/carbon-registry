@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2005-2008,2015 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -32,9 +32,9 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.mail.MailConstants;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.event.core.Message;
 import org.wso2.carbon.event.core.subscription.Subscription;
 import org.wso2.carbon.event.ws.internal.notify.WSEventDispatcher;
@@ -42,24 +42,24 @@ import org.wso2.carbon.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.governance.notifications.worklist.stub.WorkListServiceStub;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.eventing.WorkListConfig;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.eventing.events.DispatchEvent;
+import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
 import org.wso2.carbon.registry.eventing.internal.JMXEventsBean;
-import org.wso2.carbon.registry.eventing.internal.Utils;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
 
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class RegistryEventDispatcher extends WSEventDispatcher {
 
@@ -70,6 +70,17 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
     private Map<String, Queue<DigestEntry>> digestQueues;
 
     private static final Log log = LogFactory.getLog(RegistryEventDispatcher.class);
+
+    private static Session session;
+    private static ThreadPoolExecutor threadPoolExecutor;
+    private InternetAddress smtpFromAddress = null;
+    public static final int MIN_THREAD = 8;
+    public static final int MAX_THREAD = 100;
+    public static final String MIN_THREAD_NAME = "minThread";
+    public static final String MAX_THREAD_NAME = "maxThread";
+    public static final String DEFAULT_KEEP_ALIVE_TIME_NAME = "defaultKeepAliveTime";
+    public static final long DEFAULT_KEEP_ALIVE_TIME = 20;
+
 
     private static WorkListConfig workListConfig = new WorkListConfig();
 
@@ -235,8 +246,8 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             if(endpoint.toLowerCase().contains("user://")){
                 try {
                     String username = endpoint.substring(7);
-                    if (Utils.getRegistryService() != null) {
-                        UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
+                    if (EventingDataHolder.getInstance().getRegistryService() != null) {
+                        UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
                         if (registry != null && registry.getUserRealm() != null &&
                             registry.getUserRealm().getUserStoreManager() != null) {
                             UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
@@ -256,8 +267,9 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 List<String> emails = new LinkedList<String>();
                 try {
                     String roleName = endpoint.substring(7);
-                    if (Utils.getRegistryService() != null) {
-                        UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
+                    if (EventingDataHolder.getInstance().getRegistryService() != null) {
+                        UserRegistry registry =
+                                EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
                         if (registry != null && registry.getUserRealm() != null &&
                             registry.getUserRealm().getUserStoreManager() != null) {
                             UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
@@ -300,9 +312,11 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             String email = null;
             try {
                 String username = endpoint.substring(7);
-                if (Utils.getRegistryService() != null) {
-                    UserRegistry registry = Utils.getRegistryService().getGovernanceSystemRegistry
-                            (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+                if (EventingDataHolder.getInstance().getRegistryService() != null) {
+                    UserRegistry registry = EventingDataHolder.getInstance().getRegistryService()
+                                              .getGovernanceSystemRegistry(PrivilegedCarbonContext
+                                                                                   .getThreadLocalCarbonContext()
+                                                                                   .getTenantId());
                     if (registry != null && registry.getUserRealm() != null &&
                             registry.getUserRealm().getUserStoreManager() != null) {
                         UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
@@ -321,9 +335,11 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             List<String> emails = new LinkedList<String>();
             try {
                 String roleName = endpoint.substring(7);
-                if (Utils.getRegistryService() != null) {
-                    UserRegistry registry = Utils.getRegistryService().getGovernanceSystemRegistry
-                            (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId());
+                if (EventingDataHolder.getInstance().getRegistryService() != null) {
+                    UserRegistry registry = EventingDataHolder.getInstance().getRegistryService()
+                                                    .getGovernanceSystemRegistry(PrivilegedCarbonContext
+                                                                                         .getThreadLocalCarbonContext()
+                                                                                         .getTenantId());
                     if (registry != null && registry.getUserRealm() != null &&
                             registry.getUserRealm().getUserStoreManager() != null) {
                         UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
@@ -348,7 +364,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             }
         } else if (endpoint.toLowerCase().startsWith("jmx://")) {
             log.debug("Sending Notification to JMX endpoint");
-            JMXEventsBean eventsBean = Utils.getEventsBean();
+            JMXEventsBean eventsBean = EventingDataHolder.getInstance().getEventsBean();
             if (eventsBean == null) {
                 log.warn("Unable to generate notification. The notification bean has not been " +
                         "registered.");
@@ -408,7 +424,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
 //            String poweredBy = "This message was automatically generated by WSO2 Carbon.";
 //            String signature = "\n--\n" + poweredBy;
             String signature = "";
-            String registryURL = Utils.getDefaultEventingServiceURL();
+            String registryURL = EventingDataHolder.getInstance().getDefaultEventingServiceURL();
             if (registryURL != null && registryURL.indexOf(
                     "/services/RegistryEventingService") > -1) {
                 registryURL = registryURL.substring(0, registryURL.length() -
@@ -475,85 +491,125 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } else {
             eventName = temp[2];
         }
-        OMElement payload = buildPayload(factory, message, isEmail,eventName);
+        String emailMessage = null;
+        MimeEmailMessageHandler handler =  new MimeEmailMessageHandler();
+        if (message instanceof DispatchEvent && isEmail) {
+            emailMessage = handler.getEmailMessage(message);
+        }
+        String topicText = topicEle.getText();
+        if (emailMessage != null && !emailMessage.equals(message.getMessage().toString())){
 
-        if (endpoint != null) {
-            try {
-                if (doRest) {
-                    if (configContext == null) {
-                        MessageContext messageContext = MessageContext.getCurrentMessageContext();
-                        if (messageContext != null) {
-                            configContext = messageContext.getConfigurationContext();
-                        }
+            String[] tTemp = topicText.split(RegistryEvent.TOPIC_SEPARATOR);
+            String event = "";
+            if (tTemp[0].equals("")) {
+                event = tTemp[3];
+            } else {
+                event = tTemp[2];
+            }
+            String path = "";
+            if (topicText.endsWith(RegistryEvent.TOPIC_SEPARATOR) || topicText.endsWith("*") || topicText.endsWith("#")) {
+                path = topicText.substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1, topicText.lastIndexOf(RegistryEvent.TOPIC_SEPARATOR));
+            } else {
+                path = topicText.substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1);
+            }
+            String mailSubject = handler.getEmailSubject(message, path, event);
+            try{
+                if (configContext == null) {
+                    MessageContext messageContext = MessageContext.getCurrentMessageContext();
+                    if (messageContext != null) {
+                        configContext = messageContext.getConfigurationContext();
                     }
-
-                    ServiceClient serviceClient;
-                    if (configContext != null) {
-                        serviceClient = new ServiceClient(configContext, null);
-                    } else {
-                        serviceClient = new ServiceClient();
-                    }
-                    Options options = new Options();
-                    serviceClient.engageModule("addressing");
-                    options.setTo(new EndpointReference(endpoint));
-                    options.setProperty(Constants.Configuration.ENABLE_REST, Constants.VALUE_TRUE);
-                    if (endpoint.toLowerCase().startsWith("mailto:")) {
-                        Map headerMap = new HashMap();
-                        String topicText = topicEle.getText();
-                        if (topicText != null && topicText.lastIndexOf("/") > 0) {
-                            String[] tTemp = topicText.split(RegistryEvent.TOPIC_SEPARATOR);
-                            String event = "";
-                            if (tTemp[0].equals("")) {
-                                event = tTemp[3];
-                            } else {
-                                event = tTemp[2];
-                            }
-                            String path = "";
-                            if (topicText.endsWith(RegistryEvent.TOPIC_SEPARATOR) || topicText.endsWith("*") || topicText.endsWith("#")) {
-	                            path = topicText
-	                                    .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1,
-	                                            topicText.lastIndexOf(RegistryEvent.TOPIC_SEPARATOR));
-                            } else {
-                            	path = topicText
-	                                    .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1);
-                            }
-
-                            String mailHeader = message.getProperty(MailConstants.MAIL_HEADER_SUBJECT);
-                            if (mailHeader != null) {
-                                headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, mailHeader);
-                            } else if (path == null || path.length() == 0) {
-                                headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
-                                        "[" + event + "]");
-                            } else {
-                                headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
-                                        "[" + event + "] at path: " + path);
-                            }
-                        }
-                        options.setProperty(MessageContext.TRANSPORT_HEADERS, headerMap);
-                        options.setProperty(MailConstants.TRANSPORT_MAIL_FORMAT,
-                                MailConstants.TRANSPORT_FORMAT_TEXT);
-                    }
-                    options.setProperty(MessageContext.CLIENT_API_NON_BLOCKING, Boolean.TRUE);
-                    options.setAction(RegistryEventingConstants.WSE_PUBLISH);
-                    serviceClient.setOptions(options);
-                    if(log.isDebugEnabled()){
-                       log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
-                     }
-                    serviceClient.fireAndForget(payload);
-                } else {
-                    if(log.isDebugEnabled()){
-                      log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
-                    }
-                    super.sendNotification(topicEle, payload, endpoint);
                 }
-            } catch (AxisFault e) {
-                log.error("Unable to send message", e);
+                handler.sendMimeMessage(configContext, emailMessage, mailSubject,endpoint.replace("mailto:","") );
+            } catch (RegistryException e) {
+                log.error("Unable to send email notifications", e);
+            }
+
+        } else {
+            OMElement payload = buildPayload(factory, message, isEmail, eventName);
+
+            if (endpoint != null) {
+                try {
+                    if (doRest) {
+                        if (configContext == null) {
+                            MessageContext messageContext = MessageContext.getCurrentMessageContext();
+                            if (messageContext != null) {
+                                configContext = messageContext.getConfigurationContext();
+                            }
+                        }
+
+                        ServiceClient serviceClient;
+                        if (configContext != null) {
+                            serviceClient = new ServiceClient(configContext, null);
+                        } else {
+                            serviceClient = new ServiceClient();
+                        }
+                        Options options = new Options();
+                        serviceClient.engageModule("addressing");
+                        options.setTo(new EndpointReference(endpoint));
+                        options.setProperty(Constants.Configuration.ENABLE_REST, Constants.VALUE_TRUE);
+                        if (endpoint.toLowerCase().startsWith("mailto:")) {
+                            Map headerMap = new HashMap();
+                            if (topicText != null && topicText.lastIndexOf("/") > 0) {
+                                String[] tTemp = topicText.split(RegistryEvent.TOPIC_SEPARATOR);
+                                String event = "";
+                                if (tTemp[0].equals("")) {
+                                    event = tTemp[3];
+                                } else {
+                                    event = tTemp[2];
+                                }
+                                String path = "";
+                                if (topicText.endsWith(RegistryEvent.TOPIC_SEPARATOR) || topicText.endsWith("*") || topicText.endsWith("#")) {
+                                    path = topicText
+                                            .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1,
+                                                       topicText.lastIndexOf(RegistryEvent.TOPIC_SEPARATOR));
+                                } else {
+                                    path = topicText
+                                            .substring(RegistryEventingConstants.TOPIC_PREFIX.length()+event.length()+1);
+                                }
+
+                                String mailHeader = message.getProperty(MailConstants.MAIL_HEADER_SUBJECT);
+                                if (mailHeader != null) {
+                                    headerMap.put(MailConstants.MAIL_HEADER_SUBJECT, mailHeader);
+                                } else if (path == null || path.length() == 0) {
+                                    headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
+                                                  "[" + event + "]");
+                                } else {
+                                    headerMap.put(MailConstants.MAIL_HEADER_SUBJECT,
+                                                  "[" + event + "] at path: " + path);
+                                }
+                                headerMap.put(MailConstants.TRANSPORT_MAIL_FORMAT, "text/html");
+                                headerMap.put(MailConstants.TRANSPORT_MAIL_CONTENT_TYPE, "text/html");
+
+                            }
+                            options.setProperty(MessageContext.TRANSPORT_HEADERS, headerMap);
+                            //options.setProperty(MailConstants.TRANSPORT_MAIL_FORMAT,
+                            //                    MailConstants.TRANSPORT_FORMAT_TEXT);
+                            options.setProperty(MailConstants.TRANSPORT_MAIL_FORMAT, "text/html");
+                            options.setProperty(MailConstants.TRANSPORT_MAIL_CONTENT_TYPE, "text/html");
+                        }
+                        options.setProperty(MessageContext.CLIENT_API_NON_BLOCKING, Boolean.TRUE);
+                        options.setAction(RegistryEventingConstants.WSE_PUBLISH);
+                        serviceClient.setOptions(options);
+                        if(log.isDebugEnabled()){
+                            log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                        }
+                        serviceClient.fireAndForget(payload);
+                    } else {
+                        if(log.isDebugEnabled()){
+                            log.debug("\nThe payload contains in the publishing  event is : \n" + payload.toString());
+                        }
+                        super.sendNotification(topicEle, payload, endpoint);
+                    }
+                } catch (AxisFault e) {
+                    log.error("Unable to send message", e);
+                }
             }
         }
     }
 
     public String getEndpoint() {
-        return Utils.getDefaultEventingServiceURL();
+        return EventingDataHolder.getInstance().getDefaultEventingServiceURL();
     }
 
     private void addToEmailDigestQueue(Message event, String topic, String endpoint, String digestType,

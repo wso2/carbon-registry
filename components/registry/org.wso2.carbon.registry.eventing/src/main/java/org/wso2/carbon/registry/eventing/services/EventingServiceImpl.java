@@ -35,7 +35,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.eventing.RegistryEventDispatcher;
 import org.wso2.carbon.registry.eventing.RegistryEventingConstants;
 import org.wso2.carbon.registry.eventing.events.*;
-import org.wso2.carbon.registry.eventing.internal.Utils;
+import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
 
 import javax.xml.stream.XMLStreamException;
 import java.util.*;
@@ -94,7 +94,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                 // The updated subscription should be directly done at the subMgr to avoid
                 // generating another verification request
                 subscription.setId(subscriptionId);
-                Utils.getRegistryEventBrokerService().renewSubscription(subscription);
+                EventingDataHolder.getInstance().getRegistryEventBrokerService().renewSubscription(subscription);
             }
             return email;
         } catch (Exception e) {
@@ -137,7 +137,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
     private synchronized static void initializeDispatcher() {
         if (dispatcher == null) {
             dispatcher = new RegistryEventDispatcher();
-            ((RegistryEventDispatcher)dispatcher).init(Utils.getConfigurationContext());
+            ((RegistryEventDispatcher)dispatcher).init(EventingDataHolder.getInstance().getConfigurationContext());
         }
     }
 
@@ -171,7 +171,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
     }
 
     public List<Subscription> getAllSubscriptions() throws EventBrokerException {
-        return Utils.getRegistryEventBrokerService().getAllSubscriptions(null);
+        return EventingDataHolder.getInstance().getRegistryEventBrokerService().getAllSubscriptions(null);
     }
 
     public List<Subscription> getAllSubscriptions(String userName, String remoteURL)
@@ -184,16 +184,18 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
     }
 
     public String getSubscriptionManagerUrl() {
-        return Utils.getDefaultEventingServiceURL();
+        return EventingDataHolder.getInstance().getDefaultEventingServiceURL();
     }
 
     public Subscription getSubscription(String id) {
         try {
-            if(id != null && id.contains(";version:")) {
-               log.warn("Versioned resources cannot have subscriptions, instead returns the subscription from the actual resource");
-               return Utils.getRegistryEventBrokerService().getSubscription(RegistryUtil.getResourcePathFromVersionPath(id));
+            if (id != null && id.contains(";version:")) {
+                log.warn(
+                        "Versioned resources cannot have subscriptions, instead returns the subscription from the actual resource");
+                return EventingDataHolder.getInstance().getRegistryEventBrokerService()
+                                         .getSubscription(RegistryUtil.getResourcePathFromVersionPath(id));
             } else {
-                return Utils.getRegistryEventBrokerService().getSubscription(id);
+                return EventingDataHolder.getInstance().getRegistryEventBrokerService().getSubscription(id);
             }
         } catch (EventBrokerException e) {
             log.error("Unable to get subscription for given id: " + id, e);
@@ -233,7 +235,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                         Boolean.toString(true));
                 subscription.setProperties(subscriptionData);
             }
-            String subscribe = Utils.getRegistryEventBrokerService().subscribe(subscription);
+            String subscribe = EventingDataHolder.getInstance().getRegistryEventBrokerService().subscribe(subscription);
             requestEmailVerification(subscription, null, null);
             return subscribe;
         } catch (EventBrokerException e) {
@@ -249,7 +251,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
             String email = subscription.getEventSinkURL().substring(subscription.getEventSinkURL().indexOf(":") + 1
                     , subscription.getEventSinkURL().length());
             try {
-                UserRegistry registry = Utils.getRegistryService().getConfigSystemRegistry();
+                UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
                 String emailIndexPath = this.emailIndexStoragePath;
                 Resource emailIndexResource;
                 if (registry.resourceExists(emailIndexPath)) {
@@ -278,7 +280,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
 
     public boolean unsubscribe(String subscriptionID) {
         try {
-            Utils.getRegistryEventBrokerService().unsubscribe(subscriptionID);
+            EventingDataHolder.getInstance().getRegistryEventBrokerService().unsubscribe(subscriptionID);
             return true;
         } catch (EventBrokerException e) {
             log.error("Unable to unsubscribe using given id: " + subscriptionID, e);
@@ -337,7 +339,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
         public void run() {
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
-            if (Utils.getEmailVerificationSubscriber() == null) {
+            if (EventingDataHolder.getInstance().getEmailVerificationSubscriber() == null) {
                 return;
             }
             String eventUrl = subscription.getEventSinkURL();
@@ -366,8 +368,8 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                 data.put("remoteURL", remoteURL);
             }
             try {
-                Utils.getEmailVerificationSubscriber().requestUserVerification(data,
-                        Utils.getEmailVerifierConfig());
+                EventingDataHolder.getInstance().getEmailVerificationSubscriber().requestUserVerification(data,
+                                                     EventingDataHolder.getInstance().getEmailVerifierConfig());
             } catch (Exception e) {
                 log.error("Unable to create e-mail verification request", e);
             }
@@ -406,23 +408,27 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                     // For each resource-event also generate a corresponding collection event, so that any hierarchical subscriptions would
                     // work.
                     if (event.getTopic().contains(ResourceUpdatedEvent.EVENT_NAME)) {
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic());
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic().replace(
-                                ResourceUpdatedEvent.EVENT_NAME, CollectionUpdatedEvent.EVENT_NAME));
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService()
+                                          .publish(event, event.getTopic());
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService().publish(event, event.getTopic()
+                                          .replace(ResourceUpdatedEvent.EVENT_NAME, CollectionUpdatedEvent.EVENT_NAME));
                     } else if (event.getTopic().contains(ResourceAddedEvent.EVENT_NAME)) {
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic());
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic().replace(
-                                ResourceAddedEvent.EVENT_NAME, CollectionAddedEvent.EVENT_NAME));
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService()
+                                          .publish(event, event.getTopic());
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService().publish(event, event.getTopic()
+                                          .replace(ResourceAddedEvent.EVENT_NAME, CollectionAddedEvent.EVENT_NAME));
                     } else if (event.getTopic().contains(ResourceCreatedEvent.EVENT_NAME)) {
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic());
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic().replace(
-                                ResourceCreatedEvent.EVENT_NAME, CollectionCreatedEvent.EVENT_NAME));
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService()
+                                          .publish(event, event.getTopic());
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService().publish(event, event.getTopic()
+                                          .replace(ResourceCreatedEvent.EVENT_NAME, CollectionCreatedEvent.EVENT_NAME));
                     } else if (event.getTopic().contains(ResourceDeletedEvent.EVENT_NAME)) {
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic());
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic().replace(
-                                ResourceDeletedEvent.EVENT_NAME, CollectionDeletedEvent.EVENT_NAME));
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService().publish(event, event.getTopic());
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService().publish(event, event.getTopic()
+                                          .replace(ResourceDeletedEvent.EVENT_NAME, CollectionDeletedEvent.EVENT_NAME));
                     } else {
-                        Utils.getRegistryEventBrokerService().publish(event, event.getTopic());
+                        EventingDataHolder.getInstance().getRegistryEventBrokerService()
+                                          .publish(event, event.getTopic());
                     }
                 } finally {
                     PrivilegedCarbonContext.endTenantFlow();
