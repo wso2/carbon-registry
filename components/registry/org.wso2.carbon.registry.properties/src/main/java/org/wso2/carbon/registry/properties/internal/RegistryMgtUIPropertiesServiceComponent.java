@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.properties.utils.CommonUtil;
+//import org.wso2.carbon.registry.properties.utils.CommonUtil;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.properties" immediate="true"
@@ -31,6 +31,8 @@ import org.wso2.carbon.registry.properties.utils.CommonUtil;
 public class RegistryMgtUIPropertiesServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIPropertiesServiceComponent.class);
+
+    private PropertiesDataHolder dataHolder = PropertiesDataHolder.getInstance();
 
     /**
      * Method to trigger when the OSGI component become active.
@@ -56,7 +58,7 @@ public class RegistryMgtUIPropertiesServiceComponent {
      * @param registryService the registry service.
      */
     protected void setRegistryService(RegistryService registryService) {
-        CommonUtil.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     /**
@@ -65,6 +67,6 @@ public class RegistryMgtUIPropertiesServiceComponent {
      * @param registryService the registry service.
      */
     protected void unsetRegistryService(RegistryService registryService) {
-        CommonUtil.setRegistryService(null);
+        dataHolder.setRegistryService(null);
     }
 }
