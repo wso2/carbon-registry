@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
-//import org.wso2.carbon.registry.properties.utils.CommonUtil;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.properties" immediate="true"
