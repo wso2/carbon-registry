@@ -19,7 +19,7 @@ package org.wso2.carbon.registry.info.services.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.info.Utils;
+import org.wso2.carbon.registry.info.internal.InfoDataHolder;
 import org.wso2.carbon.registry.info.services.InfoService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.NetworkUtils;
@@ -88,7 +88,8 @@ public class ResourceUtil {
     private static int findTransportPort(String protocol) throws RegistryException {
         String port = null;
         try {
-            port = Integer.toString(CarbonUtils.getTransportPort(Utils.getConfigurationContext(), protocol));
+            port = Integer.toString(
+                    CarbonUtils.getTransportPort(InfoDataHolder.getInstance().getConfigurationContext(), protocol));
         } catch (Exception e) {
             port = null;
             log.warn(String.format("Unable to get %s port from server Axis configuration, using carbon.%s.port" +

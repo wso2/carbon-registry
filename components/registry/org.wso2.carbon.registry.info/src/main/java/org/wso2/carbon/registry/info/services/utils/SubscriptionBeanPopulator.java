@@ -38,7 +38,7 @@ import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.AccessControlConstants;
 import org.wso2.carbon.registry.eventing.RegistryEventingConstants;
-import org.wso2.carbon.registry.info.Utils;
+import org.wso2.carbon.registry.info.internal.InfoDataHolder;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -48,6 +48,8 @@ import java.util.*;
 public class SubscriptionBeanPopulator {
 
     private static final Log log = LogFactory.getLog(SubscriptionBeanPopulator.class);
+
+    private InfoDataHolder dataHolder = InfoDataHolder.getInstance();
 
     public static final String RECURSE = "-R";
 
@@ -181,17 +183,17 @@ public class SubscriptionBeanPopulator {
         ResourcePath resourcePath = new ResourcePath(path);
         try {
             if (url == null || userName == null) {
-                if (Utils.getRegistryEventingService() == null) {
+                if (InfoDataHolder.getInstance().getRegistryEventingService() == null) {
                     throw new IllegalStateException("Subscription Manager not found");
                 }
-            } else if (Utils.getRegistryEventingService() == null) {
+            } else if (InfoDataHolder.getInstance().getRegistryEventingService() == null) {
                 throw new IllegalStateException("Remote Subscription Manager not found at: " + url);
             }
             List<Subscription> subscriptions = null;
             if (url == null || userName == null) {
-                subscriptions = Utils.getRegistryEventingService().getAllSubscriptions();
+                subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions();
             } else {
-                subscriptions = Utils.getRegistryEventingService().getAllSubscriptions(userName, url);
+                subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions(userName, url);
             }
             log.debug("Found " + subscriptions.size() + " subscriptions");
             List<SubscriptionInstance> subscriptionInstances = new LinkedList<SubscriptionInstance>();
@@ -454,7 +456,7 @@ public class SubscriptionBeanPopulator {
                 throw new SecurityException("User does not have enough priviledges to subscribe");
             } else if (!hasPermissionToSubscribeViaEmail(userRegistry, path, endpoint)) {
                 throw new SecurityException("User does not have enough priviledges to subscribe another user");
-            } else if (Utils.getRegistryEventingService() == null) {
+            } else if (InfoDataHolder.getInstance().getRegistryEventingService() == null) {
                 throw new IllegalStateException("Registry Eventing Service Not Found");
             } else {
                 String topic = RegistryEventingConstants.TOPIC_PREFIX + RegistryEvent.TOPIC_SEPARATOR + eventName + path;
@@ -499,7 +501,7 @@ public class SubscriptionBeanPopulator {
                 String subscriptionId;
                 if (url == null || userName == null) {
                     subscriptionId =
-                            Utils.getRegistryEventingService().subscribe(subscription);
+                            InfoDataHolder.getInstance().getRegistryEventingService().subscribe(subscription);
                 } else {
                     throw new UnsupportedOperationException("You cannot directly subscribe to a " +
                             "Remote Resource. Use the Registry Browser User Interface to add a " +
