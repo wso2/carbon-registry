@@ -20,13 +20,18 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.admin.api.indexing.IContentBasedSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
+import org.wso2.carbon.registry.common.utils.UserUtil;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -322,6 +327,21 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 		resourceData.setCreatedOn(createdDateTime);
 		CommonUtil.populateAverageStars(resourceData);
 
+		String user = child.getProperty("registry.user");
+
+		if (registry.getUserName().equals(user)) {
+			resourceData.setPutAllowed(true);
+			resourceData.setDeleteAllowed(true);
+			resourceData.setGetAllowed(true);
+		} else {
+			resourceData.setPutAllowed(
+				UserUtil.isPutAllowed(registry.getUserName(), path, registry));
+			resourceData.setDeleteAllowed(
+				UserUtil.isDeleteAllowed(registry.getUserName(), path, registry));
+			resourceData.setGetAllowed(
+				UserUtil.isGetAllowed(registry.getUserName(), path, registry));
+		}
+
 		child.discard();
 
 		return resourceData;
@@ -330,5 +350,22 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 	public static String getLoggedInUserName(){
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
 	}
+
+    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException {
+        SearchResultsBean resultsBean = new SearchResultsBean();
+        SolrClient client = SolrClient.getInstance();
+        List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
+
+        if (log.isDebugEnabled()) {
+            log.debug("result for the term search: " + results);
+        }
+
+        List<TermData> termDataList = new ArrayList<>();
+        for (FacetField.Count count : results) {
+            termDataList.add(new TermData(count.getName(),count.getCount()));
+        }
+        resultsBean.setTermDataList(termDataList.toArray(new TermData[termDataList.size()]));
+        return resultsBean;
+    }
 
 }

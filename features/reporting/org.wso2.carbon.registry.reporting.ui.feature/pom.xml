@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry.reporting-feature</artifactId>
-        <version>4.3.2-SNAPSHOT</version>
+        <version>4.4.2-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.reporting.ui</artifactId>
-            <version>4.3.2-SNAPSHOT</version>
+            <version>${carbon.registry.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -56,7 +56,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.registry.reporting.ui</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
@@ -69,7 +69,7 @@
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.reporting.ui</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.reporting.ui:${carbon.commons.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

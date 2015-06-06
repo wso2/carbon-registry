@@ -23,15 +23,19 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.deployment.synchronizer.ArtifactRepository;
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
+import org.wso2.carbon.registry.deployment.synchronizer.utils.RegistryServiceReferenceHolder;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.deployment.synchronizer.RegistryBasedArtifactRepository;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.deployment.synchronizer" immediate="true"
  * @scr.reference name="registry.service" immediate="true"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="configuration.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
+ * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class RegistryDeploymentSynchronizerComponent {
 
@@ -60,40 +64,38 @@ public class RegistryDeploymentSynchronizerComponent {
         if (log.isDebugEnabled()) {
             log.debug("Deployment synchronizer component bound to the registry service");
         }
-        ServiceReferenceHolder.setRegistryService(service);
+        RegistryServiceReferenceHolder.setRegistryService(service);
     }
 
     protected void unsetRegistryService(RegistryService service) {
         if (log.isDebugEnabled()) {
             log.debug("Deployment synchronizer component unbound from the registry service");
         }
-        ServiceReferenceHolder.setRegistryService(null);
+        RegistryServiceReferenceHolder.setRegistryService(null);
     }
 
     /**
+     * This method is used to set configuration context service.
      *
- * @scr.reference name="registry.eventing.service" immediate="true"
- * interface="org.wso2.carbon.registry.eventing.services.EventingService" cardinality="0..1"
- * policy="dynamic" bind="setEventingService" unbind="unsetEventingService"
+     * @param service   configuration context service.
      */
-    /*protected void setEventingService(EventingService service) {
+    protected void setConfigurationContextService(ConfigurationContextService service) {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment synchronizer component bound to the registry eventing service");
+            log.debug("carbon-registry deployment synchronizer component bound to the configuration context service");
         }
-        ServiceReferenceHolder.setEventingService(service);
-
-        // Call delayed auto checkout initialization
-        // Because we are not waiting on the EventingService, the auto checkout feature
-        // of some synchronizers may not get initialized at the first time
-        if (observerRegistration != null) {
-            DeploymentSynchronizationManager.getInstance().initDelayedAutoCheckout();
-        }
+        RegistryServiceReferenceHolder.setConfigurationContextService(service);
     }
 
-    protected void unsetEventingService(EventingService service) {
+    /**
+     * This method is used to unset configuration context service.
+     *
+     * @param service   configuration context service.
+     */
+    protected void unsetConfigurationContextService(ConfigurationContextService service) {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment synchronizer component unbound from the registry eventing service");
+            log.debug(
+                    "carbon-registry deployment synchronizer component unbound from the configuration context service");
         }
-        ServiceReferenceHolder.setEventingService(null);
-    }*/
+        RegistryServiceReferenceHolder.setEventingService(null);
+    }
 }

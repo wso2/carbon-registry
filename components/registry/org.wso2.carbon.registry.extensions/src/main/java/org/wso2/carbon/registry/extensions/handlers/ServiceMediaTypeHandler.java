@@ -31,6 +31,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.BusinessServiceInfo;
 import org.wso2.carbon.registry.extensions.handlers.utils.*;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.uddi.utils.UDDIUtil;
@@ -148,11 +149,17 @@ public class ServiceMediaTypeHandler extends Handler {
                     //service path if there is a service already exists there
                     servicePath = originalServicePath;
                 } else {
-                    servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                            registry.getRegistryContext().getServicePath() +
-                                    (serviceNamespace == null ? "" :
-                                            CommonUtil.derivePathFragmentFromNamespace(serviceNamespace)) + serviceVersion + "/" +
-                                    serviceName);
+                    if (Utils.getRxtService() == null) {
+                        servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                                                    registry.getRegistryContext().getServicePath() +
+                                                                    (serviceNamespace == null ? "" : CommonUtil
+                                                                            .derivePathFragmentFromNamespace(
+                                                                                    serviceNamespace)) +
+                                                                    serviceVersion + "/" + serviceName);
+                    } else {
+                        String pathExpression = Utils.getRxtService().getStoragePath(resource.getMediaType());
+                        servicePath = CommonUtil.getPathFromPathExpression(pathExpression, serviceInfoElement);
+                    }
                 }
             }             
             // saving the artifact id.
@@ -268,6 +275,7 @@ public class ServiceMediaTypeHandler extends Handler {
                     context.setSourceURL(definitionURL);
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
+                    tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
                     
                     definitionPath = wsdl.addWSDLToRegistry(context, definitionURL, null, false, false,
@@ -282,6 +290,7 @@ public class ServiceMediaTypeHandler extends Handler {
                     context.setSourceURL(definitionURL);
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
+                    tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
                     definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
                 } else {
@@ -394,7 +403,7 @@ public class ServiceMediaTypeHandler extends Handler {
 
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                     requestContext.getResource().getProperty(RegistryConstants.SYMLINK_PROPERTY_NAME));
-            if (!servicePath.equals(originalServicePath)) {
+            if (!servicePath.equals(originalServicePath) && requestContext.getRegistry().resourceExists(originalServicePath)) {
                 // we are creating a sym link from service path to original service path.
                 Resource serviceResource = requestContext.getRegistry().get(
                         RegistryUtils.getParentPath(originalServicePath));

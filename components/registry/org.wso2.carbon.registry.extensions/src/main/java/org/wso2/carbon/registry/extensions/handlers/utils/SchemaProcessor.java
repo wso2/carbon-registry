@@ -579,6 +579,11 @@ public class SchemaProcessor {
             }
             String targetNamespace = schema.getTargetNamespace();
             xsdResource.setProperty("targetNamespace", targetNamespace);
+            if (metaResource == null || metaResource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+                xsdResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            }else {
+                xsdResource.setProperty(CommonConstants.SOURCE_PROPERTY, metaResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+            }
 
 
             if (schemaInfo.isMasterSchema() && validationInfo != null) {

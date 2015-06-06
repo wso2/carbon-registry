@@ -22,10 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -53,6 +56,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -297,8 +301,8 @@ public class SolrClient {
                         for (String value : fieldList.getValue()) {
                             String[] propertyValArray = value.split(",");
                             fieldKey = propertyValArray[0];
-                            value = propertyValArray[1];
-                            addPropertyField(fieldKey, value, solrInputDocument);
+                            String [] propValues = Arrays.copyOfRange(propertyValArray, 1, propertyValArray.length);
+                            addPropertyField(fieldKey, propValues, solrInputDocument);
                         }
                     } else {
                         fieldKey = fieldList.getKey() + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
@@ -337,22 +341,28 @@ public class SolrClient {
     /**
      * Method to add property values
      * @param fieldKey property field key value
-     * @param value property field value
+     * @param values property field value
      * @param solrInputDocument Solr InputDocument
      */
-    private void addPropertyField(String fieldKey, String value, SolrInputDocument solrInputDocument) {
+    private void addPropertyField(String fieldKey, String[] values, SolrInputDocument solrInputDocument) {
         int intValue;
         double doubleValue;
         // Check whether the value is an Int or decimal or string
-        String valueType = getType(value);
-        if (valueType.equals(SolrConstants.TYPE_INT)) {
-            intValue = Integer.parseInt(value);
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX, intValue);
-        } else if (valueType.equals(SolrConstants.TYPE_DOUBLE)) {
-            doubleValue = Double.parseDouble(value);
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX, doubleValue);
-        } else if (valueType.equals(SolrConstants.TYPE_STRING)) {
-            solrInputDocument.addField(fieldKey + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX, value);
+        String valueType = getType(values[0]);
+        for (String propValue : values) {
+            switch (valueType) {
+                case SolrConstants.TYPE_INT:
+                    intValue = Integer.parseInt(propValue);
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX, intValue);
+                    break;
+                case SolrConstants.TYPE_DOUBLE:
+                    doubleValue = Double.parseDouble(propValue);
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX, doubleValue);
+                    break;
+                case SolrConstants.TYPE_STRING:
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX, propValue);
+                    break;
+            }
         }
     }
 
@@ -561,6 +571,92 @@ public class SolrClient {
         }
     }
 
+    public List<FacetField.Count> facetQuery(int tenantId, Map<String, String> fields) throws SolrException {
+        String facetField = null;
+        try {
+            SolrQuery query = new SolrQuery("* TO *");
+            // Set no of rows
+            query.setRows(Integer.MAX_VALUE);
+            // Solr does not allow to search with special characters ,therefore this fix allow
+            // to contain "-" in super tenant id.
+            if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + "\\" + tenantId);
+            } else {
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + tenantId);
+            }
+            if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
+                // This is for fixing  REGISTRY-1695, This is temporary solution until
+                // the default security polices also stored in Governance registry.
+                if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                        RegistryConstants.POLICY_MEDIA_TYPE)) {
+                    query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
+                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+
+                }
+            }
+            // Add facet fields
+            facetField = addFacetFields(fields, query);
+            // Add query filters
+            addQueryFilters(fields, query);
+            if (log.isDebugEnabled()) {
+                log.debug("Solr index faceted query: " + query);
+            }
+
+            QueryResponse queryresponse = server.query(query);
+            return queryresponse.getFacetField(facetField).getValues();
+
+        } catch (SolrServerException e) {
+            String message = "Failure at query ";
+            throw new SolrException(ErrorCode.SERVER_ERROR, message + facetField, e);
+        }
+    }
+
+    private String addFacetFields(Map<String, String> fields, SolrQuery query) {
+        //set the facet true to enable facet
+        query.setFacet(true);
+        String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
+        String queryField = null;
+        if (fieldName != null) {
+            //set the field for the facet
+            if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                    IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
+                queryField = fieldName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            } else {
+                queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
+                query.addFacetField(queryField);
+            }
+            fields.remove(IndexingConstants.FACET_FIELD_NAME);
+            //set the limit for the facet
+            if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
+                query.setFacetLimit(Integer.parseInt(fields.get(IndexingConstants.FACET_LIMIT)));
+                fields.remove(IndexingConstants.FACET_LIMIT);
+            } else {
+                query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
+            }
+            //set the mincount for the facet
+            if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
+                query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
+                fields.remove(IndexingConstants.FACET_MIN_COUNT);
+            } else {
+                query.setFacetMinCount(IndexingConstants.FACET_MIN_COUNT_DEFAULT);
+            }
+            //set the sort value for facet: possible values : index or count
+            if (fields.get(IndexingConstants.FACET_SORT) != null) {
+                query.setFacetSort(fields.get(IndexingConstants.FACET_SORT));
+                fields.remove(IndexingConstants.FACET_SORT);
+            }
+            // set the prefix value for facet
+            if (fields.get(IndexingConstants.FACET_PREFIX) != null) {
+                query.setFacetPrefix(fields.get(IndexingConstants.FACET_PREFIX));
+                fields.remove(IndexingConstants.FACET_PREFIX);
+            }
+        }
+        return queryField;
+    }
+
     /**
      * Method to add filters to the solr query
      * @param fields dynamic fields
@@ -729,9 +825,9 @@ public class SolrClient {
                 double rightDoubleValue = 0;
                 // No operation values only check the property name
                 if (StringUtils.isEmpty(leftPropertyValue) && StringUtils.isEmpty(rightPropertyValue)) {
-                    String fieldKeyInt = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
-                    String fieldKeyDouble = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
-                    String fieldKeyString = propertyName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyInt = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyDouble = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
+                    String fieldKeyString = propertyName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
                     query.addFilterQuery(fieldKeyInt + "* | " + fieldKeyDouble + "* | " + fieldKeyString + "*");
                 }
                 // check foe equal operation
@@ -784,7 +880,7 @@ public class SolrClient {
         if (StringUtils.isNotEmpty(leftPropertyValue)) {
             leftDoubleValue = Double.parseDouble(leftPropertyValue);
         }
-        String fieldKey = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
+        String fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
         if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp
                 .equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
                 || leftOp.equals(SolrConstants.OPERATION_NA)) {
@@ -826,7 +922,7 @@ public class SolrClient {
         if (StringUtils.isNotEmpty(leftPropertyValue)) {
             leftIntValue = Integer.parseInt(leftPropertyValue);
         }
-        String fieldKey = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
+        String fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
         if (leftOp.equals(SolrConstants.OPERATION_GREATER_THAN) || leftOp
                 .equals(SolrConstants.OPERATION_GREATER_THAN_OR_EQUAL)
                 || leftOp.equals(SolrConstants.OPERATION_NA)) {
@@ -863,17 +959,17 @@ public class SolrClient {
         if (valueType.equals(SolrConstants.TYPE_INT)) {
             // Get the integer value
             int intValue = Integer.parseInt(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_INT_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + intValue);
         } else if (valueType.equals(SolrConstants.TYPE_DOUBLE)) {
             // Get the float value
             double doubleValue = Double.parseDouble(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_DOUBLE_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + doubleValue);
         } else if (valueType.equals(SolrConstants.TYPE_STRING)) {
             // Get the string value
             rightPropertyValue = getWildcardSearchQueryValue(rightPropertyValue);
-            fieldKey = propertyName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+            fieldKey = propertyName + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
             query.addFilterQuery(fieldKey + rightPropertyValue);
         }
     }

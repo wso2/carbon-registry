@@ -24,7 +24,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerConstants;
 import org.wso2.carbon.deployment.synchronizer.DeploymentSynchronizerException;
-import org.wso2.carbon.deployment.synchronizer.util.ServiceReferenceHolder;
 import org.wso2.carbon.event.core.subscription.Subscription;
 import org.wso2.carbon.event.ws.internal.builders.exceptions.InvalidMessageException;
 import org.wso2.carbon.event.ws.internal.builders.utils.BuilderUtils;
@@ -125,7 +124,7 @@ public class RegistryUtils {
      */
     public static String getEventReceiverEndpoint() {
         ConfigurationContextService configurationContextService =
-                ServiceReferenceHolder.getConfigurationContextService();
+                RegistryServiceReferenceHolder.getConfigurationContextService();
         if (configurationContextService == null) {
             throw new IllegalStateException("Configuration context service not available");
         }

@@ -16,13 +16,14 @@
 
 package org.wso2.carbon.registry.indexing.service;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 
-@SuppressWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class SearchResultsBean {
 
     private ResourceData [] resourceDataList;
+
+    private TermData [] termDataList;
 
     protected String errorMessage;
 
@@ -40,5 +41,13 @@ public class SearchResultsBean {
 
     public void setResourceDataList(ResourceData [] resourceDataList) {
         this.resourceDataList = resourceDataList;
+    }
+
+    public TermData[] getTermDataList() {
+        return termDataList;
+    }
+
+    public void setTermDataList(TermData[] termDataList) {
+        this.termDataList = termDataList;
     }
 }

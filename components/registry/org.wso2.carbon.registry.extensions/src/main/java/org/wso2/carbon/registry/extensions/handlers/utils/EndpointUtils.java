@@ -140,6 +140,7 @@ public class EndpointUtils {
             String locationUrl = soap11Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
@@ -156,6 +157,7 @@ public class EndpointUtils {
             String locationUrl = soap12Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
@@ -172,6 +174,7 @@ public class EndpointUtils {
             String locationUrl = httpElement.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
     }
@@ -204,6 +207,7 @@ public class EndpointUtils {
             String locationUrl = soap11Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
@@ -220,6 +224,7 @@ public class EndpointUtils {
             String locationUrl = soap12Element.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
@@ -236,6 +241,7 @@ public class EndpointUtils {
             String locationUrl = httpElement.getAttributeValue(new QName(LOCATION_ATTR));
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
+            properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
     }
@@ -800,7 +806,7 @@ public class EndpointUtils {
      * Extract endpoint URL from content
      *
      * @param endpointContent endpoint content
-     * @return addressElement.getText() String
+     * @return addressElement.getText() String endpoint content
      * @throws RegistryException
      */
     public static String deriveEndpointFromContent(String endpointContent) throws RegistryException {
@@ -810,9 +816,55 @@ public class EndpointUtils {
         try {
             OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
             OMElement overviewElement = endpointElement
-                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_OVERVIEW));
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
             OMElement addressElement = overviewElement
-                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE,SYNAPSE_ENDPOINT_ADDRESS));
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_ADDRESS));
+            return addressElement.getText();
+        } catch (XMLStreamException e) {
+            throw new RegistryException("Invalid endpoint content", e);
+        }
+    }
+
+    /**
+     * Extract endpoint version from content
+     *
+     * @param endpointContent endpoint content
+     * @return addressElement.getText() String endpoint version
+     * @throws RegistryException
+     */
+    public static String deriveVersionFromContent(String endpointContent) throws RegistryException {
+        if (StringUtils.isBlank(endpointContent)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint version from content.");
+        }
+        try {
+            OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
+            OMElement overviewElement = endpointElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
+            OMElement addressElement = overviewElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_VERSION));
+            return addressElement.getText();
+        } catch (XMLStreamException e) {
+            throw new RegistryException("Invalid endpoint content", e);
+        }
+    }
+
+    /**
+     * Extract endpoint name from content
+     *
+     * @param endpointContent endpoint content
+     * @return addressElement.getText() String endpoint name
+     * @throws RegistryException
+     */
+    public static String deriveNameFromContent(String endpointContent) throws RegistryException {
+        if (StringUtils.isBlank(endpointContent)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from content.");
+        }
+        try {
+            OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
+            OMElement overviewElement = endpointElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_OVERVIEW));
+            OMElement addressElement = overviewElement
+                    .getFirstChildWithName(new QName(ENDPOINT_ELEMENT_NAMESPACE, SYNAPSE_ENDPOINT_NAME));
             return addressElement.getText();
         } catch (XMLStreamException e) {
             throw new RegistryException("Invalid endpoint content", e);

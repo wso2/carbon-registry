@@ -133,17 +133,17 @@ public class IndexDocumentCreator {
         // Get the property key set
         Set keySet = properties.keySet();
         List<String> propertyList = new ArrayList<String>();
-        String propertyValue = "", propertyKey;
+        String propertyKey;
         if (keySet.size() > 0) {
             Object[] propertyKeys = keySet.toArray();
             List values;
             for (Object key : propertyKeys) {
                 propertyKey = key.toString();
                 values = (List) properties.get(key);
-
+                String propertyValue = "";
                 if (values != null) {
                     for (Object value : values) {
-                        propertyValue = value + ",";
+                        propertyValue += value + ",";
                     }
                 } else {
                     propertyValue = ",";
