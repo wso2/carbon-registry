@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 
 import java.util.Arrays;
@@ -32,16 +31,6 @@ import java.util.List;
 public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
-
-    private static RegistryService registryService;
-
-    public static synchronized void setRegistryService(RegistryService service) {
-        registryService = service;
-    }
-
-    public static RegistryService getRegistryService() {
-        return registryService;
-    }
 
     public static Association[] getAssociations(Registry registry, String path)
             throws RegistryException {
