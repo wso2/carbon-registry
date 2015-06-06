@@ -99,8 +99,7 @@ public class CommonUtil {
         String[][] propertyArray = new String[properties.length + 1][2];
         for (int i = 0; i <= properties.length; i++) {
             if (i < properties.length) {
-                propertyArray[i][0] = properties[i][0];
-                propertyArray[i][1] = properties[i][1];
+                propertyArray[i] = properties[i].clone();
             } else {
                 propertyArray[properties.length][0] = key;
                 propertyArray[properties.length][1] = value;
