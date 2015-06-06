@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.resource.beans.*;
+import org.wso2.carbon.registry.resource.internal.ResourceDataHolder;
 import org.wso2.carbon.registry.resource.services.utils.*;
 
 import javax.activation.DataHandler;
@@ -99,7 +100,7 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
             String mediaType,
             String description,
             String content) throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
@@ -136,7 +137,7 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
             String fetchURL,
             String symlinkLocation,
             String[][] properties) throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
@@ -249,7 +250,7 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
     public boolean addResource(String path, String mediaType, String description, DataHandler content,
                             String symlinkLocation, String[][] properties)
             throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
