@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class WSClientServiceComponent {
 
-    WSClientDataHolder dataHolder = WSClientDataHolder.getInstance();
+    private WSClientDataHolder dataHolder = WSClientDataHolder.getInstance();
 
     private static Log log = LogFactory.getLog(WSClientServiceComponent.class);
     private ServiceRegistration serviceRegistration = null;
