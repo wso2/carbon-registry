@@ -40,7 +40,7 @@ public class WSRegistryServiceComponent {
 
 	private static Log log = LogFactory.getLog(WSRegistryServiceComponent.class);
 
-    WSDataHolder dataHolder = WSDataHolder.getInstance();
+    private WSDataHolder dataHolder = WSDataHolder.getInstance();
 
     private ConfigurationContext configContext;
 	 /**
