@@ -9,7 +9,7 @@
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.4.2-SNAPSHOT</version>
+    <version>4.4.3-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -1220,12 +1220,12 @@
                 <version>${version.lucene}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.httpcomponents</groupId>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${version.httpclient}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.httpcomponents</groupId>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
                 <version>${version.httpmime}</version>
             </dependency>
@@ -1382,8 +1382,8 @@
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <version.solr>5.0.0.wso2v1</version.solr>
         <version.lucene>5.0.0.wso2v1</version.lucene>
-        <version.httpclient>4.3.1.wso2v1</version.httpclient>
-        <version.httpmime>4.3.1.wso2v1</version.httpmime>
+        <version.httpclient>4.3.1.wso2v2</version.httpclient>
+        <version.httpmime>4.3.1.wso2v2</version.httpmime>
         <version.httpcore>4.3.3.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
         <version.org.restlet>2.1.1.wso2v1</version.org.restlet>
@@ -1461,7 +1461,7 @@
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.4.2-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.4.3-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.4.0, 4.5.0)
         </carbon.registry.package.import.version.range>

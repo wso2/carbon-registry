@@ -44,6 +44,7 @@
     String[] events = null;
     String[] resourceEventNames = null;
     String[] collectionEventNames = null;
+    boolean[] isEventVisible = null;
     SubscriptionInstance[] subscriptions = null;
     boolean isResource = true;
     boolean canUnsubscribe = false;
@@ -107,11 +108,17 @@
             events = new String[eventTypes.length];
             resourceEventNames = new String[eventTypes.length];
             collectionEventNames = new String[eventTypes.length];
+            isEventVisible = new boolean[eventTypes.length];
             for (int i = 0; i < eventTypes.length; i++) {
                 if (eventTypes[i] != null) {
                     events[i] = eventTypes[i].getId();
                     resourceEventNames[i] = eventTypes[i].getResourceEvent();
                     collectionEventNames[i] = eventTypes[i].getCollectionEvent();
+                    if (eventTypes[i].getId().startsWith("publisher") || eventTypes[i].getId().startsWith("store")){
+                        isEventVisible[i] = false;
+                    } else{
+                        isEventVisible[i] = true;
+                    }
                 }
             }
             isResource = client.isResource(request);
@@ -170,7 +177,7 @@
 <%
     for (int i = 0; i < events.length; i++) {
         if (isResource) {
-            if (resourceEventNames[i] != null) {
+            if (resourceEventNames[i] != null && isEventVisible[i]) {
 %>
                     <option value="<%=resourceEventNames[i]%>">
                         <% if (events[i].startsWith("custom:")) { %><%=events[i].substring("custom:".length())%>
@@ -178,7 +185,7 @@
                     </option>
 <%
             }
-        } else if (collectionEventNames[i] != null) {
+        } else if (collectionEventNames[i] != null && isEventVisible[i]) {
 %>
                     <option value="<%=collectionEventNames[i]%>">
                         <% if (events[i].startsWith("custom:")) { %><%=events[i].substring("custom:".length())%>
