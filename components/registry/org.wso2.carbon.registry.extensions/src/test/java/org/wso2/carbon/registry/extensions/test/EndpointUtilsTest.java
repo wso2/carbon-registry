@@ -74,12 +74,6 @@ public class EndpointUtilsTest extends TestCase {
                         "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertVolume-asmx",
                         EndpointUtils.deriveEndpointNameWithNamespaceFromUrl("http://www.webservicex.net/convertVolume.asmx"),
                         "1.0.0"));
-        System.out.println(generatedEndpointcontent2);
-        System.out.println();
-
-        System.out.println(endpointContent2);
-        System.out.println();
-        System.out.println(endpointContent2_2);
         assertTrue(generatedEndpointcontent2.equals(endpointContent2.toString()) || generatedEndpointcontent1
                 .equals(endpointContent2_2.toString()));
         System.out.println("getEndpointContentWithOverview 1: " + EndpointUtils
