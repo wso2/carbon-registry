@@ -710,6 +710,9 @@ public class SolrClient {
                     } else if (IndexingConstants.FIELD_RESOURCE_NAME.equals(field.getKey())) {
                         // Set the suffix value of the key
                         resourceName = field.getValue();
+                        if(resourceName.contains(" ")) {
+                            resourceName = "\"" + resourceName + "\"";
+                        }
                     } else if (IndexingConstants.FIELD_MEDIA_TYPE.equals(field.getKey())) {
                         // Get the value of resource mediaType
                         mediaType = field.getValue();
