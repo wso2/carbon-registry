@@ -216,8 +216,8 @@ public class EndpointMediaTypeHandler extends Handler {
             if (path == null) {
                 throw new RegistryException("The resource path is not available.");
             }
-            checkEndpointDependency(registry, path);
-//            Resource resource = registry.get(path);
+            //checkEndpointDependency(registry, path);
+            Resource resource = registry.get(path);
         } finally {
             CommonUtil.releaseDeleteLock();
         }
