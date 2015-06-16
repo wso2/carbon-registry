@@ -31,9 +31,12 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
@@ -99,6 +102,7 @@ public class SwaggerProcessor {
 		documentVersion = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 		if (documentVersion == null) {
 			documentVersion = CommonConstants.SWAGGER_DOC_VERSION_DEFAULT_VALUE;
+            requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
 		}
 		String swaggerResourcePath = getSwaggerDocumentPath(commonLocation, swaggerDocObject);
 
@@ -183,6 +187,7 @@ public class SwaggerProcessor {
 		resource.setMediaType(CommonConstants.SWAGGER_MEDIA_TYPE);
 		resource.setContent(contentStream.toByteArray());
 		resource.addProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
+        CommonUtil.copyProperties(this.requestContext.getResource(), resource);
 		registry.put(path, resource);
 	}
 
@@ -243,7 +248,10 @@ public class SwaggerProcessor {
 			if (endpointElement == null) {
 				createEndpointElement(resourceObject, SwaggerConstants.SWAGGER_VERSION_12);
 			}
-			path = swaggerResourcesPath + path;
+			//path = swaggerResourcesPath + path;
+            path = path.replace("/","");
+            path = CommonUtil.replaceExpressionOfPath(swaggerResourcesPath, "name", path);
+            path = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),path);
 			//Save Resource document to registry
 			addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion);
 			//Adding an dependency to API_DOC
@@ -293,7 +301,7 @@ public class SwaggerProcessor {
 		 */
 		OMFactory factory = OMAbstractFactory.getOMFactory();
 		endpointLocation = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
-		String endpointName = EndpointUtils.deriveEndpointNameFromUrl(endpointUrl);
+		String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
 		String endpointContent = EndpointUtils
 				.getEndpointContentWithOverview(endpointUrl, endpointLocation, endpointName, documentVersion);
 		try {
@@ -312,9 +320,11 @@ public class SwaggerProcessor {
 	 * @return              Common resource path.
 	 */
 	private String getSwaggerDocumentPath(String rootLocation, JsonObject content) throws RegistryException {
+
+
+
 		String swaggerDocPath = requestContext.getResourcePath().getPath();
-		String swaggerDocName =
-				swaggerDocPath.substring(swaggerDocPath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
+		String swaggerDocName = swaggerDocPath.substring(swaggerDocPath.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
 		JsonElement infoElement = content.get(SwaggerConstants.INFO);
 		JsonObject infoObject = (infoElement != null) ? infoElement.getAsJsonObject() : null;
 
@@ -327,10 +337,23 @@ public class SwaggerProcessor {
 		swaggerResourcesPath = rootLocation + serviceProvider + RegistryConstants.PATH_SEPARATOR + serviceName +
 		                       RegistryConstants.PATH_SEPARATOR + documentVersion;
 
-		return swaggerResourcesPath + RegistryConstants.PATH_SEPARATOR + swaggerDocName;
+        String pathExpression = getSwaggerRegistryPath(swaggerDocName, serviceProvider);
+
+
+		return RegistryUtils.getAbsolutePath(registry.getRegistryContext(),pathExpression);
 	}
 
-	/**
+    private String getSwaggerRegistryPath(String swaggerDocName, String serviceProvider) {
+        String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.SWAGGER_MEDIA_TYPE);
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                              requestContext.getResource().getProperties(), null);
+        pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "provider", serviceProvider);
+        swaggerResourcesPath = pathExpression;
+        pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", swaggerDocName);
+        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+    }
+
+    /**
 	 * Parses the swagger content and return as a JsonObject
 	 *
 	 * @param swaggerContent        content as a String.
