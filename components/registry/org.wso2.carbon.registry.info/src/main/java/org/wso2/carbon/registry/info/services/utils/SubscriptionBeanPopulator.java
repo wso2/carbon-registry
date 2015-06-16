@@ -73,9 +73,11 @@ public class SubscriptionBeanPopulator {
             String[] temp = subscription.getTopicName().split(RegistryEvent.TOPIC_SEPARATOR);
             String eventName = "";
             if (temp[0].equals("")) {
-                eventName = temp[3];
+                //The last element of the array contains the subscribed topic name
+                //ex: aaa/bbb/ccc - here the 'ccc' topic has a subscription
+                eventName = temp[temp.length - 1];
             } else {
-                eventName = temp[2];
+                eventName = temp[0];
             }
 
             String tempTopic = RegistryEventingConstants.TOPIC_PREFIX + RegistryEvent.TOPIC_SEPARATOR + eventName + path;
