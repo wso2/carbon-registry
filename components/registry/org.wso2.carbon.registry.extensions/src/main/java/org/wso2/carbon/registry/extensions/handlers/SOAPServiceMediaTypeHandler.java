@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.uddi.api_v3.AuthToken;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -41,10 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Handler to process the SOAP service.
@@ -138,29 +137,25 @@ public class SOAPServiceMediaTypeHandler extends Handler {
             }
 
             String servicePath = "";
-            if (serviceInfoElement.getChildrenWithLocalName("newServicePath").hasNext()) {
-                Iterator OmElementIterator = serviceInfoElement.getChildrenWithLocalName("newServicePath");
-                while (OmElementIterator.hasNext()) {
-                    OMElement next = (OMElement) OmElementIterator.next();
-                    servicePath = next.getText();
-                    break;
-                }
+            if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) != null &&
+                resource.getProperty(CommonConstants.SOURCE_PROPERTY).equalsIgnoreCase(CommonConstants.SOURCE_AUTO)){
+                servicePath = CommonUtil.getRegistryPath(registry.getRegistryContext(),originalServicePath);
             } else {
-                if (registry.resourceExists(originalServicePath)) {
-                    //Fixing REGISTRY-1790. Save the Service to the given original
-                    //service path if there is a service already exists there
-                    servicePath = originalServicePath;
+                if (serviceInfoElement.getChildrenWithLocalName("newServicePath").hasNext()) {
+                    Iterator OmElementIterator = serviceInfoElement.getChildrenWithLocalName("newServicePath");
+                    while (OmElementIterator.hasNext()) {
+                        OMElement next = (OMElement) OmElementIterator.next();
+                        servicePath = next.getText();
+                        break;
+                    }
                 } else {
-                    if (Utils.getRxtService() == null) {
-                        servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                                                                    registry.getRegistryContext().getServicePath() +
-                                                                    (serviceNamespace == null ? "" : CommonUtil
-                                                                            .derivePathFragmentFromNamespace(
-                                                                                    serviceNamespace)) +
-                                                                    serviceVersion + "/" + serviceName);
+                    if (registry.resourceExists(originalServicePath)) {
+                        //Fixing REGISTRY-1790. Save the Service to the given original
+                        //service path if there is a service already exists there
+                        servicePath = originalServicePath;
                     } else {
-                        String pathExpression = Utils.getRxtService().getStoragePath(resource.getMediaType());
-                        servicePath = CommonUtil.getPathFromPathExpression(pathExpression, serviceInfoElement);
+                        servicePath = getServicePath(registry, resource, serviceInfoElement, serviceName,
+                                                     serviceNamespace,serviceVersion);
                     }
                 }
             }
@@ -278,6 +273,10 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
                     tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                    Map<String, String> map = CommonUtil.getOverviewEntries(serviceInfoElement);
+                    for (Map.Entry<String, String> entry : map.entrySet()){
+                        tmpResource.addProperty(entry.getKey(), entry.getValue());
+                    }
                     context.setResource(tmpResource);
 
                     definitionPath = wsdl.addWSDLToRegistry(context, definitionURL, null, false, false,
@@ -293,6 +292,10 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     Resource tmpResource = new ResourceImpl();
                     tmpResource.setProperty("version", serviceVersion);
                     tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                    Map<String, String> map = CommonUtil.getOverviewEntries(serviceInfoElement);
+                    for (Map.Entry<String, String> entry : map.entrySet()){
+                        tmpResource.addProperty(entry.getKey(), entry.getValue());
+                    }
                     context.setResource(tmpResource);
                     definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
                 } else {
@@ -317,10 +320,11 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                 // it seems definitionUrl is a registry path..
                 String definitionPath =
                         RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), definitionURL);
-                if (!definitionPath.startsWith(RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
-                                                                             RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
-                    definitionPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + definitionPath;
-                }
+                //if (!definitionPath.startsWith(RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
+                //                                                             RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
+                //    definitionPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + definitionPath;
+               // }
+                definitionPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),definitionPath);
                 boolean addItHere = false;
                 if (!registry.resourceExists(definitionPath)) {
                     StringBuilder msg = new StringBuilder("Associating service to a non-existing WSDL. wsdl url: ")
@@ -364,11 +368,11 @@ public class SOAPServiceMediaTypeHandler extends Handler {
 
             if (definitionURL != null) {
                 if (oldDefinition == null) {
-                    EndpointUtils.saveEndpointsFromServices(servicePath, serviceInfoElement,
+                    EndpointUtils.saveEndpointsFromServices(requestContext,servicePath, serviceInfoElement,
                                                             registry,
                                                             CommonUtil.getUnchrootedSystemRegistry(requestContext));
                 } else if (oldDefinition != null && !definitionURL.equals(oldDefinition)) {
-                    EndpointUtils.saveEndpointsFromServices(servicePath, serviceInfoElement,
+                    EndpointUtils.saveEndpointsFromServices(requestContext,servicePath, serviceInfoElement,
                                                             registry,
                                                             CommonUtil.getUnchrootedSystemRegistry(requestContext));
                 }
@@ -423,6 +427,25 @@ public class SOAPServiceMediaTypeHandler extends Handler {
         } finally {
             CommonUtil.releaseUpdateLock();
         }
+    }
+
+    private String getServicePath(Registry registry, Resource resource, OMElement serviceInfoElement,
+                                  String serviceName, String serviceNamespace, String serviceVersion) {
+        String servicePath;
+        if (Utils.getRxtService() == null) {
+            servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                                        registry.getRegistryContext().getServicePath() +
+                                                        (serviceNamespace == null ? "" : CommonUtil
+                                                                .derivePathFragmentFromNamespace(
+                                                                        serviceNamespace)) +
+                                                        serviceVersion + "/" + serviceName);
+        } else {
+            String pathExpression = Utils.getRxtService().getStoragePath(resource.getMediaType());
+            servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                        CommonUtil.getPathFromPathExpression(pathExpression, serviceInfoElement, null));
+            servicePath =  CommonUtil.getRegistryPath(registry.getRegistryContext(), servicePath);
+        }
+        return servicePath;
     }
 
     /**

@@ -12,17 +12,20 @@ import org.jvnet.ws.wadl.ast.WadlAstBuilder;
 import org.jvnet.ws.wadl.util.MessageListener;
 import org.w3c.dom.Element;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.Repository;
 import org.wso2.carbon.registry.core.jdbc.VersionRepository;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.xml.sax.InputSource;
 
+import javax.wsdl.Definition;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -111,10 +114,7 @@ public class WADLProcessor {
         }
 
         String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
-        String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
-                wadlNamespace).replace("//", "/");
-        String actualPath = getChrootedWadlLocation(requestContext.getRegistryContext()) +
-                namespaceSegment + version  + "/" + wadlName;
+        String actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
@@ -133,7 +133,7 @@ public class WADLProcessor {
             if (grammarsElement != null) {
                 //This is to avoid evaluating the grammars import when building AST
                 grammarsElement.detach();
-                wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version));
+                wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version, requestContext.getResource().getProperties()));
             }
         } else {
             if (!skipValidation) {
@@ -169,7 +169,7 @@ public class WADLProcessor {
             }
 
             if (grammarsElement != null) {
-                grammarsElement = resolveImports(grammarsElement, null, version);
+                grammarsElement = resolveImports(grammarsElement, null, version, requestContext.getResource().getProperties());
                 wadlElement.addChild(grammarsElement);
             }
         }
@@ -266,7 +266,8 @@ public class WADLProcessor {
         String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
         if(grammarsElement != null){
             grammarsElement.detach();
-            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version));
+            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version,
+                                                requestContext.getResource().getProperties()));
         }
 
         String actualPath;
@@ -275,6 +276,7 @@ public class WADLProcessor {
         } else {
             actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
                     commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+            actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
         }
         if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
@@ -302,7 +304,7 @@ public class WADLProcessor {
     }
 
     private OMElement resolveImports(OMElement grammarsElement,
-                                String wadlBaseUri, String wadlVersion) throws RegistryException {
+                                String wadlBaseUri, String wadlVersion, Properties props) throws RegistryException {
         String wadlNamespace = grammarsElement.getNamespace().getNamespaceURI();
         Iterator<OMElement> grammarElements = grammarsElement.
                 getChildrenWithName(new QName(wadlNamespace, "include"));
@@ -320,7 +322,7 @@ public class WADLProcessor {
                         }
                     }
                 }
-                String schemaPath = saveSchema(importUrl, wadlVersion);
+                String schemaPath = saveSchema(importUrl, wadlVersion, props);
                 importedSchemas.add(schemaPath);
                 refAttr.setAttributeValue(schemaPath);
                 childElement.addAttribute(refAttr);
@@ -368,13 +370,14 @@ public class WADLProcessor {
         }
     }
 
-    private String saveSchema(String schemaUrl, String version) throws RegistryException {
+    private String saveSchema(String schemaUrl, String version, Properties props) throws RegistryException {
         if(schemaUrl != null){
             RequestContext requestContext =
                     new RequestContext(registry, repository, versionRepository);
             Resource local = requestContext.getRegistry().newResource();
             local.setMediaType(xsdMediaType);
             local.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            local.setProperties(props);
             requestContext.setSourceURL(schemaUrl);
             requestContext.setResource(local);
 
@@ -425,7 +428,7 @@ public class WADLProcessor {
 			String endpointUrl = resourcesElement.getAttributeValue(new QName("base"));
 			if (endpointUrl != null) {
 				String endpointPath = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
-				String endpointName = EndpointUtils.deriveEndpointNameFromUrl(endpointUrl);
+				String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
 				String endpointContent =
 						EndpointUtils.getEndpointContentWithOverview(endpointUrl, endpointPath, endpointName, version);
 				OMElement endpointElement;
@@ -464,5 +467,31 @@ public class WADLProcessor {
     private void addDependency(String source, String target) throws RegistryException {
         registry.addAssociation(source, target, CommonConstants.DEPENDS);
         registry.addAssociation(target, source, CommonConstants.USED_BY);
+    }
+
+    private String getWadlLocation(RequestContext context, OMElement wadlElement, String wadlName,
+                                   String version) {
+        if (Utils.getRxtService() != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(wadlMediaType);
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", wadlName);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  context.getResource().getProperties(), null);
+            String namespace = CommonUtil.derivePathFragmentFromNamespace(
+                    wadlElement.getNamespace().getNamespaceURI()).replace("//", "/");
+            namespace = namespace.replace(".", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = pathExpression.replace("//", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
+            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
+                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+        } else {
+            String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
+            String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
+                    wadlNamespace).replace("//", "/");
+            String actualPath = getChrootedWadlLocation(context.getRegistryContext()) +
+                                namespaceSegment + version  + "/" + wadlName;
+            return actualPath;
+        }
+
     }
 }
