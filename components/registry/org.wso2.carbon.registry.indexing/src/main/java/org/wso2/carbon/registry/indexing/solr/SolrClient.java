@@ -229,6 +229,24 @@ public class SolrClient {
     }
 
     /**
+     * Delete all solr indexes for specific query
+     *
+     * @param query query that needs to be deleted
+     * @throws SolrException
+     */
+
+    public synchronized void deleteIndexByQuery(String query) throws SolrException {
+        try {
+            server.deleteByQuery(query);
+            server.commit();
+        } catch (SolrServerException e) {
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
+        } catch (IOException e) {
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
+        }
+    }
+
+    /**
      * Method to generate the solr document id
      * @param tenantId tenant id
      * @param path resource path
