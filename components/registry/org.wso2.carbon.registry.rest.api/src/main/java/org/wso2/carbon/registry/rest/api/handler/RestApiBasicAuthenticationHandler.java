@@ -84,10 +84,8 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
      * @param userName
      * @param password
      * @return
-     * @throws IdentityException does not handle exceptions thrown by IdentityUtil
-     *                           Expects IdentityException to be handled by calling method
-     * @throws UserStoreException does not handle exceptions thrown by userStoreManager
-     *                            Expects UserStoreException to be handled by calling method
+     * @throws RestApiBasicAuthenticationException wraps and throws exceptions occur when trying to authenticate
+     *                                             the user
      */
     private boolean authenticate(String userName, String password) throws RestApiBasicAuthenticationException {
         String tenantDomain = MultitenantUtils.getTenantDomain(userName);
