@@ -32,39 +32,39 @@ public class EndpointUtilsTest extends TestCase {
         StringBuilder endpointContent1 = new StringBuilder();
         StringBuilder endpointContent2 = new StringBuilder();
 
-        endpointContent1.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\" name=\"gov/net/web")
-                .append("servicex/www/ep-convertVolume-asmx\"><overview><name>ep-convertVolume-asmx</")
+        endpointContent1.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
+                .append("><overview><name>ep-convertVolume-asmx</")
                 .append("name><version>1.0.0</version><address>http://www.webservicex.net/con")
                 .append("vertVolume.asmx</address></overview></endpoint>");
-        endpointContent2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\" name=\"gov/net/web")
-                .append("servicex/www/ep-convertMetricWeight-asmx\"><overview><name>ep-convertMetricW")
-                .append("eight-asmx</name><version>1.0.0</version><address>http://www.webservicex.ne")
+        endpointContent2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
+                .append("><overview><name>ep-convertMetricWeight-asmx")
+                .append("</name><version>1.0.0</version><address>http://www.webservicex.ne")
                 .append("t/convertMetricWeight.asmx</address></overview></endpoint>");
 
         // TODO: below stringbuilder varibles should remove after xx issue fixed.
         // <remove>
         StringBuilder endpointContent1_2 = new StringBuilder();
         StringBuilder endpointContent2_2 = new StringBuilder();
-        endpointContent1_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\" name=\"gov/net/web")
+        endpointContent1_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
                 .append("servicex/www/ep-convertVolume-asmx\"><overview><name>ep-convertVolume-asmx</")
                 .append("name><version>1.0.0version</version><address>http://www.webservicex.net/con")
                 .append("vertVolume.asmx</address></overview></endpoint>");
-        endpointContent2_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\" name=\"gov/net/web")
-                .append("servicex/www/ep-convertMetricWeight-asmx\"><overview><name>ep-convertMetricW")
-                .append("eight-asmx</name><version>1.0.0version</version><address>http://www.webservicex.ne")
+        endpointContent2_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
+                .append("><overview><name>ep-convertMetricWeight-asmx")
+                .append("</name><version>1.0.0version</version><address>http://www.webservicex.ne")
                 .append("t/convertMetricWeight.asmx</address></overview></endpoint>");
         //</remove>
 
         String generatedEndpointcontent1 = EndpointUtils
                 .getEndpointContentWithOverview("http://www.webservicex.net/convertVolume.asmx",
                         "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertVolume-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertVolume.asmx"),
+                        EndpointUtils.deriveEndpointNameWithNamespaceFromUrl("http://www.webservicex.net/convertVolume.asmx"),
                         "1.0.0");
 
         String generatedEndpointcontent2 = EndpointUtils
                 .getEndpointContentWithOverview("http://www.webservicex.net/convertMetricWeight.asmx",
                         "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertMetricWeight-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertMetricWeight.asmx"),
+                        EndpointUtils.deriveEndpointNameWithNamespaceFromUrl("http://www.webservicex.net/convertMetricWeight.asmx"),
                         "1.0.0");
 
         assertTrue(generatedEndpointcontent1.equals(endpointContent1.toString()) || generatedEndpointcontent1
@@ -72,15 +72,14 @@ public class EndpointUtilsTest extends TestCase {
         System.out.println("getEndpointContentWithOverview 1: " + EndpointUtils
                 .getEndpointContentWithOverview("http://www.webservicex.net/convertVolume.asmx",
                         "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertVolume-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertVolume.asmx"),
+                        EndpointUtils.deriveEndpointNameWithNamespaceFromUrl("http://www.webservicex.net/convertVolume.asmx"),
                         "1.0.0"));
-
         assertTrue(generatedEndpointcontent2.equals(endpointContent2.toString()) || generatedEndpointcontent1
                 .equals(endpointContent2_2.toString()));
         System.out.println("getEndpointContentWithOverview 1: " + EndpointUtils
                 .getEndpointContentWithOverview("http://www.webservicex.net/convertMetricWeight.asmx",
                         "/_system/governance/trunk/endpoints/net/webservicex/www/ep-convertMetricWeight-asmx",
-                        EndpointUtils.deriveEndpointNameFromUrl("http://www.webservicex.net/convertMetricWeight.asmx"),
+                        EndpointUtils.deriveEndpointNameWithNamespaceFromUrl("http://www.webservicex.net/convertMetricWeight.asmx"),
                         "1.0.0"));
     }
 }

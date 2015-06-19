@@ -424,7 +424,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             Resource local = requestContext.getRegistry().newResource();
             String version = requestContext.getResource().getProperty("version");
             local.setMediaType(wsdlMediaType);
-            local.setProperty("version",version);
+            local.setProperty("version", version);
+            local.setProperties(requestContext.getResource().getProperties());
             requestContext.setSourceURL(uri);
             requestContext.setResource(local);
             String path = requestContext.getResourcePath().getPath();
@@ -519,6 +520,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             String version = requestContext.getResource().getProperty("version");
             local.setMediaType(xsdMediaType);
             local.setProperty("version",version);
+            local.setProperties(requestContext.getResource().getProperties());
             requestContext.setSourceURL(uri);
             requestContext.setResource(local);
             String path = requestContext.getResourcePath().getPath();

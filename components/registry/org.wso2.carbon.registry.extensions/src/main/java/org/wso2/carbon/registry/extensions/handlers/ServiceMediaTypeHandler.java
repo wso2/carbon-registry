@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.uddi.api_v3.AuthToken;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -149,19 +151,10 @@ public class ServiceMediaTypeHandler extends Handler {
                     //service path if there is a service already exists there
                     servicePath = originalServicePath;
                 } else {
-                    if (Utils.getRxtService() == null) {
-                        servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                                                                    registry.getRegistryContext().getServicePath() +
-                                                                    (serviceNamespace == null ? "" : CommonUtil
-                                                                            .derivePathFragmentFromNamespace(
-                                                                                    serviceNamespace)) +
-                                                                    serviceVersion + "/" + serviceName);
-                    } else {
-                        String pathExpression = Utils.getRxtService().getStoragePath(resource.getMediaType());
-                        servicePath = CommonUtil.getPathFromPathExpression(pathExpression, serviceInfoElement);
-                    }
+                    servicePath = getServicePath(registry, resource, serviceInfoElement, serviceName, serviceNamespace,
+                                                 serviceVersion);
                 }
-            }             
+            }
             // saving the artifact id.
             String serviceId = resource.getUUID();
             if (serviceId == null) {
@@ -277,7 +270,7 @@ public class ServiceMediaTypeHandler extends Handler {
                     tmpResource.setProperty("version", serviceVersion);
                     tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
-                    
+
                     definitionPath = wsdl.addWSDLToRegistry(context, definitionURL, null, false, false,
                             disableWSDLValidation,disableSymlinkCreation);
 
@@ -315,12 +308,13 @@ public class ServiceMediaTypeHandler extends Handler {
             } else if (definitionURL != null && definitionURL.startsWith(RegistryConstants.ROOT_PATH)) {
                 // it seems definitionUrl is a registry path..
                 String definitionPath = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), definitionURL);
-                if (!definitionPath.startsWith(RegistryUtils.getAbsolutePath(
+                /*if (!definitionPath.startsWith(RegistryUtils.getAbsolutePath(
                         requestContext.getRegistryContext(),
                         RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
 
                     definitionPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + definitionPath;
-                }
+                }*/
+                definitionPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),definitionPath);
                 boolean addItHere = false;
                 if (!registry.resourceExists(definitionPath)) {
                     String msg = "Associating service to a non-existing WSDL. wsdl url: " + definitionPath + ", " +
@@ -389,17 +383,17 @@ public class ServiceMediaTypeHandler extends Handler {
                 environment = currentRelativePath + endpointEnv;
             }
 */
-            
+
             if (definitionURL != null) {
                 if (oldDefinition == null) {
-                    EndpointUtils.saveEndpointsFromServices(servicePath,serviceInfoElement,
+                    EndpointUtils.saveEndpointsFromServices(requestContext,servicePath,serviceInfoElement,
     				                                        registry,CommonUtil.getUnchrootedSystemRegistry(requestContext));
                 } else if (oldDefinition != null && !definitionURL.equals(oldDefinition)){
-                    EndpointUtils.saveEndpointsFromServices(servicePath,serviceInfoElement,
+                    EndpointUtils.saveEndpointsFromServices(requestContext,servicePath,serviceInfoElement,
     				                                        registry,CommonUtil.getUnchrootedSystemRegistry(requestContext));
                 }
             }
-            
+
 
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                     requestContext.getResource().getProperty(RegistryConstants.SYMLINK_PROPERTY_NAME));
@@ -447,6 +441,25 @@ public class ServiceMediaTypeHandler extends Handler {
         } finally {
             CommonUtil.releaseUpdateLock();
         }
+    }
+
+    private String getServicePath(Registry registry, Resource resource, OMElement serviceInfoElement,
+                                  String serviceName, String serviceNamespace, String serviceVersion) {
+        String servicePath;
+        if (Utils.getRxtService() == null) {
+            servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                                        registry.getRegistryContext().getServicePath() +
+                                                        (serviceNamespace == null ? "" : CommonUtil
+                                                                .derivePathFragmentFromNamespace(
+                                                                        serviceNamespace)) +
+                                                        serviceVersion + "/" + serviceName);
+        } else {
+            String pathExpression = Utils.getRxtService().getStoragePath(resource.getMediaType());
+            servicePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                                        CommonUtil.getPathFromPathExpression(pathExpression, serviceInfoElement, null));
+            servicePath =  CommonUtil.getRegistryPath(registry.getRegistryContext(), servicePath);
+        }
+        return servicePath;
     }
 
     /**

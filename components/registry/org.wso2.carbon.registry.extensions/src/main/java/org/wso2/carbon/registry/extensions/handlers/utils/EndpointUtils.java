@@ -30,8 +30,12 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
@@ -70,6 +74,16 @@ public class EndpointUtils {
     private static String endpointLocation = ENDPOINT_DEFAULT_LOCATION;
     private static String endpointMediaType = CommonConstants.ENDPOINT_MEDIA_TYPE;
 
+    private static boolean includeNamespaceInName = false;
+
+    public static boolean isIncludeNamespaceInName() {
+        return includeNamespaceInName;
+    }
+
+    public static void setIncludeNamespaceInName(boolean includeNamespaceInName) {
+        EndpointUtils.includeNamespaceInName = includeNamespaceInName;
+    }
+
     public static void setEndpointLocation(String endpointLocation) {
         EndpointUtils.endpointLocation = endpointLocation;
     }
@@ -105,7 +119,7 @@ public class EndpointUtils {
             }
         }
     }
-    public static void saveEndpointsFromWSDL(String wsdlPath, Resource wsdlResource,
+    public static void saveEndpointsFromWSDL(RequestContext context, String wsdlPath, Resource wsdlResource,
                                       Registry registry, Registry systemRegistry)
             throws RegistryException {
         // building the wsdl element.
@@ -141,7 +155,7 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
+            saveEndpoint(context,registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
         // saving soap12 endpoints
@@ -158,7 +172,7 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
+            saveEndpoint(context, registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
 
         // saving http endpoints
@@ -175,10 +189,10 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry);
+            saveEndpoint(context, registry, locationUrl, wsdlPath, properties, systemRegistry);
         }
     }
-    public static void saveEndpointsFromWSDL(String wsdlPath, Resource wsdlResource,
+    public static void saveEndpointsFromWSDL(RequestContext context, String wsdlPath, Resource wsdlResource,
                                       Registry registry, Registry systemRegistry,String environment
             ,List<String> dependencies,String version) throws RegistryException {
         // building the wsdl element.
@@ -208,7 +222,7 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP11_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
+            saveEndpoint(context,registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
         // saving soap12 endpoints
@@ -225,7 +239,7 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.SOAP12_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
+            saveEndpoint(context, registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
 
         // saving http endpoints
@@ -242,11 +256,11 @@ public class EndpointUtils {
             Map<String, String> properties = new HashMap<String, String>();
             properties.put(CommonConstants.HTTP_ENDPOINT_ATTRIBUTE, "true");
             properties.put(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
-            saveEndpoint(registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
+            saveEndpoint(context, registry, locationUrl, wsdlPath, properties, systemRegistry,environment,dependencies,version);
         }
     }
 
-    public static void saveEndpointsFromServices(String servicePath, OMElement serviceElement,
+    public static void saveEndpointsFromServices(RequestContext context, String servicePath, OMElement serviceElement,
                                       Registry registry, Registry systemRegistry)
             throws RegistryException {
 
@@ -296,14 +310,14 @@ public class EndpointUtils {
             }
 
             // the entry value is the url
-            saveEndpoint(registry, entryVal, servicePath, properties, systemRegistry);
+            saveEndpoint(context, registry, entryVal, servicePath, properties, systemRegistry);
         }
 
         // and we are getting the endpoints of all the attached wsdls.
 
         addAssociations(servicePath, registry);
     }
-    public static void saveEndpointsFromServices(String servicePath, OMElement serviceElement,
+    public static void saveEndpointsFromServices(RequestContext context,String servicePath, OMElement serviceElement,
                                       Registry registry, Registry systemRegistry,String environment)
             throws RegistryException {
         if (!CommonUtil.isAddingAssociationLockAvailable()) {
@@ -357,7 +371,7 @@ public class EndpointUtils {
                 }
 
                 // the entry value is the url
-                saveEndpoint(registry, entryVal, servicePath, properties, systemRegistry,environment);
+                saveEndpoint(context,registry, entryVal, servicePath, properties, systemRegistry,environment);
             }
         } finally {
             CommonUtil.releaseAddingAssociationLock();
@@ -450,9 +464,12 @@ public class EndpointUtils {
         return builder.getDocumentElement();
     }
 
-    private static void saveEndpoint(Registry registry, String url,
-                                   String associatedPath, Map<String, String> properties,
-                                   Registry systemRegistry,String environment) throws RegistryException {
+    private static void saveEndpoint(RequestContext context, Registry registry, String url, String associatedPath,
+                                     Map<String, String> properties, Registry systemRegistry, String environment)
+                                     throws RegistryException {
+
+        String pathExpression = getEndpointLocation(context, url, systemRegistry, environment);
+
         String urlToPath = deriveEndpointFromUrl(url);
 
         String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
@@ -462,14 +479,17 @@ public class EndpointUtils {
             systemRegistry.put(endpointAbsoluteBasePath, systemRegistry.newCollection());
         }
         String relativePath = environment + urlToPath;
-        String endpointAbsolutePath = endpointAbsoluteBasePath + urlToPath;
-
-        saveEndpointValues(registry, url, associatedPath, properties, systemRegistry, relativePath, endpointAbsolutePath);
+        String endpointAbsolutePath = pathExpression;
+        saveEndpointValues(context, registry, url, associatedPath, properties, systemRegistry, relativePath,
+                           endpointAbsolutePath);
     }
-    private static void saveEndpoint(Registry registry, String url,
-                                   String associatedPath, Map<String, String> properties,
-                                   Registry systemRegistry,String environment,List<String> dependencies,String version) throws RegistryException {
+
+    private static void saveEndpoint(RequestContext context, Registry registry, String url, String associatedPath,
+                                     Map<String, String> properties, Registry systemRegistry, String environment,
+                                     List<String> dependencies, String version) throws RegistryException {
         String urlToPath = deriveEndpointFromUrl(url);
+
+        String pathExpression = getEndpointLocation(context, url, systemRegistry, environment);
 
         String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
                 environment);
@@ -486,24 +506,26 @@ public class EndpointUtils {
             if(dependency.matches(regex)){
                 String newRelativePath =  RegistryUtils.getRelativePathToOriginal(dependency,
                         org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH );
-                saveEndpointValues(registry, url, associatedPath, properties, systemRegistry, newRelativePath, dependency);
+                saveEndpointValues(context,registry, url, associatedPath, properties, systemRegistry, newRelativePath, dependency);
                 return;
             }
         }
         String endpointAbsolutePath = environment + prefix + version + RegistryConstants.PATH_SEPARATOR + name;
         String relativePath = environment.substring(0,RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH.length())
                 + prefix + version + RegistryConstants.PATH_SEPARATOR + name;
-
-        saveEndpointValues(registry, url, associatedPath, properties, systemRegistry, relativePath, endpointAbsolutePath);
+        saveEndpointValues(context, registry, url, associatedPath, properties, systemRegistry, relativePath,
+                           endpointAbsolutePath);
     }
-    private static void saveEndpoint(Registry registry, String url,
+    private static void saveEndpoint(RequestContext context, Registry registry, String url,
                                    String associatedPath, Map<String, String> properties,
                                    Registry systemRegistry) throws RegistryException {
         String urlToPath = deriveEndpointFromUrl(url);
 
+        String pathExpression = getEndpointLocation(context, url, systemRegistry, endpointLocation);
+
         String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                endpointLocation);
+                                          org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+                                          endpointLocation);
         if (!systemRegistry.resourceExists(endpointAbsoluteBasePath)) {
             systemRegistry.put(endpointAbsoluteBasePath, systemRegistry.newCollection());
         }
@@ -517,12 +539,70 @@ public class EndpointUtils {
             }
         }
         String relativePath = endpointLocation + urlToPath;
-        String endpointAbsolutePath = endpointAbsoluteBasePath + urlToPath;
+        String  endpointAbsolutePath = pathExpression;
 
-        saveEndpointValues(registry, url, associatedPath, properties, systemRegistry, relativePath, endpointAbsolutePath);
+        saveEndpointValues(context, registry, url, associatedPath, properties, systemRegistry, relativePath,
+                           endpointAbsolutePath);
     }
 
-    private static void saveEndpointValues(Registry registry, String url, String associatedPath
+    /**
+     * This method used to generate registry path of the endpoint. In the non-OSGi environment it will execute the else
+     * condition
+     * @param context Request Context
+     * @param url Endpoint URL
+     * @param systemRegistry Registry instance
+     * @param environment Environment
+     * @return Populated Registry Path
+     * @throws RegistryException
+     */
+    private static String getEndpointLocation(RequestContext context, String url, Registry systemRegistry,
+                                              String environment) throws RegistryException {
+        if (Utils.getRxtService() != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
+            pathExpression = CommonUtil
+                    .replaceExpressionOfPath(pathExpression, "name", deriveEndpointNameWithNamespaceFromUrl(url));
+            pathExpression =
+                    CommonUtil.getPathFromPathExpression(pathExpression, context.getResource().getProperties(), null);
+            String namespace = deriveEndpointNamespaceFromUrl(url).replace("//", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = pathExpression.replace("//", "/");
+            pathExpression =   RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            String endPointPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),pathExpression);
+            return endPointPath;
+        } else {
+            String urlToPath = deriveEndpointFromUrl(url);
+            String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(context.getRegistryContext(),
+                                              org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+                                              environment);
+            if (!systemRegistry.resourceExists(endpointAbsoluteBasePath)) {
+                systemRegistry.put(endpointAbsoluteBasePath, systemRegistry.newCollection());
+            }
+            String endpointAbsolutePath = endpointAbsoluteBasePath + urlToPath;
+            return endpointAbsolutePath;
+        }
+    }
+
+    /**
+     * Update endpoint content(XML structure) with properties coming though context, We assume those fields only in
+     * overview section.
+     *
+     * @param context Request Context
+     * @param content Current content of the endpoint
+     * @return updated endpoint content
+     */
+    private static String updateEndpointContent(RequestContext context, String content) {
+        try {
+            OMElement serviceElement = buildOMElement(content);
+            String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
+            CommonUtil.getPathFromPathExpression(pathExpression, context.getResource().getProperties(), serviceElement);
+            return serviceElement.toString();
+        } catch (Exception e) {
+            // If exception occurred while generating OMElement, then will return the original content
+        }
+        return content;
+    }
+
+    private static void saveEndpointValues(RequestContext context,Registry registry, String url, String associatedPath
             , Map<String, String> properties, Registry systemRegistry, String relativePath
             , String endpointAbsolutePath) throws RegistryException {
         Resource resource;
@@ -531,21 +611,21 @@ public class EndpointUtils {
             resource = registry.get(endpointAbsolutePath);
             endpointId = resource.getUUID();
             String existingContent;
-            String newContent = getEndpointContentWithOverview(url, endpointAbsolutePath,
-                    ((ResourceImpl) resource).getName(), endpointVersion);
-            if(resource.getContent() != null) {
-                existingContent = new String((byte[])(resource.getContent()));
-                if(!existingContent.equals(newContent)) {
+            String newContent = updateEndpointContent(context, getEndpointContentWithOverview(url, endpointAbsolutePath,
+                                                      ((ResourceImpl) resource).getName(),endpointVersion));
+            if (resource.getContent() != null) {
+                existingContent = new String((byte[]) (resource.getContent()));
+                if (!existingContent.equals(newContent)) {
                     resource.setContent(RegistryUtils.encodeString(newContent));
                 }
             } else {
                 resource.setContent(RegistryUtils.encodeString(newContent));
             }
-        }else {
+        } else {
             resource = registry.newResource();
-            resource.setContent(RegistryUtils.encodeString(
-                    getEndpointContentWithOverview(url, endpointAbsolutePath, deriveEndpointNameFromUrl(url),
-                            endpointVersion)));
+            resource.setContent(RegistryUtils.encodeString(updateEndpointContent(context,
+                                                        getEndpointContentWithOverview(url,endpointAbsolutePath,
+                                                        deriveEndpointNameWithNamespaceFromUrl(url),endpointVersion))));
         }
         boolean endpointIdCreated = false;
         if (endpointId == null) {
@@ -707,6 +787,28 @@ public class EndpointUtils {
     }
 
     /**
+     * Returns an endpoint path for the url without the starting '/'
+     * @param url the endpoint url
+     * @return the path
+     */
+    public static String deriveEndpointNamespaceFromUrl(String url) {
+        if (StringUtils.isBlank(url)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
+        }
+        String[] temp = url.split("[?]")[0].split("/");
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<temp.length-1; i++){
+            sb.append(temp[i]).append("/");
+        }
+        String urlToPath = CommonUtil.derivePathFragmentFromNamespace(sb.toString());
+        // excluding extra slashes.
+        if (urlToPath.length() > 1) {
+            urlToPath = urlToPath.substring(1, urlToPath.length() - 1);
+        }
+       return urlToPath;
+    }
+
+    /**
      * Returns an endpoint name with ENDPOINT_RESOURCE_PREFIX
      *
      * @param url the endpoint url
@@ -724,6 +826,32 @@ public class EndpointUtils {
                 replace("=", "-").replace("@", "-").replace("#", "-").replace("~", "-");
 
         return ENDPOINT_RESOURCE_PREFIX + name;
+    }
+
+    /**
+     * Returns an endpoint name with namespace and ENDPOINT_RESOURCE_PREFIX
+     *
+     * @param url the endpoint url
+     * @return (ENDPOINT_RESOURCE_PREFIX + namespace + name) populated resource name
+     */
+    public static String deriveEndpointNameWithNamespaceFromUrl(String url) {
+        if (StringUtils.isBlank(url)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from url.");
+        }
+        String tempURL = url;
+        if (tempURL.startsWith("jms:/")) {
+            tempURL = tempURL.split("[?]")[0];
+        }
+        String name = tempURL.split("/")[tempURL.split("/").length - 1].replace(".", "-").
+                replace("=", "-").replace("@", "-").replace("#", "-").replace("~", "-");
+        String namespace =  deriveEndpointNamespaceFromUrl(url).replace("//", "/");
+        namespace = namespace.replace("/", ".");
+        namespace += "-";
+        if (isIncludeNamespaceInName()){
+            return ENDPOINT_RESOURCE_PREFIX + namespace +name;
+        } else {
+            return ENDPOINT_RESOURCE_PREFIX + name;
+        }
     }
 
     /**
@@ -771,7 +899,7 @@ public class EndpointUtils {
         OMElement endpointElement = factory.createOMElement(new QName(SYNAPSE_ENDPOINT));
         // Workaround for manually set xml namespace value.
         endpointElement.addAttribute(ENDPOINT_NAMESPACE_ATTRIBUTE, ENDPOINT_ELEMENT_NAMESPACE, null);
-        endpointElement.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
+        //endpointElement.addAttribute(SYNAPSE_ENDPOINT_NAME_ATTRIBUTE, path, null);
         OMElement endpointElementOverview = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_OVERVIEW));
         OMElement overviewName = factory.createOMElement(new QName(SYNAPSE_ENDPOINT_NAME));
         overviewName.setText(name);
@@ -881,5 +1009,18 @@ public class EndpointUtils {
     private static boolean isArgumentsNull(String value1, String value2, String value3, String value4) {
         return StringUtils.isBlank(value1) || StringUtils.isBlank(value2) || StringUtils.isBlank(value3) ||
                 StringUtils.isBlank(value4);
+    }
+
+    public static OMElement deriveOMElementContent(String endpointContent) throws RegistryException {
+        if (StringUtils.isBlank(endpointContent)) {
+            throw new IllegalArgumentException("Invalid arguments supplied for derive endpoint name from content.");
+        }
+        try {
+            OMElement endpointElement = AXIOMUtil.stringToOM(endpointContent);
+
+            return endpointElement;
+        } catch (XMLStreamException e) {
+            throw new RegistryException("Invalid endpoint content", e);
+        }
     }
 }
