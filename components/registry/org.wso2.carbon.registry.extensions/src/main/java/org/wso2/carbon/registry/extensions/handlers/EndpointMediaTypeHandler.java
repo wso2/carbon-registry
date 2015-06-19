@@ -19,6 +19,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
@@ -26,6 +27,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
@@ -67,6 +69,10 @@ public class EndpointMediaTypeHandler extends Handler {
         EndpointUtils.setEndpointMediaType(endpointMediaType);
     }
 
+    public void setIncludeNamespaceInName(String includeNamespaceInName){
+        EndpointUtils.setIncludeNamespaceInName(Boolean.valueOf(includeNamespaceInName));
+    }
+
     public String getEndpointMediaType() throws RegistryException {
         return EndpointUtils.getEndpointMediaType();   
     }
@@ -106,7 +112,9 @@ public class EndpointMediaTypeHandler extends Handler {
                     urlToPath = RegistryConstants.PATH_SEPARATOR + urlToPath;
                 }
             }
-            String path = basePath + urlToPath;
+            String path = getEndpointPath(requestContext, resourceContent, endpointUrl);
+
+            //String path = basePath + urlToPath;
 
             String endpointId = resource.getUUID();
             if (registry.resourceExists(path)) {
@@ -174,6 +182,20 @@ public class EndpointMediaTypeHandler extends Handler {
         }
     }
 
+    private String getEndpointPath(RequestContext requestContext, String resourceContent, String endpointUrl)
+            throws RegistryException {
+        String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                           EndpointUtils.deriveOMElementContent(resourceContent),
+                                           requestContext.getResource().getProperties());
+        String endpointPath=  CommonUtil.replaceExpressionOfPath(pathExpression, "name",
+                                                     EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl));
+        endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+
+        return endpointPath;
+
+    }
+
     public String rename(RequestContext requestContext) throws RegistryException {
         return move(requestContext);
     }
@@ -198,8 +220,8 @@ public class EndpointMediaTypeHandler extends Handler {
             if (path == null) {
                 throw new RegistryException("The resource path is not available.");
             }
-            checkEndpointDependency(registry, path);
-//            Resource resource = registry.get(path);
+            //checkEndpointDependency(registry, path);
+            Resource resource = registry.get(path);
         } finally {
             CommonUtil.releaseDeleteLock();
         }
@@ -322,4 +344,5 @@ public class EndpointMediaTypeHandler extends Handler {
             CommonUtil.releaseAddingAssociationLock();
         }
     }
+
 }

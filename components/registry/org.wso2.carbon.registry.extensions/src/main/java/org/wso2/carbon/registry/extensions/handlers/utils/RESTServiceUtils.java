@@ -30,11 +30,14 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
+import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -213,6 +216,8 @@ public class RESTServiceUtils {
 			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the rest service to registry. ");
 		}
 
+
+
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
 		Resource serviceResource = new ResourceImpl();
@@ -227,8 +232,14 @@ public class RESTServiceUtils {
 				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
 		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : serviceVersion;
 
+        String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
+
+        String pathExpression = getRestServicePath(requestContext, data, apiName, serviceProvider);
+
 		//set version property.
 		serviceResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, serviceVersion);
+        //copy other property
+        serviceResource.setProperties(copyProperties(requestContext));
 		//set content.
 		serviceResource.setContent(RegistryUtils.encodeString(data.toString()));
 
@@ -243,12 +254,35 @@ public class RESTServiceUtils {
 		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
 		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
-		registry.put(servicePath, serviceResource);
-		log.info("REST Service created at " + servicePath);
-		return servicePath;
+		registry.put(pathExpression, serviceResource);
+        if (log.isDebugEnabled()){
+            log.debug("REST Service created at " + pathExpression);
+        }
+		return pathExpression;
 	}
 
-	/**
+    /**
+     * Generate REST service path
+      * @param requestContext Request Context
+     * @param data REST Service content(OMElement)
+     * @param serviceName REST Service name
+     * @param serviceProvider Service Provider(current user)
+     * @return Populated Path
+     */
+    private static String getRestServicePath(RequestContext requestContext, OMElement data, String serviceName,
+                                             String serviceProvider) {
+        String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.REST_SERVICE_MEDIA_TYPE);
+        pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", serviceName);
+        pathExpression = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), CommonUtil
+                .getPathFromPathExpression(pathExpression, data, requestContext.getResource().getProperties()));
+        pathExpression = CommonUtil
+                .getPathFromPathExpression(pathExpression, requestContext.getResource().getProperties(), null);
+        pathExpression = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), CommonUtil
+                .replaceExpressionOfPath(pathExpression, "provider", serviceProvider));
+        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+    }
+
+    /**
 	 * Adds the service endpoint element to the registry.
 	 *
 	 * @param requestContext        current request information.
@@ -264,6 +298,8 @@ public class RESTServiceUtils {
 			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the endpoint to registry. ");
 		}
 
+        endpointPath = getEndpointPath(requestContext, endpointElement, endpointPath);
+
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
 		Resource endpointResource = new ResourceImpl();
@@ -271,8 +307,10 @@ public class RESTServiceUtils {
 		endpointResource.setMediaType(CommonConstants.ENDPOINT_MEDIA_TYPE);
 		//set content.
 		endpointResource.setContent(RegistryUtils.encodeString(endpointElement.toString()));
+        //copy other property
+        endpointResource.setProperties(copyProperties(requestContext));
 		//set path
-		endpointPath = getChrootedEndpointLocation(requestContext.getRegistryContext()) + endpointPath;
+		//endpointPath = getChrootedEndpointLocation(requestContext.getRegistryContext()) + endpointPath;
 
 		String resourceId = endpointResource.getUUID();
 		//set resource UUID
@@ -281,11 +319,30 @@ public class RESTServiceUtils {
 		endpointResource.setUUID(resourceId);
 		//saving the api resource to repository.
 		registry.put(endpointPath, endpointResource);
-		log.info("Endpoint created at " + endpointPath);
+        if (log.isDebugEnabled()){
+            log.debug("Endpoint created at " + endpointPath);
+        }
 		return endpointPath;
 	}
 
-	/**
+    /**
+     * This method used to generate endpoint path
+     * @param requestContext Request Context
+     * @param endpointElement Endpoint XML element
+     * @param endpointPath Current endpoint path
+     * @return Updated endpoint path;
+     */
+    private static String getEndpointPath(RequestContext requestContext, OMElement endpointElement,
+                                          String endpointPath) {
+        String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression, endpointElement,
+                                                              requestContext.getResource().getProperties());
+        endpointPath = CommonUtil.replaceExpressionOfPath(pathExpression, "name", endpointPath);
+
+        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+    }
+
+    /**
 	 * Returns a Json element as a string
 	 *
 	 * @param object    json Object
@@ -476,4 +533,32 @@ public class RESTServiceUtils {
 	public static void setCommonEndpointLocation(String endpointLocation) {
 		RESTServiceUtils.commonEndpointLocation = endpointLocation;
 	}
+
+    /**
+     * This method used to extract properties from request context
+     * @param requestContext Request Context
+     * @return Extracted Properties
+     */
+    private static Properties copyProperties(RequestContext requestContext) {
+        Properties properties = requestContext.getResource().getProperties();
+        Properties copiedProperties = new Properties();
+        if (properties != null) {
+            List<String> linkProperties = Arrays.asList(
+                    RegistryConstants.REGISTRY_LINK,
+                    RegistryConstants.REGISTRY_USER,
+                    RegistryConstants.REGISTRY_MOUNT,
+                    RegistryConstants.REGISTRY_AUTHOR,
+                    RegistryConstants.REGISTRY_MOUNT_POINT,
+                    RegistryConstants.REGISTRY_TARGET_POINT,
+                    RegistryConstants.REGISTRY_ACTUAL_PATH,
+                    RegistryConstants.REGISTRY_REAL_PATH);
+            for (Map.Entry<Object, Object> e : properties.entrySet()) {
+                String key = (String) e.getKey();
+                if (!linkProperties.contains(key) && !(key.startsWith("resource") || key.startsWith("registry"))) {
+                    copiedProperties.put(key, (List<String>) e.getValue());
+                }
+            }
+        }
+        return copiedProperties;
+    }
 }
