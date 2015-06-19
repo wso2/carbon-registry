@@ -72,8 +72,5 @@ public class EndpointUtilsTest extends TestCase {
 
         assertTrue(generatedEndpointcontent2.equals(endpointContent2.toString()) || generatedEndpointcontent1
                 .equals(endpointContent2_2.toString()));
-
-        assertTrue(generatedEndpointcontent2.equals(endpointContent2.toString()) || generatedEndpointcontent1
-                .equals(endpointContent2_2.toString()));
     }
 }
