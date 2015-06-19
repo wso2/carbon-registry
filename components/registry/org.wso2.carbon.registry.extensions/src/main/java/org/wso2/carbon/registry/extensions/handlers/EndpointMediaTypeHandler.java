@@ -69,6 +69,10 @@ public class EndpointMediaTypeHandler extends Handler {
         EndpointUtils.setEndpointMediaType(endpointMediaType);
     }
 
+    public void setIncludeNamespaceInName(String includeNamespaceInName){
+        EndpointUtils.setIncludeNamespaceInName(Boolean.valueOf(includeNamespaceInName));
+    }
+
     public String getEndpointMediaType() throws RegistryException {
         return EndpointUtils.getEndpointMediaType();   
     }

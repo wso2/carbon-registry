@@ -33,11 +33,11 @@ public class EndpointUtilsTest extends TestCase {
         StringBuilder endpointContent2 = new StringBuilder();
 
         endpointContent1.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
-                .append("><overview><name>ep-net.webservicex.www-convertVolume-asmx</")
+                .append("><overview><name>ep-convertVolume-asmx</")
                 .append("name><version>1.0.0</version><address>http://www.webservicex.net/con")
                 .append("vertVolume.asmx</address></overview></endpoint>");
         endpointContent2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
-                .append("><overview><name>ep-net.webservicex.www-convertMetricWeight-asmx")
+                .append("><overview><name>ep-convertMetricWeight-asmx")
                 .append("</name><version>1.0.0</version><address>http://www.webservicex.ne")
                 .append("t/convertMetricWeight.asmx</address></overview></endpoint>");
 
@@ -46,11 +46,11 @@ public class EndpointUtilsTest extends TestCase {
         StringBuilder endpointContent1_2 = new StringBuilder();
         StringBuilder endpointContent2_2 = new StringBuilder();
         endpointContent1_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
-                .append("servicex/www/ep-convertVolume-asmx\"><overview><name>ep-net.webservicex.www-convertVolume-asmx</")
+                .append("servicex/www/ep-convertVolume-asmx\"><overview><name>ep-convertVolume-asmx</")
                 .append("name><version>1.0.0version</version><address>http://www.webservicex.net/con")
                 .append("vertVolume.asmx</address></overview></endpoint>");
         endpointContent2_2.append("<endpoint xmlns=\"http://www.wso2.org/governance/metadata\"")
-                .append("><overview><name>ep-net.webservicex.www-convertMetricWeight-asmx")
+                .append("><overview><name>ep-convertMetricWeight-asmx")
                 .append("</name><version>1.0.0version</version><address>http://www.webservicex.ne")
                 .append("t/convertMetricWeight.asmx</address></overview></endpoint>");
         //</remove>

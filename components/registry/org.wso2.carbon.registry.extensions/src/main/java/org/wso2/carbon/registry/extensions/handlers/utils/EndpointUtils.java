@@ -74,6 +74,16 @@ public class EndpointUtils {
     private static String endpointLocation = ENDPOINT_DEFAULT_LOCATION;
     private static String endpointMediaType = CommonConstants.ENDPOINT_MEDIA_TYPE;
 
+    private static boolean includeNamespaceInName = false;
+
+    public static boolean isIncludeNamespaceInName() {
+        return includeNamespaceInName;
+    }
+
+    public static void setIncludeNamespaceInName(boolean includeNamespaceInName) {
+        EndpointUtils.includeNamespaceInName = includeNamespaceInName;
+    }
+
     public static void setEndpointLocation(String endpointLocation) {
         EndpointUtils.endpointLocation = endpointLocation;
     }
@@ -837,7 +847,11 @@ public class EndpointUtils {
         String namespace =  deriveEndpointNamespaceFromUrl(url).replace("//", "/");
         namespace = namespace.replace("/", ".");
         namespace += "-";
-        return ENDPOINT_RESOURCE_PREFIX + namespace +name;
+        if (isIncludeNamespaceInName()){
+            return ENDPOINT_RESOURCE_PREFIX + namespace +name;
+        } else {
+            return ENDPOINT_RESOURCE_PREFIX + name;
+        }
     }
 
     /**
