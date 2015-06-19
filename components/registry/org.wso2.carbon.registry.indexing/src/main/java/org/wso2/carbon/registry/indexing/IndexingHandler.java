@@ -25,10 +25,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.registry.core.ActionConstants;
-import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.CollectionImpl;
-import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -37,6 +34,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer.File2Index;
+import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
@@ -253,7 +251,7 @@ public class IndexingHandler extends Handler {
                     if (asyncIndexer == null) {
                         asyncIndexer = null;//AsyncIndexer.getInstance();
                         asyncIndexer = new AsyncIndexer();
-                        new Thread(asyncIndexer).start();
+                        new Thread(asyncIndexer).run();
                     }
                 }
             }
@@ -283,10 +281,29 @@ public class IndexingHandler extends Handler {
         try {
             String lcName = resource.getProperty("registry.LC.name");
             String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
-            indexer.addFile(new File2Index(IndexingUtils.getByteContent(resource, sourceURL),mediaType,path,
-                    CurrentSession.getTenantId(), tenantDomain, lcName, lcState));
+            File2Index file2Index = new File2Index(IndexingUtils.getByteContent(resource, sourceURL), mediaType, path,
+                                                   CurrentSession.getTenantId(), tenantDomain, lcName, lcState);
+            String resourcePath = file2Index.path;
+            Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
+            Resource resourceToIndex;
+            //Check whether resource exists before indexing the resource
+            if (resourcePath != null && registry.resourceExists(resourcePath) &&
+                (resourceToIndex = registry.get(resourcePath)) != null) {
+                // Create the IndexDocument
+                IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resourceToIndex);
+                indexDocumentCreator.createIndexDocument();
 
-        } catch (RegistryException e) {
+                // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
+                // in the indexer. see CARBON-11510.
+                String symlinkPath = resourceToIndex.getProperty("registry.resource.symlink.path");
+                if (symlinkPath != null) {
+                    // Create the IndexDocument
+                    file2Index.path = symlinkPath;
+                    indexDocumentCreator = new IndexDocumentCreator(file2Index, resourceToIndex);
+                    indexDocumentCreator.createIndexDocument();
+                }
+            }
+        } catch (RegistryException | IndexerException e) {
             log.error("An error occurred while submitting file for indexing", e);
         }
     }
