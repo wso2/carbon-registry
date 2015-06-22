@@ -55,6 +55,7 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+            <bean class="org.wso2.carbon.registry.rest.api.handler.RestApiBasicAuthenticationHandler"/>
         </jaxrs:providers>
     </jaxrs:server>
 
