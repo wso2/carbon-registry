@@ -8,13 +8,12 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.rest.api.exception.RestApiBasicAuthenticationException;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.Response;
@@ -92,10 +91,13 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
         String tenantAwareUserName = MultitenantUtils.getTenantAwareUsername(userName);
         userName = tenantAwareUserName + "@" + tenantDomain;
 
+        RealmService realmService = RegistryContext.getBaseInstance().getRealmService();
+        TenantManager mgr = realmService.getTenantManager();
+
         int tenantId = 0;
         try {
-            tenantId = IdentityUtil.getTenantIdOFUser(userName);
-        } catch (IdentityException e) {
+            tenantId = mgr.getTenantId(tenantDomain);
+        } catch (UserStoreException e) {
             throw new RestApiBasicAuthenticationException(
                     "Identity exception thrown while getting tenant ID for user : " + userName, e);
         }
@@ -108,7 +110,6 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
             return false;
         }
 
-        RealmService realmService = RegistryContext.getBaseInstance().getRealmService();
         UserStoreManager userStoreManager = null;
         boolean authStatus = false;
 
