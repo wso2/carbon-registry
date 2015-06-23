@@ -191,24 +191,24 @@ public class ContentUtil {
                         resourceData.setGetAllowed(UserUtil.isGetAllowed(registry.getUserName(), tempPath, registry));
                         resourceData.setRealPath(tempPath);
                     } else if (user != null) {
-                        if (registry.getUserName().equals(user)) {
-                            resourceData.setPutAllowed(true);
-                            resourceData.setDeleteAllowed(true);
-                            resourceData.setGetAllowed(true);
-                        } else {
+                        // Fix for https://wso2.org/jira/browse/REGISTRY-2495
+//                        if (registry.getUserName().equals(user)) {
+//                            resourceData.setPutAllowed(true);
+//                            resourceData.setDeleteAllowed(true);
+//                            resourceData.setGetAllowed(true);
+//                        } else {
                             resourceData.setPutAllowed(
                         UserUtil.isPutAllowed(registry.getUserName(), childPath, registry));
                             resourceData.setDeleteAllowed(
                         UserUtil.isDeleteAllowed(registry.getUserName(), childPath, registry));
                             resourceData.setGetAllowed(
                         UserUtil.isGetAllowed(registry.getUserName(), childPath, registry));
-                        }
+//                        }
                         // Mounted resources should be accessed via the link, and we need not set
                         // the real path.
                     }
                 } else {
-                    resourceData.setPutAllowed(
-                        UserUtil.isPutAllowed(registry.getUserName(), childPath, registry));
+                    resourceData.setPutAllowed(UserUtil.isPutAllowed(registry.getUserName(), childPath, registry));
                     resourceData.setDeleteAllowed(
                         UserUtil.isDeleteAllowed(registry.getUserName(), childPath, registry));
                     resourceData.setGetAllowed(
@@ -267,12 +267,13 @@ public class ContentUtil {
                         UserUtil.isPutAllowed(registry.getUserName(), tempPath, registry));
                 bean.setRealPath(tempPath);
             } else if (user != null) {
-                if (registry.getUserName().equals(user)) {
-                    bean.setPutAllowed(true);
-                } else {
+                // Fix for https://wso2.org/jira/browse/REGISTRY-2495
+//                if (registry.getUserName().equals(user)) {
+//                    bean.setPutAllowed(true);
+//                } else {
                     bean.setPutAllowed(
                         UserUtil.isPutAllowed(registry.getUserName(), path, registry));
-                }
+//                }
                 // Mounted resources should be accessed via the link, and we need not set
                 // the real path.
             }
