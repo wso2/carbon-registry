@@ -72,11 +72,23 @@ public class SubscriptionBeanPopulator {
 
             String[] temp = subscription.getTopicName().split(RegistryEvent.TOPIC_SEPARATOR);
             String eventName = "";
-            if (temp[0].equals("")) {
-                eventName = temp[3];
+            if (subscription.getEventDispatcherName() != null &&
+                subscription.getEventDispatcherName().startsWith("/registry")) {
+                //handle registry subscription
+                if (temp[0].equals("")) {
+                    eventName = temp[3];
+                } else {
+                    eventName = temp[2];
+                }
             } else {
-                eventName = temp[2];
+                //handle non registry related(ESB topic) subscription
+                if (temp[0].equals("")) {
+                    eventName = temp[temp.length - 1];
+                } else {
+                    eventName = temp[0];
+                }
             }
+
 
             String tempTopic = RegistryEventingConstants.TOPIC_PREFIX + RegistryEvent.TOPIC_SEPARATOR + eventName + path;
             if (delimiter != null) {
