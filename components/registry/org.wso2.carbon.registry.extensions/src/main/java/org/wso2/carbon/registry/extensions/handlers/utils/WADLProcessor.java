@@ -159,7 +159,7 @@ public class WADLProcessor {
                     bufferedWriter.write(wadlElement.toString());
                     bufferedWriter.flush();
                 } catch (IOException e) {
-                    String msg = "Error occurred while reading the WADL File";
+                    String msg = "Error occurred while reading the WADL "+ wadlName +" file";
                     log.error(msg, e);
                     throw new RegistryException(msg, e);
                 } finally {
@@ -167,7 +167,7 @@ public class WADLProcessor {
                         try {
                             bufferedWriter.close();
                         } catch (IOException e) {
-                            String msg = "Error occurred while closing File writer";
+                            String msg = "Error occurred while closing WADL "+ wadlName +" file writer";
                             log.warn(msg, e);
                         }
                     }

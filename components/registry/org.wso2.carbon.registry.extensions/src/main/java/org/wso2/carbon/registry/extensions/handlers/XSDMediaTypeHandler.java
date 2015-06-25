@@ -173,6 +173,7 @@ public class XSDMediaTypeHandler extends Handler {
                     try {
                         InputStream in = new ByteArrayInputStream((byte[]) resourceContent);
                         if (!disableSchemaValidation) {
+                            // PublicId, SystemId, BaseSystemId and Encoding set to null.
                             validationInfo = SchemaValidator.
                                     validate(new XMLInputSource(null, null, null, in, null));
                         }
