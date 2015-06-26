@@ -535,7 +535,7 @@ public class CommonUtil {
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
-            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
+            String defaultLifeCycle = getDefaultLifecycle(registry, "service");
             if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
             registry.associateAspect(resource.getId(),defaultLifeCycle);
         } finally {
@@ -590,7 +590,7 @@ public class CommonUtil {
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport", "true");
             registry.put(path, resource);
-            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
+            String defaultLifeCycle = getDefaultLifecycle(registry, "soapservice");
             if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
                 registry.associateAspect(resource.getId(), defaultLifeCycle);
         } finally {
@@ -743,7 +743,7 @@ public class CommonUtil {
                 registry.getRegistryContext().getServicePath());  // service path contains the base
     }
 
-    private static String getDefaultServiceLifecycle(Registry registry) throws RegistryException {
+    public static String getDefaultLifecycle(Registry registry, String shortName) throws RegistryException {
         String[] rxtList = null;
         String lifecycle = "";
 
@@ -764,7 +764,7 @@ public class CommonUtil {
                 } catch (XMLStreamException e) {
                     throw new RegistryException("Error while serializing to OM content from String", e);
                 }
-                if ("service".equals(configElement.getAttributeValue(new QName("shortName")))) {
+                if (shortName.equals(configElement.getAttributeValue(new QName("shortName")))) {
                     OMElement lifecycleElement = configElement.getFirstChildWithName(
                             new QName("lifecycle"));
                     if (lifecycleElement != null) {

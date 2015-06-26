@@ -30,7 +30,6 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -216,8 +215,6 @@ public class RESTServiceUtils {
 			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the rest service to registry. ");
 		}
 
-
-
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
 		Resource serviceResource = new ResourceImpl();
@@ -254,7 +251,14 @@ public class RESTServiceUtils {
 		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
 		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
+
 		registry.put(pathExpression, serviceResource);
+
+        String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
+        if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+            registry.associateAspect(serviceResource.getId(), defaultLifeCycle);
+        }
+
         if (log.isDebugEnabled()){
             log.debug("REST Service created at " + pathExpression);
         }
