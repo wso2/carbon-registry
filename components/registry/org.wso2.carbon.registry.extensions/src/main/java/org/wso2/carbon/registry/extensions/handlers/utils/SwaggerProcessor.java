@@ -90,7 +90,7 @@ public class SwaggerProcessor {
 	 * @param sourceUrl             source URL.
 	 * @throws RegistryException    If a failure occurs when adding the swagger to registry.
 	 */
-	public void processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
+	public boolean processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
 			throws RegistryException {
 		//create a collection if not exists.
 		createCollection(commonLocation);
@@ -111,17 +111,23 @@ public class SwaggerProcessor {
 		using the relevant documents.
 		 */
 		if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			List<JsonObject> resourceObjects =
-					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
-			restServiceElement = (resourceObjects != null) ? RESTServiceUtils
-					.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects) : null;
+			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+                List<JsonObject> resourceObjects =
+                        addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
+                restServiceElement = (resourceObjects != null) ? RESTServiceUtils
+                        .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects) : null;
+            } else {
+                return false;
+            }
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			createEndpointElement(swaggerDocObject, swaggerVersion);
-			restServiceElement =
-					RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null);
+			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+                createEndpointElement(swaggerDocObject, swaggerVersion);
+                restServiceElement =
+                        RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null);
+            } else {
+                return false;
+            }
 		}
 
 		/*
@@ -140,6 +146,8 @@ public class SwaggerProcessor {
 		}
 
 		CommonUtil.closeOutputStream(swaggerContentStream);
+
+        return true;
 	}
 
 	/**
@@ -150,7 +158,7 @@ public class SwaggerProcessor {
 	 * @param documentVersion       version of the swagger document.
 	 * @throws RegistryException    If fails to add the swagger document to registry.
 	 */
-	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream contentStream, String path, String documentVersion)
+	private boolean addSwaggerDocumentToRegistry(ByteArrayOutputStream contentStream, String path, String documentVersion)
 			throws RegistryException {
 		Resource resource;
 		/*
@@ -174,7 +182,7 @@ public class SwaggerProcessor {
 			}
 			if (resourceContent.equals(contentStream.toString())) {
 				log.info("Old content is same as the new content. Skipping the put action.");
-				return;
+				return false;
 			}
 		} else {
 			//If a resource does not exist in the given path.
@@ -189,6 +197,8 @@ public class SwaggerProcessor {
 		resource.addProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
         CommonUtil.copyProperties(this.requestContext.getResource(), resource);
 		registry.put(path, resource);
+
+        return true;
 	}
 
 	/**
@@ -253,9 +263,10 @@ public class SwaggerProcessor {
             path = CommonUtil.replaceExpressionOfPath(swaggerResourcesPath, "name", path);
             path = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),path);
 			//Save Resource document to registry
-			addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion);
-			//Adding an dependency to API_DOC
-			registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
+			if(addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion)) {
+                //Adding an dependency to API_DOC
+                registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
+            }
 		}
 
 		CommonUtil.closeOutputStream(resourceContentStream);

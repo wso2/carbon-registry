@@ -143,20 +143,23 @@ public class SwaggerMediaTypeHandler extends Handler {
                     requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
             String sourceURL = requestContext.getSourceURL();
 
-
+            boolean processingCompleted ;
             if (StringUtils.isBlank(sourceURL)) {
                 inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
                 SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
+                processingCompleted = processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
             } else {
                 //Open a stream to the sourceURL
                 inputStream = new URL(sourceURL).openStream();
 
                 SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
+                processingCompleted = processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
             }
-            requestContext.setProcessingComplete(true);
-		}catch (IOException e) {
+
+            if(processingCompleted) {
+                requestContext.setProcessingComplete(true);
+            }
+		} catch (IOException e) {
             throw new RegistryException("The URL " + requestContext.getSourceURL() + " is incorrect.", e);
         } finally {
 			CommonUtil.closeInputStream(inputStream);
@@ -195,8 +198,9 @@ public class SwaggerMediaTypeHandler extends Handler {
 			inputStream = new URL(sourceURL).openStream();
 
 			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-			processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
-			requestContext.setProcessingComplete(true);
+			if(processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL)) {
+                requestContext.setProcessingComplete(true);
+            }
 		} catch (IOException e) {
 			throw new RegistryException("The URL " + sourceURL + " is incorrect.", e);
 		} finally {
