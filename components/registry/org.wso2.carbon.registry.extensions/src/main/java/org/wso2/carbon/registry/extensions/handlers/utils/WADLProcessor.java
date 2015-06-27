@@ -271,13 +271,13 @@ public class WADLProcessor {
         }
 
         String actualPath;
-        if(commonLocation != null){
-            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
-        } else {
-            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+//        if(commonLocation != null){
+//            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
+//        } else {
+//            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+//                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
             actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
-        }
+//        }
         if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
         }
