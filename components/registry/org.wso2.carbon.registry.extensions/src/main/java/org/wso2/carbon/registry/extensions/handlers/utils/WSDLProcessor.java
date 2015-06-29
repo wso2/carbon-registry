@@ -348,12 +348,12 @@ public class WSDLProcessor {
         if (Utils.getRxtService() != null) {
             String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.WSDL_MEDIA_TYPE);
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", wsdlResourceName);
-            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
-                                                                  context.getResource().getProperties(), null);
             String namespace = CommonUtil.derivePathFragmentFromNamespace(
-                                                                wsdlDefinition.getTargetNamespace()).replace("//", "/");
+                    wsdlDefinition.getTargetNamespace()).replace("//", "/");
             namespace = namespace.replace(".", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  context.getResource().getProperties(), null);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
             return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
