@@ -32,7 +32,30 @@
 
 package org.wso2.carbon.registry.ws.api.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.core.Association;
+import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.CollectionImpl;
+import org.wso2.carbon.registry.core.Comment;
+import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.Tag;
+import org.wso2.carbon.registry.core.TaggedResourcePath;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.ws.api.WSAssociation;
+import org.wso2.carbon.registry.ws.api.WSCollection;
+import org.wso2.carbon.registry.ws.api.WSComment;
+import org.wso2.carbon.registry.ws.api.WSLogEntry;
+import org.wso2.carbon.registry.ws.api.WSMap;
+import org.wso2.carbon.registry.ws.api.WSProperty;
+import org.wso2.carbon.registry.ws.api.WSResource;
+import org.wso2.carbon.registry.ws.api.WSTag;
+import org.wso2.carbon.registry.ws.api.WSTaggedResourcePath;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,35 +65,17 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.*;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.axis2.context.MessageContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.ws.api.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class CommonUtil {
     private static final Log log = LogFactory.getLog(CommonUtil.class);
-
-    private static RegistryService registryService;
-
-    public static synchronized void setRegistryService(RegistryService service) {
-        registryService = service;
-    }
-
-    public static RegistryService getRegistryService() {
-        return registryService;
-    }
 
     public static Map createMap(String[] key,String[] value)throws RegistryException{
         Map map = new HashMap();

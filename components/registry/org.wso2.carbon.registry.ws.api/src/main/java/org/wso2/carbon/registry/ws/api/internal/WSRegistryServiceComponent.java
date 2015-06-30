@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.ws.api.utils.CommonUtil;
 import org.wso2.carbon.registry.ws.api.utils.WSDeploymentInterceptor;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -41,7 +40,7 @@ public class WSRegistryServiceComponent {
 
 	private static Log log = LogFactory.getLog(WSRegistryServiceComponent.class);
 
-    private RegistryService registryService;
+    private WSDataHolder dataHolder = WSDataHolder.getInstance();
 
     private ConfigurationContext configContext;
 	 /**
@@ -92,12 +91,10 @@ public class WSRegistryServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        this.registryService = registryService;
-        CommonUtil.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        this.registryService = null;
-        CommonUtil.setRegistryService(null);
+        dataHolder.setRegistryService(null);
     }
 }
