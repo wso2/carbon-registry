@@ -56,17 +56,6 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         implements IContentBasedSearchService {
 	private static final Log log = LogFactory.getLog(ContentBasedSearchService.class);
 
-	private String solrServerUrl;
-
-
-	public String getSolrUrl(int tenantId) throws IOException, FileNotFoundException, RegistryException {
-		if(solrServerUrl == null){
-			solrServerUrl = IndexingUtils.getSolrUrl();
-		}	
-		return solrServerUrl;
-	}
-
-
 	public SearchResultsBean getContentSearchResults(String searchQuery) throws AxisFault{
         try {
 			UserRegistry registry = (UserRegistry) getRootRegistry();
