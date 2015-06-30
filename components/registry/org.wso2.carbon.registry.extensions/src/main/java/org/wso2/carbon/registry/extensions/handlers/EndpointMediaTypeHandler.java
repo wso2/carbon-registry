@@ -165,6 +165,12 @@ public class EndpointMediaTypeHandler extends Handler {
                 systemRegistry.put(basePath, systemRegistry.newCollection());
             }
 
+            resource.setProperty(CommonConstants.OVERVIEW_NAME, EndpointUtils.deriveNameFromContent(resourceContent));
+            resource.setProperty(CommonConstants.OVERVIEW_VERSION,
+                    EndpointUtils.deriveVersionFromContent(resourceContent));
+            resource.setProperty(CommonConstants.OVERVIEW_ADDRESS,
+                    EndpointUtils.deriveEndpointFromContent(resourceContent));
+
             if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
                 resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             }
