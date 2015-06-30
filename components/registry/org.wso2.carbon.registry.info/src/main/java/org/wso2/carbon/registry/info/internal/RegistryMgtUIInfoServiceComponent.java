@@ -33,7 +33,6 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.eventing.services.EventingService;
 import org.wso2.carbon.registry.eventing.services.SubscriptionEmailVerficationService;
 import org.wso2.carbon.registry.extensions.jmx.Subscriptions;
-import org.wso2.carbon.registry.info.Utils;
 import org.wso2.carbon.registry.info.services.utils.SubscriptionBeanPopulator;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
@@ -62,6 +61,8 @@ public class RegistryMgtUIInfoServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIInfoServiceComponent.class);
 
+    private InfoDataHolder dataHolder = InfoDataHolder.getInstance();
+
     private ServiceRegistration infoServiceRegistration = null;
 
     protected void activate(ComponentContext context) {
@@ -80,11 +81,11 @@ public class RegistryMgtUIInfoServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(null);
+        dataHolder.setRegistryService(null);
     }
 
     protected void setSubscriptions(Subscriptions eventing) {
@@ -98,7 +99,7 @@ public class RegistryMgtUIInfoServiceComponent {
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
                             MultitenantConstants.SUPER_TENANT_ID);
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-                    UserRegistry registry = Utils.getRegistryService().getRegistry(
+                    UserRegistry registry = dataHolder.getRegistryService().getRegistry(
                             CarbonConstants.REGISTRY_SYSTEM_USERNAME);
                     if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
                         return null;
@@ -125,7 +126,7 @@ public class RegistryMgtUIInfoServiceComponent {
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
                             MultitenantConstants.SUPER_TENANT_ID);
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-                    Utils.getRegistryEventingService().unsubscribe(id);
+                    dataHolder.getRegistryEventingService().unsubscribe(id);
                 } finally {
                     PrivilegedCarbonContext.endTenantFlow();
                 }
@@ -136,7 +137,7 @@ public class RegistryMgtUIInfoServiceComponent {
                     return eventNames;
                 }
                 Set<String> output = new TreeSet<String>();
-                Collection values = Utils.getRegistryEventingService().getEventTypes().values();
+                Collection values = dataHolder.getRegistryEventingService().getEventTypes().values();
                 for (Object value : values) {
                     String[] types = (String[])value;
                     if (types[0] != null) {
@@ -158,7 +159,7 @@ public class RegistryMgtUIInfoServiceComponent {
                             MultitenantConstants.SUPER_TENANT_ID);
                     PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
                     List<Subscription> subscriptions =
-                            Utils.getRegistryEventingService().getAllSubscriptions();
+                            dataHolder.getRegistryEventingService().getAllSubscriptions();
                     for (Subscription subscription : subscriptions) {
                         output.add(subscription.getId() + ":" + subscription.getTopicName() + ":" +
                                 subscription.getEventSinkURL());
@@ -178,33 +179,33 @@ public class RegistryMgtUIInfoServiceComponent {
     }
 
     protected void setRegistryEventingService(EventingService eventingService) {
-        Utils.setRegistryEventingService(eventingService);
+        dataHolder.setRegistryEventingService(eventingService);
         log.debug("Successfully set registry eventing service");
     }
 
     protected void unsetRegistryEventingService(EventingService eventingService) {
-        Utils.setRegistryEventingService(null);
+        dataHolder.setRegistryEventingService(null);
     }
 
     protected void setSubscriptionEmailVerficationService(SubscriptionEmailVerficationService
             subscriptionEmailVerficationService) {
-        Utils.setSubscriptionEmailVerficationService(subscriptionEmailVerficationService);
+        dataHolder.setSubscriptionEmailVerficationService(subscriptionEmailVerficationService);
         log.debug("Successfully set subscription e-mail verification service");
     }
 
     protected void unsetSubscriptionEmailVerficationService(SubscriptionEmailVerficationService
             subscriptionEmailVerficationService) {
-        Utils.setSubscriptionEmailVerficationService(null);
+        dataHolder.setSubscriptionEmailVerficationService(null);
     }
 
     protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
         log.debug("The Configuration Context Service was set");
         if (configurationContextService != null) {
-            Utils.setConfigurationContext(configurationContextService.getServerConfigContext());
+            dataHolder.setConfigurationContext(configurationContextService.getServerConfigContext());
         }
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService configurationContextService) {
-        Utils.setConfigurationContext(null);
+        dataHolder.setConfigurationContext(null);
     }
 }
