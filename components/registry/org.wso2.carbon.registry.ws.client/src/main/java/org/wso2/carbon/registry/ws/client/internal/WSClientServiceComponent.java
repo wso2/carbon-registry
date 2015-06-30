@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.registry.ws.client.internal;
 
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
@@ -27,7 +26,6 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryProvider;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.ws.client.registry.WSRegistryClientUtils;
 import org.wso2.carbon.registry.ws.client.registry.WSRegistryServiceClient;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
@@ -47,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class WSClientServiceComponent {
 
-    private ConfigurationContext configurationContext;
+    private WSClientDataHolder dataHolder = WSClientDataHolder.getInstance();
 
     private static Log log = LogFactory.getLog(WSClientServiceComponent.class);
     private ServiceRegistration serviceRegistration = null;
@@ -71,7 +69,7 @@ public class WSClientServiceComponent {
                             + "/services/";
                     RegistryUtils.setTrustStoreSystemProperties();
                     client = new WSRegistryServiceClient(serverURL, username, password,
-                            configurationContext);
+                            dataHolder.getConfigurationContext());
                     startExecutor(100000);
                     return client;
                 }
@@ -118,13 +116,11 @@ public class WSClientServiceComponent {
     }
 
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
-        configurationContext = contextService.getClientConfigContext();
-        WSRegistryClientUtils.setConfigurationContext(contextService.getServerConfigContext());
+        dataHolder.setConfigurationContext(contextService.getServerConfigContext());
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
-        configurationContext = null;
-        WSRegistryClientUtils.setConfigurationContext(null);
+        dataHolder.setConfigurationContext(null);
     }
 
 }
