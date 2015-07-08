@@ -22,6 +22,7 @@
 <!-- This page is included to display messages which are set to request scope or session scope -->
 <jsp:include page="../dialog/display_messages.jsp"/>
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
+
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
@@ -195,7 +196,10 @@
     String rightOp = request.getParameter("rightOp");
     if(rightOp == null) rightOp = "";
     if(leftOp == null) leftOp = "";
-    
+
+
+
+
     
     //this was added so that the custom parameters are also checked.
 
@@ -209,6 +213,7 @@
 //            hasParameters = true;
 //        }
 //    }
+
 
 
     String searchPath = "";
@@ -310,10 +315,12 @@
 
 
 <!-- Search results starts here -->
+
 <%
     if (hasParameters) {
 %>
 <div style="margin-bottom:30px;" id="searchResuts">
+
     <jsp:include page="<%=searchPath%>"/>
 
     <div style="margin-top:10px;margin-bottom:50px;<%=hasParameters ? "" : "display:none"%>">
@@ -321,12 +328,14 @@
            style="background-image:url(./images/search.gif);">
             <fmt:message key="try.advanced.search"/>
         </a>
+
     </div>
 </div>
 <%
 } else {
 %>
 <div style="margin-top:30px;" id="searchResuts"></div>
+
 <%
     }
 %>
@@ -336,4 +345,14 @@
 </div>
 
 </div>
+
+<script type="text/javascript">
+         function loadPagedList(pageNumber){
+
+            var sortOrder= document.getElementById('sortOrder').value;
+            var sortBy= document.getElementById('sortBy').value;
+            sort(pageNumber,sortOrder, sortBy);
+         }
+</script>
+
 </fmt:bundle>

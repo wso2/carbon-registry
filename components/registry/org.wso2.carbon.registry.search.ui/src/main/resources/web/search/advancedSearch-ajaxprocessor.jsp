@@ -33,11 +33,20 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.wso2.carbon.registry.core.pagination.PaginationContext" %>
 
+<script type="text/javascript" src="../search/js/search.js"></script>
+
 
 <%
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     AdvancedSearchResultsBean advancedSearchBean;
     String requestedPage = request.getParameter(UIConstants.REQUESTED_PAGE);
+    String sortBy=request.getParameter("sortBy");
+    String sortOrder= request.getParameter("sortOrder");
+    String imgType ="";
+    String displayStr = "";
+
+
+
     try {
 
         int start;
@@ -47,7 +56,7 @@
         } else {
             start = 0;
         }
-        PaginationContext.init(start, count, "", "", 1500);
+        PaginationContext.init(start, count, sortOrder, sortBy, 1500);
         SearchServiceClient client = new SearchServiceClient(cookie, config, session);
         advancedSearchBean = client.getAdvancedSearchResults(request);
 
@@ -57,6 +66,8 @@
 <script type="text/javascript">
     CARBON.showErrorDialog("<%=e.getMessage()%>");
 </script>
+
+
 <%
         return;
     }
@@ -115,22 +126,97 @@
     %>
 
 
+
+    <!-- Hidden fields to pass variables to advancedSearch.jsp -->
+    <input type="hidden" name="sortOrder" id="sortOrder" value="<%=sortOrder%>" />
+    <input type="hidden" name="sortBy" id="sortBy" value="<%=sortBy%>" />
     <h3 style="margin-top:20px;margin-bottom:20px;"> <fmt:message key="search.results"/> </h3>
 
-    <table cellpadding="0" cellspacing="0" border="0" style="width:100%" class="styledLeft">
+    <table cellpadding="0" id = "searchTable" cellspacing="0" border="0" style="width:100%" class="styledLeft">
         <thead>
         <tr>
             <th style="padding-left:5px;text-align:left;">&nbsp;</th>
-            <th style="padding-left:5px;text-align:left;"><fmt:message key="created"/></th>
-            <th style="padding-left:5px;text-align:left;"><fmt:message key="author"/></th>
-            <th style="padding-left:5px;text-align:left;"><fmt:message key="rating"/></th>
+
+            <th style="padding-left:5px;text-align:left;">
+            <%
+                if (request.getParameter("sortBy") !=null &&
+                                                            request.getParameter("sortBy").equals("created")) {
+                    displayStr = "display:'';margin-top:4px;margin-right:2px;";
+                } else {
+                    displayStr = "display:none;";
+                }
+                if (request.getParameter("sortOrder") !=null &&
+                                                            request.getParameter("sortOrder").equals("DES")) {
+                    imgType ="../admin/images/down-arrow.gif";
+
+                } else {
+                    imgType ="../admin/images/up-arrow.gif";
+
+                }
+
+            %>
+                <a onclick="sort('<%=pageNumber%>',
+                                '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                                'created')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
+                 alt="">
+                <fmt:message key="created"/> </a>
+            </th>
+
+            <th style="padding-left:5px;text-align:left;">
+            <%
+                 if (request.getParameter("sortBy") !=null &&
+                                                            request.getParameter("sortBy").equals("author")) {
+                    displayStr = "display:'';margin-top:4px;margin-right:2px;";
+                 } else {
+                    displayStr = "display:none;";
+                 }
+                 if (request.getParameter("sortOrder") !=null &&
+                                                            request.getParameter("sortOrder").equals("DES")) {
+                     imgType ="../admin/images/down-arrow.gif";
+
+                 } else {
+                    `imgType ="../admin/images/up-arrow.gif";
+
+                 }
+
+            %>
+                <a onclick="sort('<%=pageNumber%>',
+                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                                 'author')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
+                alt="">
+                <fmt:message key="author"/> </a>
+            </th>
+
+            <th style="padding-left:5px;text-align:left;">
+            <%
+                if (request.getParameter("sortBy") !=null &&
+                                                            request.getParameter("sortBy").equals("rating")) {
+                     displayStr = "display:'';margin-top:4px;margin-right:2px;";
+                } else {
+                     displayStr = "display:none;";
+                }
+                if (request.getParameter("sortOrder") !=null &&
+                                                            request.getParameter("sortOrder").equals("DES")) {
+                    imgType ="../admin/images/down-arrow.gif";
+
+                } else {
+                    imgType ="../admin/images/up-arrow.gif";
+                }
+
+            %>
+                <a onclick="sort('<%=pageNumber%>',
+                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
+                                 'rating')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
+                alt="">
+                <fmt:message key="rating"/> </a>
+            </th>
         </tr>
         </thead>
         <tbody>
-        <%
 
-            if (resourceDataList != null && resourceDataList.length >0) {
-        %>
         <%
             for (ResourceData resourceData : resourceDataList) {
                 if (resourceData == null) {
@@ -211,7 +297,7 @@
         <carbon:resourcePaginator pageNumber="<%=pageNumber%>" numberOfPages="<%=numberOfPages%>"
                                   resourceBundle="org.wso2.carbon.registry.search.ui.i18n.Resources"
                                   nextKey="next" prevKey="prev" tdColSpan="4"
-                                  paginationFunction="submitAdvSearchForm({0})" />
+                                  paginationFunction="loadPagedList({0})" />
         <%
         } else {
         %>
@@ -255,4 +341,7 @@
 
         </tbody>
     </table>
+
+
+
 </fmt:bundle>
