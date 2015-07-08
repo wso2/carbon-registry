@@ -226,10 +226,11 @@ function initMiscFields() {
     }
 }
 
-function submitAdvSearchForm(pageNumber) {		
+function submitAdvSearchForm(pageNumber) {
+
     sessionAwareFunction(function() {
         document.getElementById('advancedSearchFormDiv').style.display = "none";
-	var resourceName = document.getElementById('#_resourceName');
+	    var resourceName = document.getElementById('#_resourceName');
         var reasonDiv = $('advSearchReason');
         var reason = "";
         var searchResuts = $('searchResuts');
@@ -237,6 +238,7 @@ function submitAdvSearchForm(pageNumber) {
         searchResuts.innerHTML = org_wso2_carbon_registry_search_ui_jsi18n["searching"];
 
         var table = $('customTable');
+
         var rows = table.getElementsByTagName('input');        
 
         var cFromDate, cToDate,
@@ -397,6 +399,180 @@ function submitAdvSearchForm(pageNumber) {
             )
             ;
 }
+
+function sort(pageNumber,sortOrder, sortBy) {
+    sessionAwareFunction(function() {
+        document.getElementById('advancedSearchFormDiv').style.display = "none";
+	    var resourceName = document.getElementById('#_resourceName');
+        var reasonDiv = $('advSearchReason');
+        var reason = "";
+        var searchResuts = $('searchResuts');
+        searchResuts.style.display = "";
+        searchResuts.innerHTML = org_wso2_carbon_registry_search_ui_jsi18n["searching"];
+
+        var table = $('customTable');
+        var rows = table.getElementsByTagName('input');
+
+
+        var cFromDate, cToDate,
+                uFromDate, uToDate;
+
+
+        for (var i = 0; i < rows.length; i++) {
+            if ((rows[i].id == "cfromDate") && rows[i].value != "") {
+                cFromDate = rows[i];
+                reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["from"]);
+            }
+            else if ((rows[i].id == "ctoDate") && rows[i].value != "") {
+                cToDate = rows[i];
+                reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["to"]);
+            }
+            else if ((rows[i].id == "ufromDate") && rows[i].value != "") {
+                uFromDate = rows[i];
+                reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["from"]);
+            }
+            else if ((rows[i].id == "utoDate") && rows[i].value != "") {
+                uToDate = rows[i];
+                reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["to"]);
+            }
+
+            else if ((rows[i].id == "#_resourceName") && trim(rows[i].value) != "")
+	    {
+		if(rows[i].value.indexOf("/") >= 0 )
+		{
+			//reason += "invalid search term";
+			reason += org_wso2_carbon_registry_search_ui_jsi18n["invalid.search.term"];
+		}
+
+		reason += validateIllegalNoPercent(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["resource.name"]);
+	    }
+            else if ((rows[i].id == "#_content") && trim(rows[i].value) != "") reason += validateIllegalContentSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["content.name"]);
+            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
+            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
+            else if ((rows[i].id == "#_tags") && rows[i].value != "") reason += validateTagsInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["tags"]);
+            else if ((rows[i].id == "#_comments") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["comments"]);
+            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
+            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
+            else if ((rows[i].value != "") && rows[i].type == "text") {
+               reason += validateForInput(rows[i], rows[i].name);
+            }
+        }
+
+
+
+        if(cFromDate != null && cFromDate.value != "" && cToDate != null && cToDate.value != "") {
+            reason += validateToFromDate(cFromDate, cToDate);
+        }
+
+        if(uFromDate != null && uFromDate.value != "" && uToDate != null && uToDate.value != "") {
+            reason += validateToFromDate(uFromDate, uToDate);
+        }
+
+        reasonDiv.innerHTML = reason;
+        if (reason == "") {
+
+            var emptyFields = 0;
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].type == "text") {
+                    emptyFields += emptyIncrementer(rows[i]);
+                }
+            }
+
+            var customParamterList = "";
+
+            for (var i = 0; i < rows.length - 1; i++) {
+                if (rows[i].type == "text") {
+                    customParamterList = customParamterList + rows[i].name + "^";
+                    if (rows[i].value == "") {
+                        customParamterList = customParamterList + "null";
+                    }
+                    else {
+                        customParamterList = customParamterList + rows[i].value;
+                    }
+                    if (i != (rows.length - 1)) {
+                        customParamterList = customParamterList + "|";
+                    }
+                }
+
+                if (rows[i].type == "checkbox") {
+                    customParamterList = customParamterList + rows[i].name + "^";
+                    if (rows[i].checked) {
+                        customParamterList = customParamterList + "on";
+                    }
+                    else {
+                        customParamterList = customParamterList + "null";
+                    }
+                    if (i != (rows.length - 1)) {
+                        customParamterList = customParamterList + "|";
+                    }
+                }
+            }
+
+            var opList = table.getElementsByTagName('select');
+
+            for (var i = 0; i < opList.length; i++) {
+            	customParamterList = customParamterList + opList[i].name + "^";
+            	customParamterList = customParamterList + opList[i].value;
+            	if (i != (opList.length - 1)) {
+                    customParamterList = customParamterList + "|";
+                }
+            }
+
+            var validateValue = validateEmptyPropertyValues();
+                if(validateValue > 0 ) {
+                   searchResuts.innerHTML = "";
+                   	   if(validateValue == 1) {
+                         CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["property.name.required"]);
+                       }
+                       document.getElementById('advancedSearchFormDiv').style.display = "";
+                         return false;
+
+                }
+
+            if(validatePropertyValues() == 0){
+            	searchResuts.innerHTML = "";
+            	CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["left.needs.less.than.right.property.value"]);
+            	document.getElementById('advancedSearchFormDiv').style.display = "";
+            	return false;
+            }
+
+            if (emptyFields == 0) {
+                searchResuts.innerHTML = "";
+                CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["please.fill.at.least.one"]);
+                document.getElementById('advancedSearchFormDiv').style.display = "";
+                return false;
+            }
+
+            var advancedSearchForm = $('advancedSearchForm');
+            advancedSearchForm.style.display = "none";
+            reasonDiv.innerHTML = "<a href=\"#\" onclick=\"displayAdvSearchForm(this)\"" +
+                                  "class=\"icon-link\" style=\"margin-left:0px;background-image:url(images/search.gif);\">" +
+                                  org_wso2_carbon_registry_search_ui_jsi18n["search.again"] + "</a>";
+            reasonDiv.style.display = "block";
+
+            if (pageNumber) {
+                new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
+                { method: 'get', parameters: {parameterList:customParamterList,requestedPage:pageNumber, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+            } else {
+                new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
+                { method: 'get', parameters: {parameterList:customParamterList, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+            }
+            $('#_0').focus();
+
+        }
+        else {
+            searchResuts.innerHTML = "";
+            document.getElementById('advancedSearchFormDiv').style.display = "";
+            CARBON.showWarningDialog(reason);
+            return false;
+        }
+    }
+            ,
+            org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]
+            )
+            ;
+}
+
 
 function adjustPropertyInput(){
 	var opLeft = document.getElementById('opLeft');

@@ -23,13 +23,14 @@
 <carbon:jsi18n
 		resourceBundle="org.wso2.carbon.registry.activities.ui.i18n.JSResources"
 		request="<%=request%>" namespace="org.wso2.carbon.registry.activities.ui" />
-<script type="text/javascript" src="js/activity.js"></script>
+
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 <jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
+<script type="text/javascript" src="../activities/js/activity.js"></script>
 <link rel="stylesheet" type="text/css"
       href="../resources/css/registry.css"/>
 <%
@@ -179,4 +180,15 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+         function sortAndOrder(page, pageNumber){
+
+            var sortOrder= document.getElementById('sortOrder');
+            var sortOrderValue=sortOrder.value;
+            sort(page,pageNumber,sortOrderValue);
+         }
+
+    </script>
+
 </fmt:bundle>
