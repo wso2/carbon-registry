@@ -141,7 +141,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
      * @throws RegistryException
      */
     private SearchResultsBean searchContentInternal(String searchQuery, Map<String, String> attributes,
-            UserRegistry registry) throws IndexerException, RegistryException {
+        UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
         // To verify advance search and metadata search
@@ -207,6 +207,12 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     startIndex = start;
                 }
                 if (rowCount < start + count) {
+                    if(rowCount - startIndex < 0) {
+                        String msg = "PaginationContext parameter's start index seems to be greater than the limit count. Please verify your parameters";
+                        log.warn(msg);
+                        resultsBean.setErrorMessage(msg);
+                        return resultsBean;
+                    }
                     paginatedPaths = new String[rowCount - startIndex];
                     System.arraycopy(authorizedPaths, startIndex, paginatedPaths, 0, (rowCount - startIndex));
                 } else {
