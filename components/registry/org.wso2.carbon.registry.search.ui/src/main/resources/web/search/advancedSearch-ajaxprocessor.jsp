@@ -139,16 +139,14 @@
 
             <th style="padding-left:5px;text-align:left;">
             <%
-                if (request.getParameter("sortBy") !=null &&
-                                                            request.getParameter("sortBy").equals("created")) {
+                if (request.getParameter("sortBy") != null && request.getParameter("sortBy").equals("created")) {
                     displayStr = "display:'';margin-top:4px;margin-right:2px;";
                 } else {
                     displayStr = "display:none;";
                 }
-                if (request.getParameter("sortOrder") !=null &&
-                                                            request.getParameter("sortOrder").equals("DES")) {
-                    imgType ="../admin/images/down-arrow.gif";
 
+                if (request.getParameter("sortOrder") != null && request.getParameter("sortOrder").equals("DES")) {
+                    imgType ="../admin/images/down-arrow.gif";
                 } else {
                     imgType ="../admin/images/up-arrow.gif";
 
@@ -156,66 +154,60 @@
 
             %>
                 <a onclick="sort('<%=pageNumber%>',
-                                '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
-                                'created')">
-                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
-                 alt="">
+                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>', 'created')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>" alt="">
                 <fmt:message key="created"/> </a>
             </th>
 
             <th style="padding-left:5px;text-align:left;">
             <%
-                 if (request.getParameter("sortBy") !=null &&
-                                                            request.getParameter("sortBy").equals("author")) {
+                 if (request.getParameter("sortBy") != null && request.getParameter("sortBy").equals("author")) {
                     displayStr = "display:'';margin-top:4px;margin-right:2px;";
                  } else {
                     displayStr = "display:none;";
                  }
-                 if (request.getParameter("sortOrder") !=null &&
-                                                            request.getParameter("sortOrder").equals("DES")) {
-                     imgType ="../admin/images/down-arrow.gif";
 
+                 if (request.getParameter("sortOrder") != null && request.getParameter("sortOrder").equals("DES")) {
+                     imgType ="../admin/images/down-arrow.gif";
                  } else {
-                    `imgType ="../admin/images/up-arrow.gif";
+                     imgType ="../admin/images/up-arrow.gif";
 
                  }
 
             %>
                 <a onclick="sort('<%=pageNumber%>',
-                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
-                                 'author')">
-                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
-                alt="">
+                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>', 'author')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>" alt="">
                 <fmt:message key="author"/> </a>
             </th>
 
             <th style="padding-left:5px;text-align:left;">
             <%
-                if (request.getParameter("sortBy") !=null &&
-                                                            request.getParameter("sortBy").equals("rating")) {
+                if (request.getParameter("sortBy") != null && request.getParameter("sortBy").equals("rating")) {
                      displayStr = "display:'';margin-top:4px;margin-right:2px;";
                 } else {
                      displayStr = "display:none;";
                 }
-                if (request.getParameter("sortOrder") !=null &&
-                                                            request.getParameter("sortOrder").equals("DES")) {
-                    imgType ="../admin/images/down-arrow.gif";
 
+                if (request.getParameter("sortOrder") != null && request.getParameter("sortOrder").equals("DES")) {
+                    imgType ="../admin/images/down-arrow.gif";
                 } else {
                     imgType ="../admin/images/up-arrow.gif";
                 }
 
             %>
                 <a onclick="sort('<%=pageNumber%>',
-                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>',
-                                 'rating')">
-                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
-                alt="">
+                                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>', 'rating')">
+                <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>" alt="">
                 <fmt:message key="rating"/> </a>
             </th>
         </tr>
         </thead>
         <tbody>
+
+        <%
+        if (resourceDataList != null && resourceDataList.length >0) {
+        %>
 
         <%
             for (ResourceData resourceData : resourceDataList) {
@@ -341,7 +333,4 @@
 
         </tbody>
     </table>
-
-
-
 </fmt:bundle>

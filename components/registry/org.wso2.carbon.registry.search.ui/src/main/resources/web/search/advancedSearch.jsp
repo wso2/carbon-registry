@@ -197,10 +197,6 @@
     if(rightOp == null) rightOp = "";
     if(leftOp == null) leftOp = "";
 
-
-
-
-    
     //this was added so that the custom parameters are also checked.
 
 
@@ -213,7 +209,6 @@
 //            hasParameters = true;
 //        }
 //    }
-
 
 
     String searchPath = "";
@@ -315,12 +310,10 @@
 
 
 <!-- Search results starts here -->
-
 <%
     if (hasParameters) {
 %>
 <div style="margin-bottom:30px;" id="searchResuts">
-
     <jsp:include page="<%=searchPath%>"/>
 
     <div style="margin-top:10px;margin-bottom:50px;<%=hasParameters ? "" : "display:none"%>">
@@ -328,14 +321,12 @@
            style="background-image:url(./images/search.gif);">
             <fmt:message key="try.advanced.search"/>
         </a>
-
     </div>
 </div>
 <%
 } else {
 %>
 <div style="margin-top:30px;" id="searchResuts"></div>
-
 <%
     }
 %>
@@ -346,13 +337,19 @@
 
 </div>
 
-<script type="text/javascript">
+
+    <script type="text/javascript">
+         /**
+          * Method to get sort order and invoke sort method in search.js.
+          *
+          * @param pageNumber    current page of the search results
+          */
          function loadPagedList(pageNumber){
 
             var sortOrder= document.getElementById('sortOrder').value;
             var sortBy= document.getElementById('sortBy').value;
             sort(pageNumber,sortOrder, sortBy);
          }
-</script>
+    </script>
 
 </fmt:bundle>

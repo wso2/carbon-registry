@@ -41,14 +41,14 @@
         ActivityBean activityBean;
         String requestedPage = request.getParameter(UIConstants.REQUESTED_PAGE);
 
-        String sortOrder=request.getParameter("sortOrder");
-        String imgType="";
-        String displayStr="display:none;";
+        String sortOrder = request.getParameter("sortOrder");
+        String imgType = "";
+        String displayStr = "display:none;";
 
-        if(sortOrder!=null){
-            if(sortOrder.equals("DES")){
+        if (sortOrder!=null){
+            if (sortOrder.equals("DES")){
                 imgType ="../admin/images/down-arrow.gif";
-            } else if(sortOrder.equals("ASC")){
+            } else if (sortOrder.equals("ASC")){
                 imgType ="../admin/images/up-arrow.gif";
             }
             displayStr = "display:'';margin-top:4px;margin-right:2px;";
@@ -67,8 +67,6 @@
 
         String[] allActivities = null;
         String[] activities;
-
-
 
         if (activityBean != null) {
             allActivities = activityBean.getActivity();
@@ -117,11 +115,9 @@
         <tr>
             <th align="left"><fmt:message key="activities"/></th>
             <th align="left" id ="date"  value="<%=sortOrder%>" >
-                <a onclick="sort(1,'<%=pageNumber%>',
+                <a onclick="sort('<%=pageNumber%>',
                 '<%="ASC".equals(request.getParameter("sortOrder")) ? "DES" : "ASC" %>')">
-                    <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>"
-                     alt="">
-
+                 <img  src="<%=imgType%>" border="0" align="right" style="<%=displayStr%>" alt="">
                 <fmt:message key="date"/></a>
             </th>
         </tr>
@@ -161,25 +157,25 @@
                                 ] + "</a>"
                                 + explodedActivity[3] + "<a href='../resources/resource.jsp?region=region3&item=resource_browser_menu&viewType=std&path=" + path + "'>" + explodedActivity[5]
                                 + "</a>" ;
-                    }   else {
+                    } else {
                         activity = "<a href='#" + explodedActivity[1] + "'>" + explodedActivity[2] + "</a>"
                                 + explodedActivity[3] +  explodedActivity[5];
 
                     }
 
                 }
-                for(int j=0;j<split.length-2;j++){
-                activity+=split[j];
+                for (int j=0;j<split.length-2;j++){
+                    activity+=split[j];
                 }
                 if (explodedActivity.length > 7 && explodedActivity[7] != null) {
                     activity += "<br/>" + explodedActivity[7];
 
                 }
 
-                if(activity.charAt(activity.length()-1)=='('){
+                if (activity.charAt(activity.length()-1)=='('){
                     activity = activity.substring(0, activity.length()-1);
                 }
-                // get the date of activities
+                // Get the date of activities
                 date=split[split.length-1].substring(0, split[split.length-1].length()-2);
 
                 %>
@@ -234,7 +230,7 @@
         <carbon:resourcePaginator pageNumber="<%=pageNumber%>" numberOfPages="<%=numberOfPages%>"
                                   resourceBundle="org.wso2.carbon.registry.activities.ui.i18n.Resources"
                                   nextKey="next" prevKey="prev"
-                                  paginationFunction="sortAndOrder(1,{0})" />
+                                  paginationFunction="sortAndOrder({0})" />
         <%--<tr>
             <td class="pagingRow" style="text-align:center;padding-top:10px; padding-bottom:10px;">
 
@@ -246,7 +242,7 @@
                 } else {
                 %>
                 <a class="pageLinks" title="<fmt:message key="page.x.to.y"><fmt:param value="<%=(pageNumber - 1)%>"/></fmt:message>"
-                   onclick="sortAndOrder(1,'<%=(pageNumber-1)%>')"><
+                   onclick="sortAndOrder('<%=(pageNumber-1)%>')"><
                     <fmt:message key="prev"/></a>
                 <%
                     }
@@ -254,7 +250,7 @@
                         for (int pageItem = 1; pageItem <= numberOfPages; pageItem++) { %>
 
                 <a title="<fmt:message key="page.x.to.y"><fmt:param value="<%=pageItem%>"/></fmt:message>" class=<% if(pageNumber==pageItem){ %>"pageLinks-selected"<% } else { %>"pageLinks" <% } %>
-                onclick="sortAndOrder(1,'<%=pageItem%>')" ><%=pageItem%></a>
+                onclick="sortAndOrder('<%=pageItem%>')" ><%=pageItem%></a>
                 <% }
                 } else {
                     // FIXME: The equals comparisons below looks buggy. Need to test whether the desired
@@ -281,7 +277,7 @@
                         for (int pageItem = 1; pageItem <= 2; pageItem++) { %>
 
                 <a class="pageLinks" title="<fmt:message key="page.x.to.y"><fmt:param value="<%=pageItem%>"/></fmt:message>"
-                   onclick="sortAndOrder(1,'<%=pageItem%>')"><%=pageItem%>
+                   onclick="sortAndOrder('<%=pageItem%>')"><%=pageItem%>
                 </a>
                 <% } %>
                 ...
@@ -291,7 +287,7 @@
                     for (int pageItem = pageItemFrom; pageItem <= pageItemTo; pageItem++) { %>
 
                 <a title="<fmt:message key="page.x.to.y"><fmt:param value="<%=pageItem%>"/></fmt:message>" class=<% if(pageNumber==pageItem){ %>"pageLinks-selected"<% } else {%>"pageLinks"<% } %>
-                onclick="sortAndOrder(1,'<%=pageItem%>')"><%=pageItem%></a>
+                onclick="sortAndOrder('<%=pageItem%>')"><%=pageItem%></a>
                 <% }
 
                     if (place == "start" || place == "middle") {
@@ -301,7 +297,7 @@
                     for (int pageItem = (numberOfPages - 1); pageItem <= numberOfPages; pageItem++) { %>
 
                 <a class="pageLinks" title="<fmt:message key="page.x.to.y"><fmt:param value="<%=pageItem%>"/></fmt:message>"
-                   onclick="sortAndOrder(1,'<%=pageItem%>')"
+                   onclick="sortAndOrder('<%=pageItem%>')"
                    style="margin-left:5px;margin-right:5px;"><%=pageItem%>
                 </a>
                 <% }
@@ -319,7 +315,7 @@
                 } else {
                 %>
                 <a class="pageLinks" title="<fmt:message key="page.x.to.y"><fmt:param value="<%=(pageNumber - 1)%>"/></fmt:message>"
-                   onclick="sortAndOrder(1,'<%=(pageNumber+1)%>')">Next
+                   onclick="sortAndOrder('<%=(pageNumber+1)%>')">Next
                     ></a>
                 <%
                     }
@@ -338,7 +334,5 @@
     <%
         }
     %>
-
-
 
 </fmt:bundle>
