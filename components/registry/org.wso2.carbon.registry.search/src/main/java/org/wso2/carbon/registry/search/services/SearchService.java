@@ -133,82 +133,37 @@ public class SearchService extends RegistryAbstractAdmin implements
 
 
     /**
-     * Method to sort search results based on created date, author and rating
+     * Method to sort search results based on created date, author and rating.
      *
-     * @param results search results
-     * @return sorted search results based on sort criteria
+     * @param results   search results
+     * @return          sorted search results based on sort criteria
      */
     private ResourceData[] getSortedSearchResults(ResourceData[] results) {
         MessageContext messageContext = MessageContext.getCurrentMessageContext();
         if (messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)) {
 
-
+            String createdDate = "created";
+            String author = "author";
+            String rating = "rating";
             try {
                 PaginationContext paginationContext = PaginationUtils.initPaginationContext(messageContext);
 
                 String sortOrder = paginationContext.getSortOrder();
                 String sortBy = paginationContext.getSortBy();
                 if (sortBy != null && sortOrder != null) {
-                    //sort by created date
-                    if ("created".equals(sortBy)) {
-                        if ("ASC".equals(sortOrder)) {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    return o1.getCreatedOn().compareTo(o2.getCreatedOn());
-                                }
-                            });
-                        } else {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    return o2.getCreatedOn().compareTo(o1.getCreatedOn());
-                                }
-                            });
-                        }
-                    //sort by author
-                    } else if ("author".equals(sortBy)) {
-                        if ("ASC".equals(sortOrder)) {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    return o1.getAuthorUserName().compareTo(o2.getAuthorUserName());
-                                }
-                            });
-                        } else {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    return o2.getAuthorUserName().compareTo(o1.getAuthorUserName());
-                                }
-                            });
-                        }
-                    // sort by average rating
-                    } else if ("rating".equals(sortBy)) {
-                        if ("ASC".equals(sortOrder)) {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    Float rating1 = Float.valueOf(o1.getAverageRating());
-                                    Float rating2 = Float.valueOf(o2.getAverageRating());
-                                    return rating1.compareTo(rating2);
-                                }
-                            });
-                        } else {
-                            Arrays.sort(results, new Comparator<ResourceData>() {
-                                @Override
-                                public int compare(ResourceData o1, ResourceData o2) {
-                                    Float rating1 = Float.valueOf(o1.getAverageRating());
-                                    Float rating2 = Float.valueOf(o2.getAverageRating());
-                                    return rating2.compareTo(rating1);
-                                }
-                            });
-                        }
-
+                    // Sort by created date
+                    if (createdDate.equals(sortBy)) {
+                        sortReultsOnCreatedDate(results, sortOrder);
                     }
-
+                    // Sort by author
+                    else if (author.equals(sortBy)) {
+                        sortResultsOnAuthor(results, sortOrder);
+                    }
+                    // Sort by average rating
+                    else if (rating.equals(sortBy)) {
+                        sortResultsOnrating(results, sortOrder);
+                    }
                 }
-
 
             } finally {
                 PaginationContext.destroy();
@@ -217,6 +172,78 @@ public class SearchService extends RegistryAbstractAdmin implements
         } else {
             return results;
         }
+    }
+
+
+    /**
+     * Method to sort search results based on created date.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on created date
+     */
+    private ResourceData[] sortReultsOnCreatedDate(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                if (sortCriteria.equals(sortOrder)) {
+                    return o1.getCreatedOn().compareTo(o2.getCreatedOn());
+                } else {
+                    return o2.getCreatedOn().compareTo(o1.getCreatedOn());
+                }
+            }
+        });
+
+        return results;
+    }
+
+
+    /**
+     * Method to sort search results based on author.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on author
+     */
+    private ResourceData[] sortResultsOnAuthor(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                if (sortCriteria.equals(sortOrder)) {
+                    return o1.getAuthorUserName().compareTo(o2.getAuthorUserName());
+                } else {
+                    return o2.getAuthorUserName().compareTo(o1.getAuthorUserName());
+                }
+            }
+        });
+        return results;
+    }
+
+
+    /**
+     * Method to sort search results based on average rating.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on average rating
+     */
+    private ResourceData[] sortResultsOnrating(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                Float rating1 = Float.valueOf(o1.getAverageRating());
+                Float rating2 = Float.valueOf(o2.getAverageRating());
+                if (sortCriteria.equals(sortOrder)) {
+                    return rating1.compareTo(rating2);
+                } else {
+                    return rating2.compareTo(rating1);
+                }
+            }
+        });
+        return results;
     }
 
     /**

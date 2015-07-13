@@ -182,11 +182,17 @@
     </div>
 
     <script type="text/javascript">
-         function sortAndOrder(page, pageNumber){
+
+         /**
+         * Method to get sort order and invoke sort method in activity.js.
+         *
+         * @param pageNumber    current page of the search results
+         */
+         function sortAndOrder(pageNumber){
 
             var sortOrder= document.getElementById('sortOrder');
             var sortOrderValue=sortOrder.value;
-            sort(page,pageNumber,sortOrderValue);
+            sort(pageNumber,sortOrderValue);
          }
 
     </script>
