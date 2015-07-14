@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.3.2-SNAPSHOT</version>
+        <version>4.4.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -118,6 +118,12 @@
         <dependency>
             <groupId>commons-digester</groupId>
             <artifactId>commons-digester</artifactId>
+        </dependency>
+        <!-- Junit testing environment-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

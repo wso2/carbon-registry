@@ -9,7 +9,7 @@
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.3.2-SNAPSHOT</version>
+    <version>4.4.5-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -39,6 +39,7 @@
         <module>features/jcr</module>
         <module>features/uddi</module>
         <module>features/deployment-synchronizer</module>
+	    <module>features/caching-invalidator</module>
     </modules>
 
     <repositories>
@@ -353,6 +354,11 @@
                         <artifactId>javax.servlet</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>javax.cache.wso2</artifactId>
+                <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
@@ -761,6 +767,11 @@
                 <artifactId>org.wso2.carbon.registry.deployment.synchronizer</artifactId>
                 <version>${carbon.registry.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.caching.invalidator</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
 
             <!-- Carbon Kernel Features Dependencies-->
             <dependency>
@@ -809,6 +820,18 @@
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.deployment.synchronizer</artifactId>
                 <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.reporting.server.feature</artifactId>
+                <version>${carbon.commons.version}</version>
+                <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.reporting.ui.feature</artifactId>
+                <version>${carbon.commons.version}</version>
+                <type>zip</type>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -984,6 +1007,11 @@
                 <groupId>wsdl4j.wso2</groupId>
                 <artifactId>wsdl4j</artifactId>
                 <version>${wsdl4j.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${com.google.code.gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-httpclient</groupId>
@@ -1182,9 +1210,49 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>solr.wso2</groupId>
+                <groupId>org.wso2.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.apache.lucene</groupId>
+                <artifactId>lucene</artifactId>
+                <version>${version.lucene}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.httpclient}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${version.httpmime}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.wso2</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${version.httpcore}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.noggit</groupId>
+                <artifactId>noggit</artifactId>
+                <version>${version.noggit}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.restlet.jee</groupId>
+                <artifactId>org.restlet</artifactId>
+                <version>${version.org.restlet}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2.spatial4j</groupId>
+                <artifactId>spatial4j</artifactId>
+                <version>${version.spatial4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.zookeeper.wso2</groupId>
+                <artifactId>apache-zookeeper</artifactId>
+                <version>${version.zookeeper}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.jackson</groupId>
@@ -1201,7 +1269,11 @@
                 <artifactId>oauth2-client</artifactId>
                 <version>${amber.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.geronimo.specs.wso2</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>${orbit.version.geronimo-jms_1.1_spec}</version>
+            </dependency>
             <!-- Test Scope -->
             <dependency>
                 <groupId>junit</groupId>
@@ -1238,8 +1310,8 @@
                 <version>2.3.1</version>
                 <inherited>true</inherited>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -1275,29 +1347,28 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.3.0</carbon.kernel.version>
-        <carbon.kernel.package.import.version.range>[4.3.0, 4.4.0)
-        </carbon.kernel.package.import.version.range>
+        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v11</axis2.version>
-        <axis2.wso2.version>1.6.1.wso2v11</axis2.wso2.version>
-        <axis2.osgi.version>1.6.1.wso2v11</axis2.osgi.version>
-        <orbit.version.axis2>1.6.1.wso2v11</orbit.version.axis2>
-        <axis2-transports.version>1.1.0-wso2v10</axis2-transports.version>
-        <axis2.osgi.version.range>[1.6.1.wso2v11, 1.7.0)</axis2.osgi.version.range>
+        <axis2.version>1.6.1-wso2v12</axis2.version>
+        <axis2.wso2.version>1.6.1.wso2v12</axis2.wso2.version>
+        <axis2.osgi.version>1.6.1.wso2v12</axis2.osgi.version>
+        <orbit.version.axis2>1.6.1.wso2v12</orbit.version.axis2>
+        <axis2-transports.version>1.1.0-wso2v12</axis2-transports.version>
+        <axis2.osgi.version.range>[1.6.1.wso2v12, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
         <rampart.wso2.version>1.6.1-wso2v13</rampart.wso2.version>
 
         <!-- Axiom Version -->
-        <axiom.version>1.2.11-wso2v5</axiom.version>
-        <axiom.wso2.version>1.2.11.wso2v5</axiom.wso2.version>
-        <axiom.osgi.version>1.2.11.wso2v5</axiom.osgi.version>
-        <orbit.version.axiom>1.2.11.wso2v5</orbit.version.axiom>
-        <axiom.osgi.version.range>[1.2.11.wso2v5, 1.3.0)</axiom.osgi.version.range>
+        <axiom.version>1.2.11-wso2v6</axiom.version>
+        <axiom.wso2.version>1.2.11.wso2v6</axiom.wso2.version>
+        <axiom.osgi.version>1.2.11.wso2v6</axiom.osgi.version>
+        <orbit.version.axiom>1.2.11.wso2v6</orbit.version.axiom>
+        <axiom.osgi.version.range>[1.2.11.wso2v6, 1.3.0)</axiom.osgi.version.range>
 
         <!-- Servet Version -->
         <version.javax.servlet.jsp>2.2.0.v201112011158</version.javax.servlet.jsp>
@@ -1309,11 +1380,20 @@
         <!-- Misc -->
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>1.4.1.wso2v1</version.solr>
+        <version.solr>5.0.0.wso2v1</version.solr>
+        <version.lucene>5.0.0.wso2v1</version.lucene>
+        <version.httpclient>4.3.1.wso2v2</version.httpclient>
+        <version.httpmime>4.3.1.wso2v2</version.httpmime>
+        <version.httpcore>4.3.3.wso2v1</version.httpcore>
+        <version.noggit>0.6.wso2v1</version.noggit>
+        <version.org.restlet>2.1.1.wso2v1</version.org.restlet>
+        <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
+        <version.zookeeper>3.3.4.wso2v1</version.zookeeper>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
         <wss4j.version>1.5.11.wso2v9</wss4j.version>
+        <com.google.code.gson.version>2.2.4</com.google.code.gson.version>
         <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
         <jetty.version>6.1.5</jetty.version>
         <xml-apis.version>1.3.04</xml-apis.version>
@@ -1324,7 +1404,7 @@
         <wsdl-validator.version>1.2.0.wso2v1</wsdl-validator.version>
         <uddi4j.version>1.0.1</uddi4j.version>
         <xercesImpl.version>2.8.1</xercesImpl.version>
-        <juddi.wso2.version>3.0.3.wso2v2</juddi.wso2.version>
+        <juddi.wso2.version>3.1.5.wso2v1</juddi.wso2.version>
         <junit.version>3.8.2</junit.version>
         <xmlschema.version>1.4.3</xmlschema.version>
         <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
@@ -1364,7 +1444,7 @@
         <commons-collections.version>3.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
-        <commons-io.wso2.version>2.0.0.wso2v1</commons-io.wso2.version>
+        <commons-io.wso2.version>2.4.0.wso2v1</commons-io.wso2.version>
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <commons-httpclient.version>3.0.1</commons-httpclient.version>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
@@ -1374,17 +1454,21 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.3.5</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.3.0, 4.4.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.1</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
+
+        <!-- jms -->
+        <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.3.2-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.4.5-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
-        <carbon.registry.package.import.version.range>[4.3.0, 4.4.0)
+        <carbon.registry.package.import.version.range>[4.4.0, 4.5.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     </properties>
 </project>

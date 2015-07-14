@@ -200,4 +200,8 @@ public class DispatchEvent extends Message {
     public Map<String, String> getParameters() {
         return event.getParameters();
     }
+
+    public RegistryEvent getEvent(){
+        return event;
+    }
 }

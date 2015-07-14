@@ -17,7 +17,9 @@
 package org.wso2.carbon.registry.resource.services;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.registry.admin.api.resource.IResourceService;
+import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.common.utils.RegistryUtil;
@@ -25,11 +27,47 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.resource.beans.*;
-import org.wso2.carbon.registry.resource.services.utils.*;
+import org.wso2.carbon.registry.resource.beans.CollectionContentBean;
+import org.wso2.carbon.registry.resource.beans.ContentBean;
+import org.wso2.carbon.registry.resource.beans.ContentDownloadBean;
+import org.wso2.carbon.registry.resource.beans.MetadataBean;
+import org.wso2.carbon.registry.resource.beans.PermissionBean;
+import org.wso2.carbon.registry.resource.beans.ResourceTreeEntryBean;
+import org.wso2.carbon.registry.resource.beans.VersionsBean;
+import org.wso2.carbon.registry.resource.internal.ResourceDataHolder;
+import org.wso2.carbon.registry.resource.services.utils.AddCollectionUtil;
+import org.wso2.carbon.registry.resource.services.utils.AddRemoteLinkUtil;
+import org.wso2.carbon.registry.resource.services.utils.AddResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.AddRolePermissionUtil;
+import org.wso2.carbon.registry.resource.services.utils.AddSymbolicLinkUtil;
+import org.wso2.carbon.registry.resource.services.utils.AddTextResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.ChangeRolePermissionsUtil;
+import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
+import org.wso2.carbon.registry.resource.services.utils.ContentUtil;
+import org.wso2.carbon.registry.resource.services.utils.CopyResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.CreateVersionUtil;
+import org.wso2.carbon.registry.resource.services.utils.DeleteUtil;
+import org.wso2.carbon.registry.resource.services.utils.DeleteVersionUtil;
+import org.wso2.carbon.registry.resource.services.utils.DescriptionUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetDownloadContentUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetPropertyUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetResourceTreeEntryUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetTextContentUtil;
+import org.wso2.carbon.registry.resource.services.utils.GetVersionsUtil;
+import org.wso2.carbon.registry.resource.services.utils.MediaTypeUtil;
+import org.wso2.carbon.registry.resource.services.utils.MetadataPopulator;
+import org.wso2.carbon.registry.resource.services.utils.MoveResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.PermissionUtil;
+import org.wso2.carbon.registry.resource.services.utils.RenameResourceUtil;
+import org.wso2.carbon.registry.resource.services.utils.ResourceServiceException;
+import org.wso2.carbon.registry.resource.services.utils.RestoreVersionUtil;
+import org.wso2.carbon.registry.resource.services.utils.UpdateTextContentUtil;
 
 import javax.activation.DataHandler;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.OutputStream;
 
 public class ResourceService extends RegistryAbstractAdmin implements IResourceService<MetadataBean, CollectionContentBean, ResourceData, ContentBean, PermissionBean, VersionsBean, ResourceTreeEntryBean, ContentDownloadBean> {
 
@@ -97,7 +135,7 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
             String mediaType,
             String description,
             String content) throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
@@ -134,13 +172,25 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
             String fetchURL,
             String symlinkLocation,
             String[][] properties) throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }
-        ImportResourceUtil.
-                importResource(parentPath, resourceName, mediaType, description, fetchURL,
-                        symlinkLocation, registry, properties);
+
+        // Fix for file importation security verification - FileSystemImportationSecurityHotFixTestCase
+        if (StringUtils.isNotBlank(fetchURL) && fetchURL.toLowerCase().startsWith("file:")) {
+            String msg = "The source URL must not be file in the server's local file system";
+            throw new RegistryException(msg);
+        }
+
+        // Adding Source URL as property to end of the properties array.
+        String[][] newProperties = CommonUtil.setProperties(properties, "sourceURL", fetchURL);
+
+        // Data is directed to below AddResourceUtil.addResource from ImportResourceUtil.importResource
+        // Hence resource upload path will now go through put.
+        AddResourceUtil.addResource(CommonUtil.calculatePath(parentPath, resourceName),
+                mediaType, description, GetTextContentUtil.getByteContent(fetchURL),
+                symlinkLocation, registry, newProperties);
         return true;
     }
 
@@ -235,7 +285,7 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
     public boolean addResource(String path, String mediaType, String description, DataHandler content,
                             String symlinkLocation, String[][] properties)
             throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(CommonUtil.getRegistryService());
+        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return false;
         }

@@ -142,20 +142,6 @@ function showHideCustomDiv(){
 
 }
 
-function validateIllegalContentSearchString(fld,fldName){
-    var error = "";
-    //var illegalChars = /([^a-zA-Z0-9_\-\x2E\&\?\/\:\,\s\(\)\[\]])/;
-    var illegalChars = /([~!@#$;%^*+{}\|\\<>\"\',\[\]\(\)])/; // disallow ~!@#$;%^*+={}|\<>"',[]()
-    var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
-    if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars"] + "<br />";
-    } else{
-//        fld.style.background = 'White';
-    }
-
-   return error;
-}
-
 function clearAll(){
     var table = $('customTable');
     var rows = table.getElementsByTagName('input');
@@ -178,22 +164,6 @@ function clearAll(){
 
     document.getElementById("lblPropName").innerHTML = "-";
     collapseCustomUI();
-}
-
-function validateTagsInput(fld,fldName){
-    var error = "";
-    var illegalChars = /(^,+$)/; // match any starting tag
-
-    if (illegalChars.test(fld.value)) {
-         error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_search_ui_jsi18n["contains.invalid.tag.search"] + "<br />";
-    } else{
-//        fld.style.background = 'White';
-    }
-    if (error != "") {
-       return error;
-    }
-
-    return  validateForInput(fld,fldName);
 }
 
 function isNumberKey(evt) {
@@ -302,12 +272,12 @@ function submitAdvSearchForm(pageNumber) {
 		reason += validateIllegalNoPercent(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["resource.name"]);
 	    }
             else if ((rows[i].id == "#_content") && trim(rows[i].value) != "") reason += validateIllegalContentSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["content.name"]);
-            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
-            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
+            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
+            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
             else if ((rows[i].id == "#_tags") && rows[i].value != "") reason += validateTagsInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["tags"]);
             else if ((rows[i].id == "#_comments") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["comments"]);
-            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
-            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
+            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
+            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateIllegalSearchString(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
             else if ((rows[i].value != "") && rows[i].type == "text") {           	
                reason += validateForInput(rows[i], rows[i].name);
             }           
@@ -461,34 +431,6 @@ function setPropertyName() {
     } else {
         propLabel.innerHTML = "-";
     }
-}
-
-function validatePropertyValues() {
-    var leftVal = parseInt(document.getElementById('valueLeft').value);
-    var rightVal = parseInt(document.getElementById('valueRight').value);
-
-	if(leftVal != "" && rightVal != ""){
-		if(leftVal >= rightVal){
-			return 0;
-		}
-	}
-	return 1;
-}
-
-function validateEmptyPropertyValues(){
-
-    var leftVal = document.getElementById('valueLeft').value;
-    var rightVal = document.getElementById('valueRight').value;
-    var opRight = document.getElementById('opRight');
-    var propertyName = document.getElementById('#_propertyName').value;
-
-    if(leftVal != "" || rightVal != "") {
-    	   if(propertyName == "" && (opRight.options[opRight.selectedIndex].value != "eq")){
-    	        return 1;
-    	   }
-    }
-
-    return 0;
 }
 
 function setIndexForOp(opName, param) {
@@ -760,26 +702,6 @@ function handletextBoxKeyPress(event) {
     }
 }
 
-function validateFilterName(fld, fldName) {
-
-    var illegalChars = /\//; // do not allow slash
-    var fnReason = "";
-
-    fnReason += validateEmpty(fld, fldName);
-
-    if (fnReason == "") {
-        fnReason += validateForInput(fld, fldName);
-    }
-    if (fnReason == "") {
-        fnReason += validateIllegal(fld, fldName);
-    }
-    if (fnReason == "" && illegalChars.test(fld.value)) {
-        fnReason += org_wso2_carbon_registry_search_ui_jsi18n["filter.name.cannot.contain.slash"];
-    }
-
-    return fnReason;
-}
-
 function showSimpleSearch() {
     if ($('searchIconExpanded').style.display == "none") {
         //We have to expand all and hide sum
@@ -795,33 +717,6 @@ function showSimpleSearch() {
         $('searchMinimized').style.display = "";
     }
 }
-function validateSimpleSearch() {
-    // JS injection validation
-    if(!validateTextForIllegal(document.forms["searchForm"]["criteria"],"resource path")) {
-        CARBON.showWarningDialog(org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+ "search content"+" " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"]);
-        return false;
-    }
-
-    var searchText = document.forms["searchForm"]["criteria"].value;
-    if(searchText == null || searchText =="") {
-        CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["validate.simple.search"]);
-        return false;
-    }
-    document.forms['searchForm'].submit();
-    return true;
-}
-
-function validateTextForIllegal(fld,fldName) {
-
-    var illegalChars = /([?#^\|<>\"\'])/;
-    var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
-    if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-       return false;
-    } else {
-       return true;
-    }
-}
-
 
 /*function showSaveSearch() {
     sessionAwareFunction(function() {

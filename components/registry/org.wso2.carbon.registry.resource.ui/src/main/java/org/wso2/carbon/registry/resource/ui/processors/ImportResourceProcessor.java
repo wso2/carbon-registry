@@ -16,11 +16,12 @@
 
 package org.wso2.carbon.registry.resource.ui.processors;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.context.ConfigurationContext;
-import org.wso2.carbon.registry.common.ui.UIException;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.resource.ui.Utils;
 import org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient;
@@ -41,9 +42,17 @@ public class ImportResourceProcessor {
 
     private static final Log log = LogFactory.getLog(ImportResourceProcessor.class);
 
+    /**
+     * Process the form data and send it to ResourceServiceClient
+     *
+     * @param request HTML request
+     * @param config  server configuration
+     * @param response  in case if we needed to sendRedirect
+     * @throws RegistryException
+     */
     public static void process(
             HttpServletRequest request, HttpServletResponse response, ServletConfig config)
-            throws UIException {
+            throws RegistryException {
 
         String parentPath = request.getParameter("parentPath");
         String resourceName = request.getParameter("resourceName");
@@ -51,7 +60,7 @@ public class ImportResourceProcessor {
                 request.getParameter("mediaType"));
         String description = request.getParameter("description");
         String fetchURL = request.getParameter("fetchURL");
-        String isAsync = request.getParameter("isAsync");
+        String async = request.getParameter("isAsync");
         String symlinkLocation = request.getParameter("symlinkLocation");
 
         String cookie = (String) request.
@@ -62,22 +71,17 @@ public class ImportResourceProcessor {
         try {
             ConfigurationContext configContext = (ConfigurationContext) config.
                     getServletContext().getAttribute(CarbonConstants.CONFIGURATION_CONTEXT);
-            IServerAdmin adminClient =
-                    (IServerAdmin) CarbonUIUtil.
-                            getServerProxy(new ServerAdminClient(configContext,
-                                    serverURL, cookie, session), IServerAdmin.class, session);
-            ServerData data = null;
-            String chroot = "";
+            IServerAdmin adminClient = new ServerAdminClient(configContext, serverURL, cookie, session);
+            ServerData data;
             try {
                 data = adminClient.getServerData();
-            } catch (Exception ignored) {
+            } catch (RegistryException e) {
                 // If we can't get server data the chroot cannot be determined.
-                chroot = null;
+                throw new RegistryException("No server data", e);
             }
-            if (data != null && data.getRegistryType() != null && 
-                    data.getRegistryType().equals("remote") &&
-                    data.getRemoteRegistryChroot() != null &&
-                    !data.getRemoteRegistryChroot().equals(RegistryConstants.PATH_SEPARATOR)) {
+            // TODO: refactor the code to remove chroot = ""
+            String chroot = "";
+            if (validateServerData(data)) {
                 chroot = data.getRemoteRegistryChroot();
                 if (!chroot.startsWith(RegistryConstants.PATH_SEPARATOR)) {
                     chroot = RegistryConstants.PATH_SEPARATOR + chroot;
@@ -93,19 +97,34 @@ public class ImportResourceProcessor {
             if (symlinkLocation != null) {
                 symlinkLocation = chroot + symlinkLocation;
             }
+            // fetching custom properties from the request. eg: version
+            String[][] properties = Utils.getProperties(request);
+
             ResourceServiceClient client =
                     new ResourceServiceClient(cookie, config, request.getSession());
-            if (JavaUtils.isTrueExplicitly(isAsync)) {
-                client.importResource(parentPath, resourceName, mediaType, description, fetchURL, symlinkLocation, Utils.getProperties(request), true);
-            } else {
-                client.importResource(parentPath, resourceName, mediaType, description, fetchURL, symlinkLocation, Utils.getProperties(request), false);
-            }
+            boolean isAsync = JavaUtils.isTrueExplicitly(async);
+
+            client.importResource(parentPath, resourceName, mediaType,
+                    description, fetchURL, symlinkLocation, properties, isAsync);
+        } catch (AxisFault axisFault) {
+            String msg = "Failed to initiate Server Admin Client.";
+            log.error(msg, axisFault);
+            throw new RegistryException(msg, axisFault);
         } catch (Exception e) {
+            // Since ResourceServiceClient.importResource has thrown a Exception need to handle that as well,
+            // Therefore adding the original exception below.
             // having additional details will make the error message long
-            String msg = e.getMessage();
+            String msg = "Unable to process (ResourceServiceClient.importResource) function." +
+                    " Please check the network connection.";
             log.error(msg, e);
-            // if we skip msg and put just e, error message contain the axis2 fault story 
-            throw new UIException(msg, e);
+            // if we skip msg and put just e, error message contain the axis2 fault story
+            throw new RegistryException(msg, e);
         }
+    }
+
+    private static boolean validateServerData(ServerData data) {
+        return data != null &&
+                "remote".equals(data.getRegistryType()) &&
+                !RegistryConstants.PATH_SEPARATOR.equals(data.getRemoteRegistryChroot());
     }
 }

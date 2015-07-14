@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>contentsearch-feature</artifactId>
-        <version>4.3.2-SNAPSHOT</version>
+        <version>4.4.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,7 +34,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>solr.wso2</groupId>
+            <groupId>org.wso2.apache.solr</groupId>
             <artifactId>solr</artifactId>
         </dependency>
         <dependency>
@@ -58,7 +58,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.registry.contentsearch.server</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:server</propertyDef>
@@ -67,7 +67,17 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing</bundleDef>
-                                <bundleDef>solr.wso2:solr</bundleDef>
+                                <bundleDef>org.wso2.apache.solr:solr</bundleDef>
+                                <bundleDef>commons-io.wso2:commons-io</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpmime</bundleDef>
+                                <bundleDef>org.apache.httpcomponents.wso2:httpcore</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpclient</bundleDef>
+                                <bundleDef>org.wso2.noggit:noggit</bundleDef>
+                                <bundleDef>org.wso2.restlet.jee:org.restlet</bundleDef>
+                                <bundleDef>org.wso2.apache.lucene:lucene</bundleDef>
+                                <bundleDef>org.apache.zookeeper.wso2:apache-zookeeper</bundleDef>
+                                <bundleDef>com.wso2.spatial4j:spatial4j</bundleDef>
+                                <bundleDef>com.google.guava.wso2:guava</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}

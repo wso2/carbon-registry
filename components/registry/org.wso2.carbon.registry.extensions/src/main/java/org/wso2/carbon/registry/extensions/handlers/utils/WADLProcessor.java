@@ -3,6 +3,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 import org.apache.axiom.om.*;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -11,17 +12,20 @@ import org.jvnet.ws.wadl.ast.WadlAstBuilder;
 import org.jvnet.ws.wadl.util.MessageListener;
 import org.w3c.dom.Element;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.Repository;
 import org.wso2.carbon.registry.core.jdbc.VersionRepository;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.xml.sax.InputSource;
 
+import javax.wsdl.Definition;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -110,57 +114,102 @@ public class WADLProcessor {
         }
 
         String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
-        String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
-                wadlNamespace).replace("//", "/");
-        String actualPath = getChrootedWadlLocation(requestContext.getRegistryContext()) +
-                namespaceSegment + version  + "/" + wadlName;
+        String actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
-        if (grammarsElement != null) {
-            //This is to avoid evaluating the grammars import when building AST
-            grammarsElement.detach();
-        }
 
-        if(!skipValidation)  {
-            File tempFile = null;
-            BufferedWriter bufferedWriter = null;
-            try{
-                tempFile = File.createTempFile(wadlName, null);
-                bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
-                bufferedWriter.write(wadlElement.toString());
-                bufferedWriter.flush();
-            } catch (IOException e) {
-                String msg = "Error occured while reading the WADL File";
-                log.error(msg);
-                throw new RegistryException(msg, e);
-            } finally {
-                if (bufferedWriter != null) {
-                    try {
-                        bufferedWriter.close();
-                    } catch (IOException e) {
-                        log.error("Error occurred while closing File writer");
+        if (StringUtils.isNotBlank(requestContext.getSourceURL())) {
+            String uri = requestContext.getSourceURL();
+            if (!skipValidation) {
+                validateWADL(uri);
+            }
+
+            if (resource.getUUID() == null) {
+                resource.setUUID(UUID.randomUUID().toString());
+            }
+
+            String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
+            if (grammarsElement != null) {
+                //This is to avoid evaluating the grammars import when building AST
+                grammarsElement.detach();
+                wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version, requestContext.getResource().getProperties()));
+            }
+        } else {
+            if (!skipValidation) {
+                File tempFile = null;
+                BufferedWriter bufferedWriter = null;
+                try {
+                    tempFile = File.createTempFile(wadlName, null);
+                    bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
+                    bufferedWriter.write(wadlElement.toString());
+                    bufferedWriter.flush();
+                } catch (IOException e) {
+                    String msg = "Error occurred while reading the WADL File";
+                    log.error(msg, e);
+                    throw new RegistryException(msg, e);
+                } finally {
+                    if (bufferedWriter != null) {
+                        try {
+                            bufferedWriter.close();
+                        } catch (IOException e) {
+                            String msg = "Error occurred while closing File writer";
+                            log.warn(msg, e);
+                        }
                     }
                 }
+                validateWADL(tempFile.toURI().toString());
+                try {
+                    delete(tempFile);
+                } catch (IOException e) {
+                    String msg = "An error occurred while deleting the temporary files from local file system.";
+                    log.warn(msg, e);
+                    throw new RegistryException(msg, e);
+                }
             }
-            validateWADL(tempFile.toURI().toString());
-        }
 
-        if(grammarsElement != null){
-            grammarsElement = resolveImports(grammarsElement, null, version);
-            wadlElement.addChild(grammarsElement);
+            if (grammarsElement != null) {
+                grammarsElement = resolveImports(grammarsElement, null, version, requestContext.getResource().getProperties());
+                wadlElement.addChild(grammarsElement);
+            }
         }
 
         requestContext.setResourcePath(new ResourcePath(actualPath));
+        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+        }
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(getCreateService()){
-            OMElement serviceElement = getServiceElement(requestContext, wadlName.contains(".") ?
-                    wadlName.substring(0, wadlName.lastIndexOf(".")) : wadlName, wadlNamespace, actualPath, version);
-            CommonUtil.addService(serviceElement, requestContext);
+	        OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
+	                                                                              RegistryUtils.getRelativePath(
+			                                                                              requestContext
+					                                                                              .getRegistryContext(),
+			                                                                              actualPath));
+	        String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
+	        registry.addAssociation(servicePath, actualPath, CommonConstants.DEPENDS);
+	        registry.addAssociation(actualPath, servicePath, CommonConstants.USED_BY);
+	        String endpointPath = createEndpointElement(requestContext, wadlElement, version);
+	        if(endpointPath != null) {
+		        registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
+		        registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
+	        }
         }
 
         return resource.getPath();
+    }
+
+    /**
+     * This method try to delete the temporary file,
+     * If it fails it will just log a warning msg.
+     *
+     * @param file
+     * @throws IOException
+     */
+    private void delete(File file) throws IOException {
+        if (file != null && file.exists() && !file.delete()) {
+            log.warn("Failed to delete file/directory at path: " + file.getAbsolutePath());
+        }
     }
 
     public String importWADLToRegistry(RequestContext requestContext, String commonLocation, boolean skipValidation)
@@ -217,15 +266,20 @@ public class WADLProcessor {
         String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
         if(grammarsElement != null){
             grammarsElement.detach();
-            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version));
+            wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version,
+                                                requestContext.getResource().getProperties()));
         }
 
         String actualPath;
-        if(commonLocation != null){
-            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
-        } else {
-            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+//        if(commonLocation != null){
+//            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
+//        } else {
+//            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+//                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+            actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
+//        }
+        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
         }
 
         resource.setContent(wadlElement.toString());
@@ -233,17 +287,24 @@ public class WADLProcessor {
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(createService){
-            OMElement serviceElement = getServiceElement(requestContext,
-                    wadlName.contains(".") ? wadlName.substring(0, wadlName.
-                            lastIndexOf(".")) : wadlName, wadlNamespace, actualPath, version);
-            CommonUtil.addService(serviceElement, requestContext);
+	        OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
+	                                                                              RegistryUtils.getRelativePath(
+			                                                                              requestContext
+					                                                                              .getRegistryContext(),
+			                                                                              actualPath));
+            String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
+	        addDependency(servicePath, actualPath);
+			String endpointPath = createEndpointElement(requestContext, wadlElement, version);
+	        if(endpointPath != null) {
+		        addDependency(servicePath, endpointPath);
+	        }
         }
 
         return actualPath;
     }
 
     private OMElement resolveImports(OMElement grammarsElement,
-                                String wadlBaseUri, String wadlVersion) throws RegistryException {
+                                String wadlBaseUri, String wadlVersion, Properties props) throws RegistryException {
         String wadlNamespace = grammarsElement.getNamespace().getNamespaceURI();
         Iterator<OMElement> grammarElements = grammarsElement.
                 getChildrenWithName(new QName(wadlNamespace, "include"));
@@ -261,7 +322,7 @@ public class WADLProcessor {
                         }
                     }
                 }
-                String schemaPath = saveSchema(importUrl, wadlVersion);
+                String schemaPath = saveSchema(importUrl, wadlVersion, props);
                 importedSchemas.add(schemaPath);
                 refAttr.setAttributeValue(schemaPath);
                 childElement.addAttribute(refAttr);
@@ -309,12 +370,14 @@ public class WADLProcessor {
         }
     }
 
-    private String saveSchema(String schemaUrl, String version) throws RegistryException {
+    private String saveSchema(String schemaUrl, String version, Properties props) throws RegistryException {
         if(schemaUrl != null){
             RequestContext requestContext =
                     new RequestContext(registry, repository, versionRepository);
             Resource local = requestContext.getRegistry().newResource();
             local.setMediaType(xsdMediaType);
+            local.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            local.setProperties(props);
             requestContext.setSourceURL(schemaUrl);
             requestContext.setResource(local);
 
@@ -345,32 +408,45 @@ public class WADLProcessor {
         return null;
     }
 
-    private OMElement getServiceElement(RequestContext requestContext,
-                                   String serviceName, String serviceNamespace, String wadlPath, String version){
-        OMFactory fac = OMAbstractFactory.getOMFactory();
-        OMNamespace namespace = fac.
-                createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
-        OMElement data = fac.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
-        OMElement definitionURL = fac.createOMElement("wsdlURL", namespace);
-        OMElement overview = fac.createOMElement("overview", namespace);
-        OMElement interfaceElement = fac.createOMElement("interface", namespace);
-        OMElement name = fac.createOMElement("name", namespace);
-        OMElement versionElement = fac.createOMElement("version",namespace);
-        name.setText(serviceName);
-        versionElement.setText(version);
-        definitionURL.setText(RegistryUtils.
-                getRelativePath(requestContext.getRegistryContext(), wadlPath));
-        OMElement namespaceElement = fac.createOMElement("namespace", namespace);
-        namespaceElement.setText(serviceNamespace);
-        interfaceElement.addChild(definitionURL);
-        overview.addChild(name);
-        overview.addChild(versionElement);
-        overview.addChild(namespaceElement);
-        data.addChild(overview);
-        data.addChild(interfaceElement);
+	/**
+	 * Creates endpoint element for REST service
+	 *
+	 * @param requestContext        information about current request.
+	 * @param wadlElement           wadl document.
+	 * @param version               wadl version.
+	 * @return                      Endpoint Path.
+	 * @throws RegistryException    If fails to create endpoint element.
+	 */
+	private String createEndpointElement(RequestContext requestContext, OMElement wadlElement, String version)
+			throws RegistryException {
+		OMNamespace wadlNamespace = wadlElement.getNamespace();
+		String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
+		String wadlNamespacePrefix = wadlNamespace.getPrefix();
+		OMElement resourcesElement =
+				wadlElement.getFirstChildWithName(new QName(wadlNamespaceURI, "resources", wadlNamespacePrefix));
+		if (resourcesElement != null) {
+			String endpointUrl = resourcesElement.getAttributeValue(new QName("base"));
+			if (endpointUrl != null) {
+				String endpointPath = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
+				String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
+				String endpointContent =
+						EndpointUtils.getEndpointContentWithOverview(endpointUrl, endpointPath, endpointName, version);
+				OMElement endpointElement;
+				try {
+					endpointElement = AXIOMUtil.stringToOM(endpointContent);
+				} catch (XMLStreamException e) {
+					throw new RegistryException("Error in creating the endpoint element. ", e);
+				}
 
-        return data;
-    }
+				return RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointPath);
+			} else {
+				log.warn("Base path does not exist. endpoint creation may fail. ");
+			}
+		} else {
+			log.warn("Resources element is null. ");
+		}
+		return null;
+	}
 
     private void addImportAssociations(String path) throws RegistryException {
         for (String schema : importedSchemas) {
@@ -391,5 +467,31 @@ public class WADLProcessor {
     private void addDependency(String source, String target) throws RegistryException {
         registry.addAssociation(source, target, CommonConstants.DEPENDS);
         registry.addAssociation(target, source, CommonConstants.USED_BY);
+    }
+
+    private String getWadlLocation(RequestContext context, OMElement wadlElement, String wadlName,
+                                   String version) {
+        if (Utils.getRxtService() != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(wadlMediaType);
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", wadlName);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  context.getResource().getProperties(), null);
+            String namespace = CommonUtil.derivePathFragmentFromNamespace(
+                    wadlElement.getNamespace().getNamespaceURI()).replace("//", "/");
+            namespace = namespace.replace(".", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = pathExpression.replace("//", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
+            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
+                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+        } else {
+            String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
+            String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(
+                    wadlNamespace).replace("//", "/");
+            String actualPath = getChrootedWadlLocation(context.getRegistryContext()) +
+                                namespaceSegment + version  + "/" + wadlName;
+            return actualPath;
+        }
+
     }
 }

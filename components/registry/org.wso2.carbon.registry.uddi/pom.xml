@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.3.2-SNAPSHOT</version>
+        <version>4.4.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -44,6 +44,9 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Axis2Module>${project.artifactId}-${carbon.registry.version}</Axis2Module>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Private-Package>
+                            org.wso2.carbon.registry.uddi.internal.*,
+                        </Private-Package>
                         <Export-Package>org.wso2.carbon.registry.uddi.persistance.*,
                             org.wso2.carbon.registry.uddi.servlet.*,
                             org.wso2.carbon.registry.uddi.utils.*,

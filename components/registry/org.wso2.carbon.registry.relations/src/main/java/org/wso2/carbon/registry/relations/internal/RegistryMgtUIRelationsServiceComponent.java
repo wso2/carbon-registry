@@ -20,9 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.relations.services.utils.CommonUtil;
-import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.relations" immediate="true"
@@ -34,6 +31,8 @@ public class RegistryMgtUIRelationsServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIRelationsServiceComponent.class);
 
+    private RelationsDataHolder dataHolder = RelationsDataHolder.getInstance();
+
     protected void activate(ComponentContext context) {
         log.debug("******* Registry Relations UI Management bundle is activated ******* ");
     }
@@ -43,10 +42,10 @@ public class RegistryMgtUIRelationsServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        CommonUtil.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        CommonUtil.setRegistryService(null);
+        dataHolder.setRegistryService(null);
     }
 }

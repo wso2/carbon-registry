@@ -19,6 +19,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
@@ -26,6 +27,7 @@ import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
@@ -67,6 +69,10 @@ public class EndpointMediaTypeHandler extends Handler {
         EndpointUtils.setEndpointMediaType(endpointMediaType);
     }
 
+    public void setIncludeNamespaceInName(String includeNamespaceInName){
+        EndpointUtils.setIncludeNamespaceInName(Boolean.valueOf(includeNamespaceInName));
+    }
+
     public String getEndpointMediaType() throws RegistryException {
         return EndpointUtils.getEndpointMediaType();   
     }
@@ -106,7 +112,9 @@ public class EndpointMediaTypeHandler extends Handler {
                     urlToPath = RegistryConstants.PATH_SEPARATOR + urlToPath;
                 }
             }
-            String path = basePath + urlToPath;
+            String path = getEndpointPath(requestContext, resourceContent, endpointUrl);
+
+            //String path = basePath + urlToPath;
 
             String endpointId = resource.getUUID();
             if (registry.resourceExists(path)) {
@@ -156,6 +164,10 @@ public class EndpointMediaTypeHandler extends Handler {
             if (!systemRegistry.resourceExists(basePath)) {
                 systemRegistry.put(basePath, systemRegistry.newCollection());
             }
+
+            if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+                resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            }
             registry.put(path, resource);
 
 //            if (!(resource instanceof Collection) &&
@@ -168,6 +180,20 @@ public class EndpointMediaTypeHandler extends Handler {
         } finally {
             CommonUtil.releaseUpdateLock();
         }
+    }
+
+    private String getEndpointPath(RequestContext requestContext, String resourceContent, String endpointUrl)
+            throws RegistryException {
+        String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                           EndpointUtils.deriveOMElementContent(resourceContent),
+                                           requestContext.getResource().getProperties());
+        String endpointPath=  CommonUtil.replaceExpressionOfPath(pathExpression, "name",
+                                                     EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl));
+        endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+
+        return endpointPath;
+
     }
 
     public String rename(RequestContext requestContext) throws RegistryException {
@@ -194,8 +220,8 @@ public class EndpointMediaTypeHandler extends Handler {
             if (path == null) {
                 throw new RegistryException("The resource path is not available.");
             }
-            checkEndpointDependency(registry, path);
-//            Resource resource = registry.get(path);
+            //checkEndpointDependency(registry, path);
+            Resource resource = registry.get(path);
         } finally {
             CommonUtil.releaseDeleteLock();
         }
@@ -218,7 +244,8 @@ public class EndpointMediaTypeHandler extends Handler {
                 if (CommonConstants.WSDL_MEDIA_TYPE.equals(mediaType)) {
                     // so there are dependencies for wsdl media
                     dependents.add(targetPath);
-                } else if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(mediaType))) {
+                } else if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(mediaType) ||
+                            CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(mediaType))) {
                     dependents.add(targetPath);
                 }
             }
@@ -250,16 +277,16 @@ public class EndpointMediaTypeHandler extends Handler {
 
             // get the target resource.
             Resource targetResource = registry.get(targetPath);
-            if (CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) &&
-                    CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
+            if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) ||
+                 CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType())) &&
+                CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
                 // if so we are getting the service and add the endpoint to the source
                 Resource sourceResource = registry.get(sourcePath);
-                byte[] sourceContent = (byte[])sourceResource.getContent();
+                byte[] sourceContent = (byte[]) sourceResource.getContent();
                 if (sourceContent == null) {
                     return;
                 }
-                String endpointUrl = EndpointUtils.
-                        deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                String endpointUrl = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                 String endpointEnv = sourceResource.getProperty(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR);
                 if (endpointEnv == null) {
                     endpointEnv = "";
@@ -291,16 +318,16 @@ public class EndpointMediaTypeHandler extends Handler {
 
             // get the target resource.
             Resource targetResource = registry.get(targetPath);
-            if (CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) &&
-                    CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
+            if ((CommonConstants.SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType()) ||
+                 CommonConstants.SOAP_SERVICE_MEDIA_TYPE.equals(targetResource.getMediaType())) &&
+                CommonConstants.USED_BY.equals(requestContext.getAssociationType())) {
                 // if so we are getting the service and add the endpoint to the source
                 Resource sourceResource = registry.get(sourcePath);
-                byte[] sourceContent = (byte[])sourceResource.getContent();
+                byte[] sourceContent = (byte[]) sourceResource.getContent();
                 if (sourceContent == null) {
                     return;
                 }
-                String endpointUrl = EndpointUtils.
-                        deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                String endpointUrl = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                 String endpointEnv = sourceResource.getProperty(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR);
                 if (endpointEnv == null) {
                     endpointEnv = "";
@@ -317,4 +344,5 @@ public class EndpointMediaTypeHandler extends Handler {
             CommonUtil.releaseAddingAssociationLock();
         }
     }
+
 }

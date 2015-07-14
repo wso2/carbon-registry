@@ -16,31 +16,47 @@
 
 package org.wso2.carbon.registry.ws.client.registry;
 
-import java.io.ByteArrayInputStream;
+import org.wso2.carbon.registry.core.Association;
+import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.Comment;
+import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.Tag;
+import org.wso2.carbon.registry.core.TaggedResourcePath;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.ws.client.resource.OnDemandContentCollectionImpl;
+import org.wso2.carbon.registry.ws.client.resource.OnDemandContentResourceImpl;
+import org.wso2.carbon.registry.ws.stub.xsd.WSAssociation;
+import org.wso2.carbon.registry.ws.stub.xsd.WSCollection;
+import org.wso2.carbon.registry.ws.stub.xsd.WSComment;
+import org.wso2.carbon.registry.ws.stub.xsd.WSLogEntry;
+import org.wso2.carbon.registry.ws.stub.xsd.WSMap;
+import org.wso2.carbon.registry.ws.stub.xsd.WSProperty;
+import org.wso2.carbon.registry.ws.stub.xsd.WSResource;
+import org.wso2.carbon.registry.ws.stub.xsd.WSTag;
+import org.wso2.carbon.registry.ws.stub.xsd.WSTaggedResourcePath;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.*;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
-import org.apache.axis2.context.ConfigurationContext;
-import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.ws.client.resource.OnDemandContentCollectionImpl;
-import org.wso2.carbon.registry.ws.client.resource.OnDemandContentResourceImpl;
-import org.wso2.carbon.registry.ws.stub.xsd.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class WSRegistryClientUtils {
-
-    private static ConfigurationContext configurationContext;
 	
 	public static Map createMap(String[] key,String[] value)throws RegistryException {
 		Map map = new HashMap();
@@ -349,13 +365,5 @@ public class WSRegistryClientUtils {
         tag.setTagName(wsTag.getTagName());
         tag.setTagCount(wsTag.getTagCount());
         return tag;
-    }
-
-    public static void setConfigurationContext(ConfigurationContext configurationContext) {
-        WSRegistryClientUtils.configurationContext = configurationContext;
-    }
-
-    public static ConfigurationContext getConfigurationContext() {
-        return WSRegistryClientUtils.configurationContext;
     }
 }

@@ -51,6 +51,8 @@ public class RegistryTaskServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryTaskServiceComponent.class);
 
+    private RegistryTaskDataHolder dataHolder = RegistryTaskDataHolder.getInstance();
+
     private static final String REGISTRY_TASK_MANAGER = "registryTasks";
 
     protected void activate(ComponentContext context) {
@@ -62,9 +64,11 @@ public class RegistryTaskServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
+        dataHolder.setRegistryService(null);
     }
 
     protected void setTaskService(TaskService taskService) {
@@ -75,9 +79,9 @@ public class RegistryTaskServiceComponent {
             TaskManager taskManager = null;
             PrivilegedCarbonContext.startTenantFlow();
             try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                        MultitenantConstants.SUPER_TENANT_ID);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
                 taskManager = taskService.getTaskManager(REGISTRY_TASK_MANAGER);
+                taskService.registerTaskType(REGISTRY_TASK_MANAGER);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
@@ -129,7 +133,7 @@ public class RegistryTaskServiceComponent {
                             while (properties.hasNext()) {
                                 OMElement property = (OMElement) properties.next();
                                 propertyMap.put(property.getAttributeValue(new QName("key")),
-                                        property.getAttributeValue(new QName("value")));
+                                                property.getAttributeValue(new QName("value")));
                             }
                             taskManager.registerTask(new TaskInfo(name, clazz, propertyMap, trigger));
                         }

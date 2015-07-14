@@ -529,7 +529,9 @@ function updateTextContent(resourcePath,mediaType,override) {
             }
         } else{
             if (textContentUpdator) {
-                textContentUpdator.destroy();
+                try {
+                    textContentUpdator.destroy();
+                } catch(e) {}
                 textContentUpdator = null;
             }
             contentText = $('editTextContentIDPlain').value;

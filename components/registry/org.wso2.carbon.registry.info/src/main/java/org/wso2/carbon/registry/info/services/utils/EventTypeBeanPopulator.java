@@ -22,7 +22,7 @@ import org.wso2.carbon.registry.core.ResourcePath;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.common.beans.EventTypeBean;
 import org.wso2.carbon.registry.common.beans.utils.EventType;
-import org.wso2.carbon.registry.info.Utils;
+import org.wso2.carbon.registry.info.internal.InfoDataHolder;
 
 public class EventTypeBeanPopulator {
 
@@ -30,17 +30,19 @@ public class EventTypeBeanPopulator {
         EventTypeBean eventTypeBean = new EventTypeBean();
         ResourcePath resourcePath = new ResourcePath(path);
         try {
-            if (Utils.getRegistryEventingService() == null || Utils.getRegistryEventingService().getEventTypes() == null) {
+            if (InfoDataHolder.getInstance().getRegistryEventingService() == null
+                    || InfoDataHolder.getInstance().getRegistryEventingService().getEventTypes() == null) {
                 throw new IllegalStateException("No Event Types defined");
             }
             else {
-                Map eventTypeMap = Utils.getRegistryEventingService().getEventTypes();
+                Map eventTypeMap = InfoDataHolder.getInstance().getRegistryEventingService().getEventTypes();
                 EventType[] eventTypes = new EventType[eventTypeMap.size()];
                 Set<Map.Entry<String, String[]>> entrySet = eventTypeMap.entrySet();
                 if (eventTypeMap.size() > 0) {
                     int count = 0;
                     for (Map.Entry<String, String[]> e : entrySet) {
-                        if (Utils.getRegistryEventingService().isEventTypeExclusionRegistered(e.getKey(), path)) {
+                        if (InfoDataHolder.getInstance().getRegistryEventingService()
+                                .isEventTypeExclusionRegistered(e.getKey(), path)) {
                             continue;    
                         }
                         EventType eventType = new EventType();

@@ -30,6 +30,7 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,6 +39,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class RegistryConfigLoader {
+
+    private static volatile RegistryConfigLoader registryConfigLoaderInstance = new RegistryConfigLoader();
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
@@ -57,14 +60,20 @@ public class RegistryConfigLoader {
         return indexerPoolSize;
     }
 
-    private  int indexerPoolSize;
+    private  int indexerPoolSize = 50;
 
     public long getBatchSize() {
         return batchSize;
     }
 
+    // solr server url for initiate the solr server	
+    private String solrServerUrl;
 
-    public RegistryConfigLoader() {
+    public String getSolrServerUrl(){
+    	return solrServerUrl;
+    }
+
+    private RegistryConfigLoader() {
         startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
@@ -93,6 +102,10 @@ public class RegistryConfigLoader {
 
     }
 
+    public static RegistryConfigLoader getInstance(){
+    	return registryConfigLoaderInstance;
+    }
+    
     public long getIndexingFreqInSecs() {
         return indexingFreqInSecs;
     }
@@ -138,7 +151,7 @@ public class RegistryConfigLoader {
                     new QName("startingDelayInSeconds")).getText());
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-            log.error("No OMElement found in indexingConfig, hence using default value ", e);
+            log.error("Error occurred when retriving startingDelayInSeconds, hence using the default value", e);
         }
 
         try {
@@ -146,7 +159,7 @@ public class RegistryConfigLoader {
                     new QName("indexingFrequencyInSeconds")).getText());
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-            log.error("No OMElement found in indexingConfig, hence using default value ", e);
+            log.error("Error occurred when retriving indexingFrequencyInSeconds, hence using the default value", e);
         }
 
         try {
@@ -154,7 +167,12 @@ public class RegistryConfigLoader {
                     new QName("lastAccessTimeLocation")).getText();
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
-            log.error("No OMElement found in indexingConfig, hence using default value ", e);
+            log.error("Error occurred when retriving lastAccessTimeLocation, hence using the default value", e);
+        }
+        
+        // solr server url for initiate the solr server	
+        if(indexingConfig.getFirstChildWithName(new QName("solrServerUrl")) != null){
+        	solrServerUrl = indexingConfig.getFirstChildWithName(new QName("solrServerUrl")).getText();
         }
 
         batchSize =  Long.parseLong(indexingConfig.getFirstChildWithName(new QName("batchSize")).getText());
@@ -169,8 +187,8 @@ public class RegistryConfigLoader {
             if (pathRegEx != null) {
                 try {
                     exclusionList.add(Pattern.compile(pathRegEx));
-                } catch (PatternSyntaxException e) {
-                    log.error("Error in compiling expression ", e);
+                } catch (PatternSyntaxException ignore) {
+                    log.error("Error occured when compiling the RegEx pattern: " + pathRegEx, ignore);
                 }
             }
         }
@@ -198,7 +216,7 @@ public class RegistryConfigLoader {
                 try {
                     Object indexerObj = this.getClass().getClassLoader().loadClass(clazz).newInstance();
                     if (!(indexerObj instanceof Indexer)) {
-                        throw new RegistryException(clazz + " has not implemented Indexer interface");
+                    	log.error(clazz + " has not implemented Indexer interface");
                     }
                     String mediaPattern = indexerEl.getAttribute(
                             new QName("mediaTypeRegEx")).getAttributeValue();
@@ -210,8 +228,6 @@ public class RegistryConfigLoader {
                 } catch (ClassNotFoundException e) {
                     log.error(clazz + " is not found in classpath. Please check whether the class " +
                             "is exported in your OSGI bundle.", e);
-                } catch (RegistryException e) {
-                    log.error(e.getMessage(), e);
                 }
             }
         }

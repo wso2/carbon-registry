@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>handler.configuration-feature</artifactId>
-        <version>4.3.2-SNAPSHOT</version>
+        <version>4.4.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,7 +58,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.registry.handler.configuration.ui</id>
-                            <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
@@ -68,11 +68,10 @@
                             <bundles>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.handler.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.handler.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.extensions</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.ui:${carbon.registry.version}
-                                </importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.registry.extensions.ui:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                         </configuration>

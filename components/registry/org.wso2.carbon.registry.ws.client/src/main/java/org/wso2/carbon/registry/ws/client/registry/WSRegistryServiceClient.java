@@ -34,25 +34,56 @@ import org.apache.ws.security.components.crypto.Merlin;
 import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.core.common.AuthenticationException;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Aspect;
+import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.CollectionImpl;
+import org.wso2.carbon.registry.core.Comment;
+import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.LogEntryCollection;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourceImpl;
+import org.wso2.carbon.registry.core.Tag;
+import org.wso2.carbon.registry.core.TaggedResourcePath;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
+import org.wso2.carbon.registry.ws.client.internal.WSClientDataHolder;
 import org.wso2.carbon.registry.ws.client.resource.OnDemandContentCollectionImpl;
 import org.wso2.carbon.registry.ws.client.resource.OnDemandContentResourceImpl;
 import org.wso2.carbon.registry.ws.stub.WSRegistryServiceStub;
-import org.wso2.carbon.registry.ws.stub.xsd.*;
+import org.wso2.carbon.registry.ws.stub.xsd.WSAssociation;
+import org.wso2.carbon.registry.ws.stub.xsd.WSCollection;
+import org.wso2.carbon.registry.ws.stub.xsd.WSComment;
+import org.wso2.carbon.registry.ws.stub.xsd.WSLogEntry;
+import org.wso2.carbon.registry.ws.stub.xsd.WSResource;
+import org.wso2.carbon.registry.ws.stub.xsd.WSTag;
+import org.wso2.carbon.registry.ws.stub.xsd.WSTaggedResourcePath;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class WSRegistryServiceClient implements Registry {
 	private static final Log log = LogFactory.getLog(WSRegistryServiceClient.class);
@@ -79,7 +110,7 @@ public class WSRegistryServiceClient implements Registry {
         try{
             if (CarbonUtils.isRunningOnLocalTransportMode()) {
                 stub = new WSRegistryServiceStub(
-                        WSRegistryClientUtils.getConfigurationContext(), epr);
+                        WSClientDataHolder.getInstance().getConfigurationContext(), epr);
             } else {
                 stub = new WSRegistryServiceStub(epr);
             }

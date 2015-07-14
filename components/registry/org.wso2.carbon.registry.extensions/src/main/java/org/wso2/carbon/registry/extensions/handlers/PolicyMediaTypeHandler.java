@@ -22,12 +22,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
@@ -47,6 +49,7 @@ public class PolicyMediaTypeHandler extends Handler {
     private String location = "/policies/";
     private String locationTag = "location";
     private OMElement locationConfiguration;
+    private String identityPolicyPath = "/_system/config/repository/components/org.wso2.carbon.security.mgt/policy";
 
     public OMElement getPolicyLocationConfiguration() {
         return locationConfiguration;
@@ -179,15 +182,11 @@ public class PolicyMediaTypeHandler extends Handler {
         }
 
         String policyPath;
-        if (!resourcePath.startsWith(commonLocation)
-                && !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
-                RegistryConstants.PATH_SEPARATOR + policyFileName))
-                && !resourcePath.equals(RegistryUtils.getAbsolutePath(registryContext,
-                RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH
-                        + RegistryConstants.PATH_SEPARATOR + policyFileName))) {
-            policyPath = resourcePath;
-        }else{
-            policyPath = commonLocation + version + "/" +  extractResourceFromURL(policyFileName, ".xml");
+        // This logic to handle IS related policy location
+        if (isIdentityPolicyPath(requestContext)){
+            policyPath = requestContext.getResourcePath().getCompletePath();
+        } else{
+            policyPath = getPolicyLocation(requestContext, policyFileName,commonLocation, resourcePath,version);
         }
 
 
@@ -225,6 +224,11 @@ public class PolicyMediaTypeHandler extends Handler {
             }
         }
         newResource.setMediaType("application/policy+xml");
+        if (policyResource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+            newResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+        }else {
+            newResource.setProperty(CommonConstants.SOURCE_PROPERTY, policyResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+        }
         String policyId = policyResource.getUUID();
         if (policyId == null) {
             // generate a service id
@@ -253,6 +257,34 @@ public class PolicyMediaTypeHandler extends Handler {
         }
         requestContext.setResource(newResource);
         requestContext.setProcessingComplete(true);
+    }
+
+    private String getPolicyLocation(RequestContext requestContext, String policyFileName, String commonLocation,
+                                     String resourcePath,String version  ) {
+        if (Utils.getRxtService() != null &&
+            Utils.getRxtService().getStoragePath(RegistryConstants.POLICY_MEDIA_TYPE) != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.POLICY_MEDIA_TYPE);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  requestContext.getResource().getProperties(), null);
+            pathExpression =  RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
+                                                            CommonUtil.replaceExpressionOfPath(pathExpression,
+                                                            "name", extractResourceFromURL(policyFileName, ".xml")));
+            pathExpression =  CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+            return pathExpression;
+        } else {
+            String policyPath;
+            if (!resourcePath.startsWith(commonLocation) && !resourcePath.equals(RegistryUtils.getAbsolutePath(
+                    requestContext.getRegistryContext(), RegistryConstants.PATH_SEPARATOR + policyFileName)) &&
+                !resourcePath.equals(RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
+                                                                   RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+                                                                   RegistryConstants.PATH_SEPARATOR +
+                                                                   policyFileName))) {
+                policyPath = resourcePath;
+            }else{
+                policyPath = commonLocation + version + "/" +  extractResourceFromURL(policyFileName, ".xml");
+            }
+            return policyPath;
+        }
     }
 
     /**
@@ -287,5 +319,13 @@ public class PolicyMediaTypeHandler extends Handler {
     private String getChrootedLocation(RegistryContext registryContext) {
         return RegistryUtils.getAbsolutePath(registryContext,
                 RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + location);
+    }
+
+    private boolean isIdentityPolicyPath(RequestContext requestContext) {
+        if (requestContext.getResourcePath() != null &&
+            requestContext.getResourcePath().getCompletePath().contains(identityPolicyPath)) {
+            return true;
+        }
+        return false;
     }
 }

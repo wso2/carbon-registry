@@ -23,7 +23,6 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

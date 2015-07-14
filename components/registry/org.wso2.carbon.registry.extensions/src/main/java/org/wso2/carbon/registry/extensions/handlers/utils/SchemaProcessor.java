@@ -27,9 +27,12 @@ import org.apache.ws.commons.schema.XmlSchemaExternal;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLUtil;
@@ -110,6 +113,7 @@ public class SchemaProcessor {
         String version = requestContext.getResource().getProperty("version");
         if(version == null){
             version = CommonConstants.SCHEMA_VERSION_DEFAULT_VALUE;
+            requestContext.getResource().setProperty("version", version);
         }
 
         if(requestContext.getSourceURL() != null) {
@@ -175,7 +179,7 @@ public class SchemaProcessor {
             persistAssociations(path);
 
         } else {
-            updateSchemaPaths(commonLocation, version);
+            updateSchemaPaths(commonLocation, version, requestContext);
 
             updateSchemaInternalsAndAssociations();
             String symlinkLocation = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
@@ -227,7 +231,7 @@ public class SchemaProcessor {
             }
             throw new RegistryException(msg, re);
         }
-        updateSchemaPaths(commonLocation,version);
+        updateSchemaPaths(commonLocation,version, requestContext);
 
         updateSchemaInternalsAndAssociations();
 
@@ -404,7 +408,7 @@ public class SchemaProcessor {
      * @param commonSchemaLocation the location to store schemas
      * @throws RegistryException if the operation failed.
      */
-    private void updateSchemaPaths(String commonSchemaLocation, String version) throws RegistryException {
+    private void updateSchemaPaths(String commonSchemaLocation, String version, RequestContext requestContext) throws RegistryException {
         /* i.e. ROOT/commonSchemaLocation */
         if (!systemRegistry.resourceExists(commonSchemaLocation)) {
             systemRegistry.put(commonSchemaLocation, systemRegistry.newCollection());
@@ -415,13 +419,11 @@ public class SchemaProcessor {
             if ((targetNamespace == null) || ("".equals(targetNamespace))) {
                 targetNamespace = "unqualified";
             }
-            String schemaLocation = (commonSchemaLocation +
-                    CommonUtil.derivePathFragmentFromNamespace(targetNamespace)).replace("//", "/");
-            schemaLocation += version +"/"+ schemaInfo.getProposedResourceName();
+            String schemaLocation = getSchemaLocation(requestContext, schemaInfo, targetNamespace, commonSchemaLocation, version);
             schemaInfo.setProposedRegistryURL(schemaLocation);
         }
     }
-    private void updateSchemaPaths(String commonSchemaLocation,String version,List dependencies) throws RegistryException {
+    private void updateSchemaPaths(String commonSchemaLocation,String version,List dependencies, RequestContext requestContext) throws RegistryException {
         /* i.e. ROOT/commonSchemaLocation */
         if (!systemRegistry.resourceExists(commonSchemaLocation)) {
             systemRegistry.put(commonSchemaLocation, systemRegistry.newCollection());
@@ -433,9 +435,9 @@ public class SchemaProcessor {
             if ((targetNamespace == null) || ("".equals(targetNamespace))) {
                 targetNamespace = "unqualified";
             }
+
+            String schemaLocation = getSchemaLocation(requestContext, schemaInfo, targetNamespace,commonSchemaLocation, version);
             
-            String schemaLocation = (commonSchemaLocation +
-                    CommonUtil.derivePathFragmentFromNamespace(targetNamespace)).replace("//", "/");
             String regex =  schemaLocation + "[\\d].[\\d].[\\d]" + RegistryConstants.PATH_SEPARATOR
                     + schemaInfo.getProposedResourceName();
 
@@ -447,8 +449,6 @@ public class SchemaProcessor {
                     continue outerLoop;
                 }
             }
-            schemaLocation = schemaLocation + version + RegistryConstants.PATH_SEPARATOR
-                    + schemaInfo.getProposedResourceName();
             schemaInfo.setProposedRegistryURL(schemaLocation);
 
 
@@ -456,6 +456,42 @@ public class SchemaProcessor {
         }
     }
 
+    /**
+     * This method used to populate registry location of the XSD
+     *
+     * @param requestContext Request Context
+     * @param schemaInfo   SchemaInfo
+     * @param targetNamespace  Target Namespace
+     * @param commonSchemaLocation Common Schema Location
+     * @param version Version
+     * @return Registry path for XSD
+     */
+    private String getSchemaLocation(RequestContext requestContext, SchemaInfo schemaInfo, String targetNamespace,
+                                     String commonSchemaLocation, String version) {
+
+        if (Utils.getRxtService() != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.XSD_MEDIA_TYPE);
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression,
+                                                                "name", schemaInfo.getProposedResourceName());
+            if (requestContext.getResource().getProperties().size() != 0) {
+                pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                      requestContext.getResource().getProperties(),
+                                                                      null);
+            }
+            String namespace = CommonUtil.derivePathFragmentFromNamespace(targetNamespace).replace("//", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
+            return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),
+                                   RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
+                                                                 pathExpression.replace("//", "/")));
+        } else {
+            String schemaLocation = (commonSchemaLocation + CommonUtil.derivePathFragmentFromNamespace(targetNamespace))
+                    .replace("//", "/");
+            schemaLocation += requestContext.getResource().getProperty("version") + "/" +
+                              schemaInfo.getProposedResourceName();
+            return schemaLocation;
+        }
+    }
     /**
      * Update the schema's internal import location according to the new registry URLs.
      * Furthermore, fill the associations arraylist according to the detectored associations.
@@ -500,7 +536,7 @@ public class SchemaProcessor {
     public String saveSchemasToRegistry(RequestContext requestContext, String commonSchemaLocation,
                                         String symlinkLocation, Resource metaResource,boolean disableSymlinkCreation)
             throws RegistryException {
-        updateSchemaPaths(commonSchemaLocation,requestContext.getResource().getProperty("version"));
+        updateSchemaPaths(commonSchemaLocation,requestContext.getResource().getProperty("version"), requestContext);
         updateSchemaInternalsAndAssociations();
         String path = saveSchemaToRegistry(requestContext, null, symlinkLocation, metaResource,disableSymlinkCreation);
         persistAssociations(path);
@@ -509,7 +545,7 @@ public class SchemaProcessor {
     public String saveSchemasToRegistry(RequestContext requestContext, String commonSchemaLocation,
                                         String symlinkLocation, Resource metaResource,String version,List dependencies,boolean disableSymlinkCreation)
             throws RegistryException {
-        updateSchemaPaths(commonSchemaLocation,version,dependencies);
+        updateSchemaPaths(commonSchemaLocation,version,dependencies, requestContext);
         updateSchemaInternalsAndAssociations();
         String path = saveSchemaToRegistry(requestContext, null, symlinkLocation, metaResource,disableSymlinkCreation);
         persistAssociations(path);
@@ -579,6 +615,11 @@ public class SchemaProcessor {
             }
             String targetNamespace = schema.getTargetNamespace();
             xsdResource.setProperty("targetNamespace", targetNamespace);
+            if (metaResource == null || metaResource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+                xsdResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+            }else {
+                xsdResource.setProperty(CommonConstants.SOURCE_PROPERTY, metaResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+            }
 
 
             if (schemaInfo.isMasterSchema() && validationInfo != null) {

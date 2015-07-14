@@ -30,10 +30,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLUtil;
@@ -108,7 +110,17 @@ public class WSDLProcessor {
 
     private boolean createService = true;
 
-    public WSDLProcessor(RequestContext requestContext) {
+	private boolean createSOAPService = true;
+
+	public boolean isCreateSOAPService() {
+		return createSOAPService;
+	}
+
+	public void setCreateSOAPService(boolean createSOAPService) {
+		this.createSOAPService = createSOAPService;
+	}
+
+	public WSDLProcessor(RequestContext requestContext) {
         this.registry = requestContext.getRegistry();
         try {
             this.systemRegistry = CommonUtil.getUnchrootedSystemRegistry(requestContext);
@@ -185,7 +197,7 @@ public class WSDLProcessor {
         String currentEnvironment = null;
         String masterVersion= null;
         
-        List<String> dependeinciesList = new ArrayList<String>();
+        List<String> listOfDependencies = new ArrayList<String>();
         String version = context.getResource().getProperty("version");
 
         if(version == null){
@@ -210,10 +222,13 @@ public class WSDLProcessor {
                 String wsdlName = wsdlInfo.getProposedRegistryURL();
                 int index = wsdlName.lastIndexOf("/");
                 String wsdlResourceName = wsdlName.substring(index +1);
-                wsdlPath = (getChrootedWSDLLocation(registryContext) + CommonUtil.
+
+                wsdlPath = getWsdlLocation(context, wsdlDefinition, wsdlResourceName, version);
+
+                /*wsdlPath = (getChrootedWSDLLocation(registryContext) + CommonUtil.
                         derivePathFragmentFromNamespace(wsdlDefinition.getTargetNamespace())).
                         replace("//", "/");
-                wsdlPath += version + "/" + wsdlResourceName;
+                wsdlPath += version + "/" + wsdlResourceName;*/
                 if(!resourcePath.contains(wsdlResourceName)){
                     wsdlInfo.setProposedRegistryURL(wsdlPath);
                     continue;
@@ -278,7 +293,7 @@ public class WSDLProcessor {
                     Association[] associations = registry.getAssociations(wsdlPath,CommonConstants.DEPENDS);
                     for (Association association : associations) {
                         if(association.getSourcePath().equals(wsdlPath)){
-                            dependeinciesList.add(association.getDestinationPath());
+                            listOfDependencies.add(association.getDestinationPath());
                         }
                     }
                 }
@@ -296,17 +311,17 @@ public class WSDLProcessor {
         String masterWSDLPath;
         if (!isDefaultEnvironment) {
             schemaProcessor.saveSchemasToRegistry(context, currentSchemaLocation,
-                    null, null,masterVersion,dependeinciesList,disableSymLinkCreation);
+                    null, null,masterVersion,listOfDependencies,disableSymLinkCreation);
             updateWSDLSchemaLocations();
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,currentEndpointLocation
-                    ,dependeinciesList,masterVersion,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
+                    ,listOfDependencies,masterVersion,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
 
             addPolicyImportys(context, version);
 
             saveAssociations();
         } else {
             schemaProcessor.saveSchemasToRegistry(context, getChrootedSchemaLocation(registryContext),
-                    null, null, version, dependeinciesList, disableSymLinkCreation);
+                    null, null, version, listOfDependencies, disableSymLinkCreation);
             updateWSDLSchemaLocations();
 
             masterWSDLPath = saveWSDLsToRepositoryNew(context, symlinkLocation, metadata,disableSymLinkCreation);// 3rd parameter is false, for importing WSDLs.
@@ -317,12 +332,40 @@ public class WSDLProcessor {
             if (addService && getCreateService()) {
                 List<OMElement> serviceContentBeans = createServiceContent(masterWSDLPath, metadata);
                 for (OMElement serviceContentBean : serviceContentBeans) {
-                    CommonUtil.addService(serviceContentBean, context);
-
+                    if (isCreateSOAPService()) {
+                        CommonUtil.addSoapService(serviceContentBean, context);
+                    } else {
+                        CommonUtil.addService(serviceContentBean, context);
+                    }
                 }
             }
         }
         return masterWSDLPath;
+    }
+
+    private String getWsdlLocation(RequestContext context, Definition wsdlDefinition, String wsdlResourceName,
+                                   String version) {
+        if (Utils.getRxtService() != null) {
+            String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.WSDL_MEDIA_TYPE);
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", wsdlResourceName);
+            String namespace = CommonUtil.derivePathFragmentFromNamespace(
+                    wsdlDefinition.getTargetNamespace()).replace("//", "/");
+            namespace = namespace.replace(".", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  context.getResource().getProperties(), null);
+            pathExpression = pathExpression.replace("//", "/");
+            pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
+            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
+                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+        } else {
+            String wsdlPath = (getChrootedWSDLLocation(context.getRegistryContext()) +
+                               CommonUtil.derivePathFragmentFromNamespace(
+                               wsdlDefinition.getTargetNamespace())).replace("//", "/");
+            wsdlPath += version + "/" + wsdlResourceName;
+            return wsdlPath;
+        }
+
     }
 
     private void addPolicyImportys(RequestContext context, String version) throws RegistryException {
@@ -340,6 +383,7 @@ public class WSDLProcessor {
                         String path = policyURL.substring(policyURL.lastIndexOf(RegistryConstants.PATH_SEPARATOR) + 1);
                         if(policyURL.lastIndexOf(RegistryConstants.PATH_SEPARATOR) > 0){
                         	policyResource.setProperty("version", version);
+                            policyResource.setProperties(copyProperties(context));
                             String policyPath = registry.importResource(path ,policyURL,policyResource);
                             registry.addAssociation(policyPath, wsdlInfo.getProposedRegistryURL(), CommonConstants.USED_BY);
                             registry.addAssociation(wsdlInfo.getProposedRegistryURL(), policyPath, CommonConstants.DEPENDS);
@@ -711,12 +755,25 @@ public class WSDLProcessor {
                     wsdlResource.setDescription(metaDataResource.getDescription());
                 }
                 boolean newWSDLUpload = !registry.resourceExists(wsdlPath);
+                if (metaDataResource != null && metaDataResource.getProperty(CommonConstants.SOURCE_PROPERTY) != null) {
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, metaDataResource.getProperty(CommonConstants.SOURCE_PROPERTY));
+                } else {
+                    if (context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY) != null) {
+                        if (context.getResource().getMediaType() != null &&
+                            context.getResource().getMediaType().equals(wsdlResource.getMediaType())) {
+                            wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY,
+                                                     context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY));
+                        } else {
+                            wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                        }
+                    }
+                }
+
 
                 deleteOldResource(context, metaDataResource, wsdlInfo, wsdlPath, wsdlResource);
                 saveResource(context, wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, true);
                 if (systemRegistry != null) {
-                    EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
-                            systemRegistry);
+                    EndpointUtils.saveEndpointsFromWSDL(context,wsdlPath, wsdlResource, registry, systemRegistry);
                 }
 
 //                TODO symlink
@@ -927,6 +984,11 @@ public class WSDLProcessor {
                         }
                     }
                 }
+                if (context.getResource().getProperty(CommonConstants.SOURCE_PROPERTY) != null){
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+                } else {
+                    wsdlResource.setProperty(CommonConstants.SOURCE_PROPERTY, "undefined");
+                }
 
                 if(registry.resourceExists(wsdlPath)){
                     // we are copying all the properties, rather than using the existing pointer
@@ -952,7 +1014,7 @@ public class WSDLProcessor {
 
                 saveResource(context, wsdlInfo.getOriginalURL(), wsdlPath, wsdlResource, true);
                 if (systemRegistry != null) {
-                    EndpointUtils.saveEndpointsFromWSDL(wsdlPath, wsdlResource, registry,
+                    EndpointUtils.saveEndpointsFromWSDL(context ,wsdlPath, wsdlResource, registry,
                             systemRegistry,endpointEnvironment,dependenciesList,version);
                 }
 
@@ -1137,6 +1199,29 @@ public class WSDLProcessor {
     protected SchemaProcessor buildSchemaProcessor(RequestContext requestContext,
                                                  WSDLValidationInfo validationInfo, boolean useOriginalSchema) {
         return new SchemaProcessor(requestContext, validationInfo, useOriginalSchema);
+    }
+
+    private static Properties copyProperties(RequestContext requestContext){
+        Properties properties = requestContext.getResource().getProperties();
+        Properties copiedProperties = new Properties();
+        if (properties != null) {
+            List<String> linkProperties = Arrays.asList(
+                    RegistryConstants.REGISTRY_LINK,
+                    RegistryConstants.REGISTRY_USER,
+                    RegistryConstants.REGISTRY_MOUNT,
+                    RegistryConstants.REGISTRY_AUTHOR,
+                    RegistryConstants.REGISTRY_MOUNT_POINT,
+                    RegistryConstants.REGISTRY_TARGET_POINT,
+                    RegistryConstants.REGISTRY_ACTUAL_PATH,
+                    RegistryConstants.REGISTRY_REAL_PATH);
+            for (Map.Entry<Object, Object> e : properties.entrySet()) {
+                String key = (String) e.getKey();
+                if (!linkProperties.contains(key) && !(key.startsWith("resource") || key.startsWith("registry"))) {
+                    copiedProperties.put(key, (List<String>) e.getValue());
+                }
+            }
+        }
+        return copiedProperties;
     }
 
 }

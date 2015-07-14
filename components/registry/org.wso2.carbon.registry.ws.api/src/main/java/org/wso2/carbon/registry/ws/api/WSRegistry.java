@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.ws.api.utils.CommonUtil;
+import org.wso2.carbon.registry.ws.api.internal.WSDataHolder;
 import org.wso2.carbon.utils.ServerConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
@@ -68,7 +69,7 @@ public class WSRegistry extends RegistryAbstractAdmin implements Registry {
         Registry registry = getRootRegistry();
         HttpSession httpSession = ((HttpServletRequest) MessageContext.getCurrentMessageContext().getProperty(
                     HTTPConstants.MC_HTTP_SERVLETREQUEST)).getSession();
-        RegistryService registryService = CommonUtil.getRegistryService();
+        RegistryService registryService = WSDataHolder.getInstance().getRegistryService();
         if (httpSession != null && registryService != null) {
             if (PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId() ==
                     MultitenantConstants.SUPER_TENANT_ID) {
