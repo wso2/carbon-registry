@@ -85,7 +85,7 @@ public class SearchService extends RegistryAbstractAdmin implements
         RegistryUtils.recordStatistics(parameters);
         AdvancedSearchResultsBean advancedSearchResultsBean;
         UserRegistry registry = (UserRegistry) getRootRegistry();
-        AttributeSearchService attributeSearchService = SearchDataHolder.getInstance().getAttributeSearchService();
+        AttributeSearchService attributeSearchService = SearchDataHolder.getInstance().getAttributeIndexingService();
         // Get advance search parameter values
         String[][] searchParameterValues = parameters.getParameterValues();
         ResourceData[] advanceSearchResourceData = new ResourceData[0];

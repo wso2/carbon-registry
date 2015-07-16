@@ -34,7 +34,6 @@ public class SearchDataHolder {
     private ContentSearchService contentSearchService;
 
     private static SearchDataHolder holder = new SearchDataHolder();
-    private AttributeSearchService attributeSearchService;
 
     private SearchDataHolder() {
     }
@@ -73,13 +72,5 @@ public class SearchDataHolder {
 
     public AttributeSearchService getAttributeIndexingService() {
         return attributeIndexingService;
-    }
-
-    public AttributeSearchService getAttributeSearchService() {
-        return attributeSearchService;
-    }
-
-    public void setAttributeSearchService(AttributeSearchService attributeSearchService) {
-        this.attributeSearchService = attributeSearchService;
     }
 }
