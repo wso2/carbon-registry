@@ -205,7 +205,12 @@ public class SubscriptionBeanPopulator {
             if (url == null || userName == null) {
                 subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions();
             } else {
-                subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions(userName, url);
+                try {
+                    subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions(userName, url);
+                } catch(UnsupportedOperationException ex) {
+                    log.debug("Since getAllSubscriptions(userName, url) method is unsupported getAllSubscriptions() will be called");
+                    subscriptions = InfoDataHolder.getInstance().getRegistryEventingService().getAllSubscriptions();
+                }
             }
             log.debug("Found " + subscriptions.size() + " subscriptions");
             List<SubscriptionInstance> subscriptionInstances = new LinkedList<SubscriptionInstance>();
