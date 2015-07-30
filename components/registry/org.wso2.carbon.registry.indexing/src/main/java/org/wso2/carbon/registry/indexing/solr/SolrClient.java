@@ -583,7 +583,7 @@ public class SolrClient {
                 }
             }
             return queryresponse.getResults();
-        } catch (SolrServerException e) {
+        } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
         }
@@ -623,7 +623,7 @@ public class SolrClient {
             QueryResponse queryresponse = server.query(query);
             return queryresponse.getFacetField(facetField).getValues();
 
-        } catch (SolrServerException e) {
+        } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + facetField, e);
         }
