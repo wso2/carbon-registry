@@ -54,7 +54,7 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.solr.*;version="[5.0.0,5.1.0)",
+                            org.apache.solr.*;version="[5.2.1,5.3.0)",
                             org.tartarus.*;version="[5.0.0,5.1.0)",
                             *;resolution:=optional
                         </Import-Package>
@@ -103,7 +103,7 @@
             <artifactId>commons-digester</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.apache.solr</groupId>
+            <groupId>org.wso2.orbit.org.apache.solr</groupId>
             <artifactId>solr</artifactId>
         </dependency>
     </dependencies>

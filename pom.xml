@@ -1210,12 +1210,12 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.solr</groupId>
+                <groupId>org.wso2.orbit.org.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.lucene</groupId>
+                <groupId>org.wso2.orbit.org.apache.lucene</groupId>
                 <artifactId>lucene</artifactId>
                 <version>${version.lucene}</version>
             </dependency>
@@ -1240,7 +1240,7 @@
                 <version>${version.noggit}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.restlet.jee</groupId>
+                <groupId>org.wso2.orbit.org.restlet.jee</groupId>
                 <artifactId>org.restlet</artifactId>
                 <version>${version.org.restlet}</version>
             </dependency>
@@ -1380,13 +1380,13 @@
         <!-- Misc -->
         <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>5.0.0.wso2v1</version.solr>
-        <version.lucene>5.0.0.wso2v1</version.lucene>
+        <version.solr>5.2.1.wso2v1</version.solr>
+        <version.lucene>5.2.1.wso2v1</version.lucene>
         <version.httpclient>4.3.1.wso2v2</version.httpclient>
         <version.httpmime>4.3.1.wso2v2</version.httpmime>
         <version.httpcore>4.3.3.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
-        <version.org.restlet>2.1.1.wso2v1</version.org.restlet>
+        <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
         <version.zookeeper>3.3.4.wso2v1</version.zookeeper>
         <derby.version>10.4.2.0</derby.version>
