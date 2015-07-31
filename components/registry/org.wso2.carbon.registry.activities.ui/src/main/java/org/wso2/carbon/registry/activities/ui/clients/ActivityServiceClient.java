@@ -23,11 +23,13 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.registry.activities.beans.xsd.ArrayOfString;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.wso2.carbon.registry.activities.stub.ActivityAdminServiceStub;
+import org.wso2.carbon.registry.activities.beans.xsd.CustomActivityParameterBean;
 import org.wso2.carbon.registry.common.IActivityService;
 import org.wso2.carbon.registry.common.beans.ActivityBean;
 import org.wso2.carbon.ui.CarbonUIUtil;
@@ -155,4 +157,89 @@ public class ActivityServiceClient implements IActivityService {
 
         return result;
     }
+
+    private CustomActivityParameterBean getSearchParameterBeanFromRequest(
+            HttpServletRequest request) {
+        CustomActivityParameterBean paramterBean = new CustomActivityParameterBean();
+        try {
+
+            String s = request.getParameter("parameterList");
+
+            String[] tempList = s.split("\\|");
+            String[][] parameterList = new String[tempList.length][];
+
+            ArrayOfString[] arrayOfStrings = new ArrayOfString[tempList.length];
+
+            for (int i = 0; i < tempList.length; i++) {
+                parameterList[i] = tempList[i].split("\\^", 2);
+            }
+
+//            System.out.println("sdfs");
+
+
+            for (int i = 0; i < parameterList.length; i++) {
+//                String[] temp = new String[2];
+                ArrayOfString arr = new ArrayOfString();
+                arr.addArray(parameterList[i][0]);
+
+                if ("null".equals(parameterList[i][1])) {
+                    arr.addArray("");
+
+                } else {
+                    arr.addArray(parameterList[i][1]);
+                }
+//                arrayOfStrings[i].setArray(temp);
+                arrayOfStrings[i] = arr;
+            }
+            paramterBean.setParameterValues(arrayOfStrings);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return paramterBean;
+    }
+
+    public void saveSearchFilter(HttpServletRequest request, String filterName) throws Exception {
+
+        CustomActivityParameterBean bean = getSearchParameterBeanFromRequest(request);
+
+        try {
+            stub.saveAdvancedSearchFilter(bean, filterName);
+
+        } catch (Exception e) {
+            String msg = "Failed to save search filter using the activity service. " +
+                    e.getMessage();
+            log.error(msg, e);
+            throw new Exception(msg);
+        }
+    }
+
+    public void deleteSearchFilter(String filterName) throws Exception {
+        stub.deleteFilter(filterName);
+    }
+
+
+    public String[] getSavedFilters() throws Exception {
+        try {
+            return stub.getSavedFilters();
+        } catch (Exception e) {
+            String msg = "Failed to get search filter names from the activity service. " +
+                    e.getMessage();
+            log.error(msg, e);
+            throw new Exception(msg);
+        }
+    }
+
+    public CustomActivityParameterBean getAdvancedSearchFilter(String filterName) throws Exception {
+        try {
+            return stub.getAdvancedSearchFilter(filterName);
+        } catch (Exception e) {
+            String msg = "Failed to get search filter from the activity service. " +
+                    e.getMessage();
+            log.error(msg, e);
+            throw new Exception(msg);
+        }
+
+    }
+
+
 }

@@ -16,7 +16,11 @@
 
 package org.wso2.carbon.registry.activities.services;
 
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.registry.activities.beans.CustomActivityParameterBean;
+import org.wso2.carbon.registry.activities.services.utils.ActivityFilterActions;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
+import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.activities.services.utils.ActivityBeanPopulator;
@@ -46,5 +50,39 @@ public class ActivityService extends RegistryAbstractAdmin implements IActivityS
         } catch(Exception e) {
             return null;
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#saveAdvancedSearchFilter(org.wso2.carbon.registry.search.beans.CustomSearchParameterBean, java.lang.String)
+	 */
+    public void saveAdvancedSearchFilter(CustomActivityParameterBean queryBean, String filterName) throws
+            RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
+        ActivityFilterActions.saveAdvancedSearchQueryBean(configUserRegistry, queryBean, filterName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getAdvancedSearchFilter(java.lang.String)
+	 */
+    public CustomActivityParameterBean getAdvancedSearchFilter(String filterName) throws
+            RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
+        return ActivityFilterActions.getAdvancedSearchQueryBean(configUserRegistry, filterName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.wso2.carbon.registry.search.services.ISearchService#getSavedFilters()
+	 */
+    public String[] getSavedFilters() throws RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
+        return ActivityFilterActions.getSavedFilterNames(configUserRegistry);
+    }
+
+    public void deleteFilter(String filterName) throws RegistryException {
+        UserRegistry configUserRegistry = (UserRegistry) getConfigUserRegistry();
+        configUserRegistry
+                .delete(RegistryConstants.PATH_SEPARATOR + "users" + RegistryConstants.PATH_SEPARATOR + CarbonContext
+                        .getThreadLocalCarbonContext().getUsername() + RegistryConstants.PATH_SEPARATOR
+                        + "activityFilters" + RegistryConstants.PATH_SEPARATOR + filterName);
     }
 }

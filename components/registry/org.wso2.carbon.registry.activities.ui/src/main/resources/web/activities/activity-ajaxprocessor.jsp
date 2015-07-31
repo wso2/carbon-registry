@@ -278,14 +278,48 @@
             </td>
         </tr>--%>
 
+        <%
+        } else {
+        %>
+        <tr id="1">
+            <td style="padding-left:5px;padding-top:3px;text-align:left;">
+                <strong><fmt:message key="no.activities.found"/></strong>
+            </td>
+        </tr>
+        <%
+            }
+        %>
+
+        <tr>
+                    <td colspan="2">
+
+                        <div class="search-subtitle" style="padding-left:10px;padding-bottom:10px"><fmt:message
+                                key="save.search"/></div>
+                        <div style="padding-left:10px;color:#666666;font-style:italic;"><fmt:message
+                                key="search.save.txt"/></div>
+
+
+                        <form id="saveAdvancedSearchForm" name="saveAdvancedSearch" action=""
+                              method="get">
+                            <table class="normal">
+                                <tr>
+                                    <td class="leftCol-small"><fmt:message key="filter.name"/></td>
+                                    <td>
+                                        <input type="text" name="saveFilterName" id="#_saveFilterName"
+                                               onkeypress="handletextBoxKeyPress(event)"/>
+                                    </td>
+                                    <td>
+                                        <input type="button" id="#_clicked"
+                                               value="<fmt:message key="save"/>" class="button"
+                                               onclick="submitSaveSearchForm()"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+
     </table>
-    <%
-    } else {
-    %>
-    <strong>
-        <fmt:message key="no.activities.found"/>.
-    </strong>
-    <%
-        }
-    %>
+
+
 </fmt:bundle>

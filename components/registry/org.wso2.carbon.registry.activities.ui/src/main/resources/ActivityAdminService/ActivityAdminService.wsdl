@@ -16,134 +16,335 @@
  ~ specific language governing permissions and limitations
  ~ under the License.
  -->
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2134="http://beans.common.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.activities.registry.carbon.wso2.org" xmlns:ax2132="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.activities.registry.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://services.activities.registry.carbon.wso2.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2375="http://api.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax2374="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax2380="http://beans.activities.registry.carbon.wso2.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2378="http://beans.common.registry.carbon.wso2.org/xsd" targetNamespace="http://services.activities.registry.carbon.wso2.org">
     <wsdl:documentation>ActivityAdminService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+        <xs:schema xmlns:ax2376="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
             <xs:complexType name="RegistryException">
-                <xs:sequence />
+                <xs:complexContent>
+                    <xs:extension base="ax2375:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.common.registry.carbon.wso2.org/xsd">
-
             <xs:complexType name="ActivityBean">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="activity" nillable="true" type="xs:string" />
-                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="activity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="errorMessage" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax2133="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2135="http://beans.common.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.activities.registry.carbon.wso2.org">
-            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd" />
-
-            <xs:import namespace="http://beans.common.registry.carbon.wso2.org/xsd" />
-            <xs:element name="RegistryException">
+        <xs:schema xmlns:ax2379="http://beans.common.registry.carbon.wso2.org/xsd" xmlns:ax2381="http://beans.activities.registry.carbon.wso2.org/xsd" xmlns:ax2377="http://exceptions.core.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.activities.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.common.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://beans.activities.registry.carbon.wso2.org/xsd"/>
+            <xs:element name="ActivityAdminServiceRegistryException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2133:RegistryException" />
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2374:RegistryException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getActivities">
-
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="fromDate" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="toDate" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="pageStr" nillable="true" type="xs:string" />
-                        <xs:element minOccurs="0" name="sessionId" nillable="true" type="xs:string" />
-
+                        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="fromDate" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="toDate" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="filter" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="pageStr" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="sessionId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getActivitiesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2134:ActivityBean" />
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2379:ActivityBean"/>
                     </xs:sequence>
                 </xs:complexType>
-
+            </xs:element>
+            <xs:element name="getAdvancedSearchFilter">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="filterName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAdvancedSearchFilterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax2380:CustomActivityParameterBean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedFilters">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getSavedFiltersResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deleteFilter">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="filterName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="saveAdvancedSearchFilter">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="queryBean" nillable="true" type="ax2380:CustomActivityParameterBean"/>
+                        <xs:element minOccurs="0" name="filterName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
             </xs:element>
         </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://beans.activities.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="CustomActivityParameterBean">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="parameterValues" nillable="true" type="ax2380:ArrayOfString"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ArrayOfString">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="array" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
     </wsdl:types>
+    <wsdl:message name="getAdvancedSearchFilterRequest">
+        <wsdl:part name="parameters" element="ns:getAdvancedSearchFilter"/>
+    </wsdl:message>
+    <wsdl:message name="getAdvancedSearchFilterResponse">
+        <wsdl:part name="parameters" element="ns:getAdvancedSearchFilterResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ActivityAdminServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:ActivityAdminServiceRegistryException"/>
+    </wsdl:message>
+    <wsdl:message name="saveAdvancedSearchFilterRequest">
+        <wsdl:part name="parameters" element="ns:saveAdvancedSearchFilter"/>
+    </wsdl:message>
+    <wsdl:message name="getSavedFiltersRequest">
+        <wsdl:part name="parameters" element="ns:getSavedFilters"/>
+    </wsdl:message>
+    <wsdl:message name="getSavedFiltersResponse">
+        <wsdl:part name="parameters" element="ns:getSavedFiltersResponse"/>
+    </wsdl:message>
     <wsdl:message name="getActivitiesRequest">
-        <wsdl:part name="parameters" element="ns:getActivities" />
+        <wsdl:part name="parameters" element="ns:getActivities"/>
     </wsdl:message>
     <wsdl:message name="getActivitiesResponse">
-        <wsdl:part name="parameters" element="ns:getActivitiesResponse" />
+        <wsdl:part name="parameters" element="ns:getActivitiesResponse"/>
     </wsdl:message>
-
-    <wsdl:message name="RegistryException">
-        <wsdl:part name="parameters" element="ns:RegistryException" />
+    <wsdl:message name="deleteFilterRequest">
+        <wsdl:part name="parameters" element="ns:deleteFilter"/>
     </wsdl:message>
     <wsdl:portType name="ActivityAdminServicePortType">
-        <wsdl:operation name="getActivities">
-            <wsdl:input message="ns:getActivitiesRequest" wsaw:Action="urn:getActivities" />
-            <wsdl:output message="ns:getActivitiesResponse" wsaw:Action="urn:getActivitiesResponse" />
-            <wsdl:fault message="ns:RegistryException" name="RegistryException" wsaw:Action="urn:getActivitiesRegistryException" />
+        <wsdl:operation name="getAdvancedSearchFilter">
+            <wsdl:input message="ns:getAdvancedSearchFilterRequest" wsaw:Action="urn:getAdvancedSearchFilter"/>
+            <wsdl:output message="ns:getAdvancedSearchFilterResponse" wsaw:Action="urn:getAdvancedSearchFilterResponse"/>
+            <wsdl:fault message="ns:ActivityAdminServiceRegistryException" name="ActivityAdminServiceRegistryException" wsaw:Action="urn:getAdvancedSearchFilterActivityAdminServiceRegistryException"/>
         </wsdl:operation>
-
+        <wsdl:operation name="saveAdvancedSearchFilter">
+            <wsdl:input message="ns:saveAdvancedSearchFilterRequest" wsaw:Action="urn:saveAdvancedSearchFilter"/>
+            <wsdl:fault message="ns:ActivityAdminServiceRegistryException" name="ActivityAdminServiceRegistryException" wsaw:Action="urn:saveAdvancedSearchFilterActivityAdminServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedFilters">
+            <wsdl:input message="ns:getSavedFiltersRequest" wsaw:Action="urn:getSavedFilters"/>
+            <wsdl:output message="ns:getSavedFiltersResponse" wsaw:Action="urn:getSavedFiltersResponse"/>
+            <wsdl:fault message="ns:ActivityAdminServiceRegistryException" name="ActivityAdminServiceRegistryException" wsaw:Action="urn:getSavedFiltersActivityAdminServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getActivities">
+            <wsdl:input message="ns:getActivitiesRequest" wsaw:Action="urn:getActivities"/>
+            <wsdl:output message="ns:getActivitiesResponse" wsaw:Action="urn:getActivitiesResponse"/>
+            <wsdl:fault message="ns:ActivityAdminServiceRegistryException" name="ActivityAdminServiceRegistryException" wsaw:Action="urn:getActivitiesActivityAdminServiceRegistryException"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteFilter">
+            <wsdl:input message="ns:deleteFilterRequest" wsaw:Action="urn:deleteFilter"/>
+            <wsdl:fault message="ns:ActivityAdminServiceRegistryException" name="ActivityAdminServiceRegistryException" wsaw:Action="urn:deleteFilterActivityAdminServiceRegistryException"/>
+        </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="ActivityAdminServiceSoap11Binding" type="ns:ActivityAdminServicePortType">
-        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-        <wsdl:operation name="getActivities">
-            <soap:operation soapAction="urn:getActivities" style="document" />
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getAdvancedSearchFilter">
+            <soap:operation soapAction="urn:getAdvancedSearchFilter" style="document"/>
             <wsdl:input>
-                <soap:body use="literal" />
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-
-                <soap:body use="literal" />
+                <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="RegistryException">
-                <soap:fault use="literal" name="RegistryException" />
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveAdvancedSearchFilter">
+            <soap:operation soapAction="urn:saveAdvancedSearchFilter" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getActivities">
+            <soap:operation soapAction="urn:getActivities" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedFilters">
+            <soap:operation soapAction="urn:getSavedFilters" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deleteFilter">
+            <soap:operation soapAction="urn:deleteFilter" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap:fault use="literal" name="ActivityAdminServiceRegistryException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="ActivityAdminServiceSoap12Binding" type="ns:ActivityAdminServicePortType">
-        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-
-        <wsdl:operation name="getActivities">
-            <soap12:operation soapAction="urn:getActivities" style="document" />
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getAdvancedSearchFilter">
+            <soap12:operation soapAction="urn:getAdvancedSearchFilter" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal" />
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal" />
+                <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="RegistryException">
-
-                <soap12:fault use="literal" name="RegistryException" />
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="saveAdvancedSearchFilter">
+            <soap12:operation soapAction="urn:saveAdvancedSearchFilter" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getActivities">
+            <soap12:operation soapAction="urn:getActivities" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedFilters">
+            <soap12:operation soapAction="urn:getSavedFilters" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ActivityAdminServiceRegistryException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deleteFilter">
+            <soap12:operation soapAction="urn:deleteFilter" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="ActivityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="ActivityAdminServiceRegistryException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="ActivityAdminServiceHttpBinding" type="ns:ActivityAdminServicePortType">
-        <http:binding verb="POST" />
-        <wsdl:operation name="getActivities">
-            <http:operation location="getActivities" />
+        <http:binding verb="POST"/>
+        <wsdl:operation name="getAdvancedSearchFilter">
+            <http:operation location="getAdvancedSearchFilter"/>
             <wsdl:input>
-
-                <mime:content type="text/xml" part="parameters" />
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters" />
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveAdvancedSearchFilter">
+            <http:operation location="saveAdvancedSearchFilter"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getActivities">
+            <http:operation location="getActivities"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getSavedFilters">
+            <http:operation location="getSavedFilters"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteFilter">
+            <http:operation location="deleteFilter"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="ActivityAdminService">
         <wsdl:port name="ActivityAdminServiceHttpsSoap11Endpoint" binding="ns:ActivityAdminServiceSoap11Binding">
-
-            <soap:address location="https://10.100.0.25:9443/services/ActivityAdminService.ActivityAdminServiceHttpsSoap11Endpoint/" />
+            <soap:address location="https://10.178.174.188:9443/services/ActivityAdminService.ActivityAdminServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="ActivityAdminServiceHttpsSoap12Endpoint" binding="ns:ActivityAdminServiceSoap12Binding">
-            <soap12:address location="https://10.100.0.25:9443/services/ActivityAdminService.ActivityAdminServiceHttpsSoap12Endpoint/" />
+            <soap12:address location="https://10.178.174.188:9443/services/ActivityAdminService.ActivityAdminServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="ActivityAdminServiceHttpsEndpoint" binding="ns:ActivityAdminServiceHttpBinding">
-            <http:address location="https://10.100.0.25:9443/services/ActivityAdminService.ActivityAdminServiceHttpsEndpoint/" />
+            <http:address location="https://10.178.174.188:9443/services/ActivityAdminService.ActivityAdminServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
-
 </wsdl:definitions>

@@ -91,7 +91,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.wso2.carbon.registry.activities.stub.*;version="${carbon.registry.package.export.version}",
+                            org.wso2.carbon.registry.activities.*;version="${carbon.registry.package.export.version}",
                         </Export-Package>
                         <Import-Package>
                             !javax.xml.namespace,
