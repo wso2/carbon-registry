@@ -91,33 +91,20 @@ function submitActivityForm(page, pageNumber) {
 
 function submitSaveSearchForm() {
     sessionAwareFunction(function() {
-        //var reasonDiv = $('advSearchReason');
-        var reason = "";
 
-        var table = $('customTable');
-        var rows = table.getElementsByTagName('input');
+        var fromDate = document.getElementById('fromDate');
+        var toDate = document.getElementById('toDate');
+        var userName = document.getElementById('user');
+        var path = document.getElementById('path');
+        var filterElement = document.getElementById('filter');
+        var filter = filterElement.options[filterElement.selectedIndex].value;
 
+        var fromDateValue = fromDate.value;
+        var toDateValue = toDate.value;
+        var userNameValue = userName.value;
+        var pathValue = path.value;
 
-        for (var i = 0; i < rows.length; i++) {
-            if ((rows[i].id == "cfromDate") && rows[i].value != "") reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["from"]);
-            else if ((rows[i].id == "ctoDate") && rows[i].value != "") reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["to"]);
-            else if ((rows[i].id == "ufromDate") && rows[i].value != "") reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["from"]);
-            else if ((rows[i].id == "utoDate") && rows[i].value != "") reason += validateDate(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["to"]);
-            else if ((rows[i].id == "#_resourceName") && trim(rows[i].value) != "") reason += validateIllegalNoPercent(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["resource.name"]);
-            else if ((rows[i].id == "#_author") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["created.by"]);
-            else if ((rows[i].id == "#_updater") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["updated.by"]);
-            else if ((rows[i].id == "#_tags") && rows[i].value != "") reason += validateTagsInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["tags"]);
-            else if ((rows[i].id == "#_comments") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["comments"]);
-            else if ((rows[i].id == "#_associationType") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationType"]);
-            else if ((rows[i].id == "#_associationDest") && rows[i].value != "") reason += validateForInput(rows[i], org_wso2_carbon_registry_search_ui_jsi18n["associationDest"]);
-            else if ((rows[i].value != "") && rows[i].type == "text") {
-                reason += validateForInput(rows[i], rows[i].name);
-            }
-        }
-
-        //reasonDiv.innerHTML = reason;
-        if (reason == "") {
-            var fnReason = validateFilterName($('#_saveFilterName'), org_wso2_carbon_registry_search_ui_jsi18n["filter.name"]);
+            var fnReason = validateFilterName($('#_saveFilterName'), org_wso2_carbon_registry_activities_ui_jsi18n["filter.name"]);
 
             if (fnReason != "") {
                 CARBON.showWarningDialog(fnReason);
@@ -125,106 +112,48 @@ function submitSaveSearchForm() {
             }
 
 
-            var emptyFields = 0;
-            for (var i = 0; i < rows.length; i++) {
-                if (rows[i].type == "text") {
-                    emptyFields += emptyIncrementer(rows[i]);
-                }
-            }
-
-            var customParamterList = "";
-
-            for (var i = 0; i < rows.length - 1; i++) {
-                if (rows[i].type == "text") {
-                    customParamterList = customParamterList + rows[i].name + "^";
-                    if (rows[i].value == "") {
-                        customParamterList = customParamterList + "null";
-                    }
-                    else {
-                        customParamterList = customParamterList + rows[i].value;
-                    }
-
-                    if (i != (rows.length - 1)) {
-                        customParamterList = customParamterList + "|";
-                    }
-                }
-
-                if (rows[i].type == "checkbox") {
-                    customParamterList = customParamterList + rows[i].name + "^";
-                    if (rows[i].checked) {
-                        customParamterList = customParamterList + rows[i].value;
-                    } else {
-                        customParamterList = customParamterList + "null";
-                    }
-
-                    if (i != (rows.length - 1)) {
-                        customParamterList = customParamterList + "|";
-                    }
-                }
-            }
-
-            var opList = table.getElementsByTagName('select');
-
-                for (var i = 0; i < opList.length; i++) {
-                      customParamterList = customParamterList + opList[i].name + "^";
-                      customParamterList = customParamterList + opList[i].value;
-                      if (i != (opList.length - 1)) {
-                        customParamterList = customParamterList + "|";
-                      }
-                }
-
-
-            if (emptyFields == 0) {
-                $('searchResuts').innerHTML = "";
-                CARBON.showWarningDialog(org_wso2_carbon_registry_search_ui_jsi18n["please.fill.at.least.one"]);
-                return false;
-            }
-
             var saveFilterName = $('#_saveFilterName').value;
 
-            new Ajax.Request('../search/isDuplicateFilterName-ajaxprocessor.jsp',
+            new Ajax.Request('../activities/isDuplicateFilterName-ajaxprocessor.jsp',
             {
                 method:'get',
                 parameters: {filterName: saveFilterName},
                 onSuccess: function(transport) {
                     var returnValue = transport.responseText;
                     if (returnValue.search(/----DuplicateFilterName----/) != -1){
-                        CARBON.showConfirmationDialog(org_wso2_carbon_registry_search_ui_jsi18n["are.you.sure.you.want.to.replace.search.filter"] + "&nbsp;<strong>'" +
+                        CARBON.showConfirmationDialog(org_wso2_carbon_registry_activities_ui_jsi18n["are.you.sure.you.want.to.replace.search.filter"] + "&nbsp;<strong>'" +
                                                       saveFilterName + "'</strong> ",
                                 function() {
-                                    saveSearchFilter(customParamterList, saveFilterName);
+                                    saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName);
                                 }, null);
 
                     } else {
-                        saveSearchFilter(customParamterList, saveFilterName);
+                        saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName);
                     }
                 },
                 onFailure: function() {
-                    CARBON.showErrorDialog(org_wso2_carbon_registry_search_ui_jsi18n["search.filter.was.not.saved"]);
+                    CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["search.filter.was.not.saved"]);
                     return false;
                 }
             });
 
 
-        } else {
-            CARBON.showWarningDialog(reason);
-            return false;
-        }
 
-    }, org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]);
+
+    }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
 }
 
-function saveSearchFilter(customParameterList, saveFilterName) {
-    new Ajax.Request('../search/saveSearchFilter-ajaxprocessor.jsp',
+function saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName) {
+    new Ajax.Request('../activities/saveActivitySearchFilter-ajaxprocessor.jsp',
     {
         method: 'get',
-        parameters: {parameterList:customParameterList,saveFilterName:saveFilterName},
+        parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,saveFilterName:saveFilterName},
         evalScripts: true,
 
         onSuccess: function() {
-            CARBON.showInfoDialog(org_wso2_carbon_registry_search_ui_jsi18n["successfully.saved.search.filter"]);
+            CARBON.showInfoDialog(org_wso2_carbon_registry_activities_ui_jsi18n["successfully.saved.search.filter"]);
             $('#_saveFilterName').value = "";
-            new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+            new Ajax.Updater('savedSearchFilterListDiv', '../activities/getSavedActivitySearchFilters-ajaxprocessor.jsp',{evalScripts:true});
             //showSaveSearch();
         },
 
@@ -238,26 +167,26 @@ function saveSearchFilter(customParameterList, saveFilterName) {
 
 function loadSearchFilter() {
     sessionAwareFunction(function() {
-        document.getElementById('advancedSearchFormDiv').style.display = "";
-        document.getElementById('advancedSearchForm').style.display = 'block';
-        document.getElementById('advSearchReason').style.display = 'none';
-        document.getElementById('searchResuts').style.display = 'none';
-        new Ajax.Request('../search/advancedSearchForm-ajaxprocessor.jsp',
+//        document.getElementById('advancedSearchFormDiv').style.display = "";
+        document.getElementById('activityForm').style.display = 'block';
+        document.getElementById('activityReason').style.display = 'none';
+//        document.getElementById('searchResuts').style.display = 'none';
+        new Ajax.Updater('activityForm', '../activities/loadActivitySearchFilter-ajaxprocessor.jsp',
         {
             method:'get',
             parameters: {filterName: $('savedSearchFilterList').value},
 
             onSuccess: function(transport) {
-                document.getElementById('advancedSearchFormDiv').innerHTML = transport.responseText;
+                //document.getElementById('activityForm').innerHTML = transport.responseText;
                 initDatePickers();
-                initRangeOperators();
-                initMiscFields();
+                //initRangeOperators();
+                //initMiscFields();
                 //fillMediaTypes();
                 $('#_0').fcocus();
             }
         });
 
-    }, org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]);
+    }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
 }
 
 function deleteSearchFilter(filterName) {
@@ -268,18 +197,16 @@ function deleteSearchFilter(filterName) {
 
      sessionAwareFunction(function() {
 
-         CARBON.showConfirmationDialog(org_wso2_carbon_registry_search_ui_jsi18n["are.you.sure.you.want.to.delete.the.filter"] + "&nbsp;<strong>'" +
+         CARBON.showConfirmationDialog(org_wso2_carbon_registry_activities_ui_jsi18n["are.you.sure.you.want.to.delete.the.filter"] + "&nbsp;<strong>'" +
                                                               filterName + "'</strong> ",
         function() {
-            new Ajax.Request('../search/deleteSearchFilter-ajaxprocessor.jsp',
+            new Ajax.Request('../activities/deleteActivitySearchFilter-ajaxprocessor.jsp',
             {
                 method:'get',
                 parameters: {filterName:filterName},
 
                 onSuccess: function(transport) {
-                document.getElementById('advancedSearchFormDiv').innerHTML = transport.responseText;
-                new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{evalScripts:true});
-                new Ajax.Updater('advancedSearchFormDiv', '../search/advancedSearchForm-ajaxprocessor.jsp');
+                new Ajax.Updater('savedSearchFilterListDiv', '../activities/getSavedActivitySearchFilters-ajaxprocessor.jsp',{evalScripts:true});
                 initDatePickers();
                 $('#_0').fcocus();
             } ,
@@ -290,7 +217,7 @@ function deleteSearchFilter(filterName) {
                         " <strong>'" +filterName + "'</strong>. " + transport.responseText);
                 }
         }); },null);
-     }, org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]);
+     }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
 }
 
 function handleUserNameKeyPress(event) {

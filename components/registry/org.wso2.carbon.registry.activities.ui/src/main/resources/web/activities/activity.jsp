@@ -55,7 +55,10 @@
             jQuery("#fromDate").datepicker();
             jQuery("#toDate").datepicker();
         }
-        jQuery(document).ready(initDatePickers)
+        jQuery(document).ready(function(){
+                initDatePickers();
+                new Ajax.Updater('savedSearchFilterListDiv', '../activities/getSavedActivitySearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+            });
     </script>
     <div id="middle">
 
@@ -70,48 +73,46 @@
     <%
         boolean hasParameters = false;
     %>
+            <!-- start: load search filter -->
+            <div id="loadSearchFilterArea" <%=hasParameters ? "style=\"display:none\"" : ""%>>
+
+                <table class="styledLeft">
+                    <thead>
+                        <tr><th><fmt:message key="load.filter" /></th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding-left:0px !important;">
+                                <div class="search-subtitle" style="padding-left:10px;padding-bottom:10px"><fmt:message key="load.search.filter"/></div>
+                                <div style="padding-left:10px;color:#666666;font-style:italic;"><fmt:message key="search.help.txt"/></div>
+                                <form method="get" action="">
+                                <table class="normal">
+                                    <tr>
+                                        <td  class="leftCol-small"><fmt:message key="filter.name"/></td>
+                                        <td>
+                                            <div id="savedSearchFilterListDiv">
+                                                <select name="searchFilterList" id="searchFilterList">
+                                                    <option value=""><fmt:message key="loading"/></option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td><input type="button" onclick="loadSearchFilter()" value="<fmt:message key='load'/>"
+                                                   class="button" id="filterLoadButton"></td>
+                                        <td><input type="button" onclick="deleteSearchFilter(document.getElementById('savedSearchFilterList').options[document.getElementById('savedSearchFilterList').selectedIndex].value)" value="<fmt:message key='delete.filter'/>"
+                                                   class="button" id="filterDeleteButton"></td>
+                                    </tr>
+                                </table>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <%--<h2 class="sub-headding-prop"></h2>--%>
+
+            </div>
+            <!-- end: load search filter-->
 
             <div id="activityReason" style="display: none;"></div>
-
-            <!-- start: load search filter -->
-                <div id="loadSearchFilterArea" <%=hasParameters ? "style=\"display:none\"" : ""%>>
-
-                    <table class="styledLeft">
-                        <thead>
-                            <tr><th><fmt:message key="load.filter" /></th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding-left:0px !important;">
-                                    <div class="search-subtitle" style="padding-left:10px;padding-bottom:10px"><fmt:message key="load.search.filter"/></div>
-                                    <div style="padding-left:10px;color:#666666;font-style:italic;"><fmt:message key="search.help.txt"/></div>
-                                    <form method="get" action="">
-                                    <table class="normal">
-                                        <tr>
-                                            <td  class="leftCol-small"><fmt:message key="filter.name"/></td>
-                                            <td>
-                                                <div id="savedSearchFilterListDiv">
-                                                    <select name="searchFilterList" id="searchFilterList">
-                                                        <option value=""><fmt:message key="loading"/></option>
-                                                    </select>
-                                                </div>
-                                            </td>
-                                            <td><input type="button" onclick="loadSearchFilter()" value="<fmt:message key='load'/>"
-                                                       class="button" id="filterLoadButton"></td>
-                                            <td><input type="button" onclick="deleteSearchFilter(document.getElementById('savedSearchFilterList').options[document.getElementById('savedSearchFilterList').selectedIndex].value)" value="<fmt:message key='delete.filter'/>"
-                                                       class="button" id="filterDeleteButton"></td>
-                                        </tr>
-                                    </table>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <%--<h2 class="sub-headding-prop"></h2>--%>
-
-                </div>
-                <!-- end: load search filter-->
-
 
             <form action="activity-ajaxprocessor.jsp" method="get" id="activityForm"
                   onsubmit="return submitActivityForm();">

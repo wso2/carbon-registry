@@ -158,49 +158,55 @@ public class ActivityServiceClient implements IActivityService {
         return result;
     }
 
-    private CustomActivityParameterBean getSearchParameterBeanFromRequest(
+    private CustomActivityParameterBean getActivitySearchParameterBeanFromRequest(
             HttpServletRequest request) {
         CustomActivityParameterBean paramterBean = new CustomActivityParameterBean();
-        try {
 
-            String s = request.getParameter("parameterList");
-
-            String[] tempList = s.split("\\|");
-            String[][] parameterList = new String[tempList.length][];
-
-            ArrayOfString[] arrayOfStrings = new ArrayOfString[tempList.length];
-
-            for (int i = 0; i < tempList.length; i++) {
-                parameterList[i] = tempList[i].split("\\^", 2);
-            }
-
-//            System.out.println("sdfs");
-
-
-            for (int i = 0; i < parameterList.length; i++) {
-//                String[] temp = new String[2];
-                ArrayOfString arr = new ArrayOfString();
-                arr.addArray(parameterList[i][0]);
-
-                if ("null".equals(parameterList[i][1])) {
-                    arr.addArray("");
-
-                } else {
-                    arr.addArray(parameterList[i][1]);
-                }
-//                arrayOfStrings[i].setArray(temp);
-                arrayOfStrings[i] = arr;
-            }
-            paramterBean.setParameterValues(arrayOfStrings);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        paramterBean.setUserName(request.getParameter("userName"));
+        paramterBean.setPath(request.getParameter("path"));
+        paramterBean.setFromDate(request.getParameter("fromDate"));
+        paramterBean.setToDate(request.getParameter("toDate"));
+        paramterBean.setFilter(request.getParameter("filter"));
+//        try {
+//
+//            String s = request.getParameter("parameterList");
+//
+//            String[] tempList = s.split("\\|");
+//            String[][] parameterList = new String[tempList.length][];
+//
+//            ArrayOfString[] arrayOfStrings = new ArrayOfString[tempList.length];
+//
+//            for (int i = 0; i < tempList.length; i++) {
+//                parameterList[i] = tempList[i].split("\\^", 2);
+//            }
+//
+////            System.out.println("sdfs");
+//
+//
+//            for (int i = 0; i < parameterList.length; i++) {
+////                String[] temp = new String[2];
+//                ArrayOfString arr = new ArrayOfString();
+//                arr.addArray(parameterList[i][0]);
+//
+//                if ("null".equals(parameterList[i][1])) {
+//                    arr.addArray("");
+//
+//                } else {
+//                    arr.addArray(parameterList[i][1]);
+//                }
+////                arrayOfStrings[i].setArray(temp);
+//                arrayOfStrings[i] = arr;
+//            }
+//            paramterBean.setParameterValues(arrayOfStrings);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         return paramterBean;
     }
 
-    public void saveSearchFilter(HttpServletRequest request, String filterName) throws Exception {
+    public void saveActivitySearchFilter(HttpServletRequest request, String filterName) throws Exception {
 
-        CustomActivityParameterBean bean = getSearchParameterBeanFromRequest(request);
+        CustomActivityParameterBean bean = getActivitySearchParameterBeanFromRequest(request);
 
         try {
             stub.saveAdvancedSearchFilter(bean, filterName);
@@ -209,11 +215,11 @@ public class ActivityServiceClient implements IActivityService {
             String msg = "Failed to save search filter using the activity service. " +
                     e.getMessage();
             log.error(msg, e);
-            throw new Exception(msg);
+
         }
     }
 
-    public void deleteSearchFilter(String filterName) throws Exception {
+    public void deleteActivitySearchFilter(String filterName) throws Exception {
         stub.deleteFilter(filterName);
     }
 
@@ -224,19 +230,19 @@ public class ActivityServiceClient implements IActivityService {
         } catch (Exception e) {
             String msg = "Failed to get search filter names from the activity service. " +
                     e.getMessage();
-            log.error(msg, e);
             throw new Exception(msg);
+
         }
     }
 
-    public CustomActivityParameterBean getAdvancedSearchFilter(String filterName) throws Exception {
+    public CustomActivityParameterBean getActivitySearchFilter(String filterName) throws Exception {
         try {
             return stub.getAdvancedSearchFilter(filterName);
         } catch (Exception e) {
             String msg = "Failed to get search filter from the activity service. " +
                     e.getMessage();
-            log.error(msg, e);
             throw new Exception(msg);
+
         }
 
     }

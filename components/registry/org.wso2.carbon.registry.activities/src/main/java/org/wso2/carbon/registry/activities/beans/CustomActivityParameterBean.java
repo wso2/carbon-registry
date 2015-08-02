@@ -21,6 +21,51 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 public class CustomActivityParameterBean {
 
     String[][] parameterValues;
+    String userName;
+    String path;
+    String fromDate;
+    String toDate;
+    String filter;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public String getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
     public String[][] getParameterValues() {
         return parameterValues;
