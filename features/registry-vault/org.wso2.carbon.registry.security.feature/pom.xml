@@ -27,14 +27,9 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.registry.security.feature</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon - Registry Community Features Feature</name>
+    <name>WSO2 Carbon - Registry Security Feature</name>
     <url>http://wso2.org</url>
-    <description>
-        Adds community features for registry resources and collections, such as rating, tagging,
-        adding comments, and also creating subscriptions to receive notifications. This pack also
-        adds the WS-Eventing functionality (used by subscriptions and notifications) to the
-        underlying registry.
-    </description>
+    <description>Adds Registry Security features.</description>
 
     <dependencies>
         <dependency>

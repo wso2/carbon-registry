@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.wso2.carbon.registry.security.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon - Mediation Library (Synapse) Management Stub</name>
+    <name>WSO2 Carbon -Registry Security Stub</name>
     <url>http://wso2.org</url>
 
     <build>
