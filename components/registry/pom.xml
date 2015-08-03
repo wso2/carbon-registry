@@ -71,6 +71,8 @@
         <module>org.wso2.carbon.registry.metadata</module>
         <module>org.wso2.carbon.registry.deployment.synchronizer</module>
         <module>org.wso2.carbon.registry.caching.invalidator</module>
+        <module>org.wso2.carbon.registry.security.ui</module>
+        <module>org.wso2.carbon.registry.security</module>
     </modules>
     <build>
         <pluginManagement>

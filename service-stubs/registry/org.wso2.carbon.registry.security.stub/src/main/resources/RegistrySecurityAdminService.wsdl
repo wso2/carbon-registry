@@ -1,0 +1,132 @@
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://service.vault.security.registry.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
+    <wsdl:documentation>RegistrySecurityAdminService</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
+            <xs:element name="doDecrypt">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cipherText" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="doDecryptResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="doEncrypt">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="plainTextPass" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="doEncryptResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="doEncryptRequest">
+        <wsdl:part name="parameters" element="ns:doEncrypt"/>
+    </wsdl:message>
+    <wsdl:message name="doEncryptResponse">
+        <wsdl:part name="parameters" element="ns:doEncryptResponse"/>
+    </wsdl:message>
+    <wsdl:message name="doDecryptRequest">
+        <wsdl:part name="parameters" element="ns:doDecrypt"/>
+    </wsdl:message>
+    <wsdl:message name="doDecryptResponse">
+        <wsdl:part name="parameters" element="ns:doDecryptResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="RegistrySecurityAdminServicePortType">
+        <wsdl:operation name="doEncrypt">
+            <wsdl:input message="ns:doEncryptRequest" wsaw:Action="urn:doEncrypt"/>
+            <wsdl:output message="ns:doEncryptResponse" wsaw:Action="urn:doEncryptResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="doDecrypt">
+            <wsdl:input message="ns:doDecryptRequest" wsaw:Action="urn:doDecrypt"/>
+            <wsdl:output message="ns:doDecryptResponse" wsaw:Action="urn:doDecryptResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RegistrySecurityAdminServiceSoap11Binding" type="ns:RegistrySecurityAdminServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="doEncrypt">
+            <soap:operation soapAction="urn:doEncrypt" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="doDecrypt">
+            <soap:operation soapAction="urn:doDecrypt" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistrySecurityAdminServiceSoap12Binding" type="ns:RegistrySecurityAdminServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="doEncrypt">
+            <soap12:operation soapAction="urn:doEncrypt" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="doDecrypt">
+            <soap12:operation soapAction="urn:doDecrypt" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistrySecurityAdminServiceHttpBinding" type="ns:RegistrySecurityAdminServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="doEncrypt">
+            <http:operation location="doEncrypt"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="doDecrypt">
+            <http:operation location="doDecrypt"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RegistrySecurityAdminService">
+        <wsdl:port name="RegistrySecurityAdminServiceHttpsSoap11Endpoint" binding="ns:RegistrySecurityAdminServiceSoap11Binding">
+            <soap:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistrySecurityAdminServiceHttpsSoap12Endpoint" binding="ns:RegistrySecurityAdminServiceSoap12Binding">
+            <soap12:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistrySecurityAdminServiceHttpsEndpoint" binding="ns:RegistrySecurityAdminServiceHttpBinding">
+            <http:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
