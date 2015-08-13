@@ -25,9 +25,13 @@ import org.wso2.carbon.registry.core.RegistryConstants;
  */
 public final class IndexingConstants {
 
+
     // Make the constructor private, since it is a utility class
     private IndexingConstants() {
     }
+
+    // Default value to determine whether to start indexers or not
+    public static final boolean START_INDEXING_DEFAULT_VALUE = true;
 
     // Default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
