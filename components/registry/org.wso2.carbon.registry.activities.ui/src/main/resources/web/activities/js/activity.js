@@ -89,6 +89,137 @@ function submitActivityForm(page, pageNumber) {
     }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
 }
 
+function submitSaveSearchForm() {
+    sessionAwareFunction(function() {
+
+        var fromDate = document.getElementById('fromDate');
+        var toDate = document.getElementById('toDate');
+        var userName = document.getElementById('user');
+        var path = document.getElementById('path');
+        var filterElement = document.getElementById('filter');
+        var filter = filterElement.options[filterElement.selectedIndex].value;
+
+        var fromDateValue = fromDate.value;
+        var toDateValue = toDate.value;
+        var userNameValue = userName.value;
+        var pathValue = path.value;
+
+            var fnReason = validateFilterName($('#_saveFilterName'), org_wso2_carbon_registry_activities_ui_jsi18n["filter.name"]);
+
+            if (fnReason != "") {
+                CARBON.showWarningDialog(fnReason);
+                return false;
+            }
+
+
+            var saveFilterName = $('#_saveFilterName').value;
+
+            new Ajax.Request('../activities/isDuplicateFilterName-ajaxprocessor.jsp',
+            {
+                method:'get',
+                parameters: {filterName: saveFilterName},
+                onSuccess: function(transport) {
+                    var returnValue = transport.responseText;
+                    if (returnValue.search(/----DuplicateFilterName----/) != -1){
+                        CARBON.showConfirmationDialog(org_wso2_carbon_registry_activities_ui_jsi18n["are.you.sure.you.want.to.replace.search.filter"] + "&nbsp;<strong>'" +
+                                                      saveFilterName + "'</strong> ",
+                                function() {
+                                    saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName);
+                                }, null);
+
+                    } else {
+                        saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName);
+                    }
+                },
+                onFailure: function() {
+                    CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["search.filter.was.not.saved"]);
+                    return false;
+                }
+            });
+
+
+
+
+    }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
+}
+
+function saveSearchFilter(userNameValue, pathValue, fromDateValue, toDateValue, filter, saveFilterName) {
+    new Ajax.Request('../activities/saveActivitySearchFilter-ajaxprocessor.jsp',
+    {
+        method: 'get',
+        parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,saveFilterName:saveFilterName},
+        evalScripts: true,
+
+        onSuccess: function() {
+            CARBON.showInfoDialog(org_wso2_carbon_registry_activities_ui_jsi18n["successfully.saved.search.filter"]);
+            $('#_saveFilterName').value = "";
+            new Ajax.Updater('savedSearchFilterListDiv', '../activities/getSavedActivitySearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+            //showSaveSearch();
+        },
+
+        onFailure: function(transport) {
+            CARBON.showErrorDialog(org_wso2_carbon_registry_resource_ui_jsi18n["failed.to.save.search.filter"] + transport.responseText);
+        }
+    });
+    $('#_0').focus();
+}
+
+
+function loadSearchFilter() {
+    sessionAwareFunction(function() {
+//        document.getElementById('advancedSearchFormDiv').style.display = "";
+        document.getElementById('activityForm').style.display = 'block';
+        document.getElementById('activityReason').style.display = 'none';
+//        document.getElementById('searchResuts').style.display = 'none';
+        new Ajax.Updater('activityForm', '../activities/loadActivitySearchFilter-ajaxprocessor.jsp',
+        {
+            method:'get',
+            parameters: {filterName: $('savedSearchFilterList').value},
+
+            onSuccess: function(transport) {
+                //document.getElementById('activityForm').innerHTML = transport.responseText;
+                initDatePickers();
+                //initRangeOperators();
+                //initMiscFields();
+                //fillMediaTypes();
+                $('#_0').fcocus();
+            }
+        });
+
+    }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
+}
+
+function deleteSearchFilter(filterName) {
+
+     if (filterName == "None") {
+         return;
+     }
+
+     sessionAwareFunction(function() {
+
+         CARBON.showConfirmationDialog(org_wso2_carbon_registry_activities_ui_jsi18n["are.you.sure.you.want.to.delete.the.filter"] + "&nbsp;<strong>'" +
+                                                              filterName + "'</strong> ",
+        function() {
+            new Ajax.Request('../activities/deleteActivitySearchFilter-ajaxprocessor.jsp',
+            {
+                method:'get',
+                parameters: {filterName:filterName},
+
+                onSuccess: function(transport) {
+                new Ajax.Updater('savedSearchFilterListDiv', '../activities/getSavedActivitySearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+                initDatePickers();
+                $('#_0').fcocus();
+            } ,
+
+                onFailure: function(transport) {
+                    addSuccess = false;
+                    CARBON.showErrorDialog(org_wso2_carbon_registry_resource_ui_jsi18n["failed.to.delete"] +
+                        " <strong>'" +filterName + "'</strong>. " + transport.responseText);
+                }
+        }); },null);
+     }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
+}
+
 function handleUserNameKeyPress(event) {
     if (event.keyCode == 13) {
         submitActivityForm(1);
