@@ -77,13 +77,15 @@ public class IndexingManager {
 
     public synchronized void startIndexing() {
         stopIndexing(); //stop executors if they are already running, otherwise they will never stop
-        submittingExecutor = Executors.newSingleThreadScheduledExecutor();
-        submittingExecutor.scheduleWithFixedDelay(new ResourceSubmitter(this),
-                getStartingDelayInSecs(), getIndexingFreqInSecs(), TimeUnit.SECONDS);
+        if (registryConfig.IsStartIndexing()) {
+            submittingExecutor = Executors.newSingleThreadScheduledExecutor();
+            submittingExecutor.scheduleWithFixedDelay(new ResourceSubmitter(this),
+                    getStartingDelayInSecs(), getIndexingFreqInSecs(), TimeUnit.SECONDS);
 
-        indexingExecutor = Executors.newSingleThreadScheduledExecutor();
-        indexingExecutor.scheduleWithFixedDelay(indexer, getStartingDelayInSecs(),getIndexingFreqInSecs(), TimeUnit.SECONDS);
-        readLastAccessTime();
+            indexingExecutor = Executors.newSingleThreadScheduledExecutor();
+            indexingExecutor.scheduleWithFixedDelay(indexer, getStartingDelayInSecs(), getIndexingFreqInSecs(), TimeUnit.SECONDS);
+            readLastAccessTime();
+        }
     }
 
     public synchronized void restartIndexing() {
