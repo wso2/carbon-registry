@@ -17,16 +17,18 @@
  */
 package org.wso2.carbon.registry.security.vault.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.core.util.CryptoException;
+import org.wso2.carbon.core.util.CryptoUtil;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.security.vault.CipherInitializer;
@@ -129,13 +131,69 @@ public class SecureVaultUtil {
             }
             // creating vault-specific storage repository (this happens only if
             // not resource not existing)
-            if (!registry.resourceExists(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY)) {
+            if (!registry.resourceExists(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH)) {
                 Collection secureVaultCollection = registry.newCollection();
-                registry.put(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY, secureVaultCollection);
+                registry.put(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH, secureVaultCollection);
             }
         } catch (RegistryException e) {
             throw new RegistryException("Error while intializing the registry");
         }
     }
 
+    /**
+     * Method to do the encryption operation.
+     *
+     * @param plainTextPass		plain text value.
+     * @return				encrypted value.
+     * @throws RegistryException	Throws when an error occurs during encryption.
+     */
+    public static String doEncrypt(String plainTextPass) throws CryptoException {
+        CryptoUtil cryptoUtil = CryptoUtil.getDefaultCryptoUtil();
+        return cryptoUtil.encryptAndBase64Encode(plainTextPass.getBytes(Charset.forName("UTF-8")));
+    }
+
+    /**
+     * Method to decrypt a property, when key of the property is provided.
+     *
+     * @param key			key of the property.
+     * @return 				decrypted property value.
+     * @throws RegistryException	Throws when an error occurs during decryption.
+     */
+    public static String getDecryptedPropertyValue(String key) throws RegistryException {
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        UserRegistry registry = SecurityServiceHolder.getInstance().getRegistryService()
+                .getConfigSystemRegistry(tenantId);
+
+        if (registry.resourceExists(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH)) {
+            Resource registryResource = registry.get(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH);
+            String propertyValue = registryResource.getProperty(key);
+            if (propertyValue != null) {
+                try {
+                    return doDecrypt(propertyValue);
+                } catch (CryptoException | UnsupportedEncodingException e) {
+                    throw new RegistryException("Error while decrypting the property value", e);
+                }
+            } else {
+                throw new RegistryException("Property does not exist with key \"" + key + "\" at path " +
+                        SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH);
+            }
+        } else {
+            throw new RegistryException("Collection does not exist at path "
+                    + SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH);
+        }
+    }
+
+    /**
+     * Method to decrypt a property, when encrypted value is provided.
+     *
+     * @param encryptedValue                	encrypted property value.
+     * @return 					decrypted value.
+     * @throws CryptoException              	Throws when an error occurs during decryption.
+     * @throws UnsupportedEncodingException	Throws when an error occurs during byte array to string conversion.
+     */
+    public static String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
+        CryptoUtil cryptoUtil = CryptoUtil.getDefaultCryptoUtil();
+        byte[] decryptedBytes = cryptoUtil.base64DecodeAndDecrypt(encryptedValue);
+        return new String(decryptedBytes, "UTF-8");
+    }
 }

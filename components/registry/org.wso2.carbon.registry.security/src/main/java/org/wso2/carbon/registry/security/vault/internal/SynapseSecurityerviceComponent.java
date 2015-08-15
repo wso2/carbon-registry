@@ -18,21 +18,20 @@
 
 package org.wso2.carbon.registry.security.vault.internal;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.base.api.ServerConfigurationService;
-import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.core.util.CryptoException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.security.vault.observers.TenantDeploymentListenerImpl;
 import org.wso2.carbon.registry.security.vault.service.RegistrySecurityService;
 import org.wso2.carbon.registry.security.vault.util.SecureVaultUtil;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Stack;
 
 /**
@@ -106,15 +105,43 @@ public class SynapseSecurityerviceComponent {
 
     private static class RegistrySecurityServiceImpl implements RegistrySecurityService {
 
+		/**
+		 * Method to do the encryption operation.
+		 *
+		 * @param plainTextValue	plain text value.
+		 * @return			encrypted value.
+		 * @throws CryptoException	Throws when an error occurs during encryption.
+		 */
         @Override
-        public String doEncrypt(String plainTextPass) throws RegistryException {
-            try {
-                return SecureVaultUtil.encryptValue(plainTextPass);
-            } catch (AxisFault axisFault) {
-                throw new RegistryException("Error while encrypting data");
-            }
-        }
+        public String doEncrypt(String plainTextValue) throws CryptoException {
+			return SecureVaultUtil.doEncrypt(plainTextValue);
+		}
 
-    }
+		/**
+		 * Method to decrypt a property, when key of the property is provided.
+		 *
+		 * @param key			key of the property.
+		 * @return 			decrypted property value.
+		 * @throws RegistryException	Throws when an error occurs during decryption.
+		 */
+		@Override
+		public String getDecryptedPropertyValue(String key) throws RegistryException {
+			return SecureVaultUtil.getDecryptedPropertyValue(key);
+		}
+
+		/**
+		 * Method to decrypt a property, when encrypted value is provided.
+		 *
+		 * @param encryptedValue                encrypted value.
+		 * @return 				decrypted  value.
+		 * @throws CryptoException              Throws when an error occurs during decryption.
+		 * @throws UnsupportedEncodingException Throws when an error occurs during byte array to string conversion.
+		 */
+		@Override
+		public String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
+			return SecureVaultUtil.doDecrypt(encryptedValue);
+		}
+
+	}
 
 }

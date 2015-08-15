@@ -97,7 +97,7 @@ public class PropertiesServiceClient {
 	 * @throws RegistryException
 	 */
 	public int getPropertiesLenght() throws RegistryException {
-		String path = SecureVaultConstants.SYSTEM_CONFIG_CONNECTOR_SECURE_VAULT_CONFIG;
+		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
 		PropertiesBean bean = null;
 		try {
 			bean = propertAdminServicestub.getProperties(path, "no");
@@ -112,7 +112,7 @@ public class PropertiesServiceClient {
 	public PropertiesBean getProperties(HttpServletRequest request, int pageNumber)
 	                                                                               throws Exception {
 
-		String path = SecureVaultConstants.SYSTEM_CONFIG_CONNECTOR_SECURE_VAULT_CONFIG;
+		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
 		Boolean view = (Boolean) request.getSession().getAttribute(UIConstants.SHOW_SYSPROPS_ATTR);
 		String viewProps;
 		if (view != null) {
@@ -167,7 +167,7 @@ public class PropertiesServiceClient {
 	}
 
 	public void setProperty(HttpServletRequest request) throws Exception {
-		String path = SecureVaultConstants.SYSTEM_CONFIG_CONNECTOR_SECURE_VAULT_CONFIG;
+		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
 		String name = (String) Utils.getParameter(request, "name");
 		String value = (String) Utils.getParameter(request, "value");
 		// do the encryption..
@@ -182,7 +182,7 @@ public class PropertiesServiceClient {
 	}
 
 	public void updateProperty(HttpServletRequest request) throws Exception {
-		String path = SecureVaultConstants.SYSTEM_CONFIG_CONNECTOR_SECURE_VAULT_CONFIG;
+		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
 		String name = (String) Utils.getParameter(request, "name");
 		String value = (String) Utils.getParameter(request, "value");
 		String oldName = (String) Utils.getParameter(request, "oldName");
