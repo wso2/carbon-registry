@@ -18,14 +18,19 @@
  */
 package org.wso2.carbon.registry.security.vault.service;
 
-import org.apache.axis2.AxisFault;
-import org.wso2.carbon.registry.admin.api.search.SearchOSGiService;
-import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.core.util.CryptoException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.io.UnsupportedEncodingException;
+
 /**
- * API to perform a metadata search
+ * API to perform a encrypt and decrypt operations.
  */
 public interface RegistrySecurityService {
-    public String doEncrypt(String plainTextPass) throws RegistryException;
+    public String doEncrypt(String plainTextValue) throws CryptoException;
+
+    public String getDecryptedPropertyValue(String key) throws RegistryException;
+
+    public String  doDecrypt(String encryptedValue)throws CryptoException, UnsupportedEncodingException;
+
 }

@@ -22,28 +22,49 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.wso2.carbon.core.util.CryptoException;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.security.vault.util.SecureVaultUtil;
+
+import java.io.UnsupportedEncodingException;
 
 public class RegistrySecurityAdminService extends RegistryAbstractAdmin {
 
 	private static Log log = LogFactory.getLog(RegistrySecurityAdminService.class);
 
 	/**
-	 * Operation to do the encryption ops by invoking secure vault api
+	 * Method to do the encryption operation by invoking CryptoUtil
 	 * 
-	 * @param plainTextPass
-	 * @return
-	 * @throws AxisFault
+	 * @param plainTextValue	Plain text value.
+	 * @return			Encrypted value.
+	 * @throws CryptoException  	Throws while error during encryption.
 	 */
-	public String doEncrypt(String plainTextPass) throws AxisFault {
-        return SecureVaultUtil.encryptValue(plainTextPass);
-
+	public String doEncrypt(String plainTextValue) throws CryptoException {
+		 return SecureVaultUtil.doEncrypt(plainTextValue);
 	}
 
-    public String doDecrypt(String cipherText) throws AxisFault {
-		// TODO:yet to implement
-		return null;
+	/**
+	 * Method to decrypt a property, when key of the property is provided.
+	 *
+	 * @param key			Key of the property.
+	 * @return 			Decrypted property value.
+	 * @throws RegistryException	Throws while error during decryption.
+	 */
+	public String getDecryptedPropertyValue(String key) throws RegistryException {
+		return SecureVaultUtil.getDecryptedPropertyValue(key);
+	}
+
+	/**
+	 * Method to decrypt a property, when encrypted value is provided.
+	 *
+	 * @param encryptedValue                encrypted property value.
+	 * @return 				decrypted property value.
+	 * @throws CryptoException              Throws when an error occurs during decryption.
+	 * @throws UnsupportedEncodingException Throws when an error occurs during byte array to string conversion.
+	 */
+	public String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
+		return SecureVaultUtil.doDecrypt(encryptedValue);
 	}
 
 }

@@ -18,10 +18,9 @@
 package org.wso2.carbon.registry.security.vault.util;
 
 public interface SecureVaultConstants {
-	public static final String SYSTEM_CONFIG_CONNECTOR_SECURE_VAULT_CONFIG =
-	                                                                         "/_system/config/repository/components/secure-vault";
-	public static final String CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY =
-	                                                                      "/repository/components/secure-vault";
+
+	public static final String ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH = "/_system/config/repository/components/secure-vault";
+	public static final String ENCRYPTED_PROPERTY_STORAGE_PATH = "/repository/components/secure-vault";
 	public static final String CARBON_HOME = "carbon.home";
 	public static final String SECRET_CONF = "secret-conf.properties";
 	public static final String CONF_DIR = "conf";

@@ -67,9 +67,9 @@ public class RegistrySecretRepository implements SecretRepository {
 
         if (registry != null) {
             try {
-                if (registry.resourceExists(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY)) {
+                if (registry.resourceExists(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH)) {
                     Resource registryResource =
-                            registry.get(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY);
+                            registry.get(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH);
                     propertyValue = registryResource.getProperty(alias);
                 }
 
@@ -107,10 +107,10 @@ public class RegistrySecretRepository implements SecretRepository {
         try {
             createRegistryResource();
             UserRegistry registry = SecurityServiceHolder.getInstance().getRegistryService().getConfigSystemRegistry();
-            Resource registryResource = registry.get(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY);
+            Resource registryResource = registry.get(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH);
             String encryptedValue = SecureVaultUtil.encryptValue(plainTextValue);
             registryResource.addProperty(alias, encryptedValue);
-            registry.put(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY, registryResource);
+            registry.put(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH, registryResource);
         } catch (RegistryException | AxisFault e) {
         }
     }
@@ -135,9 +135,9 @@ public class RegistrySecretRepository implements SecretRepository {
 
             // creating vault-specific storage repository (this happens only if
             // not resource not existing)
-            if (!registry.resourceExists(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY)) {
+            if (!registry.resourceExists(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH)) {
                 org.wso2.carbon.registry.core.Collection secureVaultCollection = registry.newCollection();
-                registry.put(SecureVaultConstants.CONNECTOR_SECURE_VAULT_CONFIG_REPOSITORY, secureVaultCollection);
+                registry.put(SecureVaultConstants.ENCRYPTED_PROPERTY_STORAGE_PATH, secureVaultCollection);
             }
         } catch (RegistryException e) {
             throw new RegistryException("Error while intializing the registry");

@@ -1,12 +1,76 @@
-
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://service.vault.security.registry.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2511="http://util.core.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://service.vault.security.registry.carbon.wso2.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2513="http://io.java/xsd" xmlns:ax2508="http://api.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2507="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
     <wsdl:documentation>RegistrySecurityAdminService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.core.carbon.wso2.org/xsd">
+            <xs:complexType name="CryptoException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2509="http://api.registry.carbon.wso2.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exceptions.core.registry.carbon.wso2.org/xsd">
+            <xs:import namespace="http://api.registry.carbon.wso2.org/xsd"/>
+            <xs:complexType name="RegistryException">
+                <xs:complexContent>
+                    <xs:extension base="ax2509:RegistryException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://io.java/xsd">
+            <xs:complexType name="IOException">
+                <xs:sequence/>
+            </xs:complexType>
+            <xs:complexType name="UnsupportedEncodingException">
+                <xs:complexContent>
+                    <xs:extension base="ax2513:IOException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax2512="http://util.core.carbon.wso2.org/xsd" xmlns:ax2510="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:ax2514="http://io.java/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://service.vault.security.registry.carbon.wso2.org">
+            <xs:import namespace="http://exceptions.core.registry.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://util.core.carbon.wso2.org/xsd"/>
+            <xs:import namespace="http://io.java/xsd"/>
+            <xs:element name="RegistrySecurityAdminServiceRegistryException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="RegistryException" nillable="true" type="ax2510:RegistryException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDecryptedPropertyValue">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDecryptedPropertyValueResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="RegistrySecurityAdminServiceCryptoException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CryptoException" nillable="true" type="ax2511:CryptoException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="RegistrySecurityAdminServiceUnsupportedEncodingException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnsupportedEncodingException" nillable="true" type="ax2513:UnsupportedEncodingException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="doDecrypt">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cipherText" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="encryptedValue" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -20,7 +84,7 @@
             <xs:element name="doEncrypt">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="plainTextPass" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="plainTextValue" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -32,40 +96,59 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.registry.carbon.wso2.org/xsd">
+            <xs:complexType name="RegistryException">
+                <xs:sequence/>
+            </xs:complexType>
+        </xs:schema>
     </wsdl:types>
-    <wsdl:message name="doEncryptRequest">
-        <wsdl:part name="parameters" element="ns:doEncrypt"/>
-    </wsdl:message>
-    <wsdl:message name="doEncryptResponse">
-        <wsdl:part name="parameters" element="ns:doEncryptResponse"/>
-    </wsdl:message>
     <wsdl:message name="doDecryptRequest">
         <wsdl:part name="parameters" element="ns:doDecrypt"/>
     </wsdl:message>
     <wsdl:message name="doDecryptResponse">
         <wsdl:part name="parameters" element="ns:doDecryptResponse"/>
     </wsdl:message>
+    <wsdl:message name="RegistrySecurityAdminServiceCryptoException">
+        <wsdl:part name="parameters" element="ns:RegistrySecurityAdminServiceCryptoException"/>
+    </wsdl:message>
+    <wsdl:message name="RegistrySecurityAdminServiceUnsupportedEncodingException">
+        <wsdl:part name="parameters" element="ns:RegistrySecurityAdminServiceUnsupportedEncodingException"/>
+    </wsdl:message>
+    <wsdl:message name="doEncryptRequest">
+        <wsdl:part name="parameters" element="ns:doEncrypt"/>
+    </wsdl:message>
+    <wsdl:message name="doEncryptResponse">
+        <wsdl:part name="parameters" element="ns:doEncryptResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getDecryptedPropertyValueRequest">
+        <wsdl:part name="parameters" element="ns:getDecryptedPropertyValue"/>
+    </wsdl:message>
+    <wsdl:message name="getDecryptedPropertyValueResponse">
+        <wsdl:part name="parameters" element="ns:getDecryptedPropertyValueResponse"/>
+    </wsdl:message>
+    <wsdl:message name="RegistrySecurityAdminServiceRegistryException">
+        <wsdl:part name="parameters" element="ns:RegistrySecurityAdminServiceRegistryException"/>
+    </wsdl:message>
     <wsdl:portType name="RegistrySecurityAdminServicePortType">
-        <wsdl:operation name="doEncrypt">
-            <wsdl:input message="ns:doEncryptRequest" wsaw:Action="urn:doEncrypt"/>
-            <wsdl:output message="ns:doEncryptResponse" wsaw:Action="urn:doEncryptResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="doDecrypt">
             <wsdl:input message="ns:doDecryptRequest" wsaw:Action="urn:doDecrypt"/>
             <wsdl:output message="ns:doDecryptResponse" wsaw:Action="urn:doDecryptResponse"/>
+            <wsdl:fault message="ns:RegistrySecurityAdminServiceCryptoException" name="RegistrySecurityAdminServiceCryptoException" wsaw:Action="urn:doDecryptRegistrySecurityAdminServiceCryptoException"/>
+            <wsdl:fault message="ns:RegistrySecurityAdminServiceUnsupportedEncodingException" name="RegistrySecurityAdminServiceUnsupportedEncodingException" wsaw:Action="urn:doDecryptRegistrySecurityAdminServiceUnsupportedEncodingException"/>
+        </wsdl:operation>
+        <wsdl:operation name="doEncrypt">
+            <wsdl:input message="ns:doEncryptRequest" wsaw:Action="urn:doEncrypt"/>
+            <wsdl:output message="ns:doEncryptResponse" wsaw:Action="urn:doEncryptResponse"/>
+            <wsdl:fault message="ns:RegistrySecurityAdminServiceCryptoException" name="RegistrySecurityAdminServiceCryptoException" wsaw:Action="urn:doEncryptRegistrySecurityAdminServiceCryptoException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDecryptedPropertyValue">
+            <wsdl:input message="ns:getDecryptedPropertyValueRequest" wsaw:Action="urn:getDecryptedPropertyValue"/>
+            <wsdl:output message="ns:getDecryptedPropertyValueResponse" wsaw:Action="urn:getDecryptedPropertyValueResponse"/>
+            <wsdl:fault message="ns:RegistrySecurityAdminServiceRegistryException" name="RegistrySecurityAdminServiceRegistryException" wsaw:Action="urn:getDecryptedPropertyValueRegistrySecurityAdminServiceRegistryException"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="RegistrySecurityAdminServiceSoap11Binding" type="ns:RegistrySecurityAdminServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-        <wsdl:operation name="doEncrypt">
-            <soap:operation soapAction="urn:doEncrypt" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="doDecrypt">
             <soap:operation soapAction="urn:doDecrypt" style="document"/>
             <wsdl:input>
@@ -74,19 +157,40 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceUnsupportedEncodingException">
+                <soap:fault use="literal" name="RegistrySecurityAdminServiceUnsupportedEncodingException"/>
+            </wsdl:fault>
+            <wsdl:fault name="RegistrySecurityAdminServiceCryptoException">
+                <soap:fault use="literal" name="RegistrySecurityAdminServiceCryptoException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="doEncrypt">
+            <soap:operation soapAction="urn:doEncrypt" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceCryptoException">
+                <soap:fault use="literal" name="RegistrySecurityAdminServiceCryptoException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDecryptedPropertyValue">
+            <soap:operation soapAction="urn:getDecryptedPropertyValue" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceRegistryException">
+                <soap:fault use="literal" name="RegistrySecurityAdminServiceRegistryException"/>
+            </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="RegistrySecurityAdminServiceSoap12Binding" type="ns:RegistrySecurityAdminServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-        <wsdl:operation name="doEncrypt">
-            <soap12:operation soapAction="urn:doEncrypt" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="doDecrypt">
             <soap12:operation soapAction="urn:doDecrypt" style="document"/>
             <wsdl:input>
@@ -95,10 +199,49 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceUnsupportedEncodingException">
+                <soap12:fault use="literal" name="RegistrySecurityAdminServiceUnsupportedEncodingException"/>
+            </wsdl:fault>
+            <wsdl:fault name="RegistrySecurityAdminServiceCryptoException">
+                <soap12:fault use="literal" name="RegistrySecurityAdminServiceCryptoException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="doEncrypt">
+            <soap12:operation soapAction="urn:doEncrypt" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceCryptoException">
+                <soap12:fault use="literal" name="RegistrySecurityAdminServiceCryptoException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDecryptedPropertyValue">
+            <soap12:operation soapAction="urn:getDecryptedPropertyValue" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="RegistrySecurityAdminServiceRegistryException">
+                <soap12:fault use="literal" name="RegistrySecurityAdminServiceRegistryException"/>
+            </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="RegistrySecurityAdminServiceHttpBinding" type="ns:RegistrySecurityAdminServicePortType">
         <http:binding verb="POST"/>
+        <wsdl:operation name="doDecrypt">
+            <http:operation location="doDecrypt"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="doEncrypt">
             <http:operation location="doEncrypt"/>
             <wsdl:input>
@@ -108,8 +251,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="doDecrypt">
-            <http:operation location="doDecrypt"/>
+        <wsdl:operation name="getDecryptedPropertyValue">
+            <http:operation location="getDecryptedPropertyValue"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -120,13 +263,13 @@
     </wsdl:binding>
     <wsdl:service name="RegistrySecurityAdminService">
         <wsdl:port name="RegistrySecurityAdminServiceHttpsSoap11Endpoint" binding="ns:RegistrySecurityAdminServiceSoap11Binding">
-            <soap:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.100.7.81:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="RegistrySecurityAdminServiceHttpsSoap12Endpoint" binding="ns:RegistrySecurityAdminServiceSoap12Binding">
-            <soap12:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.100.7.81:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="RegistrySecurityAdminServiceHttpsEndpoint" binding="ns:RegistrySecurityAdminServiceHttpBinding">
-            <http:address location="https://192.168.1.6:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsEndpoint/"/>
+            <http:address location="https://10.100.7.81:9443/services/RegistrySecurityAdminService.RegistrySecurityAdminServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

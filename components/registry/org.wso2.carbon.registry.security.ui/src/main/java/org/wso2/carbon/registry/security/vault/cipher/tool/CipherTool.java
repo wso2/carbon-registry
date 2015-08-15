@@ -19,28 +19,27 @@ package org.wso2.carbon.registry.security.vault.cipher.tool;
 
 import java.rmi.RemoteException;
 
+import org.wso2.carbon.registry.security.stub.RegistrySecurityAdminServiceCryptoExceptionException;
 import org.wso2.carbon.registry.security.stub.RegistrySecurityAdminServiceStub;
 
 public class CipherTool {
 
-	private RegistrySecurityAdminServiceStub mediationSecurityAdminServiceStub;
+	private RegistrySecurityAdminServiceStub registrySecurityAdminServiceStub;
 
-	public CipherTool(RegistrySecurityAdminServiceStub mediationSecurityAdminServiceStub) {
-		this.mediationSecurityAdminServiceStub = mediationSecurityAdminServiceStub;
+	public CipherTool(RegistrySecurityAdminServiceStub registrySecurityAdminServiceStub) {
+		this.registrySecurityAdminServiceStub = registrySecurityAdminServiceStub;
 	}
 
 	/**
 	 * encrypt the plain text password
-	 * 
-	 * @param cipher
-	 *            init cipher
-	 * @param plainTextPass
-	 *            plain text password
-	 * @return encrypted password
+	 *
+	 * @param plainTextValue	plain text value.
+	 * @return 			encrypted value.
 	 * @throws RemoteException
+	 * @throws RegistrySecurityAdminServiceCryptoExceptionException
 	 */
-	public String doEncryption(String plainTextPass) throws RemoteException {
-		String encodedValue = mediationSecurityAdminServiceStub.doEncrypt(plainTextPass);
+	public String doEncryption(String plainTextValue) throws RemoteException, RegistrySecurityAdminServiceCryptoExceptionException {
+		String encodedValue = registrySecurityAdminServiceStub.doEncrypt(plainTextValue);
 		return encodedValue;
 	}
 
