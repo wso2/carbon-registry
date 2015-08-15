@@ -30,7 +30,6 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -689,10 +688,6 @@ public class SolrClient {
                     mediaTypeNegate = "", createdBy = "", createdByNegate = "", updatedBy = "", updatedByNegate = "",
                     createdRangeNegate = "", updatedRangeNegate = "", resourceName = "";
             for (Map.Entry<String, String> field : fields.entrySet()) {
-                // add escape characters for solr special characters
-                if (field.getValue() != null) {
-                    field.setValue(ClientUtils.escapeQueryChars(field.getValue()));
-                }
                 // Query for multivalued fields
                 if (field.getValue() != null && StringUtils.isNotEmpty(field.getValue())) {
                     if (field.getKey().equals(IndexingConstants.FIELD_TAGS) || field.getKey()

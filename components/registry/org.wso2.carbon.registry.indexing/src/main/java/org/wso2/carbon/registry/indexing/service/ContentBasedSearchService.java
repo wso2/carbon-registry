@@ -25,6 +25,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.admin.api.indexing.IContentBasedSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
@@ -151,8 +152,15 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             isMetaDataSearch = false;
             attributes.remove(IndexingConstants.ADVANCE_SEARCH);
         }
-        SolrDocumentList results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
-                client.query(searchQuery, registry.getTenantId());
+        SolrDocumentList results = new SolrDocumentList();
+        try {
+            results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
+                    client.query(searchQuery, registry.getTenantId());
+        } catch (SolrException e) {
+            // catching the solr exception to avoid blank pages for invalid solr query,
+            // so that it will return empty list and log the error message.
+            log.error("Invalid Search Query, query contains invalid characters",e);
+        }
 
         if (log.isDebugEnabled())
             log.debug("result received " + results);
