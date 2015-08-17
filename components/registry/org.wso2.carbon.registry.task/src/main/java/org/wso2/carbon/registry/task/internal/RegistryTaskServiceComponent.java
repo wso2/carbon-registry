@@ -100,6 +100,13 @@ public class RegistryTaskServiceComponent {
     }
 
     private void registerTasks(TaskManager taskManager) throws TaskException {
+        try {
+            for (TaskInfo taskInfo : taskManager.getAllTasks()) {
+                taskManager.deleteTask(taskInfo.getName());
+            }
+        } catch (TaskException ignore){
+
+        }
         String configPath = CarbonUtils.getRegistryXMLPath();
         if (configPath != null) {
             File registryXML = new File(configPath);
