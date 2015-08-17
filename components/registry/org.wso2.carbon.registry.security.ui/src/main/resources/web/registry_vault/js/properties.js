@@ -168,7 +168,7 @@ function editProperty(rowid) {
 						org_wso2_carbon_registry_secure_vault_ui_jsi18n["property.name"]);
 				reason += validateForInputSV(
 						propertyName,
-						org_wso2_carbon_registr_secure_vault_ui_jsi18n["property.name"]);
+						org_wso2_carbon_registry_secure_vault_ui_jsi18n["property.name"]);
 				var propertyValue = document.getElementById('propValue_'
 						+ rowid);
 				var propertyValueConfim = document.getElementById('propValueConfirm_'
@@ -177,7 +177,7 @@ function editProperty(rowid) {
 				// validateEmptySV(propertyValue,org_wso2_carbon_mediation_secure_vault_ui_jsi18n["property.value"]);
 				reason += validateForInputSV(
 						propertyValue,
-						org_wso2_carbon_registr_secure_vault_ui_jsi18n["property.value"]);
+						org_wso2_carbon_registry_secure_vault_ui_jsi18n["property.value"]);
 
 				// Check for the previously entered property
 				var duplicatePropNameCount = 0;
@@ -195,19 +195,19 @@ function editProperty(rowid) {
 				}
 
 				if (duplicatePropNameCount > 1) {
-					reason += org_wso2_carbon_registr_secure_vault_ui_jsi18n["duplicate.entry.please.choose.another.name"];
+					reason += org_wso2_carbon_registry_secure_vault_ui_jsi18n["duplicate.entry.please.choose.another.name"];
 				}
 				
 				if(reason == ""){
 					
 					if(propertyValue.value != propertyValueConfim.value){
-						reason += org_wso2_carbon_registr_secure_vault_ui_jsi18n["property.value.confirmation.invalid"];
+						reason += org_wso2_carbon_registry_secure_vault_ui_jsi18n["property.value.confirmation.invalid"];
 					}
 				}
 
 				if (reason == "") {
 					new Ajax.Request(
-							'../registr_vault/properties-ajaxprocessor.jsp',
+							'../registry_vault/properties-ajaxprocessor.jsp',
 							{
 								method : 'post',
 								parameters : {
@@ -236,31 +236,32 @@ function editProperty(rowid) {
 							});
 				}
 			},
-			org_wso2_carbon_registr_secure_vault_ui_jsi18n["session.timed.out"]);
+			org_wso2_carbon_registry_secure_vault_ui_jsi18n["session.timed.out"]);
 	propertyOperationStarted = false;
 }
 
 function removeProperty(propertyName) {
 	if (propertyOperationStarted) {
 		CARBON
-				.showWarningDialog(org_wso2_carbon_registr_secure_vault_ui_jsi18n["property.operation.in.progress"]);
+				.showWarningDialog(org_wso2_carbon_registry_secure_vault_ui_jsi18n["property.operation.in.progress"]);
 		return;
 	}
+
 	propertyOperationStarted = true;
 	sessionAwareFunction(
 			function() {
 				CARBON
 						.showConfirmationDialog(
-								org_wso2_carbon_registr_secure_vault_ui_jsi18n["are.you.sure.you.want.to.delete"]
+								org_wso2_carbon_registry_secure_vault_ui_jsi18n["are.you.sure.you.want.to.delete"]
 										+ " <strong>'"
 										+ propertyName
 										+ "'</strong> "
-										+ org_wso2_carbon_registr_secure_vault_ui_jsi18n["permanently"],
+										+ org_wso2_carbon_registry_secure_vault_ui_jsi18n["permanently"],
 								function() {
 									var resourcePath = document
 											.getElementById('propRPath').value;
 									new Ajax.Request(
-											'../registr_vault/properties-ajaxprocessor.jsp',
+											'../registry_vault/properties-ajaxprocessor.jsp',
 											{
 												method : 'post',
 												parameters : {
@@ -282,7 +283,7 @@ function removeProperty(propertyName) {
 											});
 								}, null);
 			},
-			org_wso2_carbon_registr_secure_vault_ui_jsi18n["session.timed.out"]);
+			org_wso2_carbon_registry_secure_vault_ui_jsi18n["session.timed.out"]);
 	propertyOperationStarted = false;
 }
 function showProperties() {
