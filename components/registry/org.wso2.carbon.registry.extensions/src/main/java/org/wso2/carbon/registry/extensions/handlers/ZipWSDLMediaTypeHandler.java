@@ -567,8 +567,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                 inputStream = new URL(uri).openStream();
                 return swaggerProcessor.processSwagger(inputStream, getChrootedSwaggerLocation(requestContext.getRegistryContext()), uri);
             } catch (IOException e) {
-                log.error("Swagger URI is invalid");
-                throw new RegistryException("Swagger URI is invalid");
+                throw new RegistryException("Swagger URI is invalid", e);
             }
 
         }
