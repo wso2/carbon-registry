@@ -61,12 +61,7 @@ import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.beans.BusinessServiceInfo;
-import org.wso2.carbon.registry.extensions.handlers.utils.SchemaProcessor;
-import org.wso2.carbon.registry.extensions.handlers.utils.SchemaValidator;
-import org.wso2.carbon.registry.extensions.handlers.utils.UDDIPublisher;
-import org.wso2.carbon.registry.extensions.handlers.utils.WADLProcessor;
-import org.wso2.carbon.registry.extensions.handlers.utils.WSDLInfo;
-import org.wso2.carbon.registry.extensions.handlers.utils.WSDLProcessor;
+import org.wso2.carbon.registry.extensions.handlers.utils.*;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
@@ -106,6 +101,12 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     private String xsdMediaType = "application/xsd+xml";
 
     private String xsdExtension = ".xsd";
+
+    private String swaggerMediaType = "application/swagger+json";
+
+    private String swaggerExtension = ".json";
+
+    private String swaggerLocation = "/swagger/";
 
     private String wadlMediaType = "application/wadl+xml";
 
@@ -221,6 +222,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         List<String> wsdlUriList = new LinkedList<String>();
                         List<String> xsdUriList = new LinkedList<String>();
                         List<String> wadlUriList = new LinkedList<String>();
+                        List<String> swaggerUriList = new LinkedList<String>();
                         zs = new ZipInputStream(new FileInputStream(tempFile));
                         try {
                             entry = zs.getNextEntry();
@@ -303,6 +305,22 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                         uri = uri.substring(0, uri.length() -1);
                                     }
                                     wadlUriList.add(uri);
+                                } else if(entryName != null &&
+                                        entryName.toLowerCase().endsWith(swaggerExtension)){
+                                    String uri = tempFile.toURI().toString();
+                                    uri = uri.substring(0, uri.length() -
+                                            archiveExtension.length()) + "/" + entryName;
+                                    if (uri.startsWith("file:")) {
+                                        uri = uri.substring(5);
+                                    }
+                                    while (uri.startsWith("/")) {
+                                        uri = uri.substring(1);
+                                    }
+                                    uri = "file:///" + uri;
+                                    if (uri.endsWith("/")) {
+                                        uri = uri.substring(0, uri.length() -1);
+                                    }
+                                    swaggerUriList.add(uri);
                                 } else if (entryName != null) {
                                     boolean isSkipFileExtension = false;
                                     for (String extension : skipFileExtensions) {
@@ -337,7 +355,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                             localPathMap =
                                     Collections.unmodifiableMap(CurrentSession.getLocalPathMap());
                         }
-                        if (wsdlUriList.isEmpty() && xsdUriList.isEmpty() && wadlUriList.isEmpty() && uriList.isEmpty()) {
+                        if (wsdlUriList.isEmpty() && xsdUriList.isEmpty() && wadlUriList.isEmpty() && uriList.isEmpty() && swaggerUriList.isEmpty()) {
                             throw new RegistryException(
                                     "No Files found in the given archive");
                         }
@@ -357,6 +375,13 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         }
                         for (String uri : wadlUriList) {
                             tasks.add(new UploadWadlTask(requestContext, uri,
+                                    CurrentSession.getTenantId(),
+                                    CurrentSession.getUserRegistry(), CurrentSession.getUserRealm(),
+                                    CurrentSession.getUser(), CurrentSession.getCallerTenantId(),
+                                    localPathMap));
+                        }
+                        for (String uri : swaggerUriList) {
+                            tasks.add(new UploadSwaggerTask(requestContext, uri,
                                     CurrentSession.getTenantId(),
                                     CurrentSession.getUserRegistry(), CurrentSession.getUserRealm(),
                                     CurrentSession.getUser(), CurrentSession.getCallerTenantId(),
@@ -504,6 +529,53 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     }
 
     /**
+     * Method that runs the Swagger upload procedure.
+     *
+     * @param requestContext requestContext the request context for the import/put operation
+     * @param uri the URL from which the swagger is imported
+     *
+     * @return  the path at which the Swagger was uploaded to
+     *
+     * @throws RegistryException if the operation failed.
+     */
+    protected boolean addSwaggerFromZip(RequestContext requestContext, String uri)
+            throws RegistryException {
+        if (uri != null) {
+            Resource local = requestContext.getRegistry().newResource();
+            String version = requestContext.getResource().getProperty("version");
+            local.setMediaType(swaggerMediaType);
+            local.setProperty("version",version);
+            requestContext.setSourceURL(uri);
+            requestContext.setResource(local);
+            String path = requestContext.getResourcePath().getPath();
+            if (path.lastIndexOf("/") != -1) {
+                path = path.substring(0, path.lastIndexOf("/"));
+            } else {
+                path = "";
+            }
+            String swaggerName = uri;
+            if (swaggerName.lastIndexOf("/") != -1) {
+                swaggerName = swaggerName.substring(swaggerName.lastIndexOf("/"));
+            } else {
+                swaggerName = "/" + swaggerName;
+            }
+            path = path + swaggerName;
+            requestContext.setResourcePath(new ResourcePath(path));
+            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext);
+            InputStream inputStream = null;
+            try {
+                inputStream = new URL(uri).openStream();
+                return swaggerProcessor.processSwagger(inputStream, getChrootedSwaggerLocation(requestContext.getRegistryContext()), uri);
+            } catch (IOException e) {
+                log.error("Swagger URI is invalid");
+                throw new RegistryException("Swagger URI is invalid");
+            }
+
+        }
+        return false;
+    }
+
+    /**
      * Method that runs the Schema upload procedure.
      *
      * @param requestContext the request context for the import/put operation
@@ -566,6 +638,11 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     private String getChrootedWADLLocation(RegistryContext registryContext) {
         return RegistryUtils.getAbsolutePath(registryContext,
                 RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + wadlLocation);
+    }
+
+    private String getChrootedSwaggerLocation(RegistryContext registryContext) {
+        return RegistryUtils
+                .getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + swaggerLocation);
     }
 
     public void importResource(RequestContext context) {
@@ -811,6 +888,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                 PrivilegedCarbonContext.startTenantFlow();
                 //This is for fixing CARBON-14469.
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
+                //set user name to set in swagger import provider
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setUsername(userId);
                 // File is already uploaded via wsdl or xsd imports those are skip
                 if (CommonUtil.isImportedArtifactExisting(new File(uri).toString())) {
                     failed = false;
@@ -989,6 +1068,21 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
 
         protected void doProcessing(RequestContext requestContext, String uri) throws RegistryException {
             result = addWADLFromZip(requestContext, uri);
+        }
+    }
+
+    protected class UploadSwaggerTask extends UploadTask {
+
+        public UploadSwaggerTask(RequestContext requestContext, String uri, int tenantId,
+                              UserRegistry userRegistry, UserRealm userRealm, String userId,
+                              int callerTenantId, Map<String, String> localPathMap) {
+            super(requestContext, uri, tenantId, userRegistry, userRealm, userId, callerTenantId,
+                    localPathMap);
+
+        }
+
+        protected void doProcessing(RequestContext requestContext, String uri) throws RegistryException {
+            addSwaggerFromZip(requestContext, uri);
         }
     }
 }
