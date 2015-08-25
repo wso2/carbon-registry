@@ -65,6 +65,8 @@ public class RESTServiceUtils {
 	private static final String METHOD = "method";
 	private static final String PATH = "path";
 	private static final String RESOURCE = "resource";
+    private static final String INTERFACE = "interface";
+    private static final String SWAGGER = "swagger";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -81,7 +83,7 @@ public class RESTServiceUtils {
 	 * @throws RegistryException    If swagger content is invalid.
 	 */
 	public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
-	                                                  String endpointURL, List<JsonObject> resourceObjects)
+	                                                  String endpointURL, List<JsonObject> resourceObjects, String swaggerPath)
 			throws RegistryException {
 
 		if(swaggerDocObject == null || swaggerVersion == null) {
@@ -128,6 +130,11 @@ public class RESTServiceUtils {
 		overview.addChild(endpoint);
 		data.addChild(overview);
 
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement swagger = factory.createOMElement(SWAGGER, namespace);
+        swagger.setText(swaggerPath);
+        interfaceElement.addChild(swagger);
+        data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
 				data.addChild(uriTemplate);
@@ -158,7 +165,7 @@ public class RESTServiceUtils {
 		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
 		OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
 		OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
-		OMElement wadl = factory.createOMElement(WADL, namespace);
+
 		List<OMElement> uriTemplates = null;
 
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
@@ -166,7 +173,7 @@ public class RESTServiceUtils {
 		name.setText(serviceName);
 		context.setText("/"+serviceName);
 		apiVersion.setText(version);
-		wadl.setText(wadlPath);
+
 		OMNamespace wadlNamespace = wadlElement.getNamespace();
 		String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
 		String wadlNamespacePrefix = wadlNamespace.getPrefix();
@@ -189,10 +196,15 @@ public class RESTServiceUtils {
 		overview.addChild(context);
 		overview.addChild(apiVersion);
 		overview.addChild(transports);
-		overview.addChild(wadl);
+
 		overview.addChild(endpoint);
 		data.addChild(overview);
 
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement wadl = factory.createOMElement(WADL, namespace);
+        wadl.setText(wadlPath);
+        interfaceElement.addChild(wadl);
+        data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
 				data.addChild(uriTemplate);
