@@ -565,7 +565,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             InputStream inputStream = null;
             try {
                 inputStream = new URL(uri).openStream();
-                return swaggerProcessor.processSwagger(inputStream, getChrootedSwaggerLocation(requestContext.getRegistryContext()), uri);
+                return swaggerProcessor.processSwagger(inputStream,
+                        getChrootedSwaggerLocation(requestContext.getRegistryContext()), uri);
             } catch (IOException e) {
                 throw new RegistryException("Swagger URI is invalid", e);
             }
@@ -640,8 +641,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     }
 
     private String getChrootedSwaggerLocation(RegistryContext registryContext) {
-        return RegistryUtils
-                .getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + swaggerLocation);
+        return RegistryUtils.getAbsolutePath(registryContext,
+                        RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + swaggerLocation);
     }
 
     public void importResource(RequestContext context) {
