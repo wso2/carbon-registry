@@ -119,6 +119,10 @@ public class EndpointMediaTypeHandler extends Handler {
             String endpointId = resource.getUUID();
             if (registry.resourceExists(path)) {
                 Resource oldResource = registry.get(path);
+                byte[] oldContent = (byte[])oldResource.getContent();
+                if (oldContent != null && RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
+                    return;
+                }
                 //Set the old resource properties to new resource
                 //https://wso2.org/jira/browse/REGISTRY-799
                 Properties properties = oldResource.getProperties();
@@ -137,7 +141,7 @@ public class EndpointMediaTypeHandler extends Handler {
                         }
                     }
                 }
-                byte[] oldContent = (byte[])oldResource.getContent();
+
                 if (oldContent != null && !RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
                     // oops somebody trying to update the endpoint resource content. that should not happen
 //                    String msg = "Endpoint content for endpoint resource is not allowed to change, " +
