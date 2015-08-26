@@ -231,6 +231,8 @@ public class SwaggerProcessor {
 			log.debug(CommonConstants.EMPTY_URL);
 			log.warn("Resource paths cannot be read. Creating the REST service might fail.");
 			return null;
+		} else if (sourceUrl.startsWith("file")) {
+			sourceUrl = sourceUrl.substring(0,sourceUrl.lastIndexOf("/"));
 		}
 
 		List<JsonObject> resourceObjects = new ArrayList<>();
