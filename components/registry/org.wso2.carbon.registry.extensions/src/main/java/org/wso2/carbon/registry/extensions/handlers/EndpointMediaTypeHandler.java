@@ -185,16 +185,24 @@ public class EndpointMediaTypeHandler extends Handler {
     private String getEndpointPath(RequestContext requestContext, String resourceContent, String endpointUrl)
             throws RegistryException {
         String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
-        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
-                                           EndpointUtils.deriveOMElementContent(resourceContent),
-                                           requestContext.getResource().getProperties());
-        String endpointPath=  CommonUtil.replaceExpressionOfPath(pathExpression, "name",
-                                                     EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl));
-        endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+
+        pathExpression =  CommonUtil.replaceExpressionOfPath(pathExpression, "name",getEndpointName(EndpointUtils.deriveNameFromContent(resourceContent),EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl)));
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression, EndpointUtils.deriveOMElementContent(resourceContent),requestContext.getResource().getProperties());
+        String endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
 
         return endpointPath;
 
     }
+
+    private String getEndpointName(String name, String namespace) {
+        if (EndpointUtils.isIncludeNamespaceInName() && !name.equals(namespace)) {
+            return namespace +"-"+ name;
+        } else {
+            return name;
+        }
+    }
+
+
 
     public String rename(RequestContext requestContext) throws RegistryException {
         return move(requestContext);
