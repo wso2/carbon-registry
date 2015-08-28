@@ -94,6 +94,10 @@
                             <importBundles>
                                 <importBundleDef>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec</importBundleDef>
                             </importBundles>
+                            <importFeatures>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}
+                                </importFeatureDef>
+                            </importFeatures>
                         </configuration>
                     </execution>
                 </executions>
