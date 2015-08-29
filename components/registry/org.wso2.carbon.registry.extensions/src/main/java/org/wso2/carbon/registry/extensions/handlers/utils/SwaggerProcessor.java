@@ -115,7 +115,7 @@ public class SwaggerProcessor {
                 List<JsonObject> resourceObjects =
                         addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
                 restServiceElement = (resourceObjects != null) ? RESTServiceUtils
-                        .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects) : null;
+                        .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects, swaggerResourcePath) : null;
             } else {
                 return false;
             }
@@ -124,7 +124,7 @@ public class SwaggerProcessor {
 			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
                 createEndpointElement(swaggerDocObject, swaggerVersion);
                 restServiceElement =
-                        RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null);
+                        RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null, swaggerResourcePath);
             } else {
                 return false;
             }
@@ -231,6 +231,8 @@ public class SwaggerProcessor {
 			log.debug(CommonConstants.EMPTY_URL);
 			log.warn("Resource paths cannot be read. Creating the REST service might fail.");
 			return null;
+		} else if (sourceUrl.startsWith("file")) {
+			sourceUrl = sourceUrl.substring(0,sourceUrl.lastIndexOf("/"));
 		}
 
 		List<JsonObject> resourceObjects = new ArrayList<>();

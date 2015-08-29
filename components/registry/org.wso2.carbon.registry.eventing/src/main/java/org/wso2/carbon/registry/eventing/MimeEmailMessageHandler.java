@@ -113,14 +113,14 @@ public class MimeEmailMessageHandler {
         return mailHeader;
     }
 
-    public String getEmailMessage(Message message){
+    public String getEmailMessage(Message message, int tenantId){
         String emailMessage = null;
         DispatchEvent event = (DispatchEvent) message;
         String eventType = event.getEvent().getClass().getSimpleName();
         String resourcePath = event.getEvent().getOperationDetails().getPath();
         if (EventingDataHolder.getInstance().getRegistryService() != null) {
             try {
-                UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
+                UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry(tenantId);
                 String mesageContent = event.getEvent().getMessage().toString();
                 String className = EventingDataHolder.getInstance().getNotificationConfig().getConfigurationClass();
                 Class clazz = Class.forName(className);

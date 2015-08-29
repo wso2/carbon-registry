@@ -4,7 +4,9 @@ target
 .classpath
 .settings
 .project
-*.im?
+*.iml
+*.iws
+*.ipr
 .idea
 atlassian-ide-plugin.xml
 .DS_Store

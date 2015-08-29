@@ -23,6 +23,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
@@ -42,19 +43,25 @@ import org.wso2.carbon.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.governance.notifications.worklist.stub.WorkListServiceStub;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.eventing.WorkListConfig;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.eventing.bean.TenantWorkListConfig;
 import org.wso2.carbon.registry.eventing.events.DispatchEvent;
 import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
 import org.wso2.carbon.registry.eventing.internal.JMXEventsBean;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -181,7 +188,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } catch (IllegalStateException e) {
             executorService.shutdownNow();
             throw new IllegalStateException("Unable to create registry event dispatcher during " +
-                    "shutdown process.");
+                                            "shutdown process.");
         }
     }
 
@@ -234,11 +241,11 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         }
         String topic = subscription.getTopicName();
         boolean doRest = (subscription.getProperties() != null &&
-                subscription.getProperties().get(
-                        RegistryEventingConstants.DO_REST) != null &&
-                (subscription.getProperties().get(
-                        RegistryEventingConstants.DO_REST)).equals(
-                        Boolean.toString(Boolean.TRUE)));
+                          subscription.getProperties().get(
+                                  RegistryEventingConstants.DO_REST) != null &&
+                          (subscription.getProperties().get(
+                                  RegistryEventingConstants.DO_REST)).equals(
+                                  Boolean.toString(Boolean.TRUE)));
         if (endpoint.toLowerCase().startsWith("digest://")) {
             String digestType = endpoint.substring(9, 10);
             endpoint = endpoint.substring(11);
@@ -299,11 +306,11 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         }
         if (endpoint.toLowerCase().startsWith("mailto:")) {
             if (subscription.getProperties() != null &&
-                    Boolean.toString(true).equals(subscription.getProperties().get(
-                            RegistryEventingConstants.NOT_VERIFIED))) {
+                Boolean.toString(true).equals(subscription.getProperties().get(
+                        RegistryEventingConstants.NOT_VERIFIED))) {
                 String email = endpoint.toLowerCase().substring("mailto:".length());
                 log.warn("Unable to send notification. The e-mail address " + email +
-                        " has not been verified.");
+                         " has not been verified.");
                 return;
             }
             log.debug("Sending Notification to: " + endpoint);
@@ -314,15 +321,15 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 String username = endpoint.substring(7);
                 if (EventingDataHolder.getInstance().getRegistryService() != null) {
                     UserRegistry registry = EventingDataHolder.getInstance().getRegistryService()
-                                              .getGovernanceSystemRegistry(PrivilegedCarbonContext
-                                                                                   .getThreadLocalCarbonContext()
-                                                                                   .getTenantId());
+                                                              .getGovernanceSystemRegistry(PrivilegedCarbonContext
+                                                                                                   .getThreadLocalCarbonContext()
+                                                                                                   .getTenantId());
                     if (registry != null && registry.getUserRealm() != null &&
-                            registry.getUserRealm().getUserStoreManager() != null) {
+                        registry.getUserRealm().getUserStoreManager() != null) {
                         UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
                         email = "mailto:" + reader.getUserClaimValue(username,
-                                UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                UserCoreConstants.DEFAULT_PROFILE);
+                                                                     UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                                                     UserCoreConstants.DEFAULT_PROFILE);
                     }
                 }
             } catch (Exception e) {
@@ -337,16 +344,16 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 String roleName = endpoint.substring(7);
                 if (EventingDataHolder.getInstance().getRegistryService() != null) {
                     UserRegistry registry = EventingDataHolder.getInstance().getRegistryService()
-                                                    .getGovernanceSystemRegistry(PrivilegedCarbonContext
-                                                                                         .getThreadLocalCarbonContext()
-                                                                                         .getTenantId());
+                                                              .getGovernanceSystemRegistry(PrivilegedCarbonContext
+                                                                                                   .getThreadLocalCarbonContext()
+                                                                                                   .getTenantId());
                     if (registry != null && registry.getUserRealm() != null &&
-                            registry.getUserRealm().getUserStoreManager() != null) {
+                        registry.getUserRealm().getUserStoreManager() != null) {
                         UserStoreManager reader = registry.getUserRealm().getUserStoreManager();
                         for (String username : reader.getUserListOfRole(roleName)) {
                             String temp = reader.getUserClaimValue(username,
-                                    UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
-                                    UserCoreConstants.DEFAULT_PROFILE);
+                                                                   UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS,
+                                                                   UserCoreConstants.DEFAULT_PROFILE);
                             if (temp != null && temp.length() > 0) {
                                 emails.add("mailto:" + temp);
                             }
@@ -367,17 +374,17 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             JMXEventsBean eventsBean = EventingDataHolder.getInstance().getEventsBean();
             if (eventsBean == null) {
                 log.warn("Unable to generate notification. The notification bean has not been " +
-                        "registered.");
+                         "registered.");
             } else {
                 OMElement message = event.getMessage();
                 OMElement firstElement = message.getFirstElement();
                 String namespaceURI = firstElement.getNamespace().getNamespaceURI();
                 OMElement timestamp = message.getFirstChildWithName(new QName(namespaceURI,
-                        "Timestamp"));
+                                                                              "Timestamp"));
                 if (timestamp != null) {
                     try {
                         eventsBean.addNotification(EVENT_TIME.parse(timestamp.getText()),
-                                firstElement.getText());
+                                                   firstElement.getText());
                     } catch (ParseException ignore) {
                         eventsBean.addNotification(new Date(), firstElement.getText());
                     }
@@ -386,27 +393,77 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         } else if (endpoint.toLowerCase().startsWith("work://")) {
             log.debug("Sending Notification to work-list");
             try {
-                if (workListConfig.getServerURL() != null && workListConfig.getUsername() != null
+                if (subscription != null && subscription.getTenantId() == MultitenantConstants.SUPER_TENANT_ID){
+                    if (workListConfig.getServerURL() != null && workListConfig.getUsername() != null
                         && workListConfig.getPassword() != null) {
-                    WorkListServiceStub stub = new WorkListServiceStub(configContext,
-                            workListConfig.getServerURL() + "WorkListService");
-                    ServiceClient client = stub._getServiceClient();
-                    CarbonUtils.setBasicAccessSecurityHeaders(workListConfig.getUsername(),
-                            workListConfig.getPassword(), client);
-                    client.getOptions().setManageSession(true);
-                    stub.addTask(endpoint.substring(7),
-                            event.getMessage().getFirstElement().getText(), 5);
+                        sendWorkListNotification(event, endpoint, workListConfig.getUsername(), workListConfig.getPassword().getBytes(),
+                                                 workListConfig.getServerURL());
+                    } else {
+                        log.warn("Unable to generate notification. The work list config has not been setup.");
+                    }
+                } else if (subscription != null) {
+                        UserRegistry registry = EventingDataHolder.getInstance().getRegistryService()
+                                                                  .getConfigSystemRegistry(subscription.getTenantId());
+                        TenantWorkListConfig config = getTenantWorkListConfig(registry);
+                        if (config.getServerURL() != null && config.getUsername() != null &&
+                            config.getPassword() != null) {
+                            sendWorkListNotification(event, endpoint, config.getUsername(), config.getPassword(),
+                                                     config.getServerURL());
+                        } else {
+                            log.warn("Unable to generate notification. The work list config has not been setup for" +
+                                     " tenant.");
+                        }
                 } else {
-                    log.warn("Unable to generate notification. The work list config has not been " +
-                            "setup.");
+                    log.warn("Unable to generate notification.");
                 }
             } catch (RemoteException e) {
                 log.error("Failed Sending Notification to work-list", e);
+            } catch (UnsupportedEncodingException | RegistryException e) {
+                log.warn("Unable to generate notification tenant.", e);
             }
         } else {
             log.debug("Sending Notification to: " + endpoint);
             publishEvent(event, subscription, endpoint, doRest);
         }
+    }
+
+    private void sendWorkListNotification(Message event, String endpoint, String username, byte[] password, String url)
+            throws RemoteException, UnsupportedEncodingException {
+        WorkListServiceStub stub = new WorkListServiceStub(configContext, url + "WorkListService");
+        ServiceClient client = stub._getServiceClient();
+        CarbonUtils.setBasicAccessSecurityHeaders(username, new String(password, "UTF-8"), client);
+        client.getOptions().setManageSession(true);
+        stub.addTask(endpoint.substring(7),event.getMessage().getFirstElement().getText(), 5);
+    }
+
+    private TenantWorkListConfig getTenantWorkListConfig(UserRegistry registry){
+
+        String path  = "/repository/components/org.wso2.carbon.registry/WorkList.xml";
+
+        try {
+            String content;
+            if (registry.resourceExists(path)){
+                Resource resource =  registry.get(path);
+                byte[] configContent = (byte[])resource.getContent();
+                content =  RegistryUtils.decodeBytes(configContent);
+            } else {
+                return null;
+            }
+            OMElement documentElement = AXIOMUtil.stringToOM(content);
+            if (documentElement != null) {
+                TenantWorkListConfig config = new TenantWorkListConfig();
+                config.setUsername(documentElement.getFirstChildWithName(new QName("username")).getText());
+                config.setPassword(documentElement.getFirstChildWithName(new QName("password")).getText().getBytes());
+                config.setServerURL(documentElement.getAttributeValue(new QName("serverURL")));
+                config.setRemote(documentElement.getAttributeValue(new QName("remote")));
+                return config;
+            }
+        } catch (XMLStreamException e) {
+            log.error("Unable to parse WorkList.xml", e);
+        } catch (RegistryException e) {
+            log.error("An error occurred while reading registry resource : WorkList.xml", e);
+        }
+        return null;
     }
 
     public void init(ConfigurationContext configContext) {
@@ -421,15 +478,15 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         try {
             // E-mail scenario
             OMElement payload = factory.createOMElement(BaseConstants.DEFAULT_TEXT_WRAPPER, null);
-//            String poweredBy = "This message was automatically generated by WSO2 Carbon.";
-//            String signature = "\n--\n" + poweredBy;
+            //            String poweredBy = "This message was automatically generated by WSO2 Carbon.";
+            //            String signature = "\n--\n" + poweredBy;
             String signature = "";
             String registryURL = EventingDataHolder.getInstance().getDefaultEventingServiceURL();
             if (registryURL != null && registryURL.indexOf(
                     "/services/RegistryEventingService") > -1) {
                 registryURL = registryURL.substring(0, registryURL.length() -
-                        "/services/RegistryEventingService".length()) +
-                        "/carbon";
+                                                       "/services/RegistryEventingService".length()) +
+                              "/carbon";
             }
             if (registryURL != null) {
                 signature += " URL: " + registryURL;
@@ -437,22 +494,22 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
             OMElement firstElement = messageElement.getFirstElement();
             String namespaceURI = firstElement.getNamespace().getNamespaceURI();
             OMElement timestamp = messageElement.getFirstChildWithName(new QName(namespaceURI,
-                    "Timestamp"));
+                                                                                 "Timestamp"));
             String time = null;
             if (timestamp != null) {
                 time = timestamp.getText();
             }
             OMElement details = messageElement.getFirstChildWithName(new QName(namespaceURI,
-                    "Details"));
+                                                                               "Details"));
             String serverName = null;
             if (details != null) {
                 serverName = details.getFirstChildWithName(new QName(namespaceURI, "Server"))
-                        .getFirstChildWithName(new QName(namespaceURI, "Product")).
+                                    .getFirstChildWithName(new QName(namespaceURI, "Product")).
                                 getFirstChildWithName(new QName(namespaceURI, "Name")).getText();
             }
             if (time != null && serverName != null) {
                 signature = "\n\nThis event was generated" + (eventType.equals("DigestEvent") ? "" : " by " + serverName) +
-                        " at " + time + ". " + signature;
+                            " at " + time + ". " + signature;
             }
             payload.setText(firstElement.getText() + signature);
             return payload;
@@ -467,7 +524,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
                 EventingConstants.NOTIFICATION_NS_URI,
                 EventingConstants.NOTIFICATION_NS_PREFIX);
         OMElement topicEle = factory.createOMElement(RegistryEventingConstants.WSE_EN_TOPIC,
-                topicNs);
+                                                     topicNs);
         topicEle.setText(topic);
         return topicEle;
     }
@@ -494,7 +551,7 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
         String emailMessage = null;
         MimeEmailMessageHandler handler =  new MimeEmailMessageHandler();
         if (message instanceof DispatchEvent && isEmail) {
-            emailMessage = handler.getEmailMessage(message);
+            emailMessage = handler.getEmailMessage(message, subscription.getTenantId());
         }
         String topicText = topicEle.getText();
         if (emailMessage != null && !emailMessage.equals(message.getMessage().toString())){
