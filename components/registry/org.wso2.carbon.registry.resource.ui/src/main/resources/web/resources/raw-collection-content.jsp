@@ -51,7 +51,7 @@
     if (requestedPage != null) {
         start = (int) ((Integer.parseInt(requestedPage) - 1) * (RegistryConstants.ITEMS_PER_PAGE));
     } else {
-        start = 1;
+        start = 0;
     }
     try {
         client = new ResourceServiceClient(cookie, config, session);

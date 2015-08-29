@@ -208,12 +208,12 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     PaginationUtils.setRowCount(messageContext, Integer.toString(rowCount));
                 }
                 paginationContext.setLength(authorizedPaths.length);
-                int startIndex;
-                if (start == 1) {
+                int startIndex = start;
+                /*if (start == 1) {
                     startIndex = 0;
                 } else {
                     startIndex = start;
-                }
+                } */
                 if (rowCount < start + count) {
                     if(rowCount - startIndex < 0) {
                         String msg = "PaginationContext parameter's start index seems to be greater than the limit count. Please verify your parameters";
