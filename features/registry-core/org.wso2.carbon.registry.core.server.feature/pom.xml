@@ -75,6 +75,7 @@
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.registry.core.common</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.contentsearch.server</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

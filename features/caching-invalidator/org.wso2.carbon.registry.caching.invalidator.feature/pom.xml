@@ -55,7 +55,7 @@
                         </goals>
                         <configuration>
                             <id>org.wso2.carbon.registry.caching.invalidator.server</id>
-                            <propertiesFile>../feature.properties</propertiesFile>
+                            <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.eclipse.equinox.p2.type.group:true</propertyDef>
