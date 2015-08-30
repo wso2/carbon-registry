@@ -208,8 +208,8 @@
                     <option value="3"><fmt:message key="soap"/></option>
                     <option value="4"><fmt:message key="username"/></option>
                     <option value="5"><fmt:message key="role"/></option>
-                    <% if(isSuperTenant) {%>
                     <option value="6"><fmt:message key="management.console"/></option>
+                    <% if(isSuperTenant) {%>
                     <option value="7"><fmt:message key="jmx"/></option>
                     <%}%>
                 </select>
