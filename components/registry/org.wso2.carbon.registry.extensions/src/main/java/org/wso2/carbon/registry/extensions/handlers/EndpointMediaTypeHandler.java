@@ -121,6 +121,11 @@ public class EndpointMediaTypeHandler extends Handler {
                 Resource oldResource = registry.get(path);
                 byte[] oldContent = (byte[])oldResource.getContent();
                 if (oldContent != null && RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
+                    requestContext.setActualPath(path);
+                    ((ResourceImpl) resource).setPath(path);
+                    requestContext.setResource(resource);
+                    registry.put(path, resource);
+                    requestContext.setProcessingComplete(true);
                     return;
                 }
                 //Set the old resource properties to new resource
