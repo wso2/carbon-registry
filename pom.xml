@@ -359,7 +359,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.google.guava.wso2</groupId>
+                <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${google.guava.wso2.version}</version>
             </dependency>
@@ -1412,7 +1412,7 @@
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 
         <!-- Misc -->
-        <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+        <google.guava.wso2.version>15.0</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <version.solr>5.2.1.wso2v1</version.solr>
         <version.lucene>5.2.1.wso2v1</version.lucene>
