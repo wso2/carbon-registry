@@ -45,7 +45,7 @@
             <version>${carbon.registry.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava.wso2</groupId>
+            <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${google.guava.wso2.version}</version>
         </dependency>
@@ -69,7 +69,7 @@
                             <id>org.wso2.carbon.registry.social</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <bundles>
-                                <bundleDef>com.google.guava.wso2:guava</bundleDef>
+                                <bundleDef>com.google.guava:guava</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.api</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.impl</bundleDef>
                             </bundles>

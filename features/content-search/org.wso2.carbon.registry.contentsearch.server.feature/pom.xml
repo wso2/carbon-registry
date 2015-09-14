@@ -102,7 +102,7 @@
                                 <bundleDef>org.wso2.orbit.org.apache.lucene:lucene</bundleDef>
                                 <bundleDef>org.apache.zookeeper.wso2:apache-zookeeper</bundleDef>
                                 <bundleDef>com.wso2.spatial4j:spatial4j</bundleDef>
-                                <bundleDef>com.google.guava.wso2:guava</bundleDef>
+                                <bundleDef>com.google.guava:guava</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}
