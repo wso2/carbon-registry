@@ -360,7 +360,7 @@ public class ActivityBeanPopulator {
             return null;
         }
 
-        DateFormat formatter = DateFormat.getDateInstance(DateFormat.SHORT);
+        DateFormat formatter = DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH);
         try {
             return formatter.parse(dateString);
         } catch (ParseException e) {
