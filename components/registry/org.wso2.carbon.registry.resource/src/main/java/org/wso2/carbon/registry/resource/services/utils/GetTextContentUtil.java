@@ -17,6 +17,7 @@
 package org.wso2.carbon.registry.resource.services.utils;
 
 import org.apache.axiom.attachments.ByteArrayDataSource;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
@@ -43,6 +44,9 @@ public class GetTextContentUtil {
     public static String getTextContent(String path, Registry registry) throws Exception {
 
         try {
+            if (path != null && path.contains("..")) {
+                path = FilenameUtils.normalize(path);
+            }
 
             Resource resource = registry.get(path);
 

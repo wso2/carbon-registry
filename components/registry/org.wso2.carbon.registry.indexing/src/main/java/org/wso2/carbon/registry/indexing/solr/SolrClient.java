@@ -65,6 +65,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
+import java.util.Locale;
 
 public class SolrClient {
 
@@ -459,7 +460,7 @@ public class SolrClient {
     private String toSolrDateFormat(String dateStr, String currentFormat) {
         String solrDateFormatResult = null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(currentFormat);
+            SimpleDateFormat sdf = new SimpleDateFormat(currentFormat, Locale.ENGLISH);
             Date date = sdf.parse(dateStr);
             sdf.applyPattern(SolrConstants.SOLR_DATE_FORMAT);
             solrDateFormatResult = sdf.format(date);
