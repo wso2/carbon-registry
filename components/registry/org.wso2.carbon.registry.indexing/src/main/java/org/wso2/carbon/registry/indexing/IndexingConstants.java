@@ -52,6 +52,7 @@ public final class IndexingConstants {
     public static final String FIELD_MEDIA_TYPE = "mediaType";
     public static final String FIELD_LC_NAME = "lcName";
     public static final String FIELD_LC_STATE = "lcState";
+    public static final String FIELD_OVERVIEW_NAME = "overview_name";
 
     // New fields are added for indexing
     public static final String FIELD_TAGS = "tags";
