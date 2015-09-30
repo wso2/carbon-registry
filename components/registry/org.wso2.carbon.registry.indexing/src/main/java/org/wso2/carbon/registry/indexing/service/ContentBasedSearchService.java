@@ -217,7 +217,9 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                 if (rowCount < start + count) {
                     if(rowCount - startIndex < 0) {
                         String msg = "PaginationContext parameter's start index seems to be greater than the limit count. Please verify your parameters";
-                        log.warn(msg);
+                        if(log.isDebugEnabled()) {
+                            log.debug(msg);
+                        }
                         resultsBean.setErrorMessage(msg);
                         return resultsBean;
                     }
