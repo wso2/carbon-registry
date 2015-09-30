@@ -75,6 +75,7 @@ public class RESTServiceUtils {
 
 	/**
 	 * Extracts the data from swagger and creates an REST Service registry artifact.
+     * In 5.1.0 please remove this method.
 	 *
 	 * @param swaggerDocObject      swagger Json Object.
 	 * @param swaggerVersion        swagger version.
@@ -143,6 +144,81 @@ public class RESTServiceUtils {
 
 		return data;
 	}
+
+    /**
+     * Extracts the data from swagger and creates an REST Service registry artifact.
+     * In 5.1.0 Please remove the above method
+     *
+     * @param swaggerDocObject      swagger Json Object.
+     * @param swaggerVersion        swagger version.
+     * @param endpointURL           Endpoint of the swagger
+     * @param resourceObjects       swagger resource object list.
+     * @param swaggerPath           Swagger resource path
+     * @param documentVersion       Swaggers registry version
+     * @return                      The API metadata
+     * @throws RegistryException    If swagger content is invalid.
+     */
+    public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
+                                                      String endpointURL, List<JsonObject> resourceObjects, String swaggerPath, String documentVersion)
+            throws RegistryException {
+
+        if(swaggerDocObject == null || swaggerVersion == null) {
+            throw new IllegalArgumentException("Arguments are invalid. cannot create the REST service artifact. ");
+        }
+
+        OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
+        OMElement overview = factory.createOMElement(OVERVIEW, namespace);
+        OMElement provider = factory.createOMElement(PROVIDER, namespace);
+        OMElement name = factory.createOMElement(NAME, namespace);
+        OMElement context = factory.createOMElement(CONTEXT, namespace);
+        OMElement apiVersion = factory.createOMElement(VERSION, namespace);
+        OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
+        OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
+        OMElement description = factory.createOMElement(DESCRIPTION, namespace);
+        List<OMElement> uriTemplates = null;
+
+        JsonObject infoObject = swaggerDocObject.get(SwaggerConstants.INFO).getAsJsonObject();
+        //get api name.
+        String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
+        name.setText(apiName);
+        context.setText("/" + apiName);
+        //get api description.
+        description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
+        //get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
+        provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+        endpoint.setText(endpointURL);
+
+        if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
+            apiVersion.setText(documentVersion);
+            transports.setText(getChildElementText(swaggerDocObject, SwaggerConstants.SCHEMES));
+            uriTemplates = createURITemplateFromSwagger2(swaggerDocObject);
+        } else if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
+            apiVersion.setText(documentVersion);
+            uriTemplates = createURITemplateFromSwagger12(resourceObjects);
+        }
+
+        overview.addChild(provider);
+        overview.addChild(name);
+        overview.addChild(context);
+        overview.addChild(apiVersion);
+        overview.addChild(transports);
+        overview.addChild(description);
+        overview.addChild(endpoint);
+        data.addChild(overview);
+
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement swagger = factory.createOMElement(SWAGGER, namespace);
+        swagger.setText(swaggerPath);
+        interfaceElement.addChild(swagger);
+        data.addChild(interfaceElement);
+        if (uriTemplates != null) {
+            for (OMElement uriTemplate : uriTemplates) {
+                data.addChild(uriTemplate);
+            }
+        }
+
+        return data;
+    }
 
 	/**
 	 * Extracts the data from wadl and creates an REST Service registry artifact.
