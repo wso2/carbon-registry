@@ -92,5 +92,6 @@ public final class IndexingConstants {
     public static final int FACET_MIN_COUNT_DEFAULT = 1;
     public static final String FACET_SORT = "facet.sort";
     public static final String FACET_PREFIX = "facet.prefix";
+    public static final String AUTH_REQUIRED = "authenticate.required";
 
 }

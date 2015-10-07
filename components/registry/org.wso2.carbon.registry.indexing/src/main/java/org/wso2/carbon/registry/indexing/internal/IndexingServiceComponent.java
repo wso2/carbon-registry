@@ -215,6 +215,7 @@ public class IndexingServiceComponent {
                     CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId), query);
         }
 
+        @Override
         public TermData[] search(Map<String, String> query) throws RegistryException {
             int tenantId;
             try {

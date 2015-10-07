@@ -82,6 +82,21 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return new SearchResultsBean();
     }
 
+    public SearchResultsBean getTermSearchResults(String[][] attributes) throws AxisFault{
+
+        try {
+            final Map<String, String> map = new HashMap<String, String>(attributes.length);
+            UserRegistry registry = (UserRegistry) getRootRegistry();
+            for (String[] mapping : attributes) {
+                map.put(mapping[0], mapping[1]);
+            }
+            return searchTerms(map, registry);
+        } catch (Exception e) {
+            log.error("Error occurred while getting the term search result.", e );
+        }
+        return new SearchResultsBean();
+    }
+
     private String[] sortByDateIfRequired(String[] authorizedPaths, final UserRegistry registry, PaginationContext paginationContext) throws RegistryException {
         if(paginationContext.getSortBy().equalsIgnoreCase("meta_created_date")) {
             if(paginationContext.getSortOrder().equalsIgnoreCase("ASC")) {
@@ -356,9 +371,15 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
 	}
 
-    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException {
+    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
+        boolean authRequired = false;
+        if (attributes.get(IndexingConstants.AUTH_REQUIRED) != null && Boolean.valueOf(attributes.get(IndexingConstants.AUTH_REQUIRED))) {
+            authRequired = true;
+        }
+        attributes.remove(IndexingConstants.AUTH_REQUIRED);
+        String facetField = attributes.get(IndexingConstants.FACET_FIELD_NAME);
         List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 
         if (log.isDebugEnabled()) {
@@ -367,7 +388,14 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 
         List<TermData> termDataList = new ArrayList<>();
         for (FacetField.Count count : results) {
-            termDataList.add(new TermData(count.getName(),count.getCount()));
+            if (authRequired) {
+                attributes.put(facetField, count.getName());
+                SearchResultsBean searchResultsBean = this.searchByAttribute(attributes, registry);
+                termDataList.add(new TermData(count.getName(), searchResultsBean.getResourceDataList().length));
+            }
+            else {
+                termDataList.add(new TermData(count.getName(), count.getCount()));
+            }
         }
         resultsBean.setTermDataList(termDataList.toArray(new TermData[termDataList.size()]));
         return resultsBean;
