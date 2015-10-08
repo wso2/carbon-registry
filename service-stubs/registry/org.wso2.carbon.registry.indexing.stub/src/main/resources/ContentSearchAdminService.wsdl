@@ -1,3 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax2427="http://api.user.carbon.wso2.org/xsd" xmlns:ax2425="http://profile.core.user.carbon.wso2.org/xsd" xmlns:ns="http://service.indexing.registry.carbon.wso2.org" xmlns:ax2423="http://claim.core.user.carbon.wso2.org/xsd" xmlns:ax2421="http://service.core.user.carbon.wso2.org/xsd" xmlns:ax2422="http://core.user.carbon.wso2.org/xsd" xmlns:ax2402="http://session.core.registry.carbon.wso2.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax2406="http://handlers.jdbc.core.registry.carbon.wso2.org/xsd" xmlns:ax2404="http://util.java/xsd" xmlns:ax2403="http://config.core.registry.carbon.wso2.org/xsd" xmlns:ax2419="http://queries.jdbc.core.registry.carbon.wso2.org/xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:ax2414="http://jdbc.core.registry.carbon.wso2.org/xsd" xmlns:ax2433="http://tenant.core.user.carbon.wso2.org/xsd" xmlns:ax2434="http://framework.osgi.org/xsd" xmlns:ax2417="http://utils.core.registry.carbon.wso2.org/xsd" xmlns:ax2412="http://securevault.wso2.org/xsd" xmlns:ax2439="http://statistics.core.registry.carbon.wso2.org/xsd" xmlns:ax2431="http://multitenancy.config.core.user.carbon.wso2.org/xsd" xmlns:ax2393="http://common.registry.carbon.wso2.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax2392="http://service.indexing.registry.carbon.wso2.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax2398="http://exceptions.core.registry.carbon.wso2.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax2396="http://indexer.indexing.registry.carbon.wso2.org/xsd" xmlns:ax2399="http://api.registry.carbon.wso2.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ax2408="http://dataaccess.core.registry.carbon.wso2.org/xsd" xmlns:ax2409="http://dao.core.registry.carbon.wso2.org/xsd" targetNamespace="http://service.indexing.registry.carbon.wso2.org">
     <wsdl:documentation>ContentSearchAdminService</wsdl:documentation>
     <wsdl:types>
@@ -883,13 +901,13 @@
     </wsdl:binding>
     <wsdl:service name="ContentSearchAdminService">
         <wsdl:port name="ContentSearchAdminServiceHttpsSoap11Endpoint" binding="ns:ContentSearchAdminServiceSoap11Binding">
-            <soap:address location="https://10.100.5.131:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://localhost:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="ContentSearchAdminServiceHttpsSoap12Endpoint" binding="ns:ContentSearchAdminServiceSoap12Binding">
-            <soap12:address location="https://10.100.5.131:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://localhost:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="ContentSearchAdminServiceHttpsEndpoint" binding="ns:ContentSearchAdminServiceHttpBinding">
-            <http:address location="https://10.100.5.131:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsEndpoint/"/>
+            <http:address location="https://localhost:9443/services/ContentSearchAdminService.ContentSearchAdminServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
