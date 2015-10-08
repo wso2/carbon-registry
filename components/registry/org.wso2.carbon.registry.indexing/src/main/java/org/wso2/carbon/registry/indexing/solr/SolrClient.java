@@ -590,9 +590,19 @@ public class SolrClient {
     }
 
     private void addSortByQuery(SolrQuery query, String sortBy, String sortOrder) {
-
-        query.setSort(sortBy + "_s",
-                "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        if (IndexingConstants.FIELD_TAGS.equals(sortBy) ||
+                IndexingConstants.FIELD_COMMENTS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(sortBy)) {
+            log.error("Sorting in multivalued fields is not supported");
+        } else if (IndexingConstants.FIELD_CREATED_DATE.equals(sortBy) ||
+                IndexingConstants.FIELD_LAST_UPDATED_DATE.equals(sortBy)) {
+            query.setSort(sortBy + SolrConstants.SOLR_DATE_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        } else {
+            query.setSort(sortBy + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        }
     }
 
     public List<FacetField.Count> facetQuery(int tenantId, Map<String, String> fields) throws SolrException {
@@ -637,7 +647,7 @@ public class SolrClient {
 
     private String addFacetFields(Map<String, String> fields, SolrQuery query) {
         //set the facet true to enable facet
-        //solr specific
+        //Need to set the Facet to true to enable Facet Query.
         query.setFacet(true);
         String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
         String queryField = null;
@@ -653,6 +663,7 @@ public class SolrClient {
                 queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
                 query.addFacetField(queryField);
             }
+            //remove the facet field avoid affecting to query results
             fields.remove(IndexingConstants.FACET_FIELD_NAME);
             //set the limit for the facet
             if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
