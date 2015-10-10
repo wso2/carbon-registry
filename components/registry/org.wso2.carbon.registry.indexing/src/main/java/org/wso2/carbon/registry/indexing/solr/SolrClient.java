@@ -22,13 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -561,9 +559,8 @@ public class SolrClient {
 
                     String sortBy = paginationContext.getSortBy();
                     if (sortBy.length() > 0) {
-                        query.setSort(sortBy + "_s",
-                                paginationContext.getSortOrder().equals("ASC") ?
-                                        SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+                        String sortOrder = paginationContext.getSortOrder();
+                        addSortByQuery(query, sortBy, sortOrder);
                     }
                     queryresponse = server.query(query);
                     if (log.isDebugEnabled()) {
@@ -590,6 +587,22 @@ public class SolrClient {
         }
     }
 
+    private void addSortByQuery(SolrQuery query, String sortBy, String sortOrder) {
+        if (IndexingConstants.FIELD_TAGS.equals(sortBy) ||
+                IndexingConstants.FIELD_COMMENTS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(sortBy)) {
+            log.error("Sorting in multivalued fields is not supported");
+        } else if (IndexingConstants.FIELD_CREATED_DATE.equals(sortBy) ||
+                IndexingConstants.FIELD_LAST_UPDATED_DATE.equals(sortBy)) {
+            query.setSort(sortBy + SolrConstants.SOLR_DATE_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        } else {
+            query.setSort(sortBy + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        }
+    }
+
     public List<FacetField.Count> facetQuery(int tenantId, Map<String, String> fields) throws SolrException {
         String facetField = null;
         try {
@@ -599,17 +612,17 @@ public class SolrClient {
             // Solr does not allow to search with special characters ,therefore this fix allow
             // to contain "-" in super tenant id.
             if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
-                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + "\\" + tenantId);
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ':' + "\\" + tenantId);
             } else {
-                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + tenantId);
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ':' + tenantId);
             }
             if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
                 if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
                         RegistryConstants.POLICY_MEDIA_TYPE)) {
-                    query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
-                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
+                    query.addFilterQuery(IndexingConstants.FIELD_ID + ':' +
+                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + '*');
 
                 }
             }
@@ -632,6 +645,7 @@ public class SolrClient {
 
     private String addFacetFields(Map<String, String> fields, SolrQuery query) {
         //set the facet true to enable facet
+        //Need to set the Facet to true to enable Facet Query.
         query.setFacet(true);
         String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
         String queryField = null;
@@ -647,6 +661,7 @@ public class SolrClient {
                 queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
                 query.addFacetField(queryField);
             }
+            //remove the facet field avoid affecting to query results
             fields.remove(IndexingConstants.FACET_FIELD_NAME);
             //set the limit for the facet
             if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
@@ -655,7 +670,7 @@ public class SolrClient {
             } else {
                 query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
             }
-            //set the mincount for the facet
+            //set the min count for the facet
             if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
                 query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
                 fields.remove(IndexingConstants.FACET_MIN_COUNT);
