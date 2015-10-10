@@ -20,9 +20,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -45,12 +43,9 @@ import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
-import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 public class ContentBasedSearchService extends RegistryAbstractAdmin 
@@ -91,7 +86,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                 map.put(mapping[0], mapping[1]);
             }
             return searchTerms(map, registry);
-        } catch (Exception e) {
+        } catch (IndexerException | RegistryException e) {
             log.error("Error occurred while getting the term search result.", e );
         }
         return new SearchResultsBean();
