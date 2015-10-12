@@ -15,6 +15,10 @@
  */
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -25,7 +29,14 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
@@ -36,6 +47,9 @@ import java.util.List;
  */
 
 @Path("/artifact")
+@Api(value = "/artifact",
+     description = "Rest api for doing operations on a resource",
+     produces = MediaType.APPLICATION_JSON)
 public class Artifact extends RegistryRestSuper {
 
     private Log log = LogFactory.getLog(Artifact.class);
@@ -52,6 +66,13 @@ public class Artifact extends RegistryRestSuper {
     @GET
     @Path("/{path:.*}")
     @Produces("application/octet-stream")
+    @ApiOperation(value = "Get content of a resource",
+                  httpMethod = "GET",
+                  notes = "Fetch content of a resource")//TODO add return type based on resource or collection
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the resource content and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getResource(@PathParam("path") List<PathSegment> path, @HeaderParam("X-JWT-Assertion") String JWTToken) {
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -101,6 +122,14 @@ public class Artifact extends RegistryRestSuper {
     @PUT
     @Path("/{path:.*}")
     @Produces("application/json")
+    @ApiOperation(value = "Create/Update a resource",
+                  httpMethod = "PUT",
+                  notes = "Create/Update a resource")
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Comment updated successfully"),
+                            @ApiResponse(code = 400, message = "Media type mismatch"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response createResource(@PathParam("path") List<PathSegment> path,
                                    InputStream contentStream,
                                    @HeaderParam("Content-Type") String contentType,
@@ -167,6 +196,13 @@ public class Artifact extends RegistryRestSuper {
     @DELETE
     @Path("/{path:.*}")
     @Produces("application/json")
+    @ApiOperation(value = "Delete a resource",
+                  httpMethod = "DELETE",
+                  notes = "Delete a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Resource deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response deleteResource(@PathParam("path") List<PathSegment> path,
                                    @HeaderParam("X-JWT-Assertion") String JWTToken) {
 

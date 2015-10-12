@@ -15,9 +15,12 @@
  */
 package org.wso2.carbon.registry.rest.api;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiImplicitParams;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -27,10 +30,25 @@ import org.wso2.carbon.registry.rest.api.model.CommentModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 /**
  * This class is to handle REST verbs GET , PSST and DELETE.
  */
 @Path("/comment")
+@Api(value = "/comment",
+     description = "Rest api for doing operations on a single comment",
+     produces = MediaType.APPLICATION_JSON)
+//@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class Comment extends RegistryRestSuper {
 
     private Log log = LogFactory.getLog(Comment.class);
@@ -44,6 +62,18 @@ public class Comment extends RegistryRestSuper {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get specific comment",
+                  httpMethod = "GET",
+                  notes = "Fetch details about a specific comment",
+                  response = CommentModel.class)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "Authorization",
+                                         value = "Header to provide basic authentication value",
+                                         dataType = "string",
+                                         paramType = "header") })
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the specific comment and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getComment(@QueryParam("path") String resourcePath,
                                @QueryParam("id") long commentId,
                                @HeaderParam("X-JWT-Assertion") String JWTToken) {
@@ -91,6 +121,13 @@ public class Comment extends RegistryRestSuper {
      */
     @POST
     @Produces("application/json")
+    @ApiOperation(value = "Add a comment to a resource",
+                  httpMethod = "POST",
+                  notes = "Add a comment to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Comment added successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addComment(@QueryParam("path") String resourcePath,
                                String commentText,
                                @HeaderParam("X-JWT-Assertion") String JWTToken) {
@@ -126,6 +163,13 @@ public class Comment extends RegistryRestSuper {
      */
     @PUT
     @Produces("application/json")
+    @ApiOperation(value = "Update an already added comment",
+                  httpMethod = "PUT",
+                  notes = "Update an already added comment")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Comment updated successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response editComment(@QueryParam("path") String resourcePath,
                                 @QueryParam("id") long commentId, String commentText,
                                 @HeaderParam("X-JWT-Assertion") String JWTToken) {
@@ -162,6 +206,13 @@ public class Comment extends RegistryRestSuper {
      */
     @DELETE
     @Produces("application/json")
+    @ApiOperation(value = "Delete a comment",
+                  httpMethod = "DELETE",
+                  notes = "Delete a comment")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Comment deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response deleteComment(@QueryParam("path") String resourcePath,
                                   @QueryParam("id") long commentId,
                                   @HeaderParam("X-JWT-Assertion") String JWTToken) {

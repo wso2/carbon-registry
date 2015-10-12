@@ -18,6 +18,10 @@ package org.wso2.carbon.registry.rest.api;
 
 //import edu.emory.mathcs.backport.java.util.Arrays;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -28,7 +32,14 @@ import org.wso2.carbon.registry.rest.api.model.PropertyModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +50,9 @@ import java.util.List;
  * This class handle the properties related to the REST verbs GET,POST and DELETE.
  */
 @Path("/properties")
+@Api(value = "/properties",
+     description = "Rest api for doing operations on resource properties",
+     produces = MediaType.APPLICATION_JSON)
 public class Properties extends PaginationCalculation<PropertyModel> {
 
     private Log log = LogFactory.getLog(Properties.class);
@@ -53,6 +67,15 @@ public class Properties extends PaginationCalculation<PropertyModel> {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get all properties on a resource",
+                  httpMethod = "GET",
+                  notes = "Fetch all properties on a resource",
+                  response = PropertyModel.class,
+                  responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the properties and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getProperties(@QueryParam("path") String resourcePath,
                                   @QueryParam("start") int start,
                                   @QueryParam("size") int size,
@@ -88,6 +111,13 @@ public class Properties extends PaginationCalculation<PropertyModel> {
      */
     @POST
     @Consumes("application/json")
+    @ApiOperation(value = "Add properties to a resource",
+                  httpMethod = "POST",
+                  notes = "Add properties to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Properties added successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addProperties(@QueryParam("path") String resourcePath,
                                   PropertyModel[] addProperty,
                                   @HeaderParam("X-JWT-Assertion") String JWTToken) {

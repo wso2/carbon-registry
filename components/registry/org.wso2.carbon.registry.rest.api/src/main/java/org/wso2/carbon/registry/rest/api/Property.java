@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -26,7 +30,15 @@ import org.wso2.carbon.registry.rest.api.model.PropertyModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Properties;
@@ -36,6 +48,9 @@ import java.util.Properties;
  */
 
 @Path("/property")
+@Api(value = "/property",
+     description = "Rest api for doing operations on a specific single property",
+     produces = MediaType.APPLICATION_JSON)
 public class Property extends RegistryRestSuper {
 
     private Log log = LogFactory.getLog(Property.class);
@@ -49,6 +64,14 @@ public class Property extends RegistryRestSuper {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get specific property",
+                  httpMethod = "GET",
+                  notes = "Fetch details about a specific property",
+                  response = PropertyModel.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the specific property and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getProperty(@QueryParam("path") String resourcePath,
                                 @QueryParam("name") String propertyName,
                                 @HeaderParam("X-JWT-Assertion") String JWTToken) {
@@ -90,6 +113,13 @@ public class Property extends RegistryRestSuper {
      */
     @POST
     @Consumes("application/json")
+    @ApiOperation(value = "Add a property to a resource",
+                  httpMethod = "POST",
+                  notes = "Add a property to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "property added successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addProperty(@QueryParam("path") String resourcePath,
                                 @QueryParam("name") String name,
                                 @QueryParam("value") String value,
@@ -129,6 +159,13 @@ public class Property extends RegistryRestSuper {
      */
     @DELETE
     @Produces("application/json")
+    @ApiOperation(value = "Delete a property",
+                  httpMethod = "DELETE",
+                  notes = "Delete a property")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "property deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response deleteProperty(@QueryParam("path") String resourcePath,
                                    @QueryParam("name") String name,
                                    @HeaderParam("X-JWT-Assertion") String JWTToken) {

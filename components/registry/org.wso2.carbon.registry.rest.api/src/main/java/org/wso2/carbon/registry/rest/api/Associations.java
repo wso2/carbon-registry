@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -26,7 +30,14 @@ import org.wso2.carbon.registry.rest.api.model.AssociationModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +46,9 @@ import java.util.List;
  * his class is to handle the associations related REST verb GET.
  */
 @Path("/associations")
+@Api(value = "/associations",
+     description = "Rest api for doing operations on associations",
+     produces = MediaType.APPLICATION_JSON)
 public class Associations extends PaginationCalculation<Association> {
 
     private Log log = LogFactory.getLog(Associations.class);
@@ -50,6 +64,13 @@ public class Associations extends PaginationCalculation<Association> {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @ApiOperation(value = "Add a set of associations to a resource",
+                  httpMethod = "POST",
+                  notes = "Add a set of associations to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Associations added successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addAssociations(@QueryParam("path") String sourcePath, AssociationModel[] association,
                                     @HeaderParam("X-JWT-Assertion") String JWTToken) {
 
@@ -88,6 +109,15 @@ public class Associations extends PaginationCalculation<Association> {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get all associations on a resource",
+                  httpMethod = "GET",
+                  notes = "Fetch all associations on a resource",
+                  response = AssociationModel.class,
+                  responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the comments and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getAssociations(@QueryParam("path") String sourcePath,
                                     @QueryParam("type") String type,
                                     @QueryParam("start") int start,

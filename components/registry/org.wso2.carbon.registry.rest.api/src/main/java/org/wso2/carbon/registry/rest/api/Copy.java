@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -28,6 +32,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
@@ -35,6 +40,9 @@ import javax.ws.rs.core.Response;
  * This class to handle resource copy functions according to the REST verbs.
  */
 @Path("/copy")
+@Api(value = "/copy",
+     description = "Rest api for doing copy operations on resources",
+     produces = MediaType.APPLICATION_JSON)
 public class Copy extends RegistryRestSuper {
     Log log = LogFactory.getLog(Copy.class);
 
@@ -47,6 +55,13 @@ public class Copy extends RegistryRestSuper {
      * @return - HTTP 204 No Content if success.
      */
     @POST
+    @ApiOperation(value = "Copy source resource to target path",
+                  httpMethod = "POST",
+                  notes = "Copy source resource to target path")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Resource copied successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response copyResource(@QueryParam("path") String resourcePath,
                                  @QueryParam("destination") String destinationPath,
                                  @HeaderParam("X-JWT-Assertion") String JWTToken) {
