@@ -19,6 +19,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -126,7 +127,6 @@ public class RESTServiceUtils {
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);
-		overview.addChild(transports);
 		overview.addChild(description);
 		overview.addChild(endpoint);
 		data.addChild(overview);
@@ -135,6 +135,7 @@ public class RESTServiceUtils {
         OMElement swagger = factory.createOMElement(SWAGGER, namespace);
         swagger.setText(swaggerPath);
         interfaceElement.addChild(swagger);
+		interfaceElement.addChild(transports);
         data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
@@ -201,7 +202,6 @@ public class RESTServiceUtils {
         overview.addChild(name);
         overview.addChild(context);
         overview.addChild(apiVersion);
-        overview.addChild(transports);
         overview.addChild(description);
         overview.addChild(endpoint);
         data.addChild(overview);
@@ -210,6 +210,7 @@ public class RESTServiceUtils {
         OMElement swagger = factory.createOMElement(SWAGGER, namespace);
         swagger.setText(swaggerPath);
         interfaceElement.addChild(swagger);
+		interfaceElement.addChild(transports);
         data.addChild(interfaceElement);
         if (uriTemplates != null) {
             for (OMElement uriTemplate : uriTemplates) {
@@ -271,7 +272,6 @@ public class RESTServiceUtils {
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);
-		overview.addChild(transports);
 
 		overview.addChild(endpoint);
 		data.addChild(overview);
@@ -280,6 +280,7 @@ public class RESTServiceUtils {
         OMElement wadl = factory.createOMElement(WADL, namespace);
         wadl.setText(wadlPath);
         interfaceElement.addChild(wadl);
+		interfaceElement.addChild(transports);
         data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
@@ -443,7 +444,22 @@ public class RESTServiceUtils {
 	 */
 	private static String getChildElementText(JsonObject object, String key) {
 		JsonElement element = object.get(key);
-		if (element != null) {
+		if (element != null && element.isJsonArray()) {
+			if (((JsonArray) element).size() == 1) {
+				return object.get(key).getAsString();
+			} else {
+				StringBuffer sb = new StringBuffer();
+				JsonArray elements = (JsonArray)object.get(key);
+				for (int i = 0; i < elements.size(); i++) {
+					JsonPrimitive ob = (JsonPrimitive)elements.get(i);
+					sb.append(ob.getAsString());
+					if (i < elements.size()-1) {
+						sb.append(",");
+					}
+				}
+				return sb.toString();
+			}
+		} else if (element != null && (element.isJsonObject() || element.isJsonPrimitive())) {
 			return object.get(key).getAsString();
 		}
 		return null;
