@@ -86,9 +86,9 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         <property name="resourcePackage" value="org.wso2.carbon.registry.rest.api" />
         <property name="version" value="2.0" />
         <property name="basePath" value="https://localhost:9443/resource/1.0.0" />
-        <property name="title" value="Swagger UI Integration Sample" />
+        <property name="title" value="Swagger documentation for Governance registry REST API" />
         <property name="description"
-                  value="Swagger UI Integration Sample for demonstrating its working." />
+                  value="Swagger documentation for Governance registry REST API" />
         <property name="contact" value="dev@wso2.org" />
         <property name="scan" value="true" />
     </bean>
