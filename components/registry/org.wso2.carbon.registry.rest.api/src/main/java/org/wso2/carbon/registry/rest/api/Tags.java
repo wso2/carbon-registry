@@ -16,22 +16,42 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Collection;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.Tag;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.rest.api.model.TagModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 @Path("/tags")
+@Api(value = "/tags",
+     description = "Rest api for doing operations on tags",
+     produces = MediaType.APPLICATION_JSON)
 public class Tags extends PaginationCalculation<Tag> {
 
     private Log log = LogFactory.getLog(Tags.class);
@@ -46,6 +66,14 @@ public class Tags extends PaginationCalculation<Tag> {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get all tags on a resource",
+                  httpMethod = "GET",
+                  notes = "Fetch all tags on a resource",
+                  response = TagModel.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the tags and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getTags(@QueryParam("path") String resourcePath,
                             @QueryParam("start") int start,
                             @QueryParam("size") int size,
@@ -89,6 +117,13 @@ public class Tags extends PaginationCalculation<Tag> {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @ApiOperation(value = "Add an array of tags to a resource",
+                  httpMethod = "POST",
+                  notes = "Add an array of tags to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Resource tagged successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addTags(@QueryParam("path") String resourcePath,
                             TagModel tags,
                             @HeaderParam("X-JWT-Assertion") String JWTToken) {

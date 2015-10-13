@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -26,10 +30,17 @@ import org.wso2.carbon.registry.rest.api.model.TaggedResourcePathModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,6 +48,9 @@ import java.util.List;
  */
 
 @Path("/tag")
+@Api(value = "/tag",
+     description = "Rest api for doing operations on a specific single tag",
+     produces = MediaType.APPLICATION_JSON)
 public class Tag extends PaginationCalculation<TaggedResourcePath> {
 
     private Log log = LogFactory.getLog(Tag.class);
@@ -53,6 +67,14 @@ public class Tag extends PaginationCalculation<TaggedResourcePath> {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get resource paths tagged with a specific tag",
+                  httpMethod = "GET",
+                  notes = "Fetch resource paths tagged with a specific tag",
+                  response = TaggedResourcePathModel.class,
+                  responseContainer = "List")
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the tagged resource paths and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getTaggedResources(@QueryParam("name") String tagName,
                                        @QueryParam("start") int start,
                                        @QueryParam("size") int size,
@@ -85,6 +107,13 @@ public class Tag extends PaginationCalculation<TaggedResourcePath> {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @ApiOperation(value = "Add a tag to a resource",
+                  httpMethod = "POST",
+                  notes = "Add a tag to a resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Resource tagged successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addTag(@QueryParam("path") String resourcePath,
                            @QueryParam("name") String tagText,
                            @HeaderParam("X-JWT-Assertion") String JWTToken) {
@@ -120,6 +149,13 @@ public class Tag extends PaginationCalculation<TaggedResourcePath> {
      */
     @DELETE
     @Produces("application/json")
+    @ApiOperation(value = "Delete a tag",
+                  httpMethod = "DELETE",
+                  notes = "Delete a tag")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Tag deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response deleteTag(@QueryParam("path") String resourcePath,
                               @QueryParam("name") String tagName,
                               @HeaderParam("X-JWT-Assertion") String JWTToken) {
