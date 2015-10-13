@@ -70,7 +70,7 @@ public class Property extends RegistryRestSuper {
                   response = PropertyModel.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the specific property and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getProperty(@QueryParam("path") String resourcePath,
                                 @QueryParam("name") String propertyName,

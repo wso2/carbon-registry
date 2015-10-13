@@ -57,13 +57,13 @@ public class MetaData extends RegistryRestSuper {
      */
     @GET
     @Produces("application/json")
-    @ApiOperation(value = "Get specific comment",
+    @ApiOperation(value = "Get metadata about a specific resource",
                   httpMethod = "GET",
-                  notes = "Fetch details about a specific comment",
+                  notes = "Fetch metadata about a specific resource",
                   response = ResourceModel.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the specific comment and returned in body"),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found metadata for the resource and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getMetaData(@QueryParam("path") String resourcePath,
                                 @HeaderParam("X-JWT-Assertion") String JWTToken) {

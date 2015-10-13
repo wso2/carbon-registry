@@ -74,7 +74,7 @@ public class Properties extends PaginationCalculation<PropertyModel> {
                   responseContainer = "List")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the properties and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getProperties(@QueryParam("path") String resourcePath,
                                   @QueryParam("start") int start,

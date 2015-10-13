@@ -71,7 +71,7 @@ public class Artifact extends RegistryRestSuper {
                   notes = "Fetch content of a resource")//TODO add return type based on resource or collection
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the resource content and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getResource(@PathParam("path") List<PathSegment> path, @HeaderParam("X-JWT-Assertion") String JWTToken) {
 
@@ -125,7 +125,7 @@ public class Artifact extends RegistryRestSuper {
     @ApiOperation(value = "Create/Update a resource",
                   httpMethod = "PUT",
                   notes = "Create/Update a resource")
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Comment updated successfully"),
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Resource updated successfully"),
                             @ApiResponse(code = 400, message = "Media type mismatch"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
                             @ApiResponse(code = 404, message = "Specified resource not found"),

@@ -114,9 +114,9 @@ public class Associations extends PaginationCalculation<Association> {
                   notes = "Fetch all associations on a resource",
                   response = AssociationModel.class,
                   responseContainer = "List")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the comments and returned in body"),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the associations and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Associations for given resource were not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getAssociations(@QueryParam("path") String sourcePath,
                                     @QueryParam("type") String type,

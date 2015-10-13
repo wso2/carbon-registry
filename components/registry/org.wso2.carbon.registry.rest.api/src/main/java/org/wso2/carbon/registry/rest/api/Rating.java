@@ -63,7 +63,7 @@ public class Rating extends RegistryRestSuper {
     @ApiResponses(value = { @ApiResponse(code = 200,
                                          message = "Found user's rating and overall rating and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getRating(@QueryParam("path") String resourcePath,
                               @HeaderParam("X-JWT-Assertion") String JWTToken) {

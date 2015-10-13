@@ -16,8 +16,6 @@
 package org.wso2.carbon.registry.rest.api;
 
 import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
@@ -66,10 +64,6 @@ public class Comment extends RegistryRestSuper {
                   httpMethod = "GET",
                   notes = "Fetch details about a specific comment",
                   response = CommentModel.class)
-    @ApiImplicitParams({ @ApiImplicitParam(name = "Authorization",
-                                         value = "Header to provide basic authentication value",
-                                         dataType = "string",
-                                         paramType = "header") })
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the specific comment and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
                             @ApiResponse(code = 404, message = "Given specific comment not found"),

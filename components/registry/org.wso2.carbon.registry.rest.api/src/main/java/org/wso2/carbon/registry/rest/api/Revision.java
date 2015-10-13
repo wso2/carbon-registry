@@ -59,7 +59,7 @@ public class Revision extends RegistryRestSuper {
                   notes = "Fetch content of a resource")//TODO add return type based on resource or collection
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Found the revisioned resource content and returned in body"),
                             @ApiResponse(code = 401, message = "Invalid credentials provided"),
-                            @ApiResponse(code = 404, message = "Given specific comment not found"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
                             @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getRevision(@QueryParam("path") String path,
                                 @QueryParam("id") long revisionId,
