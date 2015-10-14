@@ -386,7 +386,9 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             if (authRequired) {
                 attributes.put(facetField, count.getName());
                 SearchResultsBean searchResultsBean = this.searchByAttribute(attributes, registry);
-                termDataList.add(new TermData(count.getName(), searchResultsBean.getResourceDataList().length));
+                if (searchResultsBean.getResourceDataList().length > 0) {
+                    termDataList.add(new TermData(count.getName(), searchResultsBean.getResourceDataList().length));
+                }
             }
             else {
                 termDataList.add(new TermData(count.getName(), count.getCount()));
