@@ -16,6 +16,10 @@
 
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -26,12 +30,16 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * This class is to handle resource move operation according to the REST verb POST.
  */
 @Path("/move")
+@Api(value = "/move",
+     description = "Rest api for doing move operations on resources",
+     produces = MediaType.APPLICATION_JSON)
 public class Move extends RegistryRestSuper {
 
     /**
@@ -43,6 +51,13 @@ public class Move extends RegistryRestSuper {
      */
 
     @POST
+    @ApiOperation(value = "Move source resource to target path",
+                  httpMethod = "POST",
+                  notes = "Move source resource to target path")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Resource moved successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response moveResource(@QueryParam("path") String resourcePath,
                                  @QueryParam("destination") String destinationPath,
                                  @HeaderParam("X-JWT-Assertion") String JWTToken) {
