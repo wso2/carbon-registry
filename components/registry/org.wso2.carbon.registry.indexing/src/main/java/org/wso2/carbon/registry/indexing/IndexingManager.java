@@ -151,6 +151,16 @@ public class IndexingManager {
         return registryConfig.getIndexerPoolSize();
     }
 
+    /**
+     * This method is to get caching enabled or disabled status for indexing purposes when resources are retrieved.
+     *
+     * @return indexing cache status
+     */
+    public boolean isCacheSkipped() {
+        return registryConfig.isSkipIndexingCache();
+
+    }
+
     public void deleteFromIndex(String oldPath, int tenantId) throws RegistryException {
         getIndexer().getClient().deleteFromIndex(oldPath, tenantId);
     }

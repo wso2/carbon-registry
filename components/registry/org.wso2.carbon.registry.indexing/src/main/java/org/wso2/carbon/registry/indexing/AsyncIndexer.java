@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
@@ -201,28 +202,51 @@ public class AsyncIndexer implements Runnable {
         }
 
         private void createIndexDocument(File2Index file2Index) {
+            RegistryContext registryContext = null;
+            boolean skipCache = false;
+            String resourcePath = file2Index.path;;
             try {
-                String resourcePath = file2Index.path;
+                skipCache = IndexingManager.getInstance().isCacheSkipped();
                 Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
-                Resource resource;
-                //Check whether resource exists before indexing the resource
-                if(resourcePath != null && registry.resourceExists(resourcePath) && (resource = registry.get(resourcePath)) != null) {
-                    // Create the IndexDocument
-                    IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
-                    indexDocumentCreator.createIndexDocument();
+                registryContext = registry.getRegistryContext();
 
-                    // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
-                    // in the indexer. see CARBON-11510.
-                    String symlinkPath = resource.getProperty("registry.resource.symlink.path");
-                    if (symlinkPath != null) {
-                        // Create the IndexDocument
-                        file2Index.path = symlinkPath;
-                        indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
-                        indexDocumentCreator.createIndexDocument();
+                if (resourcePath != null) {
+                    if (skipCache) {
+                        // Add resource path as a no cache path. So the resource will be fetched from embedded registry.
+                        registryContext.registerNoCachePath(resourcePath);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Resource at path \"" + resourcePath + "\" is added as a no cache path");
+                        }
                     }
+
+                    Resource resource;
+                    //Check whether resource exists before indexing the resource
+                    if (registry.resourceExists(resourcePath) && (resource = registry.get(resourcePath)) != null) {
+                        // Create the IndexDocument
+                        IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                        indexDocumentCreator.createIndexDocument();
+
+                        // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
+                        // in the indexer. see CARBON-11510.
+                        String symlinkPath = resource.getProperty("registry.resource.symlink.path");
+                        if (symlinkPath != null) {
+                            // Create the IndexDocument
+                            file2Index.path = symlinkPath;
+                            indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
+                            indexDocumentCreator.createIndexDocument();
+                        }
+                    }
+
                 }
             } catch (RegistryException | IndexerException e) {
                 log.error("Error while indexing.", e);
+            } finally {
+                if (skipCache && registryContext != null) {
+                    registryContext.removeNoCachePath(resourcePath);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Resource at path \"" + resourcePath + "\" is removed from no cache path");
+                    }
+                }
             }
         }
     }
