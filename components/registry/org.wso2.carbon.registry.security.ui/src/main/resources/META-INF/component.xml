@@ -19,7 +19,7 @@
 	<menus>
 	    <menu>
             <id>secure_vault_main_menu</id>
-            <i18n-key>mediation.secure.vault</i18n-key>
+            <i18n-key>registry.secure.vault</i18n-key>
             <i18n-bundle>org.wso2.carbon.registry.security.vault.ui.i18n.Resources</i18n-bundle>
             <parent-menu>manage_menu</parent-menu>
             <link>#</link>
@@ -32,7 +32,7 @@
         
 		<menu>
 			<id>secure_vault_list_view</id>
-			<i18n-key>mediation.secure.vault.list.configs</i18n-key>
+			<i18n-key>registry.secure.vault.list.configs</i18n-key>
 			<i18n-bundle>org.wso2.carbon.registry.security.vault.ui.i18n.Resources</i18n-bundle>
 			<parent-menu>secure_vault_main_menu</parent-menu>
 			<link>../registry_vault/manageSecureVault.jsp</link>
