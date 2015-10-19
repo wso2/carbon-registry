@@ -35,7 +35,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber;
 import org.wso2.carbon.email.verification.util.Util;
-import org.wso2.carbon.event.core.EventBroker;
+import org.wso2.carbon.registry.event.core.EventBroker;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.jdbc.handlers.filters.URLMatcher;
@@ -78,7 +78,7 @@ import java.util.*;
  * interface="org.apache.axis2.engine.ListenerManager" cardinality="1..1" policy="dynamic"
  * bind="setListenerManager" unbind="unsetListenerManager"
  * @scr.reference name="eventbroker.service"
- * interface="org.wso2.carbon.event.core.EventBroker"
+ * interface="org.wso2.carbon.registry.event.core.EventBroker"
  * cardinality="1..1" policy="dynamic"
  * bind="setEventBroker" unbind="unsetEventBroker"
  * @scr.reference name="email.verification.service"

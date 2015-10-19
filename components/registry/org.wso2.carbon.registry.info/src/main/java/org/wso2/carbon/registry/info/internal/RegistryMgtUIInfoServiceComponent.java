@@ -22,8 +22,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.event.core.exception.EventBrokerException;
-import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.core.exception.EventBrokerException;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.admin.api.jmx.ISubscriptionsService;
 import org.wso2.carbon.registry.common.beans.SubscriptionBean;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -45,7 +45,7 @@ import java.util.*;
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="registry.eventing.service"
- * interface="org.wso2.carbon.registry.eventing.services.EventingService" cardinality="0..1"
+ * interface="org.wso2.carbon.registry.eventing.services.EventingService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryEventingService" unbind="unsetRegistryEventingService"
  * @scr.reference name="registry.subscription.email.verification.service"
  * interface="org.wso2.carbon.registry.eventing.services.SubscriptionEmailVerficationService" cardinality="0..1"

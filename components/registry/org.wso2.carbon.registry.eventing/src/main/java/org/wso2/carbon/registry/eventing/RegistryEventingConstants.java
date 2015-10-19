@@ -19,7 +19,7 @@
 
 package org.wso2.carbon.registry.eventing;
 
-import org.wso2.carbon.event.ws.internal.util.EventingConstants;
+import org.wso2.carbon.registry.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 
 public class RegistryEventingConstants implements EventingConstants {

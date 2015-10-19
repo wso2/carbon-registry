@@ -21,7 +21,7 @@ package org.wso2.carbon.registry.eventing.internal;
 import org.apache.axis2.context.ConfigurationContext;
 import org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber;
 import org.wso2.carbon.email.verification.util.EmailVerifierConfig;
-import org.wso2.carbon.event.core.EventBroker;
+import org.wso2.carbon.registry.event.core.EventBroker;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.eventing.services.EventingService;
 
