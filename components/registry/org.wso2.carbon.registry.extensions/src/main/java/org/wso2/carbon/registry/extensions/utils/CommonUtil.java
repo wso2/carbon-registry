@@ -571,6 +571,10 @@ public class CommonUtil {
         } else {
             String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.SOAP_SERVICE_MEDIA_TYPE);
             String absolutePath = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service, context.getResource().getProperties()));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
             if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
                 path = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), absolutePath);
                 if (log.isDebugEnabled()) {

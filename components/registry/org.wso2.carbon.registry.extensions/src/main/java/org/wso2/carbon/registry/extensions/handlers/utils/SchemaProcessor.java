@@ -27,8 +27,6 @@ import org.apache.ws.commons.schema.XmlSchemaExternal;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
@@ -484,6 +482,10 @@ public class SchemaProcessor {
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
             String schemaPath = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                     pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
             if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
                 schemaPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), schemaPath);
                 if (log.isDebugEnabled()) {

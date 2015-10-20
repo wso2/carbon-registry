@@ -374,6 +374,10 @@ public class RESTServiceUtils {
         pathExpression = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), CommonUtil
                 .replaceExpressionOfPath(pathExpression, "provider", serviceProvider));
 		String servicePath = pathExpression;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
 		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
 			servicePath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
 			if (log.isDebugEnabled()) {
@@ -441,9 +445,15 @@ public class RESTServiceUtils {
                                                               requestContext.getResource().getProperties());
         endpointPath = CommonUtil.replaceExpressionOfPath(pathExpression, "name", endpointPath);
 		String endpointRegistryPath = endpointPath;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
 		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
 			endpointRegistryPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
-			log.info("Saving current session local paths, key: " + endpointRegistryPath + " | value: " + endpointPath);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + endpointRegistryPath + " | value: " + endpointPath);
+			}
 			CurrentSession.getLocalPathMap().put(endpointRegistryPath, endpointPath);
 		}
 		return endpointRegistryPath;

@@ -354,9 +354,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         }
                         Map<String, String> localPathMap = null;
                         if (CurrentSession.getLocalPathMap() != null) {
-/*                            localPathMap =
-                                    Collections.unmodifiableMap(CurrentSession.getLocalPathMap());*/
-                            localPathMap = CurrentSession.getLocalPathMap();
+                            localPathMap =
+                                    Collections.unmodifiableMap(CurrentSession.getLocalPathMap());
                         }
                         if (wsdlUriList.isEmpty() && xsdUriList.isEmpty() && wadlUriList.isEmpty() && uriList.isEmpty() && swaggerUriList.isEmpty()) {
                             throw new RegistryException(
@@ -437,17 +436,27 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
         }
     }
 
+    /**
+     * remove the Local PathMap from the CurrentSession
+     * @param pathMapSet whether pathMap is set or not
+     */
     private void removeSessionLocalPathMap(boolean pathMapSet) {
         if (pathMapSet) {
             CurrentSession.removeLocalPathMap();
         }
     }
 
+    /**
+     * Method will add Local PathMap to the CurrentSession, if it is not exists
+     * Set ARCHIEVE_UPLOAD param to true, it param is accessed to calculate registry path in mounted env.
+     * @param requestContext the request context to get mount points
+     * @return whether pathMap is set or not
+     */
     private boolean setSessionLocalPathMap(RequestContext requestContext) {
         boolean pathMapSet = false;
         if (CurrentSession.getLocalPathMap() == null) {
             RegistryContext registryContext = requestContext.getRegistry().getRegistryContext();
-            if (registryContext != null && registryContext.getMounts().size() > 0) {
+            if (registryContext != null && registryContext.getMounts() != null && registryContext.getMounts().isEmpty()) {
                 Map<String, String> localPathMap = new HashMap<String, String>();
                 CurrentSession.setLocalPathMap(localPathMap);
                 pathMapSet = true;

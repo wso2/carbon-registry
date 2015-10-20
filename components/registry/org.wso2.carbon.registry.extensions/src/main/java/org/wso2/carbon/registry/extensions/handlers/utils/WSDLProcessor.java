@@ -357,6 +357,10 @@ public class WSDLProcessor {
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
             String wsdlPath = RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
             if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
                 wsdlPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), wsdlPath);
                 CurrentSession.getLocalPathMap().remove(context.getResourcePath().getCompletePath());

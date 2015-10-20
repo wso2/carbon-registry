@@ -711,9 +711,9 @@ public class SolrClient {
                             .equals(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS) || field.getKey()
                             .equals(IndexingConstants.FIELD_ASSOCIATION_TYPES)) {
                         // Set the suffix value of the key
-                        fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":*";
+                        fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
                         query.addFilterQuery(
-                                field.getKey() + fieldKeySuffix + field.getValue() + "*");
+                                field.getKey() + fieldKeySuffix + field.getValue());
                     } else if (IndexingConstants.FIELD_PROPERTY_NAME.equals(field.getKey())) {
                         // Get the value of property name
                         propertyName = field.getValue();

@@ -27,7 +27,6 @@ import org.jvnet.ws.wadl.ast.WadlAstBuilder;
 import org.jvnet.ws.wadl.util.MessageListener;
 import org.w3c.dom.Element;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.Repository;
@@ -41,7 +40,6 @@ import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
 import org.xml.sax.InputSource;
 
-import javax.wsdl.Definition;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -499,6 +497,10 @@ public class WADLProcessor {
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
             String wadlPath = RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
             if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
                 wadlPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), wadlPath);
                 CurrentSession.getLocalPathMap().remove(context.getResourcePath().getCompletePath());

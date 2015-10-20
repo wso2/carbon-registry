@@ -31,8 +31,6 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
@@ -365,6 +363,10 @@ public class SwaggerProcessor {
         swaggerResourcesPath = pathExpression;
         pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", swaggerDocName);
 		String swaggerPath = pathExpression;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
 		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
 			swaggerPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
 			if (log.isDebugEnabled()) {
