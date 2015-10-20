@@ -30,10 +30,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -356,8 +356,16 @@ public class WSDLProcessor {
                                                                   context.getResource().getProperties(), null);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
-            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
-                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+            String wsdlPath = RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                wsdlPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), wsdlPath);
+                CurrentSession.getLocalPathMap().remove(context.getResourcePath().getCompletePath());
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + wsdlPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(wsdlPath, pathExpression);
+            }
+            return wsdlPath;
         } else {
             String wsdlPath = (getChrootedWSDLLocation(context.getRegistryContext()) +
                                CommonUtil.derivePathFragmentFromNamespace(

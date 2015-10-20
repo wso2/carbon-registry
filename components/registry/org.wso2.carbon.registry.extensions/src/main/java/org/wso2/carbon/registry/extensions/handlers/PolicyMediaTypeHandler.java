@@ -27,6 +27,7 @@ import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
@@ -269,8 +270,15 @@ public class PolicyMediaTypeHandler extends Handler {
             pathExpression =  RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                                                             CommonUtil.replaceExpressionOfPath(pathExpression,
                                                             "name", extractResourceFromURL(policyFileName, ".xml")));
-            pathExpression =  CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
-            return pathExpression;
+            String policyPath = pathExpression;
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                policyPath =  CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + policyPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(policyPath, pathExpression);
+            }
+            return policyPath;
         } else {
             String policyPath;
             if (!resourcePath.startsWith(commonLocation) && !resourcePath.equals(RegistryUtils.getAbsolutePath(

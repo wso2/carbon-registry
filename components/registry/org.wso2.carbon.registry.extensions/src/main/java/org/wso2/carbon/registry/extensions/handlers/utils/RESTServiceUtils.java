@@ -34,6 +34,7 @@ import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -372,7 +373,15 @@ public class RESTServiceUtils {
                 .getPathFromPathExpression(pathExpression, requestContext.getResource().getProperties(), null);
         pathExpression = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), CommonUtil
                 .replaceExpressionOfPath(pathExpression, "provider", serviceProvider));
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+		String servicePath = pathExpression;
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			servicePath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + servicePath + " | value: " + pathExpression);
+			}
+			CurrentSession.getLocalPathMap().put(servicePath, pathExpression);
+		}
+		return servicePath;
     }
 
     /**
@@ -431,8 +440,13 @@ public class RESTServiceUtils {
         pathExpression = CommonUtil.getPathFromPathExpression(pathExpression, endpointElement,
                                                               requestContext.getResource().getProperties());
         endpointPath = CommonUtil.replaceExpressionOfPath(pathExpression, "name", endpointPath);
-
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+		String endpointRegistryPath = endpointPath;
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			endpointRegistryPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+			log.info("Saving current session local paths, key: " + endpointRegistryPath + " | value: " + endpointPath);
+			CurrentSession.getLocalPathMap().put(endpointRegistryPath, endpointPath);
+		}
+		return endpointRegistryPath;
     }
 
     /**

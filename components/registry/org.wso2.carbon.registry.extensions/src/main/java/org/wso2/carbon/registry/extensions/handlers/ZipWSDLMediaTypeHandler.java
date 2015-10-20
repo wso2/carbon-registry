@@ -178,6 +178,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             return;
         }
         CommonUtil.acquireUpdateLock();
+        // setting up session local path map for mounted setup.
+        boolean pathMapSet = setSessionLocalPathMap(requestContext);
         try {
             Resource resource = requestContext.getResource();
             String path = requestContext.getResourcePath().getPath();
@@ -352,8 +354,9 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         }
                         Map<String, String> localPathMap = null;
                         if (CurrentSession.getLocalPathMap() != null) {
-                            localPathMap =
-                                    Collections.unmodifiableMap(CurrentSession.getLocalPathMap());
+/*                            localPathMap =
+                                    Collections.unmodifiableMap(CurrentSession.getLocalPathMap());*/
+                            localPathMap = CurrentSession.getLocalPathMap();
                         }
                         if (wsdlUriList.isEmpty() && xsdUriList.isEmpty() && wadlUriList.isEmpty() && uriList.isEmpty() && swaggerUriList.isEmpty()) {
                             throw new RegistryException(
@@ -430,7 +433,28 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             requestContext.setProcessingComplete(true);
         } finally {
             CommonUtil.releaseUpdateLock();
+            removeSessionLocalPathMap(pathMapSet);
         }
+    }
+
+    private void removeSessionLocalPathMap(boolean pathMapSet) {
+        if (pathMapSet) {
+            CurrentSession.removeLocalPathMap();
+        }
+    }
+
+    private boolean setSessionLocalPathMap(RequestContext requestContext) {
+        boolean pathMapSet = false;
+        if (CurrentSession.getLocalPathMap() == null) {
+            RegistryContext registryContext = requestContext.getRegistry().getRegistryContext();
+            if (registryContext != null && registryContext.getMounts().size() > 0) {
+                Map<String, String> localPathMap = new HashMap<String, String>();
+                CurrentSession.setLocalPathMap(localPathMap);
+                pathMapSet = true;
+            }
+        }
+        CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD,"true");
+        return pathMapSet;
     }
 
     /**

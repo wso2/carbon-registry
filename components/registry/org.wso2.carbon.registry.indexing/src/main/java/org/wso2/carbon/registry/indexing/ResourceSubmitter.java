@@ -252,7 +252,9 @@ public class ResourceSubmitter implements Runnable {
                         logEntries[i].getAction() == LogEntry.MOVE ||
                         logEntries[i].getAction() == LogEntry.COPY ||
                         logEntries[i].getAction() == LogEntry.RENAME) {
-                    set.add(logEntries[i].getResourcePath());
+                    if (logEntries[i].getAction() != LogEntry.COPY) {
+                        set.add(logEntries[i].getResourcePath());
+                    }
                     newList.add(logEntries[i]);
                 }
             }

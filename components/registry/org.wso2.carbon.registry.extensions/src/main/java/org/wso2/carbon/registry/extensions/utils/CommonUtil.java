@@ -516,6 +516,7 @@ public class CommonUtil {
         } else {
             String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.SERVICE_MEDIA_TYPE);
             path = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service,context.getResource().getProperties()));
+            log.info("Checking local paths, absolute path: " +path+ " | path: "+ CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),path));
         }
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
@@ -569,8 +570,16 @@ public class CommonUtil {
 
         } else {
             String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.SOAP_SERVICE_MEDIA_TYPE);
-            path = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service, context.getResource().getProperties()));
-            path = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),path);
+            String absolutePath = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service, context.getResource().getProperties()));
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                path = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), absolutePath);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + path + " | value: " + absolutePath);
+                }
+                CurrentSession.getLocalPathMap().put(path, absolutePath);
+            } else {
+                path = absolutePath;
+            }
         }
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
@@ -591,8 +600,13 @@ public class CommonUtil {
             resource.setProperty("registry.DefinitionImport", "true");
             registry.put(path, resource);
             String defaultLifeCycle = getDefaultLifecycle(registry, "soapservice");
-            if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
-                registry.associateAspect(resource.getId(), defaultLifeCycle);
+            if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+                if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                    registry.associateAspect(resource.getId(), defaultLifeCycle);
+                } else {
+                    registry.associateAspect(path, defaultLifeCycle);
+                }
+            }
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();

@@ -35,6 +35,7 @@ import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -363,7 +364,15 @@ public class SwaggerProcessor {
         pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "provider", serviceProvider);
         swaggerResourcesPath = pathExpression;
         pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", swaggerDocName);
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+		String swaggerPath = pathExpression;
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			swaggerPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + swaggerPath + " | value: " + pathExpression);
+			}
+			CurrentSession.getLocalPathMap().put(swaggerPath, pathExpression);
+		}
+		return swaggerPath;
     }
 
     /**
