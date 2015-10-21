@@ -456,13 +456,15 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
         boolean pathMapSet = false;
         if (CurrentSession.getLocalPathMap() == null) {
             RegistryContext registryContext = requestContext.getRegistry().getRegistryContext();
-            if (registryContext != null && registryContext.getMounts() != null && registryContext.getMounts().isEmpty()) {
+            if (registryContext != null && registryContext.getMounts() != null && !registryContext.getMounts().isEmpty()) {
                 Map<String, String> localPathMap = new HashMap<String, String>();
                 CurrentSession.setLocalPathMap(localPathMap);
+                CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD, "true");
                 pathMapSet = true;
             }
+        } else {
+            CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD, "true");
         }
-        CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD,"true");
         return pathMapSet;
     }
 
