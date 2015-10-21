@@ -30,10 +30,9 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -567,7 +566,18 @@ public class EndpointUtils {
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression =   RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
-            String endPointPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),pathExpression);
+            String endPointPath = pathExpression;
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                endPointPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),pathExpression);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + endPointPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(endPointPath, pathExpression);
+            }
             return endPointPath;
         } else {
             String urlToPath = deriveEndpointFromUrl(url);

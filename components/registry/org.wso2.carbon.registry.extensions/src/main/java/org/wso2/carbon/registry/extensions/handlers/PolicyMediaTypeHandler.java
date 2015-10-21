@@ -22,17 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.utils.artifact.manager.ArtifactManager;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
-import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 import javax.xml.namespace.QName;
 
@@ -269,8 +267,19 @@ public class PolicyMediaTypeHandler extends Handler {
             pathExpression =  RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
                                                             CommonUtil.replaceExpressionOfPath(pathExpression,
                                                             "name", extractResourceFromURL(policyFileName, ".xml")));
-            pathExpression =  CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
-            return pathExpression;
+            String policyPath = pathExpression;
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                policyPath =  CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + policyPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(policyPath, pathExpression);
+            }
+            return policyPath;
         } else {
             String policyPath;
             if (!resourcePath.startsWith(commonLocation) && !resourcePath.equals(RegistryUtils.getAbsolutePath(

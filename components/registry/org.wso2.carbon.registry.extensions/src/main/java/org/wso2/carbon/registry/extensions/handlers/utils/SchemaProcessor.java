@@ -27,10 +27,9 @@ import org.apache.ws.commons.schema.XmlSchemaExternal;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -481,9 +480,20 @@ public class SchemaProcessor {
             String namespace = CommonUtil.derivePathFragmentFromNamespace(targetNamespace).replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
-            return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),
-                                   RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
-                                                                 pathExpression.replace("//", "/")));
+            String schemaPath = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(),
+                    pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                schemaPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), schemaPath);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + schemaPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(schemaPath, pathExpression);
+            }
+            return schemaPath;
         } else {
             String schemaLocation = (commonSchemaLocation + CommonUtil.derivePathFragmentFromNamespace(targetNamespace))
                     .replace("//", "/");

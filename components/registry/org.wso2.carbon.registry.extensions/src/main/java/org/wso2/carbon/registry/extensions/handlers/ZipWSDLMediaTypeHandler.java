@@ -178,6 +178,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             return;
         }
         CommonUtil.acquireUpdateLock();
+        // setting up session local path map for mounted setup.
+        boolean pathMapSet = setSessionLocalPathMap(requestContext);
         try {
             Resource resource = requestContext.getResource();
             String path = requestContext.getResourcePath().getPath();
@@ -430,7 +432,40 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             requestContext.setProcessingComplete(true);
         } finally {
             CommonUtil.releaseUpdateLock();
+            removeSessionLocalPathMap(pathMapSet);
         }
+    }
+
+    /**
+     * remove the Local PathMap from the CurrentSession
+     * @param pathMapSet whether pathMap is set or not
+     */
+    private void removeSessionLocalPathMap(boolean pathMapSet) {
+        if (pathMapSet) {
+            CurrentSession.removeLocalPathMap();
+        }
+    }
+
+    /**
+     * Method will add Local PathMap to the CurrentSession, if it is not exists
+     * Set ARCHIEVE_UPLOAD param to true, it param is accessed to calculate registry path in mounted env.
+     * @param requestContext the request context to get mount points
+     * @return whether pathMap is set or not
+     */
+    private boolean setSessionLocalPathMap(RequestContext requestContext) {
+        boolean pathMapSet = false;
+        if (CurrentSession.getLocalPathMap() == null) {
+            RegistryContext registryContext = requestContext.getRegistry().getRegistryContext();
+            if (registryContext != null && registryContext.getMounts() != null && !registryContext.getMounts().isEmpty()) {
+                Map<String, String> localPathMap = new HashMap<String, String>();
+                CurrentSession.setLocalPathMap(localPathMap);
+                CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD, "true");
+                pathMapSet = true;
+            }
+        } else {
+            CurrentSession.getLocalPathMap().put(CommonConstants.ARCHIEVE_UPLOAD, "true");
+        }
+        return pathMapSet;
     }
 
     /**
