@@ -347,9 +347,9 @@ public class RESTServiceUtils {
         String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
         if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
             if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
-				registry.associateAspect(serviceResource.getId(), defaultLifeCycle);
+                registry.associateAspect(serviceResource.getId(), defaultLifeCycle);
             } else {
-				registry.associateAspect(pathExpression, defaultLifeCycle);
+                registry.associateAspect(pathExpression, defaultLifeCycle);
             }
         }
 
