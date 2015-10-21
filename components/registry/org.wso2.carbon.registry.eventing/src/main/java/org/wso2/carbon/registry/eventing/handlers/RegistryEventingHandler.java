@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -32,8 +32,16 @@ import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.eventing.events.*;
+import org.wso2.carbon.registry.eventing.events.ChildCreatedEvent;
+import org.wso2.carbon.registry.eventing.events.ChildDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionAddedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionUpdatedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceAddedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceUpdatedEvent;
 import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
+import org.wso2.carbon.registry.eventing.services.EventingServiceImpl;
 
 import java.util.List;
 
@@ -748,6 +756,11 @@ public class RegistryEventingHandler extends Handler {
     private boolean sendNotifications(RequestContext requestContext, String relativePath){
 
         boolean isMountPath = false;
+        List<String>mediatypes= EventingServiceImpl.listOfMediaTypes;
+        String resourceMediaType = null;
+        if(requestContext.getResource()!=null) {//when mounted this get null for lifecycle
+            resourceMediaType = requestContext.getResource().getMediaType();
+        }
         List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
         for (Mount mount: mounts) {
             String mountPath = mount.getPath();
@@ -755,6 +768,9 @@ public class RegistryEventingHandler extends Handler {
                 isMountPath = true;
             }
         }
+        //When mounted requestDepth=1
+        //else requestDepth=3
+        //When no handlers requestDepth=2
         if (isMountPath){
             if(getRequestDepth(requestContext) != 1){
                 return false;
@@ -764,7 +780,11 @@ public class RegistryEventingHandler extends Handler {
         }  else {
             int requestDepth = getRequestDepth(requestContext);
             if(!(requestDepth == 1 || requestDepth == 3)){
-                return false;
+                if (requestDepth == 2 && resourceMediaType != null && !mediatypes.contains(resourceMediaType)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return true;
             }

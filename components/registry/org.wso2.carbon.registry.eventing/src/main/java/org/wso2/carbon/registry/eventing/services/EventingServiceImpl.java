@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005-2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2008, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,9 +20,11 @@
 package org.wso2.carbon.registry.eventing.services;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.event.core.exception.EventBrokerException;
 import org.wso2.carbon.event.core.subscription.EventDispatcher;
@@ -34,11 +36,36 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.eventing.RegistryEventDispatcher;
 import org.wso2.carbon.registry.eventing.RegistryEventingConstants;
-import org.wso2.carbon.registry.eventing.events.*;
+import org.wso2.carbon.registry.eventing.events.ChildCreatedEvent;
+import org.wso2.carbon.registry.eventing.events.ChildDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionAddedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionCreatedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.CollectionUpdatedEvent;
+import org.wso2.carbon.registry.eventing.events.DispatchEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceAddedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceCreatedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceDeletedEvent;
+import org.wso2.carbon.registry.eventing.events.ResourceUpdatedEvent;
 import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
+import org.wso2.carbon.utils.CarbonUtils;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,7 +79,8 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
     private static EventDispatcher dispatcher = null;
     private ExecutorService executor = null;
     private String emailIndexStoragePath;
-
+    public static List<String> listOfMediaTypes = new ArrayList<String>();
+    private static final String MEDIA_TYPE_MATCHER_FILTER_CLASS = "org.wso2.carbon.registry.core.jdbc.handlers.filters.MediaTypeMatcher";
     private static final Log log = LogFactory.getLog(EventingServiceImpl.class);
 
     public String verifyEmail(String data) {
@@ -114,6 +142,7 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
             eventTypeExclusionMap = new HashMap<String, List<String>>();
             emailIndexStoragePath="/repository/components/org.wso2.carbon.email-verification/emailIndex";
             registerBuiltInEventTypes();
+            storeHandlerConfig();
         } catch (Exception e) {
             log.error("Error initializing Registry Event Broker");
         }
@@ -124,6 +153,42 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
         registerEventType("delete", ResourceDeletedEvent.EVENT_NAME, CollectionDeletedEvent.EVENT_NAME);
         registerEventType("child.deleted", null, ChildDeletedEvent.EVENT_NAME);
         registerEventType("child.created", null, ChildCreatedEvent.EVENT_NAME);
+    }
+
+    private static void storeHandlerConfig() {
+        String configPath = CarbonUtils.getRegistryXMLPath();
+        Set<String> hashSet = new HashSet<>();
+        if (configPath != null) {
+            File registryXML = new File(configPath);
+            try {
+                InputStream configInputStream = new FileInputStream(registryXML);
+                StAXOMBuilder builder = new StAXOMBuilder(
+                        CarbonUtils.replaceSystemVariablesInXml(configInputStream));
+                OMElement configElement = builder.getDocumentElement();
+                Iterator<OMElement> handlerConfigs =
+                        configElement.getChildrenWithName(new QName("handler"));
+                while (handlerConfigs.hasNext()) {
+                    OMElement handlerConfigElement = handlerConfigs.next();
+                    OMElement filter = handlerConfigElement.getFirstChildWithName(new QName("filter"));
+                    String filterClass = filter.getAttributeValue(new QName("class"));
+                    OMElement property = filter.getFirstChildWithName(new QName("property"));
+                    if (MEDIA_TYPE_MATCHER_FILTER_CLASS.equals(filterClass) &&
+                        "mediaType".equals(property.getAttributeValue(new QName("name")))) {
+                        listOfMediaTypes.add(property.getText());
+                    }
+                }
+                hashSet.addAll(listOfMediaTypes);
+                listOfMediaTypes.clear();
+                listOfMediaTypes.addAll(hashSet);
+            } catch (FileNotFoundException e) {
+                log.error("registry.xml file not found", e);
+            } catch (CarbonException e) {
+                log.error("Error in converting registry xml inputstream", e);
+            } catch (XMLStreamException e) {
+                log.error("Error in registry xml stream", e);
+            }
+        }
+
     }
 
     public void notify(RegistryEvent event) throws Exception {
