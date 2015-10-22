@@ -112,7 +112,7 @@ public class CipherInitializer {
 		if (configurationProperties == null || configurationProperties.isEmpty()) {
 			if (log.isDebugEnabled()) {
 				log.debug("Configuration properties can not be loaded form : " + configurationFile +
-				          " Will use synapse properties");
+				          " Will use registry properties");
 			}
 			configurationProperties = properties;
 
