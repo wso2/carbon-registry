@@ -26,14 +26,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.registry.event.core.exception.EventBrokerException;
-import org.wso2.carbon.registry.event.core.subscription.EventDispatcher;
-import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.utils.RegistryUtil;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.event.core.exception.EventBrokerException;
+import org.wso2.carbon.registry.event.core.subscription.EventDispatcher;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.eventing.RegistryEventDispatcher;
 import org.wso2.carbon.registry.eventing.RegistryEventingConstants;
 import org.wso2.carbon.registry.eventing.events.ChildCreatedEvent;
@@ -56,6 +56,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,6 +69,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -170,11 +173,20 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                 while (handlerConfigs.hasNext()) {
                     OMElement handlerConfigElement = handlerConfigs.next();
                     OMElement filter = handlerConfigElement.getFirstChildWithName(new QName("filter"));
-                    String filterClass = filter.getAttributeValue(new QName("class"));
+                    String filterClassName = filter.getAttributeValue(new QName("class"));
+                    Class filterClass = Class.forName(filterClassName);
+                    Class mediaTypeMatcher = Class.forName(MEDIA_TYPE_MATCHER_FILTER_CLASS);
+                    if (filterClass.getGenericSuperclass().equals(mediaTypeMatcher)) {
+                        Method method = filterClass.getMethod("getMediaType", null);
+                        Object returnValue = method.invoke(filterClass.newInstance(), null);
+                        listOfMediaTypes.add((String) returnValue);
+                    }
                     OMElement property = filter.getFirstChildWithName(new QName("property"));
-                    if (MEDIA_TYPE_MATCHER_FILTER_CLASS.equals(filterClass) &&
-                        "mediaType".equals(property.getAttributeValue(new QName("name")))) {
-                        listOfMediaTypes.add(property.getText());
+                    if (property != null) {
+                        if (MEDIA_TYPE_MATCHER_FILTER_CLASS.equals(filterClassName) &&
+                            "mediaType".equals(property.getAttributeValue(new QName("name")))) {
+                            listOfMediaTypes.add(property.getText());
+                        }
                     }
                 }
                 hashSet.addAll(listOfMediaTypes);
@@ -186,6 +198,16 @@ public class EventingServiceImpl implements EventingService, SubscriptionEmailVe
                 log.error("Error in converting registry xml inputstream", e);
             } catch (XMLStreamException e) {
                 log.error("Error in registry xml stream", e);
+            } catch (NoSuchMethodException e) {
+                log.error("No such method to invoke", e);
+            } catch (IllegalAccessException e) {
+                log.error("Error when creating new instance", e);
+            } catch (InstantiationException e) {
+                log.error("Error when creating new instance", e);
+            } catch (InvocationTargetException e) {
+                log.error("Error when invoking the java reflection method", e);
+            } catch (ClassNotFoundException e) {
+                log.error("Error in Class.forName method", e);
             }
         }
 
