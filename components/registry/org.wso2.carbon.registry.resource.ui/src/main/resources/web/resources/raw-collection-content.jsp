@@ -30,6 +30,7 @@
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.MetadataBean" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.LinkedList" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.registry.core.pagination.PaginationContext" %>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
@@ -661,7 +662,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
 	        	}else {
 	        	 %>"folder-small-icon-link trimer"<% 
 	        	 } %>
-	           onclick="loadResourcePage('<%=resourceData.getResourcePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"
+	           onclick="loadResourcePage('<%=Encode.forHtml(resourceData.getResourcePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"
 	           id="resourceView<%=entryNumber%>"
 	           title="<%=resourceData.getName()%>"><%=resourceData.getName()%>
 	        </a>
@@ -678,7 +679,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
 	        	 %>"resource-icon-link trimer"<% 
 	        	 } %>
 	           <% if(!resourceData.getExternalLink()){ %>
-               onclick="loadResourcePage('<%=resourceData.getResourcePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"
+               onclick="loadResourcePage('<%=Encode.forHtml(resourceData.getResourcePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"
              <% } else {
                 client = new ResourceServiceClient(cookie, config, session);
                  String orignalPath = (String)request.getAttribute("path");

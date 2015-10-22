@@ -76,6 +76,10 @@
 			<groupId>org.wso2.carbon.registry</groupId>
 			<artifactId>org.wso2.carbon.registry.security.stub</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+            <artifactId>encoder</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>

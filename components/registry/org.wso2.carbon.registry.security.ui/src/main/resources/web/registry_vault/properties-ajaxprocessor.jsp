@@ -26,6 +26,7 @@
 	import="org.wso2.carbon.registry.security.vault.ui.PropertiesServiceClient"%>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
 <%@ page import="java.util.HashMap"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants"%>
 <%@ taglib prefix="carbon"
 	uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar"%>
@@ -130,20 +131,20 @@
 						<td style="border-right: none !important"><input
 							id="propRPath_<%=i%>" type="hidden"
 							value="<%=propertiesBean_.getPathWithVersion()%>" /><input
-							id="oldPropName_<%=i%>" type="hidden" value="<%=name%>" /><input
-							value="<%=name%>" type="text" id="propName_<%=i%>"
+							id="oldPropName_<%=i%>" type="hidden" value="<%=Encode.forHtmlAttribute(name)%>" /><input
+							value="<%=Encode.forHtmlAttribute(name)%>" type="text" id="propName_<%=i%>"
 							class="propEditNameSelector" />
 						</td>
 						<td style="border-left: none !important"><table
 								cellpadding="0" cellspacing="0" border="0" class="styledLeft">
 								<tr>
 									<td>Enter New Password:</td>
-									<td><input value="<%=value%>" id="propValue_<%=i%>"
+									<td><input value="<%=Encode.forHtmlAttribute(value)%>" id="propValue_<%=i%>"
 										type="password" /></td>
 								</tr>
 								<tr>
 									<td>Re-enter Password:</td>
-									<td><input value="<%=value%>" id="propValueConfirm_<%=i%>"
+									<td><input value="<%=Encode.forHtmlAttribute(value)%>" id="propValueConfirm_<%=i%>"
 										type="password" /></td>
 
 								</tr>
@@ -169,8 +170,8 @@
             	tmpValue = tmpValue.replaceAll(">","&gt;");
             	%>
 						<td style="border-right: none !important"><span
-							class="__propName"><%=tmpName%></span><span
-							class="__propNameRef propViewNameSelector" style="display: none;"><%=name%></span>
+							class="__propName"><%=Encode.forHtml(tmpName)%></span><span
+							class="__propNameRef propViewNameSelector" style="display: none;"><%=Encode.forHtml(name)%></span>
 						</td>
 						<td style="border-left: none !important"></td>
 
@@ -194,7 +195,7 @@
 									key="delete" /> </a> <%}else {%> <a
 							class="icon-link registryWriteOperation"
 							style="background-image: url(../admin/images/delete.gif);"
-							onclick="removeProperty('<%=name.replace("\\", "\\\\")%>');"
+							onclick="removeProperty('<%=Encode.forHtml(name.replace("\\", "\\\\"))%>');"
 							style="margin-left:5px;cursor:pointer;"><fmt:message
 									key="delete" /> </a> <%}%>
 						</td>
