@@ -410,6 +410,11 @@
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
                 <version>${carbon.commons.version}</version>
             </dependency>
+	    <dependency>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${org.wso2.securevault.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.application.deployer</artifactId>
@@ -841,15 +846,20 @@
             <!-- End of Carbon Kernel Features Dependencies-->
             <!-- Event dependencies -->
             <dependency>
-                <groupId>org.wso2.carbon.commons</groupId>
-                <artifactId>org.wso2.carbon.event.core</artifactId>
-                <version>${carbon.commons.version}</version>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.event.core</artifactId>
+                <version>${carbon.registry.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.event.ws</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <!--dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.event.ws</artifactId>
                 <version>${carbon.commons.version}</version>
-            </dependency>
+            </dependency-->
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.deployment.synchronizer</artifactId>
@@ -877,6 +887,16 @@
                 <artifactId>org.wso2.carbon.ui.menu.governance</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+	    <!--dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.event.client</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.event.client.stub</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency-->
 
             <!-- OSGi dependencies -->
             <dependency>
@@ -1385,6 +1405,7 @@
         <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
+	<org.wso2.securevault.version>1.0.0</org.wso2.securevault.version>
 
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v12</axis2.version>

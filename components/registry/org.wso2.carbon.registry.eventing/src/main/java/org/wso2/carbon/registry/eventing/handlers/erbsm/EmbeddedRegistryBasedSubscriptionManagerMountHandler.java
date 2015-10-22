@@ -19,22 +19,11 @@
 
 package org.wso2.carbon.registry.eventing.handlers.erbsm;
 
-import org.wso2.carbon.event.core.util.EventBrokerConstants;
-import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.core.config.RemoteConfiguration;
-import org.wso2.carbon.registry.app.RemoteRegistry;
 import org.wso2.carbon.registry.eventing.handlers.SubscriptionManagerHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.net.MalformedURLException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.List;
+
 
 public class EmbeddedRegistryBasedSubscriptionManagerMountHandler extends SubscriptionManagerHandler {
 

@@ -18,7 +18,7 @@ package org.wso2.carbon.registry.info.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.ActionConstants;

@@ -73,6 +73,8 @@
         <module>org.wso2.carbon.registry.caching.invalidator</module>
         <module>org.wso2.carbon.registry.security.ui</module>
         <module>org.wso2.carbon.registry.security</module>
+        <module>org.wso2.carbon.registry.event.core</module>
+        <module>org.wso2.carbon.registry.event.ws</module>
     </modules>
     <build>
         <pluginManagement>
