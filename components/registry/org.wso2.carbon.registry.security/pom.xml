@@ -68,7 +68,6 @@
 							org.wso2.carbon.registry.security.*,
                         </Export-Package>
 						<Import-Package>
-							org.apache.synapse.*,
 							org.apache.axiom.*;
 							version="${axis2.osgi.version.range}",
 							org.apache.commons.logging,

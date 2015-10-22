@@ -63,7 +63,7 @@ public class PropertiesServiceClient {
 
 		
 		String propertyEPR = backendServerURL + "PropertiesAdminService";
-		String mediationSecurityEPR = backendServerURL + "RegistrySecurityAdminService";
+		String registrySecurityEPR = backendServerURL + "RegistrySecurityAdminService";
 
 		try {
 			propertAdminServicestub = new PropertiesAdminServiceStub(configContext, propertyEPR);
@@ -74,7 +74,7 @@ public class PropertiesServiceClient {
 			option.setProperty(org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING, cookie);
 			
 			//
-			securityAdminServiceStub = new RegistrySecurityAdminServiceStub(configContext, mediationSecurityEPR);
+			securityAdminServiceStub = new RegistrySecurityAdminServiceStub(configContext, registrySecurityEPR);
 
 			ServiceClient securityclient = propertAdminServicestub._getServiceClient();
 			Options securityoption = securityclient.getOptions();

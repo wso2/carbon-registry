@@ -48,13 +48,13 @@ import java.util.Stack;
  *                bind="setServerConfigurationService"
  *                unbind="unsetServerConfigurationService"
  */
-public class SynapseSecurityerviceComponent {
+public class RegistrySecurityerviceComponent {
 
-	private static Log log = LogFactory.getLog(SynapseSecurityerviceComponent.class);
+	private static Log log = LogFactory.getLog(RegistrySecurityerviceComponent.class);
 
     private static Stack<ServiceRegistration> registrations = new Stack<ServiceRegistration>();
 
-	public SynapseSecurityerviceComponent() {
+	public RegistrySecurityerviceComponent() {
 	}
 
 	protected void activate(ComponentContext ctxt) {
