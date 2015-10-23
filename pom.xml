@@ -1514,8 +1514,8 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.4.7</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.8</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- jms -->
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
@@ -1523,7 +1523,7 @@
         <!-- Carbon Registry -->
         <carbon.registry.version>4.4.10-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
-        <carbon.registry.package.import.version.range>[4.4.0, 4.5.0)
+        <carbon.registry.package.import.version.range>[4.5.0, 5.0.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
