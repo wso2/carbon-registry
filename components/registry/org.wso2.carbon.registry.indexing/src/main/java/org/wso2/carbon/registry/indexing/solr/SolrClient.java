@@ -319,7 +319,9 @@ public class SolrClient {
                             String[] propertyValArray = value.split(",");
                             fieldKey = propertyValArray[0];
                             String [] propValues = Arrays.copyOfRange(propertyValArray, 1, propertyValArray.length);
-                            addPropertyField(fieldKey, propValues, solrInputDocument);
+                            if (propValues.length > 0) {
+                                addPropertyField(fieldKey, propValues, solrInputDocument);
+                            }
                         }
                     } else {
                         fieldKey = fieldList.getKey() + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
