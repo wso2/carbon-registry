@@ -319,7 +319,7 @@ public class SolrClient {
                             String[] propertyValArray = value.split(",");
                             fieldKey = propertyValArray[0];
                             String [] propValues = Arrays.copyOfRange(propertyValArray, 1, propertyValArray.length);
-                            if(propValues.length > 0){
+                            if (propValues.length > 0) {
                                 addPropertyField(fieldKey, propValues, solrInputDocument);
                             }
                         }
