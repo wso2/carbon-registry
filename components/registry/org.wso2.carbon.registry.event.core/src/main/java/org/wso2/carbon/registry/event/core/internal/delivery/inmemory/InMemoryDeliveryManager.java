@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.event.core.internal.delivery.inmemory;
 
+import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.event.core.Message;
 import org.wso2.carbon.registry.event.core.util.EventBrokerConstants;
 import org.wso2.carbon.registry.event.core.delivery.DeliveryManager;
@@ -64,7 +65,11 @@ public class InMemoryDeliveryManager implements DeliveryManager {
                     userRealm.getAuthorizationManager().isUserAuthorized(
                         userName,
                         resoucePath,
-                        EventBrokerConstants.EB_PERMISSION_SUBSCRIBE)){
+                        EventBrokerConstants.EB_PERMISSION_SUBSCRIBE) ||
+                    userRealm.getAuthorizationManager().isUserAuthorized(
+                            userName,
+                            resoucePath,
+                            ActionConstants.GET)){
                        this.matchingManager.addSubscription(subscription);
             } else {
                 throw new EventBrokerException("User " + CarbonContext.getThreadLocalCarbonContext().getUsername()
