@@ -75,18 +75,13 @@ public class SharedMemoryDeliveryManager implements DeliveryManager {
                 userName = userName.substring(0, userName.lastIndexOf("@"));
             }
             if (userName.equals(CarbonConstants.REGISTRY_SYSTEM_USERNAME) ||
-                    userRealm.getAuthorizationManager().isUserAuthorized(
-                        userName,
-                        resourcePath,
-                        EventBrokerConstants.EB_PERMISSION_SUBSCRIBE) ||
-                    userRealm.getAuthorizationManager().isUserAuthorized(
-                            userName,
-                            resourcePath,
-                            ActionConstants.GET)){
+                    userRealm.getAuthorizationManager()
+                            .isUserAuthorized(userName, resourcePath, EventBrokerConstants.EB_PERMISSION_SUBSCRIBE) ||
+                    userRealm.getAuthorizationManager().isUserAuthorized(userName, resourcePath, ActionConstants.GET)) {
                 getMatchingManager().addSubscription(subscription);
             } else {
                 throw new EventBrokerException("User " + CarbonContext.getThreadLocalCarbonContext().getUsername()
-                               + " is not allowed to subscribes to " + subscription.getTopicName());
+                        + " is not allowed to subscribes to " + subscription.getTopicName());
             }
         } catch (UserStoreException e) {
             throw new EventBrokerException("Can not access the user store manager",e);
