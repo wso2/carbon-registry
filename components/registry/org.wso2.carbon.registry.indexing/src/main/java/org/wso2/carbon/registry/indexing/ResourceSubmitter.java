@@ -209,6 +209,12 @@ public class ResourceSubmitter implements Runnable {
                                     log.debug("Resource Renamed : Resource at " + path +
                                             " has been submitted to the Indexing Server");
                                 }
+                            } else if (logEntry.getAction() == (LogEntry.RESTORE)) {
+                                indexingManager.submitFileForIndexing(tenantId, tenantDomain, path, null);
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Resource Res+tore : Resource at " + path +
+                                              " has been submitted to the Indexing Server");
+                                }
                             }
                         }
                     } catch (Exception e) { // to ease debugging
@@ -251,7 +257,8 @@ public class ResourceSubmitter implements Runnable {
                         logEntries[i].getAction() == LogEntry.ADD_ASSOCIATION ||
                         logEntries[i].getAction() == LogEntry.MOVE ||
                         logEntries[i].getAction() == LogEntry.COPY ||
-                        logEntries[i].getAction() == LogEntry.RENAME) {
+                        logEntries[i].getAction() == LogEntry.RENAME ||
+                        logEntries[i].getAction() == LogEntry.RESTORE) {
                     if (logEntries[i].getAction() != LogEntry.COPY) {
                         set.add(logEntries[i].getResourcePath());
                     }
