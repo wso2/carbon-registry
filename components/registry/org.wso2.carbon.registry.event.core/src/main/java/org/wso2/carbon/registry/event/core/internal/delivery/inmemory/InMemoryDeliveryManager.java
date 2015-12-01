@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.event.core.internal.delivery.inmemory;
 
+import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.event.core.Message;
 import org.wso2.carbon.registry.event.core.util.EventBrokerConstants;
 import org.wso2.carbon.registry.event.core.delivery.DeliveryManager;
@@ -61,11 +62,10 @@ public class InMemoryDeliveryManager implements DeliveryManager {
                 userName = userName.substring(0, userName.lastIndexOf("@"));
             }
             if (userName.equals(CarbonConstants.REGISTRY_SYSTEM_USERNAME) ||
-                    userRealm.getAuthorizationManager().isUserAuthorized(
-                        userName,
-                        resoucePath,
-                        EventBrokerConstants.EB_PERMISSION_SUBSCRIBE)){
-                       this.matchingManager.addSubscription(subscription);
+                    userRealm.getAuthorizationManager()
+                            .isUserAuthorized(userName, resoucePath, EventBrokerConstants.EB_PERMISSION_SUBSCRIBE) ||
+                    userRealm.getAuthorizationManager().isUserAuthorized(userName, resoucePath, ActionConstants.GET)) {
+                this.matchingManager.addSubscription(subscription);
             } else {
                 throw new EventBrokerException("User " + CarbonContext.getThreadLocalCarbonContext().getUsername()
                                + " is not allowed to subscribes to " + subscription.getTopicName());
@@ -93,10 +93,8 @@ public class InMemoryDeliveryManager implements DeliveryManager {
                 userName = CarbonConstants.REGISTRY_SYSTEM_USERNAME;
             }
             if (userName.equals(CarbonConstants.REGISTRY_SYSTEM_USERNAME) ||
-                    userRealm.getAuthorizationManager().isUserAuthorized(
-                        userName,
-                        resoucePath,
-                        EventBrokerConstants.EB_PERMISSION_PUBLISH)) {
+                    userRealm.getAuthorizationManager().isUserAuthorized(userName, resoucePath,
+                            EventBrokerConstants.EB_PERMISSION_PUBLISH)) {
                 List<Subscription> subscriptions = this.matchingManager.getMatchingSubscriptions(topicName);
                 for (Subscription subscription : subscriptions) {
                     this.executor.submit(new Worker(this.notificationManager, message, subscription));
