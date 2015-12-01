@@ -48,13 +48,13 @@ import java.util.Stack;
  *                bind="setServerConfigurationService"
  *                unbind="unsetServerConfigurationService"
  */
-public class RegistrySecurityerviceComponent {
+public class RegistrySecurityServiceComponent {
 
-	private static Log log = LogFactory.getLog(RegistrySecurityerviceComponent.class);
+	private static Log log = LogFactory.getLog(RegistrySecurityServiceComponent.class);
 
     private static Stack<ServiceRegistration> registrations = new Stack<ServiceRegistration>();
 
-	public RegistrySecurityerviceComponent() {
+	public RegistrySecurityServiceComponent() {
 	}
 
 	protected void activate(ComponentContext ctxt) {
@@ -114,8 +114,8 @@ public class RegistrySecurityerviceComponent {
 		 */
         @Override
         public String doEncrypt(String plainTextValue) throws CryptoException {
-			return SecureVaultUtil.doEncrypt(plainTextValue);
-		}
+            return SecureVaultUtil.doEncrypt(plainTextValue);
+        }
 
 		/**
 		 * Method to decrypt a property, when key of the property is provided.
@@ -124,10 +124,10 @@ public class RegistrySecurityerviceComponent {
 		 * @return 			decrypted property value.
 		 * @throws RegistryException	Throws when an error occurs during decryption.
 		 */
-		@Override
-		public String getDecryptedPropertyValue(String key) throws RegistryException {
-			return SecureVaultUtil.getDecryptedPropertyValue(key);
-		}
+        @Override
+        public String getDecryptedPropertyValue(String key) throws RegistryException {
+            return SecureVaultUtil.getDecryptedPropertyValue(key);
+        }
 
 		/**
 		 * Method to decrypt a property, when encrypted value is provided.
@@ -137,11 +137,11 @@ public class RegistrySecurityerviceComponent {
 		 * @throws CryptoException              Throws when an error occurs during decryption.
 		 * @throws UnsupportedEncodingException Throws when an error occurs during byte array to string conversion.
 		 */
-		@Override
-		public String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
-			return SecureVaultUtil.doDecrypt(encryptedValue);
-		}
+        @Override
+        public String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
+            return SecureVaultUtil.doDecrypt(encryptedValue);
+        }
 
-	}
+    }
 
 }
