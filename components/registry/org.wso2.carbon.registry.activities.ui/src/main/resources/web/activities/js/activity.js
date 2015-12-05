@@ -124,32 +124,47 @@ function sort(pageNumber, sortOrder) {
         if (pageNumber) {
             new Ajax.Request('../activities/activity-ajaxprocessor.jsp',
             {
-                method:'post',
-                parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,requestedPage:pageNumber,sortOrder:sortOrder},
+                method: 'post',
+                parameters: {
+                    fromDate: fromDateValue,
+                    toDate: toDateValue,
+                    userName: userNameValue,
+                    path: pathValue,
+                    filter: filter,
+                    requestedPage: pageNumber,
+                    sortOrder: sortOrder
+                },
 
-                onSuccess: function(transport) {
+                onSuccess: function (transport) {
                     $('activityList').innerHTML = transport.responseText;
                 },
 
-                onFailure: function(transport) {
+                onFailure: function (transport) {
                     CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["an.error.occured"] +
-                                               " " + transport.responseText);
+                        " " + transport.responseText);
                 }
             });
         } else {
             new Ajax.Request('../activities/activity-ajaxprocessor.jsp',
             {
-                method:'post',
-                parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,sortOrder:sortOrder},
+                method: 'post',
+                parameters: {
+                    fromDate: fromDateValue,
+                    toDate: toDateValue,
+                    userName: userNameValue,
+                    path: pathValue,
+                    filter: filter,
+                    sortOrder: sortOrder
+                },
 
-                onSuccess: function(transport) {
+                onSuccess: function (transport) {
                     $('activityList').innerHTML = transport.responseText;
                 },
 
-                onFailure: function(transport) {
+                onFailure: function (transport) {
                     CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["an.error.occured"] +
-                                               " " + transport.responseText);
-                    }
+                        " " + transport.responseText);
+                }
             });
         }
 

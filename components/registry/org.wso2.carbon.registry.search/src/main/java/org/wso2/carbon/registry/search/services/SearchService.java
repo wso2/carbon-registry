@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is dedicated for resource search
+ *  This class is dedicated for resource search
  */
 public class SearchService extends RegistryAbstractAdmin implements
         ISearchService<SearchResultsBean, AdvancedSearchResultsBean, CustomSearchParameterBean, MediaTypeValueList> {

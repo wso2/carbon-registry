@@ -229,7 +229,7 @@ function initMiscFields() {
 function submitAdvSearchForm(pageNumber) {
     sessionAwareFunction(function() {
         document.getElementById('advancedSearchFormDiv').style.display = "none";
-	    var resourceName = document.getElementById('#_resourceName');
+        var resourceName = document.getElementById('#_resourceName');
         var reasonDiv = $('advSearchReason');
         var reason = "";
         var searchResuts = $('searchResuts');
@@ -408,7 +408,7 @@ function submitAdvSearchForm(pageNumber) {
 function sort(pageNumber,sortOrder, sortBy) {
     sessionAwareFunction(function() {
         document.getElementById('advancedSearchFormDiv').style.display = "none";
-	    var resourceName = document.getElementById('#_resourceName');
+        var resourceName = document.getElementById('#_resourceName');
         var searchResuts = $('searchResuts');
         searchResuts.style.display = "";
         searchResuts.innerHTML = org_wso2_carbon_registry_search_ui_jsi18n["searching"];
@@ -479,14 +479,25 @@ function sort(pageNumber,sortOrder, sortBy) {
 
         if (pageNumber) {
             new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
-            { method: 'get', parameters: {parameterList:customParamterList,requestedPage:pageNumber, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+            {
+                method: 'get',
+                parameters: {
+                    parameterList: customParamterList,
+                    requestedPage: pageNumber,
+                    sortOrder: sortOrder,
+                    sortBy: sortBy
+                },
+                evalScripts: true
+            });
         } else {
             new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
-            { method: 'get', parameters: {parameterList:customParamterList, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+            {
+                method: 'get',
+                parameters: {parameterList: customParamterList, sortOrder: sortOrder, sortBy: sortBy},
+                evalScripts: true
+            });
         }
         $('#_0').focus();
-
-
 
     }
         ,
