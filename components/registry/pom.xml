@@ -68,7 +68,6 @@
         <module>org.wso2.carbon.registry.reporting.ui</module>
         <module>org.wso2.carbon.registry.rest.api</module>
         <module>org.wso2.carbon.registry.cmis</module>
-        <module>org.wso2.carbon.registry.metadata</module>
         <module>org.wso2.carbon.registry.deployment.synchronizer</module>
         <module>org.wso2.carbon.registry.caching.invalidator</module>
         <module>org.wso2.carbon.registry.security.ui</module>
