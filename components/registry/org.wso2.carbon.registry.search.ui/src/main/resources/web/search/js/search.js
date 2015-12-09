@@ -415,11 +415,8 @@ function sort(pageNumber,sortOrder, sortBy) {
 
         var table = $('customTable');
         var rows = table.getElementsByTagName('input');
-
-
         var cFromDate, cToDate,
                 uFromDate, uToDate;
-
 
         for (var i = 0; i < rows.length; i++) {
             if ((rows[i].id == "cfromDate") && rows[i].value != "") {
@@ -499,11 +496,9 @@ function sort(pageNumber,sortOrder, sortBy) {
         }
         $('#_0').focus();
 
-    }
-        ,
-        org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]
-        )
-        ;
+    },
+    org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]
+    );
 }
 
 
