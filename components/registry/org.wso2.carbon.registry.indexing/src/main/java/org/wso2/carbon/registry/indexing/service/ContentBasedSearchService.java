@@ -92,6 +92,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return new SearchResultsBean();
     }
 
+    @Deprecated
     private String[] sortByDateIfRequired(String[] authorizedPaths, final UserRegistry registry, PaginationContext paginationContext) throws RegistryException {
         if(paginationContext.getSortBy().equalsIgnoreCase("meta_created_date")) {
             if(paginationContext.getSortOrder().equalsIgnoreCase("ASC")) {
@@ -208,7 +209,8 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                 }
                 String[] authorizedPaths = authorizedPathList.toArray(new String[authorizedPathList.size()]);
 
-                sortByDateIfRequired(authorizedPaths, registry, paginationContext);
+                // Fix for REGISTRY-3132
+                //sortByDateIfRequired(authorizedPaths, registry, paginationContext);
 
                 String[] paginatedPaths;
                 int start = paginationContext.getStart();

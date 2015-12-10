@@ -94,4 +94,7 @@ public final class IndexingConstants {
     public static final String FACET_PREFIX = "facet.prefix";
     public static final String AUTH_REQUIRED = "authenticate.required";
 
+    public static final String META_LAST_UPDATED_DATE = "meta_last_updated_date";
+    public static final String META_CREATED_DATE = "meta_created_date";
+
 }

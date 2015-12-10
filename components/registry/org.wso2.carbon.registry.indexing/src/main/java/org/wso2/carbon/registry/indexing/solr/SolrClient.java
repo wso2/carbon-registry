@@ -560,6 +560,11 @@ public class SolrClient {
                     // query.setRows(paginationContext.getCount());
 
                     String sortBy = paginationContext.getSortBy();
+                    if (IndexingConstants.META_CREATED_DATE.equals(sortBy)) {
+                        sortBy = IndexingConstants.FIELD_CREATED_DATE;
+                    } else if (IndexingConstants.META_LAST_UPDATED_DATE.equals(sortBy)) {
+                        sortBy = IndexingConstants.FIELD_LAST_UPDATED_DATE;
+                    }
                     if (sortBy.length() > 0) {
                         String sortOrder = paginationContext.getSortOrder();
                         addSortByQuery(query, sortBy, sortOrder);
