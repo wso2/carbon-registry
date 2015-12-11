@@ -183,6 +183,8 @@ public class AsyncIndexer implements Runnable {
     }
 
     protected static class IndexingTask implements Runnable {
+
+        public static final String REGISTRY_RESOURCE_SYMLINK_PATH = "registry.resource.symlink.path";
         private File2Index fileData;
 
         protected IndexingTask(File2Index fileData) {
@@ -226,9 +228,9 @@ public class AsyncIndexer implements Runnable {
                         IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
                         indexDocumentCreator.createIndexDocument();
 
-                        // Here, we are checking whether a resource has a symlink associated to it, if so, we submit that symlink path
-                        // in the indexer. see CARBON-11510.
-                        String symlinkPath = resource.getProperty("registry.resource.symlink.path");
+                        // Here, we are checking whether a resource has a symlink associated to it, if so,
+                        // we submit that symlink path in the indexer. see CARBON-11510.
+                        String symlinkPath = resource.getProperty(REGISTRY_RESOURCE_SYMLINK_PATH);
                         if (symlinkPath != null) {
                             // Create the IndexDocument
                             file2Index.path = symlinkPath;
@@ -239,7 +241,8 @@ public class AsyncIndexer implements Runnable {
 
                 }
             } catch (RegistryException | IndexerException e) {
-                log.error("Error while indexing.", e);
+                log.error("Error while indexing. Resource at path " + "\"" + resourcePath + "\"" + "could not be "
+                        + "indexed" + e);
             } finally {
                 if (skipCache && registryContext != null) {
                     registryContext.removeNoCachePath(resourcePath);
