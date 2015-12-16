@@ -182,15 +182,27 @@ public class AsyncIndexer implements Runnable {
         }
     }
 
+    /**
+     * This class is used to create index document for the indexing tasks submitted by indexing manager. This will
+     * run in multi threaded environment and create index documents for resources submitted for indexing from a
+     * blocking queue and submit them to SolR client.
+     */
     protected static class IndexingTask implements Runnable {
 
         public static final String REGISTRY_RESOURCE_SYMLINK_PATH = "registry.resource.symlink.path";
         private File2Index fileData;
 
+        // This class is an inner class of the AsyncIndexer class which is not instantiated outside.
+        // Hence the constructor is made protected.
         protected IndexingTask(File2Index fileData) {
             this.fileData = fileData;
         }
 
+        /**
+         * This method is used to submit resources in order to create indexing document.
+         *
+         * @param  file2Index resource submitted for indexing. (comes from a blocking queue)
+         */
         public void run() {
             try {
                 PrivilegedCarbonContext.startTenantFlow();
@@ -203,10 +215,15 @@ public class AsyncIndexer implements Runnable {
             }
         }
 
+        /**
+         * This method is used to create index document which is submitted for SolR client.
+         *
+         * @param  file2Index resource submitted for indexing. (comes from a blocking queue)
+         */
         private void createIndexDocument(File2Index file2Index) {
             RegistryContext registryContext = null;
             boolean skipCache = false;
-            String resourcePath = file2Index.path;;
+            String resourcePath = file2Index.path;
             try {
                 skipCache = IndexingManager.getInstance().isCacheSkipped();
                 Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);

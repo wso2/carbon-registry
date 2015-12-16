@@ -158,7 +158,6 @@ public class IndexingManager {
      */
     public boolean isCacheSkipped() {
         return registryConfig.isSkipIndexingCache();
-
     }
 
     public void deleteFromIndex(String oldPath, int tenantId) throws RegistryException {

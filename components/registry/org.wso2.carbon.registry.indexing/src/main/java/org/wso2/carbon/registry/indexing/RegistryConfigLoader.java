@@ -76,8 +76,6 @@ public class RegistryConfigLoader {
         this.skipIndexingCache = skipIndexingCache;
     }
 
-
-
     public long getBatchSize() {
         return batchSize;
     }
