@@ -189,7 +189,7 @@ public class AsyncIndexer implements Runnable {
      */
     protected static class IndexingTask implements Runnable {
 
-        public static final String REGISTRY_RESOURCE_SYMLINK_PATH = "registry.resource.symlink.path";
+        private static final String REGISTRY_RESOURCE_SYMLINK_PATH = "registry.resource.symlink.path";
         private File2Index fileData;
 
         // This class is an inner class of the AsyncIndexer class which is not instantiated outside.
@@ -201,7 +201,6 @@ public class AsyncIndexer implements Runnable {
         /**
          * This method is used to submit resources in order to create indexing document.
          *
-         * @param  file2Index resource submitted for indexing. (comes from a blocking queue)
          */
         public void run() {
             try {
