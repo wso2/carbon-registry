@@ -184,16 +184,10 @@ public class XSDMediaTypeHandler extends Handler {
 
                 savedName = processSchemaUpload(requestContext, resourcePath, validationInfo);
             }
-            if (parentPath.endsWith(RegistryConstants.PATH_SEPARATOR)) {
-                requestContext.setActualPath(parentPath + RegistryUtils.getResourceName(savedName));
-            } else {
-                requestContext.setActualPath(parentPath + RegistryConstants.PATH_SEPARATOR +
-                        RegistryUtils.getResourceName(savedName));
-            }
-
             if (StringUtils.isNotBlank(savedName)) {
                 onPutCompleted(resourcePath, Collections.singletonMap(sourceURL, savedName),
                         Collections.<String>emptyList(), requestContext);
+                requestContext.setActualPath(savedName);
             }
 
             requestContext.setProcessingComplete(true);
