@@ -20,6 +20,8 @@ package org.wso2.carbon.registry.extensions.utils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -537,8 +539,15 @@ public class CommonUtil {
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
             String defaultLifeCycle = getDefaultLifecycle(registry, "service");
-            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
-            registry.associateAspect(resource.getId(),defaultLifeCycle);
+            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+                String[] lifeCycles = defaultLifeCycle.split(",");
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(resource.getId(),lifeCycle);
+                    }
+                }
+
+            }
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -604,13 +613,7 @@ public class CommonUtil {
             resource.setProperty("registry.DefinitionImport", "true");
             registry.put(path, resource);
             String defaultLifeCycle = getDefaultLifecycle(registry, "soapservice");
-            if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
-                if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
-                    registry.associateAspect(resource.getId(), defaultLifeCycle);
-                } else {
-                    registry.associateAspect(path, defaultLifeCycle);
-                }
-            }
+            applyDefaultLifeCycle(registry, resource, path, defaultLifeCycle);
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -622,6 +625,26 @@ public class CommonUtil {
         registry.addAssociation(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
                                                               CommonUtil.getDefinitionURL(service)), path,
                                                               CommonConstants.USED_BY);
+    }
+
+    public static void applyDefaultLifeCycle(Registry registry, Resource resource, String path, String defaultLifeCycle) throws RegistryException {
+        if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+            String[] lifeCycles = defaultLifeCycle.split(",");
+            ArrayUtils.reverse(lifeCycles);
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(resource.getId(), lifeCycle);
+                    }
+                }
+            } else {
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(path, lifeCycle);
+                    }
+                }
+            }
+        }
     }
 
     /**
