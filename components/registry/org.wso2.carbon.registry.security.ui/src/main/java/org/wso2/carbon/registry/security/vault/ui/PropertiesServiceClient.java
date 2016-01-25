@@ -18,10 +18,6 @@
 
 package org.wso2.carbon.registry.security.vault.ui;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -29,27 +25,37 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.registry.security.stub.RegistrySecurityAdminServiceStub;
-import org.wso2.carbon.registry.security.vault.util.SecureVaultConstants;
-import org.wso2.carbon.registry.security.vault.cipher.tool.CipherTool;
 import org.wso2.carbon.registry.common.ui.UIConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.properties.stub.PropertiesAdminServiceRegistryExceptionException;
 import org.wso2.carbon.registry.properties.stub.PropertiesAdminServiceStub;
 import org.wso2.carbon.registry.properties.stub.beans.xsd.PropertiesBean;
 import org.wso2.carbon.registry.properties.stub.beans.xsd.RetentionBean;
 import org.wso2.carbon.registry.properties.stub.utils.xsd.Property;
+import org.wso2.carbon.registry.security.stub.RegistrySecurityAdminServiceCryptoExceptionException;
+import org.wso2.carbon.registry.security.stub.RegistrySecurityAdminServiceStub;
+import org.wso2.carbon.registry.security.vault.cipher.tool.CipherTool;
+import org.wso2.carbon.registry.security.vault.util.SecureVaultConstants;
 import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.utils.ServerConstants;
 
+import java.rmi.RemoteException;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 public class PropertiesServiceClient {
 
-	private static final Log log = LogFactory.getLog(PropertiesServiceClient.class);
+    public static final String NAME = "name";
+    public static final String VALUE = "value";
+    public static final String PATH = "path";
+    private static final Log log = LogFactory.getLog(PropertiesServiceClient.class);
 
-	private PropertiesAdminServiceStub propertAdminServicestub;
-	private RegistrySecurityAdminServiceStub securityAdminServiceStub;
-	private HttpSession session;
-	private CipherTool cipherTool;
+    private PropertiesAdminServiceStub propertAdminServicestub;
+    private RegistrySecurityAdminServiceStub securityAdminServiceStub;
+    private HttpSession session;
+    private CipherTool cipherTool;
 
 	public PropertiesServiceClient(ServletConfig config, HttpSession session)
 	                                                                         throws RegistryException {
@@ -166,81 +172,111 @@ public class PropertiesServiceClient {
 		return bean;
 	}
 
-	public void setProperty(HttpServletRequest request) throws Exception {
-		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
-		String name = (String) Utils.getParameter(request, "name");
-		String value = (String) Utils.getParameter(request, "value");
-		// do the encryption..
-		String encrypted = cipherTool.doEncryption(value);
-		try {
-			propertAdminServicestub.setProperty(path, name, encrypted);
-		} catch (Exception e) {
-			String msg = "Failed to add the property. " + e.getMessage();
-			log.error(msg, e);
-			throw new Exception(msg, e);
-		}
-	}
+    /**
+     * Method to add a property, if there already exist a property with the same name, this
+     * will add the value to the existing property name. (So please remove the old property with
+     * the same name before calling this method).
+     *
+     * @param request   Http request with parameters.
+     * @throws RegistryException throws if there is an error.
+     */
+    public void setProperty(HttpServletRequest request) throws RegistryException {
+        String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
+        String name = (String) Utils.getParameter(request, NAME);
+        String value = (String) Utils.getParameter(request, VALUE);
 
-	public void updateProperty(HttpServletRequest request) throws Exception {
-		String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
-		String name = (String) Utils.getParameter(request, "name");
-		String value = (String) Utils.getParameter(request, "value");
-		String oldName = (String) Utils.getParameter(request, "oldName");
-		// do the encryption..
-		String encrypted = cipherTool.doEncryption(value);
-		try {
-			propertAdminServicestub.updateProperty(path, name, encrypted, oldName);
-		} catch (Exception e) {
-			String msg = "Failed to update the property. " + e.getMessage();
-			log.error(msg, e);
-			throw new Exception(e);
-		}
-	}
+        try {
+            // do the encryption..
+            String encrypted = cipherTool.doEncryption(value);
+            propertAdminServicestub.setProperty(path, name, encrypted);
+        } catch (RemoteException | PropertiesAdminServiceRegistryExceptionException e) {
+            throw new RegistryException("Failed to add property" + name + "to resource at path " + path, e);
+        } catch (RegistrySecurityAdminServiceCryptoExceptionException e) {
+            throw new RegistryException("Failed to encrypt the property " + name, e);
+        }
+    }
 
-	public void removeProperty(HttpServletRequest request) throws Exception {
-		String path = (String) Utils.getParameter(request, "path");
-		String name = (String) Utils.getParameter(request, "name");
-		try {
-			propertAdminServicestub.removeProperty(path, name);
-		} catch (Exception e) {
-			String msg = "Failed to remove the property. " + e.getMessage();
-			log.error(msg, e);
-			throw new Exception(e);
-		}
-	}
+    /**
+     * Method to update a property (This removes the old property with the oldName)
+     *
+     * @param request   Http request with parameters.
+     * @throws RegistryException throws if there is an error.
+     */
+    public void updateProperty(HttpServletRequest request) throws RegistryException {
+        String path = SecureVaultConstants.ENCRYPTED_PROPERTY_CONFIG_REGISTRY_PATH;
+        String name = (String) Utils.getParameter(request, NAME);
+        String value = (String) Utils.getParameter(request, VALUE);
+        String oldName = (String) Utils.getParameter(request, "oldName");
 
-	public boolean setRetentionProperties(HttpServletRequest request) throws Exception {
-		try {
-			RetentionBean bean;
-			String path = request.getParameter("path");
-			String fromDate = request.getParameter("fromDate");
-			if (fromDate == null || "".equals(fromDate)) {
-				bean = null;
-			} else {
-				bean = new RetentionBean();
-				bean.setFromDate(fromDate);
-				bean.setToDate(request.getParameter("toDate"));
-				String lockedOperationsParam = request.getParameter("lockedOperations");
-				bean.setWriteLocked(lockedOperationsParam.contains("write"));
-				bean.setDeleteLocked(lockedOperationsParam.contains("delete"));
-			}
-			propertAdminServicestub.setRetentionProperties(path, bean);
-		} catch (Exception e) {
-			log.error("Failed to add retention: " + e.getMessage(), e);
-			throw new Exception(e);
-		}
-		return true;
-	}
+        try {
+            // do the encryption..
+            String encrypted = cipherTool.doEncryption(value);
+            propertAdminServicestub.updateProperty(path, name, encrypted, oldName);
+        } catch (RemoteException | PropertiesAdminServiceRegistryExceptionException e) {
+            throw new RegistryException("Failed to update the property" + name + "at resource path " + path, e);
+        } catch (RegistrySecurityAdminServiceCryptoExceptionException e) {
+            throw new RegistryException("Failed to encrypt the property " + name, e);
+        }
+    }
 
-	public RetentionBean getRetentionProperties(HttpServletRequest request)
-	                                                                       throws RegistryException {
-		try {
-			return propertAdminServicestub.getRetentionProperties(request.getParameter("path"));
-		} catch (Exception e) {
-			String msg = "Could not retrieve retention details " + e.getMessage();
-			log.error(msg, e);
-			throw new RegistryException(msg, e);
-		}
-	}
+    /**
+     * Method to remove property from a resource.
+     *
+     * @param request   Http request with parameters.
+     * @throws RegistryException throws if there is an error.
+     */
+    public void removeProperty(HttpServletRequest request) throws RegistryException {
+        String path = (String) Utils.getParameter(request, PATH);
+        String name = (String) Utils.getParameter(request, NAME);
+        try {
+            propertAdminServicestub.removeProperty(path, name);
+        } catch (RemoteException | PropertiesAdminServiceRegistryExceptionException e) {
+            throw new RegistryException("Failed to remove the property" + name + "at resource path " + path, e);
+        }
+    }
+
+    /**
+     * Method to set resource retention properties of a resource.
+     *
+     * @param request   Http request with parameters.
+     * @throws RegistryException throws if there is an error
+     */
+    public boolean setRetentionProperties(HttpServletRequest request) throws RegistryException {
+        String path = request.getParameter(PATH);
+        try {
+            RetentionBean bean;
+            String fromDate = request.getParameter("fromDate");
+            if (fromDate == null || "".equals(fromDate)) {
+                bean = null;
+            } else {
+                bean = new RetentionBean();
+                bean.setFromDate(fromDate);
+                bean.setToDate(request.getParameter("toDate"));
+                String lockedOperationsParam = request.getParameter("lockedOperations");
+                bean.setWriteLocked(lockedOperationsParam.contains("write"));
+                bean.setDeleteLocked(lockedOperationsParam.contains("delete"));
+            }
+            propertAdminServicestub.setRetentionProperties(path, bean);
+        } catch (RemoteException | PropertiesAdminServiceRegistryExceptionException e) {
+            throw new RegistryException("Failed to add retention to resource at path" + path, e);
+
+        }
+        return true;
+    }
+
+    /**
+     * Method to get resource retention properties of a given resource.
+     *
+     * @param request   Http request with parameters.
+     * @throws RegistryException
+     */
+    public RetentionBean getRetentionProperties(HttpServletRequest request) throws RegistryException {
+        String path = request.getParameter(PATH);
+        try {
+            return propertAdminServicestub.getRetentionProperties(request.getParameter(PATH));
+        } catch (Exception e) {
+            throw new RegistryException("Could not retrieve retention details at path" + path, e);
+        }
+    }
 
 }

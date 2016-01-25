@@ -345,14 +345,7 @@ public class RESTServiceUtils {
 		registry.put(pathExpression, serviceResource);
 
         String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
-        if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
-            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
-                registry.associateAspect(serviceResource.getId(), defaultLifeCycle);
-            } else {
-                registry.associateAspect(pathExpression, defaultLifeCycle);
-            }
-        }
-
+		CommonUtil.applyDefaultLifeCycle(registry, serviceResource, pathExpression, defaultLifeCycle);
         if (log.isDebugEnabled()){
             log.debug("REST Service created at " + pathExpression);
         }

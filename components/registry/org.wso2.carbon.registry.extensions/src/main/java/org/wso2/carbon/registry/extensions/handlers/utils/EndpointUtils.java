@@ -275,6 +275,9 @@ public class EndpointUtils {
             throw new RegistryException(msg, e);
         }
 
+        String serviceVersion = CommonUtil.getServiceVersion(serviceElement);
+        endpointVersion = serviceVersion;
+
         // and add the associations and before adding them first remove all the endpoint dependencies
         removeEndpointDependencies(servicePath, registry);
 
@@ -520,6 +523,7 @@ public class EndpointUtils {
                                    Registry systemRegistry) throws RegistryException {
         String urlToPath = deriveEndpointFromUrl(url);
 
+
         String pathExpression = getEndpointLocation(context, url, systemRegistry, endpointLocation);
 
         String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
@@ -560,6 +564,8 @@ public class EndpointUtils {
             String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
             pathExpression = CommonUtil
                     .replaceExpressionOfPath(pathExpression, "name", deriveEndpointNameWithNamespaceFromUrl(url));
+            pathExpression = CommonUtil
+                    .replaceExpressionOfPath(pathExpression, "version", endpointVersion);
             pathExpression =
                     CommonUtil.getPathFromPathExpression(pathExpression, context.getResource().getProperties(), null);
             String namespace = deriveEndpointNamespaceFromUrl(url).replace("//", "/");
