@@ -1,0 +1,12 @@
+# Ignore everything in this directory
+*~
+target
+.classpath
+.settings
+.project
+*.im?
+*.iw?
+*.ip?
+.idea
+atlassian-ide-plugin.xml
+modules/jaxwebapps/
