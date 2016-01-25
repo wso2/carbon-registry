@@ -26,7 +26,7 @@
     <groupId>org.wso2.carbon.metadata</groupId>
     <artifactId>carbon-metadata</artifactId>
     <packaging>pom</packaging>
-    <version>1.-.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 Carbon Metadata - Aggregate Pom</name>
     <description>WSO2 Carbon Metadata Aggregate Pom</description>
     <url>http://wso2.com</url>
@@ -35,7 +35,7 @@
         <maven>3.0.0</maven>
     </prerequisites>
 
-    <!--profiles>
+    <profiles>
         <profile>
             <id>default</id>
             <activation>
@@ -43,16 +43,10 @@
             </activation>
             <modules>
                 <module>parent</module>
-                <module>archetypes</module>
-                <module>launcher</module>
-                <module>core</module>
-                <module>tests</module>
-                <module>features</module>
-                <module>tools</module>
-                <module>distribution</module>
+                <module>org.wso2.carbon.metadata.server</module>
             </modules>
         </profile>
-    </profiles-->
+    </profiles>
 
     <scm>
         <url>https://github.com/wso2/carbon-metadata.git</url>
