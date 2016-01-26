@@ -22,7 +22,7 @@ package org.wso2.carbon.metadata.server.api;
  * used to perform all basic metadata operations, and can also be used to implement a simple
  * metadata implementation.
  */
-public interface MetadataServcie {
+public interface MetadataStore {
 
     /**
      * Creates a new resource.
