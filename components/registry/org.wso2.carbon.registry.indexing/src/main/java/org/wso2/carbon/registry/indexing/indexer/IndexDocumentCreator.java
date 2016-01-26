@@ -339,6 +339,9 @@ public class IndexDocumentCreator {
             UserRealm userRealm = registry.getUserRealm();
             String[] allowedRoles = userRealm.getAuthorizationManager().getAllowedRolesForResource(resourcePath, ActionConstants.GET);
             attributes.put(FIELD_ALLOWED_ROLES, Arrays.asList(allowedRoles));
+            if (log.isDebugEnabled()) {
+                log.debug("Allowed Roles for the resource: " + resourcePath + " : " + Arrays.toString(allowedRoles));
+            }
         } catch (UserStoreException e) {
             throw new RegistryException("Unable to retrieve allowed roles for resource", e);
         }

@@ -175,14 +175,13 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             log.debug("result received " + results);
 
         List<ResourceData> filteredResults = new ArrayList<ResourceData>();
-        // TODO: Proper mechanism once authroizations are fixed - senaka
+        // check the authorization again for the filtered results
         for (SolrDocument solrDocument : results) {
             String path = getPathFromId((String) solrDocument.getFirstValue("id"));
             if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
                 filteredResults.add(loadResourceByPath(registry, path));
             }
         }
-        // -- end of proper mechanism
 
 /*        MessageContext messageContext = MessageContext.getCurrentMessageContext();
 
@@ -369,6 +368,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
     public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
+        //authenticate required attribute is not used, since we are going to authorize each time and depends on this flag.
         attributes.remove(IndexingConstants.AUTH_REQUIRED);
         List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 

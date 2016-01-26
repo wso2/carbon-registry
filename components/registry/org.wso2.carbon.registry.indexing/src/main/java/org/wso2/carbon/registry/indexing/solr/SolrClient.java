@@ -36,7 +36,9 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
@@ -551,7 +553,11 @@ public class SolrClient {
                     } else {
                         paginationContext = PaginationContext.getInstance();
                     }
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
+                    if (log.isDebugEnabled()) {
+                        log.debug("Pagination Context| start: "+paginationContext.getStart()+" | rows:" +
+                                paginationContext.getCount()+" | sortBy: "+paginationContext.getSortBy());
+                    }
+                    //setting up start and row count for pagination
                     query.setStart(paginationContext.getStart());
                     query.setRows(paginationContext.getCount());
 
@@ -569,7 +575,7 @@ public class SolrClient {
                     if (log.isDebugEnabled()) {
                         log.debug("Solr index queried query: " + query);
                     }
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
+                    //setting up result count in the paginationContext
                     if (messageContext != null) {
                         PaginationUtils.setRowCount(messageContext,
                                 Long.toString(queryresponse.getResults().getNumFound()));
@@ -614,6 +620,9 @@ public class SolrClient {
                 }
             }
             String queryValue = rolesQuery.toString();
+            if (log.isDebugEnabled()) {
+                log.debug("user roles filter query values: " +queryValue);
+            }
             query.addFilterQuery(FIELD_ALLOWED_ROLES + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ':' + queryValue);
         } catch (RegistryException | UserStoreException e) {
             throw new SolrException(ErrorCode.BAD_REQUEST, "Error while creating user role filter query", e);
