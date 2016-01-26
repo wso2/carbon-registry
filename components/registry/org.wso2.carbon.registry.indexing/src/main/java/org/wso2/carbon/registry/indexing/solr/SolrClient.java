@@ -613,12 +613,14 @@ public class SolrClient {
             StringBuilder rolesQuery = new StringBuilder();
             for (String userRole : userRoles) {
                 if (rolesQuery.length() == 0) {
+                    rolesQuery.append('(');
                     rolesQuery.append(userRole.toLowerCase());
                 } else {
                     rolesQuery.append(" OR ");
                     rolesQuery.append(userRole.toLowerCase());
                 }
             }
+            rolesQuery.append(')');
             String queryValue = rolesQuery.toString();
             if (log.isDebugEnabled()) {
                 log.debug("user roles filter query values: " +queryValue);
