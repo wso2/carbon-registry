@@ -369,7 +369,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
     public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
-        //authenticate required attribute is not used, since we are going to authorize each time and depends on this flag.
+        //authenticate required attribute is not used, since we are going to authorize each time and not depends on this flag.
         attributes.remove(IndexingConstants.AUTH_REQUIRED);
         List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 
