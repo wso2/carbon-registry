@@ -178,6 +178,9 @@ public class ChangeRolePermissionsUtil {
                 Resource resource = userRegistry.get(resourcePath);
                 userRegistry.put(resourcePath, resource);
             }
+            if (log.isDebugEnabled()) {
+                log.debug("update role authorizations of the resource: " + resourcePath);
+            }
         } finally {
             CurrentSession.removeTenantId();
             CurrentSession.removeUser();

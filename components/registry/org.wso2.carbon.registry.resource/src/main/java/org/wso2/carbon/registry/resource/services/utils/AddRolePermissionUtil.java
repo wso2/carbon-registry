@@ -124,7 +124,7 @@ public class AddRolePermissionUtil {
             event.setTenantId(userRegistry.getTenantId());
             CommonUtil.notify(event, userRegistry, pathToAuthorize);
             // add log entry for the resource permission update
-            addLogEntryForResourceUpdate(userRegistry, pathToAuthorize, LogEntry.UPDATE, "update role authorization of the resource");
+            addLogEntryForResourceUpdate(userRegistry, pathToAuthorize, LogEntry.UPDATE, "add new role authorization of the resource");
             String msg = "Role authorization performed successfully.";
             log.debug(msg);
 
@@ -152,6 +152,9 @@ public class AddRolePermissionUtil {
             } else {
                 Resource resource = userRegistry.get(resourcePath);
                 userRegistry.put(resourcePath, resource);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("add new role authorization of the resource: " + resourcePath);
             }
         } finally {
             CurrentSession.removeTenantId();

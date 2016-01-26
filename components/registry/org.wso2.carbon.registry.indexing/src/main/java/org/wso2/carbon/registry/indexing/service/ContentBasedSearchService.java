@@ -183,6 +183,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             }
         }
 
+        //commenting this, we don't need to do pagination here, we are using solr pagination.
 /*        MessageContext messageContext = MessageContext.getCurrentMessageContext();
 
         if (((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext))
