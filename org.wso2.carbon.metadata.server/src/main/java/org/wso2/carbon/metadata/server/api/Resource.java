@@ -67,13 +67,6 @@ public class Resource {
     private Map<String, String> allowedRoles;
 
     /**
-     * Path of the parent collection of the resource. If the resource path is
-     * /servers/config/users.xml, parent path is /servers/config.
-     */
-    protected String parentPath;
-
-
-    /**
      * The Resource Unique ID, In the default implementation this returns the auto generate UUID.
      *
      * @return the resource unique id
@@ -87,7 +80,7 @@ public class Resource {
      *
      * @param uuid the resource unique id.
      */
-    public void setUUID(String uuid) {
+    protected void setUUID(String uuid) {
         this.uuid = uuid;
     }
 
@@ -198,28 +191,5 @@ public class Resource {
         this.allowedRoles = allowedRoles;
     }
 
-    /**
-     * Method to get the parent path.
-     *
-     * @return the parent path.
-     */
-    public String getParentPath() {
-        if (parentPath != null) {
-            return parentPath;
-        }
-        if ((key == null) || key.length() == 1) {
-            return null;
-        }
-        int i = key.lastIndexOf('/');
-        return key.substring(0, i);
-    }
 
-    /**
-     * Method to set the parent path.
-     *
-     * @param parentPath the parent path.
-     */
-    public void setParentPath(String parentPath) {
-        this.parentPath = parentPath;
-    }
 }
