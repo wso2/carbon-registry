@@ -23,6 +23,7 @@ import org.wso2.carbon.metadata.server.api.MetadataStoreException;
 import org.wso2.carbon.metadata.server.api.Resource;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 ;
@@ -111,5 +112,10 @@ public class CachebasedMetadataStore implements MetadataStore {
     @Override
     public String exists(String uuid) throws MetadataStoreException {
         return metadataStore.exists(uuid);
+    }
+
+    @Override
+    public List<Resource> find(String... queryParam) throws MetadataStoreException {
+        return metadataStore.find(queryParam);
     }
 }

@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.metadata.server.api;
 
+import java.util.List;
+
 /**
  * This represents the most fundamental API for the Metadata service. This is typically what you want if
  * you're a Java programmer wanting to simply store and manage Resources.  This interface can be
@@ -106,5 +108,14 @@ public interface MetadataStore {
      * @throws MetadataStoreException if an error occurs
      */
     String exists(String uuid) throws MetadataStoreException;
+
+    /**
+     * Find the resources match with given query parameter
+     *
+     * @param queryParam query parameter
+     * @return list of resources match with given query parameter
+     * @throws MetadataStoreException if an error occurs
+     */
+    List<Resource> find(String... queryParam) throws MetadataStoreException;
 
 }
