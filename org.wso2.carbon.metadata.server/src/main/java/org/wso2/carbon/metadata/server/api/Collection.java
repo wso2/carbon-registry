@@ -25,6 +25,10 @@ import java.util.List;
  */
 public class Collection extends Resource {
 
+    protected Collection(String uuid) {
+        super(uuid);
+    }
+
     private List<String> childrens;
 
     /**

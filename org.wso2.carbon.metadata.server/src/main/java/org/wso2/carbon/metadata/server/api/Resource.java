@@ -27,6 +27,10 @@ import java.util.Properties;
  */
 public class Resource {
 
+    protected Resource(String uuid) {
+        this.uuid = uuid;
+    }
+
     /**
      * UUID to identify the resource.
      */
