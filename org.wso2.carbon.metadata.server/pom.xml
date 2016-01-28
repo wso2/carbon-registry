@@ -74,4 +74,25 @@
 
     </dependencies>
 
+    <properties>
+        <bundle.activator>org.wso2.carbon.metadata.server.internal.CarbonMetadataBundleActivator</bundle.activator>
+        <private.package>
+            org.wso2.carbon.metadata.server.internal.*,org.wso2.carbon.metadata.server.impl.*,
+            org.wso2.carbon.metadata.server.cache.*,org.wso2.carbon.metadata.server.dao.*,
+        </private.package>
+        <export.package>
+            !org.wso2.carbon.metadata.server.internal.*,
+            org.wso2.carbon.metadata.server.api*; version="${carbon.metadata.package.export.version}",
+        </export.package>
+        <import.package>
+            org.eclipse.osgi.util;version="${org.eclipse.osgi.util.package.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
+            org.eclipse.osgi.framework.console;version="${osgi.framework.console.package.import.version.range}",
+            org.osgi.service.cm.*; version="${osgi.services.cm.package.import.version.range}",
+            org.osgi.util.tracker; version="${osgi.service.tracker.package.import.version.range}",
+            org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}"
+        </import.package>
+    </properties>
+
 </project>

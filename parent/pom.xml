@@ -222,6 +222,8 @@
         <carbon.kernel.package.export.version>5.0.0</carbon.kernel.package.export.version>
         <carbon.kernel.package.import.version.range>[5.0.0, 6.0.0)</carbon.kernel.package.import.version.range>
 
+        <carbon.metadata.package.export.version>1.0.0</carbon.metadata.package.export.version>
+
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
 
