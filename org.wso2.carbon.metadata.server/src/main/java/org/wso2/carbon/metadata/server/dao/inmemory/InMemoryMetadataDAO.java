@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.xml.ws.http.HTTPException;
 
 /**
  * In Memory Metadata DAO
@@ -85,19 +84,19 @@ public class InMemoryMetadataDAO implements MetadataDAO {
     //One method accepts string and isUUID or isKey
 
     @Override
-    public void removeByUUID(String uuid) throws Exception {
+    public void removeByUUID(String uuid) throws MetadataStoreException {
         String path = uuidStore.get(uuid);
         if (path != null) {
             uuidStore.remove(uuid);
             inMemoryStore.remove(path);
             logger.debug("Collection removed successfully");
         } else {
-            throw new HTTPException(404);
+            throw new MetadataStoreException("Resource not exists");
         }
     }
 
     @Override
-    public void removeByKey(Key path) throws HTTPException {
+    public void removeByKey(Key path) throws MetadataStoreException {
         Resource retrievedResource = inMemoryStore.get(path.getKey());
         if (retrievedResource != null) {
             inMemoryStore.remove(path.getKey());
@@ -105,7 +104,7 @@ public class InMemoryMetadataDAO implements MetadataDAO {
             uuidStore.remove(uuid);
             logger.debug("resource removed successfully");
         } else {
-            throw new HTTPException(404);
+            throw new MetadataStoreException("Resource not exists");
         }
     }
 
@@ -125,12 +124,12 @@ public class InMemoryMetadataDAO implements MetadataDAO {
         if (resource != null) {
             return resource;
         } else {
-            throw new HTTPException(404);
+            throw new MetadataStoreException("Resource not Exists");
         }
     }
 
     @Override
-    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException {
+    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) {
         String collectionKey = collectionImpl.getKey();
         ArrayList<String> childrenList = new ArrayList<>();
         Iterator iterator = inMemoryStore.entrySet().iterator();
