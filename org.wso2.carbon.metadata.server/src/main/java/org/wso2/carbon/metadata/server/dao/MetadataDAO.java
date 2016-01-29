@@ -15,11 +15,12 @@
  */
 package org.wso2.carbon.metadata.server.dao;
 
-import org.wso2.carbon.metadata.server.api.Collection;
 import org.wso2.carbon.metadata.server.api.Key;
 import org.wso2.carbon.metadata.server.api.MetadataStoreException;
 import org.wso2.carbon.metadata.server.api.Resource;
+import org.wso2.carbon.metadata.server.impl.CollectionImpl;
 
+import java.util.ArrayList;
 import javax.xml.ws.http.HTTPException;
 
 /**
@@ -61,6 +62,7 @@ public interface MetadataDAO {
 
     /**
      * Method to retrieve resources or collections given the path
+     *
      * @param path path of the resource that needs to be retrieved
      * @return resource or collection to be retrieved
      * @throws MetadataStoreException throws if the operation failed
@@ -70,10 +72,10 @@ public interface MetadataDAO {
     /**
      * Get the list of paths of children of a collection
      *
-     * @param collection the collection needs to be addressed
+     * @param collectionImpl the collection to be addressed
      * @return list of paths
      * @throws MetadataStoreException
      */
-    String[] getChildren(Collection collection) throws MetadataStoreException;
+    ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException;
 
 }

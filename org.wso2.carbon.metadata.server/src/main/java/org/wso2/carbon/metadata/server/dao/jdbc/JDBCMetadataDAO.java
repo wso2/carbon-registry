@@ -16,12 +16,13 @@
 
 package org.wso2.carbon.metadata.server.dao.jdbc;
 
-import org.wso2.carbon.metadata.server.api.Collection;
 import org.wso2.carbon.metadata.server.api.Key;
 import org.wso2.carbon.metadata.server.api.MetadataStoreException;
 import org.wso2.carbon.metadata.server.api.Resource;
 import org.wso2.carbon.metadata.server.dao.MetadataDAO;
+import org.wso2.carbon.metadata.server.impl.CollectionImpl;
 
+import java.util.ArrayList;
 import javax.xml.ws.http.HTTPException;
 
 /**
@@ -54,7 +55,8 @@ public class JDBCMetadataDAO implements MetadataDAO {
     }
 
     @Override
-    public String[] getChildren(Collection collection) throws MetadataStoreException {
-        return new String[0];
+    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException {
+        return null;
     }
+
 }

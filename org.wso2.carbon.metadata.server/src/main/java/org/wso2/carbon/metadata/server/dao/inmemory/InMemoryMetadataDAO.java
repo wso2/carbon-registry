@@ -18,13 +18,17 @@ package org.wso2.carbon.metadata.server.dao.inmemory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.metadata.server.api.Collection;
 import org.wso2.carbon.metadata.server.api.Key;
 import org.wso2.carbon.metadata.server.api.MetadataStoreException;
 import org.wso2.carbon.metadata.server.api.Resource;
 import org.wso2.carbon.metadata.server.dao.MetadataDAO;
+import org.wso2.carbon.metadata.server.impl.CollectionImpl;
+import org.wso2.carbon.metadata.server.impl.ResourceImpl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.xml.ws.http.HTTPException;
 
 /**
@@ -51,8 +55,14 @@ public class InMemoryMetadataDAO implements MetadataDAO {
             throw new MetadataStoreException("Resource exists already in inMemoryMetaDataStore");
         }
         //if not in the path map, then create entry
-        inMemoryStore.put(resource.getKey(), resource);
-        uuidStore.put(resource.getUUID(), resource.getKey());
+        if (resource instanceof CollectionImpl) {
+            CollectionImpl collectionImpl = (CollectionImpl) resource;
+            inMemoryStore.put(collectionImpl.getKey(), collectionImpl);
+            uuidStore.put(collectionImpl.getUUID(), collectionImpl.getKey());
+        } else {
+            inMemoryStore.put(resource.getKey(), resource);
+            uuidStore.put(resource.getUUID(), resource.getKey());
+        }
         logger.debug("Resource added successfully");
     }
 
@@ -120,7 +130,25 @@ public class InMemoryMetadataDAO implements MetadataDAO {
     }
 
     @Override
-    public String[] getChildren(Collection collection) throws MetadataStoreException {
-        return new String[0];
+    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException {
+        String collectionKey = collectionImpl.getKey();
+        ArrayList<String> childrenList = new ArrayList<>();
+        Iterator iterator = inMemoryStore.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Resource> resourceEntry = (Map.Entry) iterator.next();
+            Resource resource = resourceEntry.getValue();
+            String parentPath = "";
+            if (resource instanceof ResourceImpl) {
+                ResourceImpl childResourceImpl = (ResourceImpl) resource;
+                parentPath = childResourceImpl.getParentPath();
+            } else if (resource instanceof CollectionImpl) {
+                CollectionImpl childCollectionImpl = (CollectionImpl) resource;
+                parentPath = childCollectionImpl.getParentPath();
+            }
+            if (parentPath.equals(collectionKey)) {
+                childrenList.add(resource.getKey());
+            }
+        }
+        return childrenList;
     }
 }
