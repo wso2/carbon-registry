@@ -18,7 +18,9 @@ package org.wso2.carbon.metadata.server.dao;
 import org.wso2.carbon.metadata.server.api.Collection;
 import org.wso2.carbon.metadata.server.api.Key;
 import org.wso2.carbon.metadata.server.api.MetadataStoreException;
-import org.wso2.carbon.metadata.server.impl.ResourceImpl;
+import org.wso2.carbon.metadata.server.api.Resource;
+
+import javax.xml.ws.http.HTTPException;
 
 /**
  * Metadata DAO
@@ -27,10 +29,10 @@ public interface MetadataDAO {
     /**
      * Method to add a resource or collection to a given path
      *
-     * @param resourceImpl Implementation of the resource or collection that needs to be added
+     * @param resource Implementation of the resource or collection that needs to be added
      * @throws MetadataStoreException throws if operation is failed
      */
-    void add(ResourceImpl resourceImpl) throws MetadataStoreException;
+    void add(Resource resource) throws MetadataStoreException;
 
     /**
      * Removes a resource or a collection from the table given the UUID
@@ -38,7 +40,7 @@ public interface MetadataDAO {
      * @param uuid UUID of the resource that needs to be removed
      * @throws MetadataStoreException throws if the operation failed
      */
-    void remove(String uuid) throws MetadataStoreException;
+    void removeByUUID(String uuid) throws Exception;
 
     /**
      * Removes a collection or a resource given the path
@@ -46,18 +48,27 @@ public interface MetadataDAO {
      * @param path path of the resource to be removed
      * @throws MetadataStoreException
      */
-    void remove(Key path) throws MetadataStoreException;
+    void removeByKey(Key path) throws HTTPException;
 
     /**
      * Update a resource given the UUID
      *
-     * @param uuid UUID of the resource
+     * @param resource new resource to replace the existing resource
      * @throws MetadataStoreException
      */
-    void update(String uuid) throws MetadataStoreException;
+
+    void update(Resource resource) throws MetadataStoreException;
 
     /**
-     * get the list of paths of children of a collection
+     * Method to retrieve resources or collections given the path
+     * @param path path of the resource that needs to be retrieved
+     * @return resource or collection to be retrieved
+     * @throws MetadataStoreException throws if the operation failed
+     */
+    Resource get(Key path) throws MetadataStoreException;
+
+    /**
+     * Get the list of paths of children of a collection
      *
      * @param collection the collection needs to be addressed
      * @return list of paths
