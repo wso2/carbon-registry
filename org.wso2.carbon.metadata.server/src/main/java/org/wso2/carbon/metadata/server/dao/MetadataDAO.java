@@ -21,7 +21,6 @@ import org.wso2.carbon.metadata.server.api.Resource;
 import org.wso2.carbon.metadata.server.impl.CollectionImpl;
 
 import java.util.ArrayList;
-import javax.xml.ws.http.HTTPException;
 
 /**
  * Metadata DAO
@@ -41,7 +40,7 @@ public interface MetadataDAO {
      * @param uuid UUID of the resource that needs to be removed
      * @throws MetadataStoreException throws if the operation failed
      */
-    void removeByUUID(String uuid) throws Exception;
+    void removeByUUID(String uuid) throws MetadataStoreException;
 
     /**
      * Removes a collection or a resource given the path
@@ -49,7 +48,7 @@ public interface MetadataDAO {
      * @param path path of the resource to be removed
      * @throws MetadataStoreException
      */
-    void removeByKey(Key path) throws HTTPException;
+    void removeByKey(Key path) throws MetadataStoreException;
 
     /**
      * Update a resource given the UUID
@@ -76,6 +75,6 @@ public interface MetadataDAO {
      * @return list of paths
      * @throws MetadataStoreException
      */
-    ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException;
+    ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl);
 
 }

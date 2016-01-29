@@ -23,24 +23,24 @@ import org.wso2.carbon.metadata.server.dao.MetadataDAO;
 import org.wso2.carbon.metadata.server.impl.CollectionImpl;
 
 import java.util.ArrayList;
-import javax.xml.ws.http.HTTPException;
 
 /**
  * JDBC Metadata DAO
  */
 public class JDBCMetadataDAO implements MetadataDAO {
+
     @Override
     public void add(Resource resource) throws MetadataStoreException {
 
     }
 
     @Override
-    public void removeByUUID(String uuid) throws Exception {
+    public void removeByUUID(String uuid) throws MetadataStoreException {
 
     }
 
     @Override
-    public void removeByKey(Key path) throws HTTPException {
+    public void removeByKey(Key path) throws MetadataStoreException {
 
     }
 
@@ -55,8 +55,7 @@ public class JDBCMetadataDAO implements MetadataDAO {
     }
 
     @Override
-    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) throws MetadataStoreException {
+    public ArrayList<String> getChildrenPaths(CollectionImpl collectionImpl) {
         return null;
     }
-
 }
