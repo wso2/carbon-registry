@@ -28,7 +28,6 @@ public interface MetadataDAO {
      * Method to add a resource or collection to a given path
      *
      * @param resourceImpl Implementation of the resource or collection that needs to be added
-     * @return the resource id from the table
      * @throws MetadataStoreException throws if operation is failed
      */
     void add(ResourceImpl resourceImpl) throws MetadataStoreException;
@@ -44,7 +43,7 @@ public interface MetadataDAO {
     /**
      * Removes a collection or a resource given the path
      *
-     * @param path
+     * @param path path of the resource to be removed
      * @throws MetadataStoreException
      */
     void remove(Key path) throws MetadataStoreException;
