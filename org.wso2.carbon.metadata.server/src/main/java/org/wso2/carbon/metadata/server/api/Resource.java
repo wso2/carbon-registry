@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.metadata.server.api;
 
-
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
