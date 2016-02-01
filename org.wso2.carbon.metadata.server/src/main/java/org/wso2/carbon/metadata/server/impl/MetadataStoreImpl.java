@@ -22,7 +22,7 @@ import org.wso2.carbon.metadata.server.api.MetadataStore;
 import org.wso2.carbon.metadata.server.api.MetadataStoreException;
 import org.wso2.carbon.metadata.server.api.Resource;
 import org.wso2.carbon.metadata.server.dao.MetadataDAO;
-import org.wso2.carbon.metadata.server.dao.jdbc.JDBCMetadataDAO;
+import org.wso2.carbon.metadata.server.dao.inmemory.InMemoryMetadataDAO;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class MetadataStoreImpl implements MetadataStore {
     private MetadataDAO metadataDAO;
 
     public MetadataStoreImpl() {
-        setMetadataDAO(new JDBCMetadataDAO());
+        setMetadataDAO(new InMemoryMetadataDAO());
     }
 
     public MetadataDAO getMetadataDAO() {

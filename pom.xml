@@ -44,6 +44,7 @@
             <modules>
                 <module>parent</module>
                 <module>org.wso2.carbon.metadata.server</module>
+                <module>org.wso2.carbon.metadata.client</module>
             </modules>
         </profile>
     </profiles>
