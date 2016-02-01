@@ -17,7 +17,7 @@
 package org.wso2.carbon.metadata.client.impl;
 
 /**
- * This represents the remoteMetadataClient. 
+ * This represents the remoteMetadataClient.
  */
 public class RemoteMetadataClient {
 }

@@ -17,9 +17,27 @@
 package org.wso2.carbon.metadata.client.api;
 
 /**
- * This class represents the Resource objects in the client side.
+ * This exception will be thrown if any operation on the client side is failed
  */
-public class Resource {
+public class MetadataClientException extends Exception {
 
+    /**
+     * The basic constructor to create an exception with message
+     *
+     * @param message Message to be passed if the operation failed
+     */
+    public MetadataClientException(String message) {
+       super(message);
+    }
+
+    /**
+     * Constructor to create an exception with message and a throwable
+     *
+     * @param message   Message to be passed if the operation failed
+     * @param cause     Cause for the exception as a throwable
+     */
+    public MetadataClientException(String message, Throwable cause) {
+        super(message,cause);
+    }
 
 }
