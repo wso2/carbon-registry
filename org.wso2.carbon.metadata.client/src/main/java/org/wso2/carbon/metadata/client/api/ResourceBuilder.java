@@ -46,4 +46,7 @@ public class ResourceBuilder {
     public Resource createResource() {
         return new Resource(uuid, path, properties, mediaType, content, isCollection);
     }
+
 }
+
+
