@@ -16,10 +16,73 @@
 
 package org.wso2.carbon.metadata.client.api;
 
+import java.util.Properties;
+
 /**
  * This class represents the Resource objects in the client side.
  */
 public class Resource {
 
+    /**
+     * UUID of the resource
+     */
+    private String uuid;
 
+    /**
+     * path of the resource stores as a Key object
+     */
+    private Key path;
+
+    /**
+     * Properties associated with the resource. A resource can contain zero or more properties,
+     * where each property is a key and  value pair. Both key and the value should be strings.
+     */
+    private Properties properties = new Properties();
+
+    /**
+     * Media type of the resource. Each resource can have a media type associated with it. This can
+     * be either a standard MIME media type or a custom media type defined by the users of the
+     * client api.
+     */
+    private String mediaType;
+
+    /**
+     * Content of the resource. Object and the type stored in this field depends on the resource
+     * type. If the resource is a file with no special media type handling, this contains an array
+     * of bytes (byte[]) containing the raw bytes of the file. If the resource is a collection, this
+     * contains a String[] containing the UUID of child resources.
+     */
+    private Object content;
+
+    /**
+     * stores whether the given resource is a collection
+     */
+    private boolean isCollection;
+
+    /**
+     * Constructor for Resource objects. This is used by the ResourceBuilder class.
+     * @param uuid
+     * @param path
+     * @param properties
+     * @param mediaType
+     * @param content
+     * @param isCollection
+     */
+    public Resource(String uuid, Key path, Properties properties, String mediaType, Object content,
+            boolean isCollection) {
+        this.uuid = uuid;
+        this.path = path;
+        this.properties = properties;
+        this.mediaType = mediaType;
+        this.content = content;
+        this.isCollection = isCollection;
+    }
+
+    public Key getPath() {
+        return path;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
 }

@@ -37,7 +37,7 @@ public class MetadataClientException extends Exception {
      * @param cause     Cause for the exception as a throwable
      */
     public MetadataClientException(String message, Throwable cause) {
-        super(message,cause);
+        super(message, cause);
     }
 
 }

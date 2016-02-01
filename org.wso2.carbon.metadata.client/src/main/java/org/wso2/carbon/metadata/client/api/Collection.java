@@ -46,10 +46,10 @@ public class Collection {
     /**
      * Remove a collection from the repository given the UUID of the collection
      *
-     * @param UUID
+     * @param uuid UUID of the collection
      * @throws MetadataClientException
      */
-    public void removeCollection(String UUID) throws MetadataClientException {
+    public void removeCollection(String uuid) throws MetadataClientException {
 
     }
 
@@ -67,11 +67,11 @@ public class Collection {
     /**
      * Get all the members of a collection given UUID of the collection
      *
-     * @param UUID UUID of the collection that the children need to be retrieved
+     * @param uuid UUID of the collection that the children need to be retrieved
      * @return Map containing UUID and Path of child resources
      * @throws MetadataClientException throws if the operation fails
      */
-    public Map<String, String> getCollection(String UUID) throws MetadataClientException {
+    public Map<String, String> getCollection(String uuid) throws MetadataClientException {
         return null;
     }
 
