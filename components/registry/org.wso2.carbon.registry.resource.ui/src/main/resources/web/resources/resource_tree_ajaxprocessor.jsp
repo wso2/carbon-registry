@@ -25,6 +25,8 @@
 <%@ page import="java.util.Stack" %>
 <%@ page import="org.wso2.carbon.registry.core.utils.RegistryUtils" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ResourceTreeEntryBean" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+
 <%
     String viewMode = Utils.getResourceViewMode(request);
     String resourceConsumer = Utils.getResourceConsumer(request);
@@ -59,7 +61,7 @@
     } else {
     	displayPath = rootPath;
     }
-    
+
     try {
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
         ResourceServiceClient client = new ResourceServiceClient(cookie, config, session);
@@ -100,28 +102,37 @@
                                                 class="picked-path-textbox" <%= (expansionPath != null) ? "value=\"" + expansionPath + "\"" : ""%> style="width:500px;"
                                                 onfocus="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>');" onchange="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>')"/>
                                             <input type="button" class="button" value="<fmt:message key="ok"/>"
-                                                   onclick="if ((typeof(isMediationLocalEntrySelected) == undefined )|| !isMediationLocalEntrySelected) { if (validateResoucePath()) { handle<%= relativeRoot ? "Relative" : "" %>WindowOk(<%= relativeRoot ? "'" + displayPath + "', " : "" %>'<%=textBoxId%>'<%= onOKCallback != null ? ", " + onOKCallback : ""%>); CARBON.closeWindow(); return true; } return false; }; CARBON.closeWindow(); return true;" />
+                                                   onclick="if ((typeof(isMediationLocalEntrySelected) == undefined )|| !isMediationLocalEntrySelected) { if (validateResoucePath()) { handle<%= relativeRoot ? "Relative" : "" %>WindowOk(<%= relativeRoot ? "'" + displayPath + "', " : "" %>'<%=Encode.forJavaScript(textBoxId)%>'<%= onOKCallback != null ? ", " + onOKCallback : ""%>); CARBON.closeWindow(); return true; } return false; }; CARBON.closeWindow(); return true;"/>
     </div>
-    </fmt:bundle>    
+    </fmt:bundle>
     <%      } %>
     <div class="resource-tree-box" <% if (displayTreeNavigation) { %>style='height:100% !important;'<% }%>>
 <%
     if (displayResourceTree) {
+        String fatherId = "father_"+rootName;
 %>
-        <div id="father_<%=rootName%>" class="father-object">
+        <div id="<%=Encode.forHtmlAttribute(fatherId)%>" class="father-object">
 <%
     boolean hideResources = request.getParameter("hideResources") != null;
 
-    if (expansionPath == null) {
-%>
-            <a onclick="loadSubTree('<%=rootPath%>', '<%=rootName%>', '<%=textBoxId%>', '<%=(hideResources? "true" : "false")%>');">
-                <img style="margin-right: 5px;" id="plus_<%=rootName%>" src="../resources/images/icon-tree-plus.jpg"/>
-                <img style="display:none; margin-right: 5px;" id="minus_<%=rootName%>" src="../resources/images/icon-tree-minus.jpg"/></a>
-            <a onclick="pickPath('<%=rootPath%>', '<%=textBoxId%>', '<%=rootName%>');"><img style="margin-right: 2px;"
-                                                                                            src="../resources/images/icon-folder-small.gif"/><%=rootPath%></a>
-        </div>
-        <div id="child_<%=rootName%>" class="child-objects"></div>
-<%
+            if (expansionPath == null) {
+                String plusId = "plus_"+rootName;
+                String minusId = "minus_"+rootName;
+                String childId = "child_"+rootName;
+        %>
+        <a onclick="loadSubTree('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(rootName)%>',
+                '<%=Encode.forHtml(textBoxId)%>', '<%=(hideResources? "true" : "false")%>');">
+            <img style="margin-right: 5px;" id="<%=Encode.forHtmlAttribute(plusId)%>"
+                 src="../resources/images/icon-tree-plus.jpg"/>
+            <img style="display:none; margin-right: 5px;" id="<%=Encode.forHtmlAttribute(minusId)%>"
+                 src="../resources/images/icon-tree-minus.jpg"/></a>
+        <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
+                '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
+                                                        src="../resources/images/icon-folder-small.gif"/><%=Encode.forHtml(rootPath)%>
+        </a>
+    </div>
+    <div id="<%=Encode.forHtmlAttribute(childId)%>" class="child-objects"></div>
+    <%
     } else {
         session.removeAttribute("resource-tree-expansion-path");
         ResourceServiceClient client;
@@ -190,16 +201,24 @@
                 sb.append("})");
             }
             sb.append("});");
-%>
-        <a onclick="<%=sb.toString()%>">
-            <img style="margin-right: 5px;" id="plus_<%=rootName%>" src="../resources/images/icon-tree-plus.jpg"/>
-            <img style="display:none; margin-right: 5px;" id="minus_<%=rootName%>" src="../resources/images/icon-tree-minus.jpg"/></a>
-        <a onclick="pickPath('<%=rootPath%>', '<%=textBoxId%>', '<%=rootName%>');"><img style="margin-right: 2px;"
-                                                                                        src="../resources/images/icon-folder-small.gif"/><%=rootPath%></a>
-    </div>
-    <div id="child_<%=rootName%>" class="child-objects"></div>
 
-        <%
+            String plusId = "plus_"+rootName;
+            String minusId = "minus_"+rootName;
+            String childId = "child_"+rootName;
+    %>
+    <a onclick="<%=Encode.forJavaScript(sb.toString())%>">
+        <img style="margin-right: 5px;" id="<%=Encode.forHtmlAttribute(plusId)%>"
+             src="../resources/images/icon-tree-plus.jpg"/>
+        <img style="display:none; margin-right: 5px;" id="<%=Encode.forHtmlAttribute(minusId)%>"
+             src="../resources/images/icon-tree-minus.jpg"/></a>
+    <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
+            '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
+                                                    src="../resources/images/icon-folder-small.gif"/><%=rootPath%>
+    </a>
+</div>
+<div id="<%=Encode.forHtmlAttribute(childId)%>" class="child-objects"></div>
+
+<%
         }
         }
         }
