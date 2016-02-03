@@ -319,7 +319,8 @@ public class SwaggerProcessor {
             }
 
             if (host == null) {
-                log.warn("Can't defined the endpoint url when uploading swagger from file. Endpoint creation might fail. ");
+                log.warn("Can't derive the endpoint(host) url when uploading swagger from file. "
+                        + "Endpoint creation might fail. ");
                 return;
             }
 
