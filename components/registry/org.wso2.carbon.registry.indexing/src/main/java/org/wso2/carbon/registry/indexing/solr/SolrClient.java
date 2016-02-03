@@ -545,10 +545,11 @@ public class SolrClient {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
                 if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
-                        RegistryConstants.POLICY_MEDIA_TYPE)) {
+                        RegistryConstants.POLICY_MEDIA_TYPE) ||
+                        fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                                RegistryConstants.WSDL_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
                             SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
-
                 }
             }
             // add filter query for user role filtering
@@ -677,10 +678,11 @@ public class SolrClient {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
                 if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
-                        RegistryConstants.POLICY_MEDIA_TYPE)) {
+                        RegistryConstants.POLICY_MEDIA_TYPE) ||
+                        fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                                RegistryConstants.WSDL_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ':' +
                             SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + '*');
-
                 }
             }
             // Add facet fields
