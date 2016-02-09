@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>carbon-registry</artifactId>
-        <version>4.4.4-SNAPSHOT</version>
+        <version>4.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -45,6 +45,7 @@
         <module>org.wso2.carbon.registry.ws.stub</module>
         <module>org.wso2.carbon.registry.properties.stub</module>
         <module>org.wso2.carbon.registry.reporting.stub</module>
+        <module>org.wso2.carbon.registry.security.stub</module>
         <module>org.wso2.carbon.governance.notifications.worklist.stub</module>
     </modules>
 

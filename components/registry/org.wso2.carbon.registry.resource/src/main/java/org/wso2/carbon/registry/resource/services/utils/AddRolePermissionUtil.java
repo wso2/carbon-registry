@@ -20,7 +20,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
@@ -120,7 +123,8 @@ public class AddRolePermissionUtil {
             }
             event.setTenantId(userRegistry.getTenantId());
             CommonUtil.notify(event, userRegistry, pathToAuthorize);
-
+            // add log entry for the resource permission update
+            addLogEntryForResourceUpdate(userRegistry, pathToAuthorize, LogEntry.UPDATE, "add new role authorization of the resource");
             String msg = "Role authorization performed successfully.";
             log.debug(msg);
 
@@ -128,6 +132,33 @@ public class AddRolePermissionUtil {
             String msg = "Failed to add role permissions. " + e.getMessage();
             log.error(msg, e);
             throw new RegistryException(msg, e);
+        }
+    }
+
+    /**
+     * Method to add new log entry for the resource update.
+     * @param userRegistry user registry to add logs
+     * @param resourcePath updated resource path
+     * @param action log action
+     * @param actionData additional details about the action
+     * @throws RegistryException
+     */
+    private static void addLogEntryForResourceUpdate(UserRegistry userRegistry, String resourcePath, int action, String actionData) throws RegistryException {
+        try {
+            CurrentSession.setTenantId(userRegistry.getTenantId());
+            CurrentSession.setUser(userRegistry.getUserName());
+            if (userRegistry.getRegistryContext() != null) {
+                userRegistry.getRegistryContext().getLogWriter().addLog(resourcePath, userRegistry.getUserName(), action, actionData);
+            } else {
+                Resource resource = userRegistry.get(resourcePath);
+                userRegistry.put(resourcePath, resource);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("add new role authorization of the resource: " + resourcePath);
+            }
+        } finally {
+            CurrentSession.removeTenantId();
+            CurrentSession.removeUser();
         }
     }
 }

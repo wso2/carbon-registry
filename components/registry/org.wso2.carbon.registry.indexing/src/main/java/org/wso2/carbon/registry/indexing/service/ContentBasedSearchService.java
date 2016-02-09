@@ -17,14 +17,12 @@
 package org.wso2.carbon.registry.indexing.service;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.admin.api.indexing.IContentBasedSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
@@ -38,34 +36,19 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
-import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
-import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 public class ContentBasedSearchService extends RegistryAbstractAdmin 
         implements IContentBasedSearchService {
 	private static final Log log = LogFactory.getLog(ContentBasedSearchService.class);
-
-	private String solrServerUrl;
-
-
-	public String getSolrUrl(int tenantId) throws IOException, FileNotFoundException, RegistryException {
-		if(solrServerUrl == null){
-			solrServerUrl = IndexingUtils.getSolrUrl();
-		}	
-		return solrServerUrl;
-	}
-
 
 	public SearchResultsBean getContentSearchResults(String searchQuery) throws AxisFault{
         try {
@@ -92,6 +75,22 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return new SearchResultsBean();
     }
 
+    public SearchResultsBean getTermSearchResults(String[][] attributes) throws AxisFault{
+
+        try {
+            final Map<String, String> map = new HashMap<String, String>(attributes.length);
+            UserRegistry registry = (UserRegistry) getRootRegistry();
+            for (String[] mapping : attributes) {
+                map.put(mapping[0], mapping[1]);
+            }
+            return searchTerms(map, registry);
+        } catch (IndexerException | RegistryException e) {
+            log.error("Error occurred while getting the term search result.", e );
+        }
+        return new SearchResultsBean();
+    }
+
+    @Deprecated
     private String[] sortByDateIfRequired(String[] authorizedPaths, final UserRegistry registry, PaginationContext paginationContext) throws RegistryException {
         if(paginationContext.getSortBy().equalsIgnoreCase("meta_created_date")) {
             if(paginationContext.getSortOrder().equalsIgnoreCase("ASC")) {
@@ -152,33 +151,40 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
      * @throws RegistryException
      */
     private SearchResultsBean searchContentInternal(String searchQuery, Map<String, String> attributes,
-            UserRegistry registry) throws IndexerException, RegistryException {
+        UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
         // To verify advance search and metadata search
-        boolean isMetaDataSearch = true;
+//        boolean isMetaDataSearch = true;
         String advanceSearchAttribute = attributes.get(IndexingConstants.ADVANCE_SEARCH);
         if (advanceSearchAttribute != null && advanceSearchAttribute.equals("true")) {
-            isMetaDataSearch = false;
+//            isMetaDataSearch = false;
             attributes.remove(IndexingConstants.ADVANCE_SEARCH);
         }
-        SolrDocumentList results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
-                client.query(searchQuery, registry.getTenantId());
+        SolrDocumentList results = new SolrDocumentList();
+        try {
+            results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
+                    client.query(searchQuery, registry.getTenantId());
+        } catch (SolrException e) {
+            // catching the solr exception to avoid blank pages for invalid solr query,
+            // so that it will return empty list and log the error message.
+            log.error("Invalid Search Query, query contains invalid characters",e);
+        }
 
         if (log.isDebugEnabled())
             log.debug("result received " + results);
 
         List<ResourceData> filteredResults = new ArrayList<ResourceData>();
-        // TODO: Proper mechanism once authroizations are fixed - senaka
-        //        for (SolrDocument solrDocument : results){
-        //            String path = getPathFromId((String)solrDocument.getFirstValue("id"));
-        //            if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
-        //                filteredResults.add(loadResourceByPath(registry, path));
-        //            }
-        //        }
-        // -- end of proper mechanism
+        // check the authorization again for the filtered results
+        for (SolrDocument solrDocument : results) {
+            String path = getPathFromId((String) solrDocument.getFirstValue("id"));
+            if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
+                filteredResults.add(loadResourceByPath(registry, path));
+            }
+        }
 
-        MessageContext messageContext = MessageContext.getCurrentMessageContext();
+        //commenting this, we don't need to do pagination here, we are using solr pagination.
+/*        MessageContext messageContext = MessageContext.getCurrentMessageContext();
 
         if (((messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext))
                 || PaginationContext.getInstance() != null) && isMetaDataSearch) {
@@ -201,7 +207,8 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                 }
                 String[] authorizedPaths = authorizedPathList.toArray(new String[authorizedPathList.size()]);
 
-                sortByDateIfRequired(authorizedPaths, registry, paginationContext);
+                // Fix for REGISTRY-3132
+                //sortByDateIfRequired(authorizedPaths, registry, paginationContext);
 
                 String[] paginatedPaths;
                 int start = paginationContext.getStart();
@@ -211,13 +218,21 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     PaginationUtils.setRowCount(messageContext, Integer.toString(rowCount));
                 }
                 paginationContext.setLength(authorizedPaths.length);
-                int startIndex;
-                if (start == 1) {
+                int startIndex = start;
+                *//*if (start == 1) {
                     startIndex = 0;
                 } else {
                     startIndex = start;
-                }
+                } *//*
                 if (rowCount < start + count) {
+                    if(rowCount - startIndex < 0) {
+                        String msg = "PaginationContext parameter's start index seems to be greater than the limit count. Please verify your parameters";
+                        if(log.isDebugEnabled()) {
+                            log.debug(msg);
+                        }
+                        resultsBean.setErrorMessage(msg);
+                        return resultsBean;
+                    }
                     paginatedPaths = new String[rowCount - startIndex];
                     System.arraycopy(authorizedPaths, startIndex, paginatedPaths, 0, (rowCount - startIndex));
                 } else {
@@ -246,7 +261,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
                     }
                 }
             }
-        }
+        }*/
         if (log.isDebugEnabled()) {
             log.debug("filtered results " + filteredResults + " for user " + registry.getUserName());
         }
@@ -351,9 +366,11 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
 	}
 
-    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException {
+    public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
+        //authenticate required attribute is not used, since we are going to authorize each time and not depends on this flag.
+        attributes.remove(IndexingConstants.AUTH_REQUIRED);
         List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
 
         if (log.isDebugEnabled()) {
@@ -362,7 +379,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 
         List<TermData> termDataList = new ArrayList<>();
         for (FacetField.Count count : results) {
-            termDataList.add(new TermData(count.getName(),count.getCount()));
+            termDataList.add(new TermData(count.getName(), count.getCount()));
         }
         resultsBean.setTermDataList(termDataList.toArray(new TermData[termDataList.size()]));
         return resultsBean;

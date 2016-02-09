@@ -1,3 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ WSO2 Inc. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied.  See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.wso2</groupId>
@@ -9,7 +27,7 @@
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.4.4-SNAPSHOT</version>
+    <version>4.5.1-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -40,6 +58,7 @@
         <module>features/uddi</module>
         <module>features/deployment-synchronizer</module>
 	    <module>features/caching-invalidator</module>
+        <module>features/registry-vault</module>
     </modules>
 
     <repositories>
@@ -340,7 +359,7 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.google.guava.wso2</groupId>
+                <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${google.guava.wso2.version}</version>
             </dependency>
@@ -390,6 +409,11 @@
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.user.mgt.ui</artifactId>
                 <version>${carbon.commons.version}</version>
+            </dependency>
+	    <dependency>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${org.wso2.securevault.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -772,6 +796,21 @@
                 <artifactId>org.wso2.carbon.registry.caching.invalidator</artifactId>
                 <version>${carbon.registry.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.security</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.security.stub</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.security.ui</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
 
             <!-- Carbon Kernel Features Dependencies-->
             <dependency>
@@ -807,15 +846,20 @@
             <!-- End of Carbon Kernel Features Dependencies-->
             <!-- Event dependencies -->
             <dependency>
-                <groupId>org.wso2.carbon.commons</groupId>
-                <artifactId>org.wso2.carbon.event.core</artifactId>
-                <version>${carbon.commons.version}</version>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.event.core</artifactId>
+                <version>${carbon.registry.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.registry</groupId>
+                <artifactId>org.wso2.carbon.registry.event.ws</artifactId>
+                <version>${carbon.registry.version}</version>
+            </dependency>
+            <!--dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.event.ws</artifactId>
                 <version>${carbon.commons.version}</version>
-            </dependency>
+            </dependency-->
             <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.deployment.synchronizer</artifactId>
@@ -843,6 +887,16 @@
                 <artifactId>org.wso2.carbon.ui.menu.governance</artifactId>
                 <version>${carbon.kernel.version}</version>
             </dependency>
+	    <!--dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.event.client</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.event.client.stub</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency-->
 
             <!-- OSGi dependencies -->
             <dependency>
@@ -1210,12 +1264,12 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.solr</groupId>
+                <groupId>org.wso2.orbit.org.apache.solr</groupId>
                 <artifactId>solr</artifactId>
                 <version>${version.solr}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.apache.lucene</groupId>
+                <groupId>org.wso2.orbit.org.apache.lucene</groupId>
                 <artifactId>lucene</artifactId>
                 <version>${version.lucene}</version>
             </dependency>
@@ -1240,7 +1294,7 @@
                 <version>${version.noggit}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.restlet.jee</groupId>
+                <groupId>org.wso2.orbit.org.restlet.jee</groupId>
                 <artifactId>org.restlet</artifactId>
                 <version>${version.org.restlet}</version>
             </dependency>
@@ -1280,6 +1334,11 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.owasp.encoder</groupId>
+                <artifactId>encoder</artifactId>
+                <version>${encoder.wso2.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1333,7 +1392,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <preparationGoals>clean install</preparationGoals>
-                    <autoVersionSubmodules>false</autoVersionSubmodules>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
             <plugin>
@@ -1347,10 +1406,11 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.4.0</carbon.kernel.version>
+        <carbon.kernel.version>4.4.1</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
+	<org.wso2.securevault.version>1.0.0</org.wso2.securevault.version>
 
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v12</axis2.version>
@@ -1361,7 +1421,7 @@
         <axis2.osgi.version.range>[1.6.1.wso2v12, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v4</orbit.version.neethi>
-        <rampart.wso2.version>1.6.1-wso2v13</rampart.wso2.version>
+        <rampart.wso2.version>1.6.1-wso2v16</rampart.wso2.version>
 
         <!-- Axiom Version -->
         <axiom.version>1.2.11-wso2v6</axiom.version>
@@ -1378,21 +1438,21 @@
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 
         <!-- Misc -->
-        <google.guava.wso2.version>12.0.0.wso2v1</google.guava.wso2.version>
+        <google.guava.wso2.version>15.0</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>5.0.0.wso2v1</version.solr>
-        <version.lucene>5.0.0.wso2v1</version.lucene>
+        <version.solr>5.2.1.wso2v1</version.solr>
+        <version.lucene>5.2.1.wso2v1</version.lucene>
         <version.httpclient>4.3.1.wso2v2</version.httpclient>
         <version.httpmime>4.3.1.wso2v2</version.httpmime>
         <version.httpcore>4.3.3.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
-        <version.org.restlet>2.1.1.wso2v1</version.org.restlet>
+        <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
         <version.zookeeper>3.3.4.wso2v1</version.zookeeper>
         <derby.version>10.4.2.0</derby.version>
         <activation.version>1.1</activation.version>
         <javamail.version>1.4</javamail.version>
-        <wss4j.version>1.5.11.wso2v9</wss4j.version>
+        <wss4j.version>1.5.11.wso2v11</wss4j.version>
         <com.google.code.gson.version>2.2.4</com.google.code.gson.version>
         <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
         <jetty.version>6.1.5</jetty.version>
@@ -1431,9 +1491,9 @@
         <orbit.version.maven-scm>1.7.0.wso2v1</orbit.version.maven-scm>
 
         <!-- Rampart -->
-        <rampart.mar.version>1.6.1-wso2v10</rampart.mar.version>
-        <rampart.osgi.version>1.6.1.wso2v10</rampart.osgi.version>
-        <orbit.version.rampart>1.6.1.wso2v10</orbit.version.rampart>
+        <rampart.mar.version>1.6.1-wso2v16</rampart.mar.version>
+        <rampart.osgi.version>1.6.1.wso2v16</rampart.osgi.version>
+        <orbit.version.rampart>1.6.1.wso2v16</orbit.version.rampart>
 
         <!-- Equinox -->
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
@@ -1454,18 +1514,19 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.4.1</carbon.commons.version>
-        <carbon.commons.imp.pkg.version>[4.4.0, 4.5.0)</carbon.commons.imp.pkg.version>
+        <carbon.commons.version>4.4.8</carbon.commons.version>
+        <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- jms -->
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.4.4-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.5.1-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
-        <carbon.registry.package.import.version.range>[4.4.0, 4.5.0)
+        <carbon.registry.package.import.version.range>[4.5.0, 5.0.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
+        <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

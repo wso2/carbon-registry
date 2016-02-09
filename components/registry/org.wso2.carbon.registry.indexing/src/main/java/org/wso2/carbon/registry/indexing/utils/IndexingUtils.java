@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.registry.indexing.utils;
 
 import org.apache.axis2.context.MessageContext;
@@ -17,39 +34,6 @@ import java.net.URL;
 import java.util.Properties;
 
 public class IndexingUtils {
-	
-	@Deprecated
-	public static String getSolrUrl() throws IOException, RegistryException {
-
-		String solrServerUrl = null;
-		String carbonHome = System.getProperty("carbon.home");
-		File confFile = new File(carbonHome,"repository" + File.separator + "conf" + File.separator + "solr.conf");
-		if(confFile.exists()){
-			FileInputStream inputStream =  new FileInputStream(confFile);
-            try {
-			    Properties properties = new Properties();
-			    properties.load(inputStream);
-
-			    solrServerUrl = properties.getProperty("solr.endpoint");
-            } finally {
-                inputStream.close();
-            }
-		} else {
-			solrServerUrl = "https://localhost:9443/registry/resourcesolr/solr";
-
-			boolean confCreated = confFile.createNewFile();
-			if (confCreated) {
-				FileOutputStream outputStream = new FileOutputStream(confFile);
-				//outputStream.write("solr.endpoint=http://localhost:8080/solr\n\n".getBytes());
-                try {
-				    outputStream.write(RegistryUtils.encodeString("solr.endpoint=" + solrServerUrl + "\n\n"));
-                } finally {
-				    outputStream.close();
-                }
-			}
-		}
-		return solrServerUrl;
-	}
 	
 //	public static String getSolrCoreUrl(int tenantId) throws IOException {
 //		String baseURL = IndexingUtils.getSolrUrl();

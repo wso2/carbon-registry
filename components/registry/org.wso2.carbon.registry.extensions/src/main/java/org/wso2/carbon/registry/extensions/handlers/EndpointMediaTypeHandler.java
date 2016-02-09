@@ -119,6 +119,15 @@ public class EndpointMediaTypeHandler extends Handler {
             String endpointId = resource.getUUID();
             if (registry.resourceExists(path)) {
                 Resource oldResource = registry.get(path);
+                byte[] oldContent = (byte[])oldResource.getContent();
+                if (oldContent != null && RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
+                    requestContext.setActualPath(path);
+                    ((ResourceImpl) resource).setPath(path);
+                    requestContext.setResource(resource);
+                    registry.put(path, resource);
+                    requestContext.setProcessingComplete(true);
+                    return;
+                }
                 //Set the old resource properties to new resource
                 //https://wso2.org/jira/browse/REGISTRY-799
                 Properties properties = oldResource.getProperties();
@@ -137,7 +146,7 @@ public class EndpointMediaTypeHandler extends Handler {
                         }
                     }
                 }
-                byte[] oldContent = (byte[])oldResource.getContent();
+
                 if (oldContent != null && !RegistryUtils.decodeBytes(oldContent).equals(resourceContent)) {
                     // oops somebody trying to update the endpoint resource content. that should not happen
 //                    String msg = "Endpoint content for endpoint resource is not allowed to change, " +
@@ -185,16 +194,24 @@ public class EndpointMediaTypeHandler extends Handler {
     private String getEndpointPath(RequestContext requestContext, String resourceContent, String endpointUrl)
             throws RegistryException {
         String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
-        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
-                                           EndpointUtils.deriveOMElementContent(resourceContent),
-                                           requestContext.getResource().getProperties());
-        String endpointPath=  CommonUtil.replaceExpressionOfPath(pathExpression, "name",
-                                                     EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl));
-        endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+
+        pathExpression =  CommonUtil.replaceExpressionOfPath(pathExpression, "name",getEndpointName(EndpointUtils.deriveNameFromContent(resourceContent),EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl)));
+        pathExpression = CommonUtil.getPathFromPathExpression(pathExpression, EndpointUtils.deriveOMElementContent(resourceContent),requestContext.getResource().getProperties());
+        String endpointPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
 
         return endpointPath;
 
     }
+
+    private String getEndpointName(String name, String namespace) {
+        if (EndpointUtils.isIncludeNamespaceInName() && !name.equals(namespace)) {
+            return namespace +"-"+ name;
+        } else {
+            return name;
+        }
+    }
+
+
 
     public String rename(RequestContext requestContext) throws RegistryException {
         return move(requestContext);

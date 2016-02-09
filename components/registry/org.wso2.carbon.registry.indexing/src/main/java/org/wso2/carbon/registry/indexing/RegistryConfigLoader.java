@@ -44,6 +44,8 @@ public class RegistryConfigLoader {
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
 
+    private boolean startIndexing;
+
     private long startingDelayInSecs;
 
     private long indexingFreqInSecs;
@@ -74,6 +76,7 @@ public class RegistryConfigLoader {
     }
 
     private RegistryConfigLoader() {
+        startIndexing = IndexingConstants.START_INDEXING_DEFAULT_VALUE;
         startingDelayInSecs = IndexingConstants.STARTING_DELAY_IN_SECS_DEFAULT_VALUE;
         indexingFreqInSecs = IndexingConstants.INDEXING_FREQ_IN_SECS_DEFAULT_VALUE;
         lastAccessTimeLocation = IndexingConstants.LAST_ACCESS_TIME_LOCATION;
@@ -122,6 +125,10 @@ public class RegistryConfigLoader {
         return exclusionList.toArray(new Pattern[exclusionList.size()]);
     }
 
+    public boolean IsStartIndexing() {
+        return startIndexing;
+    }
+
     public long getStartingDelayInSecs() {
         return startingDelayInSecs;
     }
@@ -146,6 +153,17 @@ public class RegistryConfigLoader {
     }
 
     private void loadIndexingConfiguration(OMElement indexingConfig){
+        OMElement startIndexingConfig = indexingConfig.getFirstChildWithName(new QName("startIndexing"));
+        if (startIndexingConfig != null) {
+            try {
+                startIndexing = Boolean.parseBoolean(startIndexingConfig.getText());
+            } catch (OMException e) {
+                // we can use default value and continue if no OMElement found in indexingConfig
+                log.error("Error occurred when retrieving startIndexing, hence using the default value '" +
+                        startIndexing + "'", e);
+            }
+        }
+
         try {
             startingDelayInSecs = Long.parseLong(indexingConfig.getFirstChildWithName(
                     new QName("startingDelayInSeconds")).getText());

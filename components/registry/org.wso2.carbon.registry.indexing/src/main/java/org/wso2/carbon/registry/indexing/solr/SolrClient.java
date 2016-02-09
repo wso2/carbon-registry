@@ -22,13 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.TermsResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -36,17 +34,23 @@ import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
+import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
 import org.wso2.carbon.registry.core.pagination.PaginationUtils;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RegistryConfigLoader;
 import org.wso2.carbon.registry.indexing.SolrConstants;
+import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
@@ -65,6 +69,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
+import java.util.Locale;
 
 public class SolrClient {
 
@@ -77,6 +82,8 @@ public class SolrClient {
     private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() + File.separator + "solr";
     private File solrHome, confDir, langDir;
     private String solrCore = null;
+    //TODO: Move to IndexingConstants in 5.2.0
+    private static final String FIELD_ALLOWED_ROLES = "allowedRoles";
 
     protected SolrClient() throws IOException {
         // Get the solr server url from the registry.xml
@@ -229,6 +236,24 @@ public class SolrClient {
     }
 
     /**
+     * Delete all solr indexes for specific query
+     *
+     * @param query query that needs to be deleted
+     * @throws SolrException
+     */
+
+    public synchronized void deleteIndexByQuery(String query) throws SolrException {
+        try {
+            server.deleteByQuery(query);
+            server.commit();
+        } catch (SolrServerException e) {
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
+        } catch (IOException e) {
+            throw new SolrException(ErrorCode.SERVER_ERROR, "Failure at deleting", e);
+        }
+    }
+
+    /**
      * Method to generate the solr document id
      * @param tenantId tenant id
      * @param path resource path
@@ -296,13 +321,16 @@ public class SolrClient {
                         .equals(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS) || fieldList.getKey()
                         .equals(IndexingConstants.FIELD_ASSOCIATION_TYPES) || fieldList.getKey()
                         .equals(IndexingConstants.FIELD_COMMENTS) || fieldList.getKey()
-                        .equals(IndexingConstants.FIELD_TAGS)) {
+                        .equals(IndexingConstants.FIELD_TAGS) ||
+                        FIELD_ALLOWED_ROLES.equals(fieldList.getKey())) {
                     if (fieldList.getKey().equals(IndexingConstants.FIELD_PROPERTY_VALUES)) {
                         for (String value : fieldList.getValue()) {
                             String[] propertyValArray = value.split(",");
                             fieldKey = propertyValArray[0];
                             String [] propValues = Arrays.copyOfRange(propertyValArray, 1, propertyValArray.length);
-                            addPropertyField(fieldKey, propValues, solrInputDocument);
+                            if (propValues.length > 0) {
+                                addPropertyField(fieldKey, propValues, solrInputDocument);
+                            }
                         }
                     } else {
                         fieldKey = fieldList.getKey() + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX;
@@ -441,7 +469,7 @@ public class SolrClient {
     private String toSolrDateFormat(String dateStr, String currentFormat) {
         String solrDateFormatResult = null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(currentFormat);
+            SimpleDateFormat sdf = new SimpleDateFormat(currentFormat, Locale.ENGLISH);
             Date date = sdf.parse(dateStr);
             sdf.applyPattern(SolrConstants.SOLR_DATE_FORMAT);
             solrDateFormatResult = sdf.format(date);
@@ -517,12 +545,15 @@ public class SolrClient {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
                 if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
-                        RegistryConstants.POLICY_MEDIA_TYPE)) {
+                        RegistryConstants.POLICY_MEDIA_TYPE) ||
+                        fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                                RegistryConstants.WSDL_MEDIA_TYPE)) {
                     query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
                             SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
-
                 }
             }
+            // add filter query for user role filtering
+            addUserRoleFilter(tenantId, query);
             // Add query filters
             addQueryFilters(fields, query);
             QueryResponse queryresponse;
@@ -536,23 +567,35 @@ public class SolrClient {
                     } else {
                         paginationContext = PaginationContext.getInstance();
                     }
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
-                    // query.setStart(paginationContext.getStart());
-                    // query.setRows(paginationContext.getCount());
+                    if (log.isDebugEnabled()) {
+                        log.debug("Pagination Context| start: "+paginationContext.getStart()+" | rows:" +
+                                paginationContext.getCount()+" | sortBy: "+paginationContext.getSortBy());
+                    }
+                    //setting up start and row count for pagination
+                    query.setStart(paginationContext.getStart());
+                    query.setRows(paginationContext.getCount());
 
                     String sortBy = paginationContext.getSortBy();
+                    if (IndexingConstants.META_CREATED_DATE.equals(sortBy)) {
+                        sortBy = IndexingConstants.FIELD_CREATED_DATE;
+                    } else if (IndexingConstants.META_LAST_UPDATED_DATE.equals(sortBy)) {
+                        sortBy = IndexingConstants.FIELD_LAST_UPDATED_DATE;
+                    }
                     if (sortBy.length() > 0) {
-                        query.setSort(sortBy + "_s",
-                                paginationContext.getSortOrder().equals("ASC") ?
-                                        SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+                        String sortOrder = paginationContext.getSortOrder();
+                        addSortByQuery(query, sortBy, sortOrder);
                     }
                     queryresponse = server.query(query);
                     if (log.isDebugEnabled()) {
                         log.debug("Solr index queried query: " + query);
                     }
-                    // TODO: Proper mechanism once authroizations are fixed - senaka
-                    // PaginationUtils.setRowCount(messageContext,
-                    // Long.toString(queryresponse.getResults().getNumFound()));
+                    //setting up result count in the paginationContext
+                    if (messageContext != null) {
+                        PaginationUtils.setRowCount(messageContext,
+                                Long.toString(queryresponse.getResults().getNumFound()));
+                    } else {
+                        paginationContext.setLength((int) queryresponse.getResults().getNumFound());
+                    }
                 } finally {
                     if (messageContext != null) {
                         PaginationContext.destroy();
@@ -565,9 +608,56 @@ public class SolrClient {
                 }
             }
             return queryresponse.getResults();
-        } catch (SolrServerException e) {
+        } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
+        }
+    }
+
+    /**
+     * Method build the filter query to filter the results by the user role
+     * @param tenantId tenantID of the logged user
+     * @param query search query
+     */
+    private void addUserRoleFilter(int tenantId, SolrQuery query) throws SolrException {
+        try {
+            UserRegistry registry = Utils.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId);
+            UserRealm realm = registry.getUserRealm();
+            String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(getLoggedInUserName());
+            StringBuilder rolesQuery = new StringBuilder();
+            for (String userRole : userRoles) {
+                if (rolesQuery.length() == 0) {
+                    rolesQuery.append('(');
+                    rolesQuery.append(userRole.toLowerCase());
+                } else {
+                    rolesQuery.append(" OR ");
+                    rolesQuery.append(userRole.toLowerCase());
+                }
+            }
+            rolesQuery.append(')');
+            String queryValue = rolesQuery.toString();
+            if (log.isDebugEnabled()) {
+                log.debug("user roles filter query values: " +queryValue);
+            }
+            query.addFilterQuery(FIELD_ALLOWED_ROLES + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ':' + queryValue);
+        } catch (RegistryException | UserStoreException e) {
+            throw new SolrException(ErrorCode.BAD_REQUEST, "Error while creating user role filter query", e);
+        }
+    }
+
+    private void addSortByQuery(SolrQuery query, String sortBy, String sortOrder) {
+        if (IndexingConstants.FIELD_TAGS.equals(sortBy) ||
+                IndexingConstants.FIELD_COMMENTS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(sortBy) ||
+                IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(sortBy)) {
+            log.error("Sorting in multivalued fields is not supported");
+        } else if (IndexingConstants.FIELD_CREATED_DATE.equals(sortBy) ||
+                IndexingConstants.FIELD_LAST_UPDATED_DATE.equals(sortBy)) {
+            query.setSort(sortBy + SolrConstants.SOLR_DATE_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
+        } else {
+            query.setSort(sortBy + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
+                    "ASC".equals(sortOrder) ? SolrQuery.ORDER.asc : SolrQuery.ORDER.desc);
         }
     }
 
@@ -580,22 +670,25 @@ public class SolrClient {
             // Solr does not allow to search with special characters ,therefore this fix allow
             // to contain "-" in super tenant id.
             if (tenantId == MultitenantConstants.SUPER_TENANT_ID) {
-                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + "\\" + tenantId);
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ':' + "\\" + tenantId);
             } else {
-                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ":" + tenantId);
+                query.addFilterQuery(IndexingConstants.FIELD_TENANT_ID + ':' + tenantId);
             }
             if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE) != null) {
                 // This is for fixing  REGISTRY-1695, This is temporary solution until
                 // the default security polices also stored in Governance registry.
                 if (fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
-                        RegistryConstants.POLICY_MEDIA_TYPE)) {
-                    query.addFilterQuery(IndexingConstants.FIELD_ID + ":" +
-                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + "*");
-
+                        RegistryConstants.POLICY_MEDIA_TYPE) ||
+                        fields.get(IndexingConstants.FIELD_MEDIA_TYPE).equals(
+                                RegistryConstants.WSDL_MEDIA_TYPE)) {
+                    query.addFilterQuery(IndexingConstants.FIELD_ID + ':' +
+                            SolrConstants.GOVERNANCE_REGISTRY_BASE_PATH + '*');
                 }
             }
             // Add facet fields
             facetField = addFacetFields(fields, query);
+            // add filter query for user role filtering
+            addUserRoleFilter(tenantId, query);
             // Add query filters
             addQueryFilters(fields, query);
             if (log.isDebugEnabled()) {
@@ -605,7 +698,7 @@ public class SolrClient {
             QueryResponse queryresponse = server.query(query);
             return queryresponse.getFacetField(facetField).getValues();
 
-        } catch (SolrServerException e) {
+        } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + facetField, e);
         }
@@ -613,6 +706,7 @@ public class SolrClient {
 
     private String addFacetFields(Map<String, String> fields, SolrQuery query) {
         //set the facet true to enable facet
+        //Need to set the Facet to true to enable Facet Query.
         query.setFacet(true);
         String fieldName = fields.get(IndexingConstants.FACET_FIELD_NAME);
         String queryField = null;
@@ -628,6 +722,7 @@ public class SolrClient {
                 queryField = fieldName + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
                 query.addFacetField(queryField);
             }
+            //remove the facet field avoid affecting to query results
             fields.remove(IndexingConstants.FACET_FIELD_NAME);
             //set the limit for the facet
             if (fields.get(IndexingConstants.FACET_LIMIT) != null) {
@@ -636,7 +731,7 @@ public class SolrClient {
             } else {
                 query.setFacetLimit(IndexingConstants.FACET_LIMIT_DEFAULT);
             }
-            //set the mincount for the facet
+            //set the min count for the facet
             if (fields.get(IndexingConstants.FACET_MIN_COUNT) != null) {
                 query.setFacetMinCount(Integer.parseInt(fields.get(IndexingConstants.FACET_MIN_COUNT)));
                 fields.remove(IndexingConstants.FACET_MIN_COUNT);
@@ -677,9 +772,14 @@ public class SolrClient {
                             .equals(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS) || field.getKey()
                             .equals(IndexingConstants.FIELD_ASSOCIATION_TYPES)) {
                         // Set the suffix value of the key
-                        fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":*";
-                        query.addFilterQuery(
-                                field.getKey() + fieldKeySuffix + field.getValue() + "*");
+                        fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
+                        if (IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(field.getKey())) {
+                            query.addFilterQuery(
+                                    field.getKey() + fieldKeySuffix + "\"" + field.getValue() + "\"");
+                        } else {
+                            query.addFilterQuery(
+                                    field.getKey() + fieldKeySuffix + field.getValue());
+                        }
                     } else if (IndexingConstants.FIELD_PROPERTY_NAME.equals(field.getKey())) {
                         // Get the value of property name
                         propertyName = field.getValue();
@@ -1074,6 +1174,14 @@ public class SolrClient {
             //throw unchecked exception: SolrException, this will throw when there is an error in connection.
             throw new SolrException(ErrorCode.SERVER_ERROR, e);
         }
+    }
+
+    /**
+     * Method returns username of the logged in user
+     * @return username of logged in user
+     */
+    private static String getLoggedInUserName(){
+        return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
     }
 
 }

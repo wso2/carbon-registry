@@ -30,10 +30,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.wso2.carbon.registry.core.*;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -348,16 +348,28 @@ public class WSDLProcessor {
         if (Utils.getRxtService() != null) {
             String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.WSDL_MEDIA_TYPE);
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", wsdlResourceName);
-            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
-                                                                  context.getResource().getProperties(), null);
             String namespace = CommonUtil.derivePathFragmentFromNamespace(
-                                                                wsdlDefinition.getTargetNamespace()).replace("//", "/");
+                    wsdlDefinition.getTargetNamespace()).replace("//", "/");
             namespace = namespace.replace(".", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
+            pathExpression = CommonUtil.getPathFromPathExpression(pathExpression,
+                                                                  context.getResource().getProperties(), null);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
-            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
-                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+            String wsdlPath = RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                wsdlPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), wsdlPath);
+                CurrentSession.getLocalPathMap().remove(context.getResourcePath().getCompletePath());
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + wsdlPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(wsdlPath, pathExpression);
+            }
+            return wsdlPath;
         } else {
             String wsdlPath = (getChrootedWSDLLocation(context.getRegistryContext()) +
                                CommonUtil.derivePathFragmentFromNamespace(

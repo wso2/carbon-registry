@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>deployment-synchronizer</artifactId>
-        <version>4.4.4-SNAPSHOT</version>
+        <version>4.5.1-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -65,7 +65,7 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.deployment.synchronizer</bundleDef>
 			                </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.kernel.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

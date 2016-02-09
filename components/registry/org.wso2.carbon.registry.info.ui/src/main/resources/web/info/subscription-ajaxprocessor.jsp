@@ -95,7 +95,7 @@
             if (requestedPage != null) {
                 start = (int) ((Integer.parseInt(requestedPage) - 1) * (RegistryConstants.ITEMS_PER_PAGE * 1.5));
             } else {
-                start = 1;
+                start = 0;
             }
             PaginationContext.init(start, count, "", "", 1500);
             SubscriptionBean subscriptionBean = client.getSubscriptions(request);
@@ -208,8 +208,8 @@
                     <option value="3"><fmt:message key="soap"/></option>
                     <option value="4"><fmt:message key="username"/></option>
                     <option value="5"><fmt:message key="role"/></option>
-                    <% if(isSuperTenant) {%>
                     <option value="6"><fmt:message key="management.console"/></option>
+                    <% if(isSuperTenant) {%>
                     <option value="7"><fmt:message key="jmx"/></option>
                     <%}%>
                 </select>

@@ -31,10 +31,9 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -90,7 +89,7 @@ public class SwaggerProcessor {
 	 * @param sourceUrl             source URL.
 	 * @throws RegistryException    If a failure occurs when adding the swagger to registry.
 	 */
-	public void processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
+	public boolean processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
 			throws RegistryException {
 		//create a collection if not exists.
 		createCollection(commonLocation);
@@ -111,17 +110,23 @@ public class SwaggerProcessor {
 		using the relevant documents.
 		 */
 		if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			List<JsonObject> resourceObjects =
-					addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
-			restServiceElement = (resourceObjects != null) ? RESTServiceUtils
-					.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects) : null;
+			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+                List<JsonObject> resourceObjects =
+                        addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
+                restServiceElement = (resourceObjects != null) ? RESTServiceUtils
+                        .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects, swaggerResourcePath, documentVersion) : null;
+            } else {
+                return false;
+            }
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
-			addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion);
-			createEndpointElement(swaggerDocObject, swaggerVersion);
-			restServiceElement =
-					RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null);
+			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+                createEndpointElement(swaggerDocObject, swaggerVersion);
+                restServiceElement =
+                        RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null, swaggerResourcePath, documentVersion);
+            } else {
+                return false;
+            }
 		}
 
 		/*
@@ -140,6 +145,8 @@ public class SwaggerProcessor {
 		}
 
 		CommonUtil.closeOutputStream(swaggerContentStream);
+
+        return true;
 	}
 
 	/**
@@ -150,7 +157,7 @@ public class SwaggerProcessor {
 	 * @param documentVersion       version of the swagger document.
 	 * @throws RegistryException    If fails to add the swagger document to registry.
 	 */
-	private void addSwaggerDocumentToRegistry(ByteArrayOutputStream contentStream, String path, String documentVersion)
+	private boolean addSwaggerDocumentToRegistry(ByteArrayOutputStream contentStream, String path, String documentVersion)
 			throws RegistryException {
 		Resource resource;
 		/*
@@ -174,7 +181,7 @@ public class SwaggerProcessor {
 			}
 			if (resourceContent.equals(contentStream.toString())) {
 				log.info("Old content is same as the new content. Skipping the put action.");
-				return;
+				return false;
 			}
 		} else {
 			//If a resource does not exist in the given path.
@@ -189,6 +196,8 @@ public class SwaggerProcessor {
 		resource.addProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
         CommonUtil.copyProperties(this.requestContext.getResource(), resource);
 		registry.put(path, resource);
+
+        return true;
 	}
 
 	/**
@@ -221,6 +230,8 @@ public class SwaggerProcessor {
 			log.debug(CommonConstants.EMPTY_URL);
 			log.warn("Resource paths cannot be read. Creating the REST service might fail.");
 			return null;
+		} else if (sourceUrl.startsWith("file")) {
+			sourceUrl = sourceUrl.substring(0,sourceUrl.lastIndexOf("/"));
 		}
 
 		List<JsonObject> resourceObjects = new ArrayList<>();
@@ -253,9 +264,10 @@ public class SwaggerProcessor {
             path = CommonUtil.replaceExpressionOfPath(swaggerResourcesPath, "name", path);
             path = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),path);
 			//Save Resource document to registry
-			addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion);
-			//Adding an dependency to API_DOC
-			registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
+			if(addSwaggerDocumentToRegistry(resourceContentStream, path, documentVersion)) {
+                //Adding an dependency to API_DOC
+                registry.addAssociation(swaggerDocPath, path, CommonConstants.DEPENDS);
+            }
 		}
 
 		CommonUtil.closeOutputStream(resourceContentStream);
@@ -350,7 +362,19 @@ public class SwaggerProcessor {
         pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "provider", serviceProvider);
         swaggerResourcesPath = pathExpression;
         pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "name", swaggerDocName);
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+		String swaggerPath = pathExpression;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			swaggerPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + swaggerPath + " | value: " + pathExpression);
+			}
+			CurrentSession.getLocalPathMap().put(swaggerPath, pathExpression);
+		}
+		return swaggerPath;
     }
 
     /**

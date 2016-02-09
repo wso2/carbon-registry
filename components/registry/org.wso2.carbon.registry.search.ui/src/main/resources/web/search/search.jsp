@@ -30,6 +30,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%@ page import="java.net.URLEncoder" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <script type="text/javascript" src="../search/js/search.js"></script>
 <link rel="stylesheet" type="text/css"
       href="../resources/css/registry.css"/>
@@ -77,7 +78,7 @@
                         <div style="margin-top: 10px;">
                             <strong>
                                 <fmt:message key="your.search.did.not.match"/>
-                                &quot;<%=request.getParameter("criteria")%>&quot;
+                                &quot;<%=Encode.forHtmlAttribute(request.getParameter("criteria"))%>&quot;
                             </strong>
                             <div style="margin-top: 10px">
                                 <fmt:message key="please.retry.with.following"/>
@@ -224,7 +225,7 @@
     alternateTableRows('customTable','tableEvenRow','tableOddRow');
 
     function loadPagedList(page) {
-        window.location = '<%="../search/search.jsp?region=region3&item=registry_search_menu&searchType=tag&criteria=" + request.getParameter("criteria")%>';
+        window.location = '<%="../search/search.jsp?region=region3&item=registry_search_menu&searchType=tag&criteria=" + Encode.forJavaScriptBlock(request.getParameter("criteria"))%>';
     }
 </script>
 

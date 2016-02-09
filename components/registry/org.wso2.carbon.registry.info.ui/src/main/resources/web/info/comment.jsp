@@ -27,6 +27,7 @@
 <%@ page import="org.wso2.carbon.registry.common.beans.CommentBean" %>
 <%@ page import="org.wso2.carbon.registry.common.beans.utils.Comment" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.utils.UIUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
@@ -84,7 +85,7 @@
 <div class="box1-mid" id="commentsExpanded" <% if (comments.length == 0) { %> style="display:none;height:auto;" <% } else { %> style="height:auto;" <% } %>>
 <div style="height:15px;">
     <% if (!comment.isVersionView()) {
-        String url = UIUtil.getAtomURL(config, request, request.getParameter("path")) + ";comments"; %>
+        String url = UIUtil.getAtomURL(config, request, Encode.forJava(request.getParameter("path"))) + ";comments"; %>
     <a
             style="float:right;background-image:url(images/icon-feed-small.gif);"
             href="../../registry/atom<%=request.getParameter("path")%>;comments"
@@ -105,7 +106,7 @@
 <% } %>
 
 <div class="registryWriteOperation" id="add-comment-div" style="display:none;padding-bottom:10px;">
-    <form onsubmit="return addComment('<%=request.getParameter("path")%>');">
+    <form onsubmit="return addComment('<%=Encode.forHtmlContent(request.getParameter("path"))%>');">
         <table cellspacing="0" cellpadding="0" border="0" style="width:100%"
                class="styledLeft">
             <thead>
@@ -159,7 +160,7 @@
             <%
                 for (int i = 0; i < comments.length; i++) {
                     Comment comment1 = comments[i];
-                    String commentString = comment1.getText();
+                    String commentString = Encode.forJava(comment1.getText());
                     String commentedTime = CommonUtil.formatDate(comment1.getCreatedTime().getTime());
                     String commentedUser = comment1.getUser();
 					String commentPath = comment1.getCommentPath();
@@ -172,10 +173,10 @@
                     <div valign="top"
                          style="padding-top:10px;padding-bottom:10px;">
                         <% if (!comment.isVersionView()) { %>
-	                    <a class="closeButton icon-link registryWriteOperation" onclick="delComment('<%=request.getParameter("path")%>','<%=commentPath%>')" id="closeC<%=i%>" title="<fmt:message key="delete"/>" style="background-image: url(../admin/images/delete.gif);position:relative;float:right">&nbsp;</a>
+	                    <a class="closeButton icon-link registryWriteOperation" onclick="delComment('<%=Encode.forHtmlContent(request.getParameter("path"))%>','<%=commentPath%>')" id="closeC<%=i%>" title="<fmt:message key="delete"/>" style="background-image: url(../admin/images/delete.gif);position:relative;float:right">&nbsp;</a>
                         <% } %>
 	                    <fmt:message key="comment">
-	                        <fmt:param value="<%=commentString%>"/>
+	                        <fmt:param value="<%=Encode.forHtml(commentString)%>"/>
 	                    </fmt:message>
 	                    <br/>
 	                    <fmt:message key="posted.on.by">

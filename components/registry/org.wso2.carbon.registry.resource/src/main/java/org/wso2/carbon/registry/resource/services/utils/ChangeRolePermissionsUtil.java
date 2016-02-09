@@ -21,7 +21,10 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.LogEntry;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.AccessControlConstants;
 import org.wso2.carbon.user.api.RealmConfiguration;
@@ -146,13 +149,41 @@ public class ChangeRolePermissionsUtil {
                 event.setTenantId(userRegistry.getTenantId());
                 CommonUtil.notify(event, userRegistry, resourcePath);
             }
-
+            // add log entry for the resource permission update
+            addLogEntryForResourceUpdate(userRegistry, resourcePath, LogEntry.UPDATE, "update role authorizations of the resource");
             String msg = "Role authorizations performed successfully.";
             log.debug(msg);
         } catch (UserStoreException e) {
             String msg = "Couldn't set authorizations. Caused by: " + e.getMessage();
             log.error(msg, e);
             throw new RegistryException(msg, e);
+        }
+    }
+
+    /**
+     * Method to add new log entry for the resource update.
+     * @param userRegistry user registry to add logs
+     * @param resourcePath updated resource path
+     * @param action log action
+     * @param actionData additional details about the action
+     * @throws RegistryException
+     */
+    private static void addLogEntryForResourceUpdate(UserRegistry userRegistry, String resourcePath, int action, String actionData) throws RegistryException {
+        try {
+            CurrentSession.setTenantId(userRegistry.getTenantId());
+            CurrentSession.setUser(userRegistry.getUserName());
+            if (userRegistry.getRegistryContext() != null) {
+                userRegistry.getRegistryContext().getLogWriter().addLog(resourcePath, userRegistry.getUserName(), action, actionData);
+            } else {
+                Resource resource = userRegistry.get(resourcePath);
+                userRegistry.put(resourcePath, resource);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("update role authorizations of the resource: " + resourcePath);
+            }
+        } finally {
+            CurrentSession.removeTenantId();
+            CurrentSession.removeUser();
         }
     }
 }

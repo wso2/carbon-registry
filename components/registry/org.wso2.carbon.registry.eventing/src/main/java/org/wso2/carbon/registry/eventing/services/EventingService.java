@@ -19,8 +19,8 @@
 
 package org.wso2.carbon.registry.eventing.services;
 
-import org.wso2.carbon.event.core.exception.EventBrokerException;
-import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.core.exception.EventBrokerException;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
 
 import java.util.List;

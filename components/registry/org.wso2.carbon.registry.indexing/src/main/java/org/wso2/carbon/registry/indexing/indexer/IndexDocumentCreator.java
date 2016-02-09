@@ -24,6 +24,7 @@ import org.wso2.carbon.registry.core.Association;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.Comment;
 import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.Tag;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -34,6 +35,8 @@ import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
+import org.wso2.carbon.user.core.UserRealm;
+import org.wso2.carbon.user.core.UserStoreException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +61,8 @@ public class IndexDocumentCreator {
     private UserRegistry registry;
     private Resource resource = null;
     private static final Log log = LogFactory.getLog(IndexDocumentCreator.class);
+    //TODO: Move to IndexingConstants in 5.2.0
+    private static final String FIELD_ALLOWED_ROLES = "allowedRoles";
     // Indexing fields attribute Map
     private Map<String, List<String>> attributes = new HashMap<String, List<String>>();
 
@@ -115,6 +120,8 @@ public class IndexDocumentCreator {
         }
         // Set Property names and values of the resource to the attribute list
         addPropertyData();
+        // Add allowed roles of the resource path.
+        addAllowedRoles();
         // Set the attribute fields.
         indexDocument.setFields(attributes);
         // Set the tenant id.
@@ -326,6 +333,23 @@ public class IndexDocumentCreator {
         // Set path in index document
         indexDocument.setPath(file2Index.path);
         return indexDocument;
+    }
+
+    /**
+     * method to get allowed roles for the resource and to indexed list.
+     * @throws RegistryException
+     */
+    private void addAllowedRoles() throws RegistryException {
+        try {
+            UserRealm userRealm = registry.getUserRealm();
+            String[] allowedRoles = userRealm.getAuthorizationManager().getAllowedRolesForResource(resourcePath, ActionConstants.GET);
+            attributes.put(FIELD_ALLOWED_ROLES, Arrays.asList(allowedRoles));
+            if (log.isDebugEnabled()) {
+                log.debug("Allowed Roles for the resource: " + resourcePath + " : " + Arrays.toString(allowedRoles));
+            }
+        } catch (UserStoreException e) {
+            throw new RegistryException("Unable to retrieve allowed roles for resource", e);
+        }
     }
 
 }

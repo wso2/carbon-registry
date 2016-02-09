@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>contentsearch-feature</artifactId>
-        <version>4.4.4-SNAPSHOT</version>
+        <version>4.5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -34,7 +34,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.wso2.apache.solr</groupId>
+            <groupId>org.wso2.orbit.org.apache.solr</groupId>
             <artifactId>solr</artifactId>
         </dependency>
         <dependency>
@@ -45,6 +45,31 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>prefilter-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>resources</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                        <include>p2.inf</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wso2.maven</groupId>
                 <artifactId>carbon-p2-plugin</artifactId>
@@ -67,17 +92,17 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.indexing</bundleDef>
-                                <bundleDef>org.wso2.apache.solr:solr</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.solr:solr</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpmime</bundleDef>
                                 <bundleDef>org.apache.httpcomponents.wso2:httpcore</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpclient</bundleDef>
                                 <bundleDef>org.wso2.noggit:noggit</bundleDef>
-                                <bundleDef>org.wso2.restlet.jee:org.restlet</bundleDef>
-                                <bundleDef>org.wso2.apache.lucene:lucene</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.restlet.jee:org.restlet</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.lucene:lucene</bundleDef>
                                 <bundleDef>org.apache.zookeeper.wso2:apache-zookeeper</bundleDef>
                                 <bundleDef>com.wso2.spatial4j:spatial4j</bundleDef>
-                                <bundleDef>com.google.guava.wso2:guava</bundleDef>
+                                <bundleDef>com.google.guava:guava</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}

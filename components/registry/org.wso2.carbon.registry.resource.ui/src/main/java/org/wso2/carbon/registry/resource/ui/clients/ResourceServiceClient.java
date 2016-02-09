@@ -22,6 +22,7 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -613,6 +614,9 @@ public class
     public String getTextContent(HttpServletRequest request) throws Exception {
 
         String path = RegistryUtil.getPath(request);
+        if (path != null && path.contains("..")) {
+            path = FilenameUtils.normalize(path);
+        }
 
         String textContent = null;
         try {
@@ -634,6 +638,9 @@ public class
     public String getExternalURL(HttpServletRequest request) throws Exception {
 
         String path = (String)request.getAttribute("path");
+        if (path != null && path.contains("..")) {
+            path = FilenameUtils.normalize(path);
+        }
 
         String url = null;
         try {

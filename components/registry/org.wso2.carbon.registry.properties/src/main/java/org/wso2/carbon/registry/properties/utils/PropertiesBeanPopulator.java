@@ -83,7 +83,7 @@ public class PropertiesBeanPopulator {
 
             if (keys[i].equals("registry.link") &&
                     values.get(0).equals("true")) {
-                 isPutAllowed = true;
+                 //isPutAllowed = true;
             }
         }
         } else {

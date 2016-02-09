@@ -37,6 +37,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.Repository;
 import org.wso2.carbon.registry.core.jdbc.VersionRepository;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -300,13 +301,13 @@ public class WADLProcessor {
         }
 
         String actualPath;
-        if(commonLocation != null){
-            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
-        } else {
-            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+//        if(commonLocation != null){
+//            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
+//        } else {
+//            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+//                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
             actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
-        }
+//        }
         if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
         }
@@ -511,8 +512,20 @@ public class WADLProcessor {
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "version", version);
-            return CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), RegistryUtils
-                    .getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/")));
+            String wadlPath = RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                wadlPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), wadlPath);
+                CurrentSession.getLocalPathMap().remove(context.getResourcePath().getCompletePath());
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + wadlPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(wadlPath, pathExpression);
+            }
+            return wadlPath;
         } else {
             String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
             String namespaceSegment = CommonUtil.derivePathFragmentFromNamespace(

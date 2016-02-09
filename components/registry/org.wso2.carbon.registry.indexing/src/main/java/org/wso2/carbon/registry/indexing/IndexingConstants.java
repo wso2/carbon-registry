@@ -25,9 +25,13 @@ import org.wso2.carbon.registry.core.RegistryConstants;
  */
 public final class IndexingConstants {
 
+
     // Make the constructor private, since it is a utility class
     private IndexingConstants() {
     }
+
+    // Default value to determine whether to start indexers or not
+    public static final boolean START_INDEXING_DEFAULT_VALUE = true;
 
     // Default last access time location path is set as default when nothing specified in registry.xml
     public static final String LAST_ACCESS_TIME_LOCATION = RegistryConstants.LOCAL_REPOSITORY_BASE_PATH +
@@ -48,6 +52,7 @@ public final class IndexingConstants {
     public static final String FIELD_MEDIA_TYPE = "mediaType";
     public static final String FIELD_LC_NAME = "lcName";
     public static final String FIELD_LC_STATE = "lcState";
+    public static final String FIELD_OVERVIEW_NAME = "overview_name";
 
     // New fields are added for indexing
     public static final String FIELD_TAGS = "tags";
@@ -87,5 +92,9 @@ public final class IndexingConstants {
     public static final int FACET_MIN_COUNT_DEFAULT = 1;
     public static final String FACET_SORT = "facet.sort";
     public static final String FACET_PREFIX = "facet.prefix";
+    public static final String AUTH_REQUIRED = "authenticate.required";
+
+    public static final String META_LAST_UPDATED_DATE = "meta_last_updated_date";
+    public static final String META_CREATED_DATE = "meta_created_date";
 
 }

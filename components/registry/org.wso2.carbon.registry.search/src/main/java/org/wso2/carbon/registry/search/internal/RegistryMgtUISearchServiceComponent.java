@@ -28,7 +28,6 @@ import org.wso2.carbon.registry.core.jdbc.queries.QueryProcessorManager;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
-import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
 import org.wso2.carbon.registry.search.beans.CustomSearchParameterBean;
 import org.wso2.carbon.registry.search.services.MetadataSearchService;
@@ -57,6 +56,9 @@ import java.util.Map;
 public class RegistryMgtUISearchServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUISearchServiceComponent.class);
+
+    private SearchDataHolder dataHolder = SearchDataHolder.getInstance();
+
     private ServiceRegistration serviceRegistration;
 
     protected void activate(ComponentContext context) {
@@ -65,7 +67,7 @@ public class RegistryMgtUISearchServiceComponent {
                 MetadataSearchService.class.getName(), metadataSearchService, null);
         try {
             QueryProcessorManager queryProcessorManager =
-                    Utils.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME)
+                    dataHolder.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME)
                             .getRegistryContext().getQueryProcessorManager();
             if (queryProcessorManager.getQueryProcessor(
                     XPathQueryProcessor.XPATH_QUERY_MEDIA_TYPE) == null) {
@@ -88,27 +90,27 @@ public class RegistryMgtUISearchServiceComponent {
     }
 
     protected void setRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
-        Utils.setRegistryService(null);
+        dataHolder.setRegistryService(null);
     }
 
     protected void setIndexingService(ContentSearchService contentSearchService){
-         Utils.setContentSearchService(contentSearchService);
+        dataHolder.setContentSearchService(contentSearchService);
     }
 
     protected void unsetIndexingService(ContentSearchService contentSearchService){
-         Utils.setContentSearchService(null);
+        dataHolder.setContentSearchService(null);
     }
 
     protected void setAttributeIndexingService(AttributeSearchService attributeIndexingService) {
-        Utils.setAttributeIndexingService(attributeIndexingService);
+        dataHolder.setAttributeIndexingService(attributeIndexingService);
     }
 
     protected void unsetAttributeIndexingService(AttributeSearchService attributeIndexingService) {
-        Utils.setAttributeIndexingService(null);
+        dataHolder.setAttributeIndexingService(null);
     }
 
     private static class MetadataSearchServiceImpl implements MetadataSearchService {
@@ -132,7 +134,7 @@ public class RegistryMgtUISearchServiceComponent {
 
         public ResourceData[] search(int tenantId, Map<String, String> parameters)
                 throws RegistryException {
-            return search(Utils.getRegistryService().getRegistry(
+            return search(SearchDataHolder.getInstance().getRegistryService().getRegistry(
                     CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId), parameters);
         }
 

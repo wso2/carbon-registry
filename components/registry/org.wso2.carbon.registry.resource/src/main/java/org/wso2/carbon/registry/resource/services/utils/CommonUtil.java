@@ -21,45 +21,29 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.common.eventing.NotificationService;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
+import org.wso2.carbon.registry.resource.internal.ResourceDataHolder;
 
 public class CommonUtil {
 
     private static final Log log = LogFactory.getLog(CommonUtil.class);
 
-    private static RegistryService registryService;
-
-    private static NotificationService registryNotificationService;
-
-    public static void setRegistryService(RegistryService service) {
-        registryService = service;
-    }
-
-    public static RegistryService getRegistryService() {
-        return registryService;
-    }
-
-    public static void setRegistryNotificationService(NotificationService registryNotificationService) {
-        CommonUtil.registryNotificationService = registryNotificationService;
-    }
-
     public static void notify(RegistryEvent event, Registry registry, String path)
             throws Exception {
         try {
-            if (CommonUtil.registryNotificationService == null) {
+            if (ResourceDataHolder.getInstance().getRegistryNotificationService() == null) {
                 log.debug("Eventing service is unavailable.");
                 return;
             }
             if (registry == null || registry.getEventingServiceURL(path) == null) {
-                CommonUtil.registryNotificationService.notify(event);
+                ResourceDataHolder.getInstance().getRegistryNotificationService().notify(event);
             } else if (registry.getEventingServiceURL(null) == null) {
                 log.error("Unable to send notification.");
             } else if (registry.getEventingServiceURL(path).equals(registry.getEventingServiceURL(null))) {
-                CommonUtil.registryNotificationService.notify(event);
+                ResourceDataHolder.getInstance().getRegistryNotificationService().notify(event);
             } else {
-                CommonUtil.registryNotificationService.notify(event, registry.getEventingServiceURL(path));
+                ResourceDataHolder.getInstance().getRegistryNotificationService().notify(event,
+                        registry.getEventingServiceURL(path));
             }
         } catch (RegistryException e) {
             log.error("Unable to send notification", e);
@@ -101,8 +85,7 @@ public class CommonUtil {
         String[][] propertyArray = new String[properties.length + 1][2];
         for (int i = 0; i <= properties.length; i++) {
             if (i < properties.length) {
-                propertyArray[i][0] = properties[i][0];
-                propertyArray[i][1] = properties[i][1];
+                propertyArray[i] = properties[i].clone();
             } else {
                 propertyArray[properties.length][0] = key;
                 propertyArray[properties.length][1] = value;

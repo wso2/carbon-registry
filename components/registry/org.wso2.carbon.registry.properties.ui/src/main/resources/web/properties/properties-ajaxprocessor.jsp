@@ -24,6 +24,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 
 <%
@@ -113,9 +114,9 @@
                            value="<%=propertiesBean_.getPathWithVersion()%>"/><input
                         id="oldPropName_<%=i%>"
                         type="hidden"
-                        value="<%=name%>"/><input
-                        value="<%=name%>" type="text" id="propName_<%=i%>" class="propEditNameSelector"/></td>
-                <td><input value="<%=value%>" id="propValue_<%=i%>" type="text" /></td>
+                        value="<%=Encode.forHtmlAttribute(name)%>"/><input
+                        value="<%=Encode.forHtmlAttribute(name)%>" type="text" id="propName_<%=i%>" class="propEditNameSelector"/></td>
+                <td><input value="<%=Encode.forHtmlAttribute(value)%>" id="propValue_<%=i%>" type="text" /></td>
                 <td>
                     <a class="icon-link" style="background-image:url(../properties/images/save-button.gif);"
                        id="propSaveButton_<%=i%>"
@@ -139,11 +140,11 @@
             	String tmpValue = value.replaceAll("<","&lt;");
             	tmpValue = tmpValue.replaceAll(">","&gt;");
             	%>
-                <td><span class="__propName"><%=tmpName%></span><span class="__propNameRef propViewNameSelector"
-                                                                   style="display:none;"><%=name%></span>
+                <td><span class="__propName"><%=Encode.forHtml(tmpName)%></span><span class="__propNameRef propViewNameSelector"
+                                                                   style="display:none;"><%=Encode.forHtml(name)%></span>
                 </td>
-                <td><span class="__propValue"><%=tmpValue%></span><span class="__propValueRef"
-                                                                     style="display:none;"><%=value%></span>
+                <td><span class="__propValue"><%=Encode.forHtml(tmpValue)%></span><span class="__propValueRef"
+                                                                     style="display:none;"><%=Encode.forHtml(value)%></span>
                 </td>
 
 
@@ -169,7 +170,7 @@
                        style="margin-left:5px;cursor:pointer;"><fmt:message key="delete"/></a>
                     <%}else {%>
                      <a class="icon-link registryWriteOperation" style="background-image:url(../admin/images/delete.gif);"
-                       onclick="removeProperty('<%=name.replace("\\", "\\\\")%>');"
+                       onclick="removeProperty('<%=Encode.forHtml(name.replace("\\", "\\\\"))%>');"
                        style="margin-left:5px;cursor:pointer;"><fmt:message key="delete"/></a>
                     <%}%>
                 </td>

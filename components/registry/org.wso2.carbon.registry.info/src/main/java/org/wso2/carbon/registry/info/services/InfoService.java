@@ -18,7 +18,7 @@ package org.wso2.carbon.registry.info.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.ActionConstants;
@@ -29,7 +29,7 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.info.Utils;
+import org.wso2.carbon.registry.info.internal.InfoDataHolder;
 import org.wso2.carbon.registry.info.services.utils.*;
 import org.wso2.carbon.registry.common.IInfoService;
 import org.wso2.carbon.registry.common.beans.*;
@@ -273,10 +273,10 @@ public class InfoService extends RegistryAbstractAdmin implements IInfoService {
     }
 
     public String verifyEmail(String data, String sessionId) throws RegistryException {
-        if (Utils.getSubscriptionEmailVerficationService() == null) {
+        if (InfoDataHolder.getInstance().getSubscriptionEmailVerficationService() == null) {
             return null;
         }
-        return Utils.getSubscriptionEmailVerficationService().verifyEmail(data);
+        return InfoDataHolder.getInstance().getSubscriptionEmailVerficationService().verifyEmail(data);
     }
 
     public boolean unsubscribe(String path, String id, String sessionId) throws RegistryException {

@@ -29,12 +29,14 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     String viewMode = Utils.getResourceViewMode(request);
     String synapseRegistryMetaDataRootPath =
             RegistryConstants.ROOT_PATH + "carbon" + RegistryConstants.PATH_SEPARATOR + "synapse-registries";
     String resourceConsumer = Utils.getResourceConsumer(request);
+    resourceConsumer = Encode.forHtmlAttribute(resourceConsumer);
     String targetDivID = Utils.getTargetDivID(request);
     String synapseRegistryRoot = "";
     MetadataBean metadata;
@@ -108,10 +110,10 @@
 
                 if (resourceData != null && resourceData[0] != null && (resourceData[0].getMounted() || resourceData[0].getLink())) {
                     %><a class="registry-breadcrumb" href="#"
-             onclick="loadResourcePage('<%=childPath.getNavigatePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><i><%=childPath.getNavigateName()%></i></a><%
+             onclick="loadResourcePage('<%=Encode.forHtml(childPath.getNavigatePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><i><%=Encode.forHtml(childPath.getNavigateName())%></i></a><%
                 } else {
         %><a class="registry-breadcrumb" href="#"
-             onclick="loadResourcePage('<%=childPath.getNavigatePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><%=childPath.getNavigateName()%></a><%
+             onclick="loadResourcePage('<%=Encode.forHtml(childPath.getNavigatePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><%=Encode.forHtml(childPath.getNavigateName())%></a><%
 
                 }
             }
@@ -134,10 +136,10 @@
 
                 if (resourceData != null && resourceData[0] != null && (resourceData[0].getMounted() || resourceData[0].getLink())) {
                     %>/<a class="registry-breadcrumb" href="#"
-              onclick="loadResourcePage('<%=resourcePath.getNavigatePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><div style="display:inline" id=<%="pathResult"+i %>><i><%=resourcePath.getNavigateName()%></i></div></a><%
+              onclick="loadResourcePage('<%=Encode.forHtml(resourcePath.getNavigatePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><div style="display:inline" id=<%="pathResult"+i %>><i><%=Encode.forHtml(resourcePath.getNavigateName())%></i></div></a><%
             } else {
         %>/<a class="registry-breadcrumb" href="#"
-              onclick="loadResourcePage('<%=resourcePath.getNavigatePath()%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><div style="display:inline" id=<%="pathResult"+i %>><%=resourcePath.getNavigateName()%></div></a><%
+              onclick="loadResourcePage('<%=Encode.forHtml(resourcePath.getNavigatePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"><div style="display:inline" id=<%="pathResult"+i %>><%=Encode.forHtml(resourcePath.getNavigateName())%></div></a><%
                     }
                 }
             }
@@ -145,7 +147,7 @@
                 String correctPath = Utils.resolveResourceKey(path, synapseRegistryRoot);
         %>
             <script type="text/javascript">
-                setResourcePathOnConsumer('<%=resourceConsumer%>', '<%=correctPath%>',<%=iNavPaths.length%>);
+                setResourcePathOnConsumer('<%=Encode.forHtml(resourceConsumer)%>', '<%=Encode.forHtml(correctPath)%>',<%=iNavPaths.length%>);
             </script>
             <%
                     }

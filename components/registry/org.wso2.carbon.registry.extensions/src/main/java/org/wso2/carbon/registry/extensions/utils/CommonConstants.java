@@ -145,4 +145,5 @@ public class CommonConstants {
 
     public static final String SOURCE_REMOTE = "remote";
 
+    public static final String ARCHIEVE_UPLOAD = "archieve-upload";
 }

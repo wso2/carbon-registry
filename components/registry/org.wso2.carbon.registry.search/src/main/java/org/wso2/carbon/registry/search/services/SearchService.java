@@ -30,11 +30,11 @@ import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
-import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
 import org.wso2.carbon.registry.search.beans.CustomSearchParameterBean;
 import org.wso2.carbon.registry.search.beans.MediaTypeValueList;
 import org.wso2.carbon.registry.search.beans.SearchResultsBean;
+import org.wso2.carbon.registry.search.internal.SearchDataHolder;
 import org.wso2.carbon.registry.search.services.utils.AdvancedSearchFilterActions;
 import org.wso2.carbon.registry.search.services.utils.CustomSearchParameterPopulator;
 import org.wso2.carbon.registry.search.services.utils.SearchResultsBeanPopulator;
@@ -85,7 +85,7 @@ public class SearchService extends RegistryAbstractAdmin implements
         RegistryUtils.recordStatistics(parameters);
         AdvancedSearchResultsBean advancedSearchResultsBean;
         UserRegistry registry = (UserRegistry) getRootRegistry();
-        AttributeSearchService attributeSearchService = Utils.getAttributeSearchService();
+        AttributeSearchService attributeSearchService = SearchDataHolder.getInstance().getAttributeIndexingService();
         // Get advance search parameter values
         String[][] searchParameterValues = parameters.getParameterValues();
         ResourceData[] advanceSearchResourceData = new ResourceData[0];

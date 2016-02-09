@@ -45,7 +45,7 @@
         if (requestedPage != null) {
             start = (int) ((Integer.parseInt(requestedPage) - 1) * (RegistryConstants.ITEMS_PER_PAGE * 1.5));
         } else {
-            start = 1;
+            start = 0;
         }
         PaginationContext.init(start, count, "", "", 1500);
         SearchServiceClient client = new SearchServiceClient(cookie, config, session);

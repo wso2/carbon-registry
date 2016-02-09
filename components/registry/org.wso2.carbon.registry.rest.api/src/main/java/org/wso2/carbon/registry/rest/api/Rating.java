@@ -15,9 +15,10 @@
  */
 package org.wso2.carbon.registry.rest.api;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -27,10 +28,22 @@ import org.wso2.carbon.registry.rest.api.model.RatingModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 /**
  * This class is to handle the rating related REST verbs GET,DELETE.
  */
 @Path("/rating")
+@Api(value = "/rating",
+     description = "Rest api for operating on a  rating a resource",
+     produces = MediaType.APPLICATION_JSON)
 public class Rating extends RegistryRestSuper {
 
     private Log log = LogFactory.getLog(Rating.class);
@@ -43,6 +56,15 @@ public class Rating extends RegistryRestSuper {
      */
     @GET
     @Produces("application/json")
+    @ApiOperation(value = "Get user's rating and overall rating on a resource",
+                  httpMethod = "GET",
+                  notes = "Fetch user's rating and overall rating on a resource",
+                  response = RatingModel.class)
+    @ApiResponses(value = { @ApiResponse(code = 200,
+                                         message = "Found user's rating and overall rating and returned in body"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Given specific resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response getRating(@QueryParam("path") String resourcePath,
                               @HeaderParam("X-JWT-Assertion") String JWTToken) {
 
@@ -78,6 +100,13 @@ public class Rating extends RegistryRestSuper {
      */
     @DELETE
     @Produces("application/json")
+    @ApiOperation(value = "Delete the user's rating on the given resource",
+                  httpMethod = "DELETE",
+                  notes = "Delete the user's rating on the given resource")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "User's rating deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response removeRating(@QueryParam("path") String resourcePath,
                                  @HeaderParam("X-JWT-Assertion") String JWTToken) {
         RestAPIAuthContext authContext = RestAPISecurityUtils.getAuthContext

@@ -15,22 +15,34 @@
  */
 package org.wso2.carbon.registry.rest.api;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.rest.api.model.AssociationModel;
 import org.wso2.carbon.registry.rest.api.security.RestAPIAuthContext;
 import org.wso2.carbon.registry.rest.api.security.RestAPISecurityUtils;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
  * This class is to handle the association related REST verbs POST and DELETE.
  */
 @Path("/association")
+@Api(value = "/association",
+     description = "Rest api for doing operations on an association",
+     produces = MediaType.APPLICATION_JSON)
 public class Association extends RegistryRestSuper {
 
     private Log log = LogFactory.getLog(Association.class);
@@ -44,6 +56,13 @@ public class Association extends RegistryRestSuper {
      */
     @POST
     @Produces("application/json")
+    @ApiOperation(value = "Add an association between two resources",
+                  httpMethod = "POST",
+                  notes = "Add an association between two resources")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Association added successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response addAssociation(@QueryParam("path") String sourcePath,
                                    @QueryParam("targetPath") String targetPath,
                                    @QueryParam("type") String type,
@@ -80,6 +99,13 @@ public class Association extends RegistryRestSuper {
      */
     @DELETE
     @Produces("application/json")
+    @ApiOperation(value = "Delete an association",
+                  httpMethod = "DELETE",
+                  notes = "Delete an association")
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "Association deleted successfully"),
+                            @ApiResponse(code = 401, message = "Invalid credentials provided"),
+                            @ApiResponse(code = 404, message = "Specified resource not found"),
+                            @ApiResponse(code = 500, message = "Internal server error occurred")})
     public Response deleteAssociation(@QueryParam("path") String sourcePath,
                                       @QueryParam("targetPath") String targetPath,
                                       @QueryParam("type") String type,

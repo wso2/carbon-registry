@@ -24,9 +24,9 @@ import org.apache.axis2.description.Parameter;
 import org.apache.axis2.transport.mail.MailConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.core.Message;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.registry.event.core.Message;
 import org.wso2.carbon.registry.eventing.events.DispatchEvent;
 import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
 import org.wso2.carbon.registry.eventing.template.NotificationTemplate;
@@ -113,14 +113,14 @@ public class MimeEmailMessageHandler {
         return mailHeader;
     }
 
-    public String getEmailMessage(Message message){
+    public String getEmailMessage(Message message, int tenantId){
         String emailMessage = null;
         DispatchEvent event = (DispatchEvent) message;
         String eventType = event.getEvent().getClass().getSimpleName();
         String resourcePath = event.getEvent().getOperationDetails().getPath();
         if (EventingDataHolder.getInstance().getRegistryService() != null) {
             try {
-                UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry();
+                UserRegistry registry = EventingDataHolder.getInstance().getRegistryService().getConfigSystemRegistry(tenantId);
                 String mesageContent = event.getEvent().getMessage().toString();
                 String className = EventingDataHolder.getInstance().getNotificationConfig().getConfigurationClass();
                 Class clazz = Class.forName(className);

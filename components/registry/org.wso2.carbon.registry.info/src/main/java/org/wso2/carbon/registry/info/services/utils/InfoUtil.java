@@ -17,7 +17,7 @@ package org.wso2.carbon.registry.info.services.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -25,8 +25,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.AccessControlConstants;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.info.Utils;
-
+import org.wso2.carbon.registry.info.internal.InfoDataHolder;
 
 public class InfoUtil {
 
@@ -82,17 +81,17 @@ public class InfoUtil {
             log.warn("User is anonymous, can't unsubscribe");
             return false;
         }
-        if (Utils.getRegistryEventingService() == null) {
+        if (InfoDataHolder.getInstance().getRegistryEventingService() == null) {
             log.warn("No event source found, can't unsubscribe");
             return false;
         }
         try {
             Subscription subscription = null;
             if (url == null || userName == null) {
-                subscription = Utils.getRegistryEventingService().getSubscription(id);
+                subscription = InfoDataHolder.getInstance().getRegistryEventingService().getSubscription(id);
             } else  {
-                subscription = Utils.getRegistryEventingService().getSubscription(id, userName,
-                                                                                  url);
+                subscription = InfoDataHolder.getInstance().getRegistryEventingService()
+                        .getSubscription(id, userName, url);
             }
 
             if (subscription == null) {
@@ -118,9 +117,9 @@ public class InfoUtil {
                 return false;
             }
             if (url == null || userName == null) {
-                return Utils.getRegistryEventingService().unsubscribe(id);
+                return InfoDataHolder.getInstance().getRegistryEventingService().unsubscribe(id);
             } else  {
-                return Utils.getRegistryEventingService().unsubscribe(id, userName, url);
+                return InfoDataHolder.getInstance().getRegistryEventingService().unsubscribe(id, userName, url);
             }
 
         } catch (Exception e) {

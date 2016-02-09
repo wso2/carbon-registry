@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.wso2.carbon.registry.rest.api.handler;
 
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
+import org.apache.cxf.transport.http.auth.HttpAuthHeader;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.rest.api.exception.RestApiBasicAuthenticationException;
@@ -17,8 +33,6 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.TreeMap;
 
 public class RestApiBasicAuthenticationHandler implements RequestHandler {
 
@@ -42,38 +56,23 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
             log.debug("Registry REST API Basic authentication handler execution started");
         }
 
-        TreeMap<String, ArrayList> httpHeadersTreemap =
-                (TreeMap<String, ArrayList>) message.get(Message.PROTOCOL_HEADERS);
-        ArrayList authHeaderList = httpHeadersTreemap.get("Authorization");
-
-        if (authHeaderList == null){
-            return null;
-        }
-
-        String authParam = ((String) authHeaderList.get(0));
-
-        if (!authParam.startsWith("Basic ")){
-            return null;
-        }
-
-        String credentials = authParam.substring(6).trim();
-        String decodedCredentials = new String(new Base64().decode(credentials.getBytes()));
-        String[] usernameAndPassword = decodedCredentials.split(":");
-        String userName = usernameAndPassword[0];
-        String password = usernameAndPassword[1];
-
-        try {
-            if (authenticate(userName, password)){
-                return null;
+        AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
+        if (policy != null && HttpAuthHeader.AUTH_TYPE_BASIC.equals(policy.getAuthorizationType())) {
+            try {
+                if (authenticate(policy.getUserName(), policy.getPassword())) {
+                    return null;
+                }
+            } catch (RestApiBasicAuthenticationException e) {
+                /* Upon an occurrence of exception log the caught exception
+                 * and return a HTTP response with 500 server error response */
+                log.error("Could not authenticate user : " + policy.getUserName() + "against carbon userStore", e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             }
-        } catch (RestApiBasicAuthenticationException e) {
-            /* Upon an occurrence of exception log the caught exception
-             * and return a HTTP response with 500 server error response */
-            log.error("Could not authenticate user : " + userName + "against carbon userStore", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+
+            return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", HttpAuthHeader.AUTH_TYPE_BASIC).build();
         }
 
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+        return null;
     }
 
     /**
@@ -89,7 +88,7 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
     private boolean authenticate(String userName, String password) throws RestApiBasicAuthenticationException {
         String tenantDomain = MultitenantUtils.getTenantDomain(userName);
         String tenantAwareUserName = MultitenantUtils.getTenantAwareUsername(userName);
-        userName = tenantAwareUserName + "@" + tenantDomain;
+        String userNameWithTenantDomain = tenantAwareUserName + "@" + tenantDomain;
 
         RealmService realmService = RegistryContext.getBaseInstance().getRealmService();
         TenantManager mgr = realmService.getTenantManager();
@@ -99,13 +98,13 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
             tenantId = mgr.getTenantId(tenantDomain);
         } catch (UserStoreException e) {
             throw new RestApiBasicAuthenticationException(
-                    "Identity exception thrown while getting tenant ID for user : " + userName, e);
+                    "Identity exception thrown while getting tenant ID for user : " + userNameWithTenantDomain, e);
         }
 
         // tenantId == -1, means an invalid tenant.
         if(tenantId == -1){
             if (log.isDebugEnabled()) {
-                log.debug("Basic authentication request with an invalid tenant : " + userName);
+                log.debug("Basic authentication request with an invalid tenant : " + userNameWithTenantDomain);
             }
             return false;
         }
@@ -118,12 +117,12 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
             authStatus = userStoreManager.authenticate(tenantAwareUserName, password);
         } catch (UserStoreException e) {
             throw new RestApiBasicAuthenticationException(
-                    "User store exception thrown while authenticating user : " + userName, e);
+                    "User store exception thrown while authenticating user : " + userNameWithTenantDomain, e);
         }
 
         if(log.isDebugEnabled()){
             log.debug("Basic authentication request completed. " +
-                    "Username : " + userName +
+                    "Username : " + userNameWithTenantDomain +
                     ", Authentication State : " + authStatus);
         }
 

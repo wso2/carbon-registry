@@ -20,6 +20,8 @@ package org.wso2.carbon.registry.extensions.utils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
@@ -516,6 +518,7 @@ public class CommonUtil {
         } else {
             String pathExpression = Utils.getRxtService().getStoragePath(RegistryConstants.SERVICE_MEDIA_TYPE);
             path = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service,context.getResource().getProperties()));
+            log.info("Checking local paths, absolute path: " +path+ " | path: "+ CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),path));
         }
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
@@ -535,9 +538,16 @@ public class CommonUtil {
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport","true");
             registry.put(path, resource);
-            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
-            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
-            registry.associateAspect(resource.getId(),defaultLifeCycle);
+            String defaultLifeCycle = getDefaultLifecycle(registry, "service");
+            if(defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+                String[] lifeCycles = defaultLifeCycle.split(",");
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(resource.getId(),lifeCycle);
+                    }
+                }
+
+            }
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -569,8 +579,20 @@ public class CommonUtil {
 
         } else {
             String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.SOAP_SERVICE_MEDIA_TYPE);
-            path = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service, context.getResource().getProperties()));
-            path = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),path);
+            String absolutePath = RegistryUtils.getAbsolutePath(context.getRegistryContext(),getPathFromPathExpression(pathExpression, service, context.getResource().getProperties()));
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                path = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(), absolutePath);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + path + " | value: " + absolutePath);
+                }
+                CurrentSession.getLocalPathMap().put(path, absolutePath);
+            } else {
+                path = absolutePath;
+            }
         }
         String content = service.toString();
         resource.setContent(RegistryUtils.encodeString(content));
@@ -590,9 +612,8 @@ public class CommonUtil {
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
             resource.setProperty("registry.DefinitionImport", "true");
             registry.put(path, resource);
-            String defaultLifeCycle = getDefaultServiceLifecycle(registry);
-            if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty())
-                registry.associateAspect(resource.getId(), defaultLifeCycle);
+            String defaultLifeCycle = getDefaultLifecycle(registry, "soapservice");
+            applyDefaultLifeCycle(registry, resource, path, defaultLifeCycle);
         } finally {
             if (lockAlreadyAcquired) {
                 CommonUtil.acquireUpdateLock();
@@ -604,6 +625,26 @@ public class CommonUtil {
         registry.addAssociation(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
                                                               CommonUtil.getDefinitionURL(service)), path,
                                                               CommonConstants.USED_BY);
+    }
+
+    public static void applyDefaultLifeCycle(Registry registry, Resource resource, String path, String defaultLifeCycle) throws RegistryException {
+        if (defaultLifeCycle != null && !defaultLifeCycle.isEmpty()) {
+            String[] lifeCycles = defaultLifeCycle.split(",");
+            ArrayUtils.reverse(lifeCycles);
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(resource.getId(), lifeCycle);
+                    }
+                }
+            } else {
+                for (String lifeCycle : lifeCycles) {
+                    if (StringUtils.isNotEmpty(lifeCycle)){
+                        registry.associateAspect(path, lifeCycle);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -743,7 +784,7 @@ public class CommonUtil {
                 registry.getRegistryContext().getServicePath());  // service path contains the base
     }
 
-    private static String getDefaultServiceLifecycle(Registry registry) throws RegistryException {
+    public static String getDefaultLifecycle(Registry registry, String shortName) throws RegistryException {
         String[] rxtList = null;
         String lifecycle = "";
 
@@ -764,7 +805,7 @@ public class CommonUtil {
                 } catch (XMLStreamException e) {
                     throw new RegistryException("Error while serializing to OM content from String", e);
                 }
-                if ("service".equals(configElement.getAttributeValue(new QName("shortName")))) {
+                if (shortName.equals(configElement.getAttributeValue(new QName("shortName")))) {
                     OMElement lifecycleElement = configElement.getFirstChildWithName(
                             new QName("lifecycle"));
                     if (lifecycleElement != null) {

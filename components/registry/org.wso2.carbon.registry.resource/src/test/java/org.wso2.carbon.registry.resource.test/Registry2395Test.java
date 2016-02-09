@@ -96,4 +96,22 @@ public class Registry2395Test extends TestCase {
         }
         assertTrue(thrown);
     }
+
+    public void testSetProperties() {
+
+        String[][] testProperties = new String[2][2];
+        testProperties[0][0] = "testKey1";
+        testProperties[0][1] = "testVal1";
+        testProperties[1][0] = "testKey2";
+        testProperties[1][1] = "testVal2";
+
+        String[][] newProperties = CommonUtil.setProperties(testProperties, "newKey", "newVal");
+        if (newProperties[(newProperties.length - 1)].length == 2
+                && newProperties[(newProperties.length - 1)][0] == "newKey"
+                && newProperties[(newProperties.length - 1)][1] == "newVal") {
+            assertTrue("Property array set successfully!", true);
+        } else {
+            assertTrue("Property array setting unsuccessful!", false);
+        }
+    }
 }

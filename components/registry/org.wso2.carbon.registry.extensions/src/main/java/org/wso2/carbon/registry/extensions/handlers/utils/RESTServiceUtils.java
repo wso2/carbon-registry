@@ -19,6 +19,7 @@ package org.wso2.carbon.registry.extensions.handlers.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -30,10 +31,10 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -66,6 +67,8 @@ public class RESTServiceUtils {
 	private static final String METHOD = "method";
 	private static final String PATH = "path";
 	private static final String RESOURCE = "resource";
+    private static final String INTERFACE = "interface";
+    private static final String SWAGGER = "swagger";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -74,6 +77,7 @@ public class RESTServiceUtils {
 
 	/**
 	 * Extracts the data from swagger and creates an REST Service registry artifact.
+     * In 5.1.0 please remove this method.
 	 *
 	 * @param swaggerDocObject      swagger Json Object.
 	 * @param swaggerVersion        swagger version.
@@ -82,7 +86,7 @@ public class RESTServiceUtils {
 	 * @throws RegistryException    If swagger content is invalid.
 	 */
 	public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
-	                                                  String endpointURL, List<JsonObject> resourceObjects)
+	                                                  String endpointURL, List<JsonObject> resourceObjects, String swaggerPath)
 			throws RegistryException {
 
 		if(swaggerDocObject == null || swaggerVersion == null) {
@@ -124,11 +128,16 @@ public class RESTServiceUtils {
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);
-		overview.addChild(transports);
 		overview.addChild(description);
 		overview.addChild(endpoint);
 		data.addChild(overview);
 
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement swagger = factory.createOMElement(SWAGGER, namespace);
+        swagger.setText(swaggerPath);
+        interfaceElement.addChild(swagger);
+		interfaceElement.addChild(transports);
+        data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
 				data.addChild(uriTemplate);
@@ -137,6 +146,81 @@ public class RESTServiceUtils {
 
 		return data;
 	}
+
+    /**
+     * Extracts the data from swagger and creates an REST Service registry artifact.
+     * In 5.1.0 Please remove the above method
+     *
+     * @param swaggerDocObject      swagger Json Object.
+     * @param swaggerVersion        swagger version.
+     * @param endpointURL           Endpoint of the swagger
+     * @param resourceObjects       swagger resource object list.
+     * @param swaggerPath           Swagger resource path
+     * @param documentVersion       Swaggers registry version
+     * @return                      The API metadata
+     * @throws RegistryException    If swagger content is invalid.
+     */
+    public static OMElement createRestServiceArtifact(JsonObject swaggerDocObject, String swaggerVersion,
+                                                      String endpointURL, List<JsonObject> resourceObjects, String swaggerPath, String documentVersion)
+            throws RegistryException {
+
+        if(swaggerDocObject == null || swaggerVersion == null) {
+            throw new IllegalArgumentException("Arguments are invalid. cannot create the REST service artifact. ");
+        }
+
+        OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
+        OMElement overview = factory.createOMElement(OVERVIEW, namespace);
+        OMElement provider = factory.createOMElement(PROVIDER, namespace);
+        OMElement name = factory.createOMElement(NAME, namespace);
+        OMElement context = factory.createOMElement(CONTEXT, namespace);
+        OMElement apiVersion = factory.createOMElement(VERSION, namespace);
+        OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
+        OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
+        OMElement description = factory.createOMElement(DESCRIPTION, namespace);
+        List<OMElement> uriTemplates = null;
+
+        JsonObject infoObject = swaggerDocObject.get(SwaggerConstants.INFO).getAsJsonObject();
+        //get api name.
+        String apiName = getChildElementText(infoObject, SwaggerConstants.TITLE).replaceAll("\\s", "");
+        name.setText(apiName);
+        context.setText("/" + apiName);
+        //get api description.
+        description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
+        //get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
+        provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+        endpoint.setText(endpointURL);
+
+        if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
+            apiVersion.setText(documentVersion);
+            transports.setText(getChildElementText(swaggerDocObject, SwaggerConstants.SCHEMES));
+            uriTemplates = createURITemplateFromSwagger2(swaggerDocObject);
+        } else if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
+            apiVersion.setText(documentVersion);
+            uriTemplates = createURITemplateFromSwagger12(resourceObjects);
+        }
+
+        overview.addChild(provider);
+        overview.addChild(name);
+        overview.addChild(context);
+        overview.addChild(apiVersion);
+        overview.addChild(description);
+        overview.addChild(endpoint);
+        data.addChild(overview);
+
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement swagger = factory.createOMElement(SWAGGER, namespace);
+        swagger.setText(swaggerPath);
+        interfaceElement.addChild(swagger);
+		interfaceElement.addChild(transports);
+        data.addChild(interfaceElement);
+        if (uriTemplates != null) {
+            for (OMElement uriTemplate : uriTemplates) {
+                data.addChild(uriTemplate);
+            }
+        }
+
+        return data;
+    }
 
 	/**
 	 * Extracts the data from wadl and creates an REST Service registry artifact.
@@ -159,7 +243,7 @@ public class RESTServiceUtils {
 		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
 		OMElement endpoint = factory.createOMElement(ENDPOINT_URL, namespace);
 		OMElement transports = factory.createOMElement(TRANSPORTS, namespace);
-		OMElement wadl = factory.createOMElement(WADL, namespace);
+
 		List<OMElement> uriTemplates = null;
 
 		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
@@ -167,7 +251,7 @@ public class RESTServiceUtils {
 		name.setText(serviceName);
 		context.setText("/"+serviceName);
 		apiVersion.setText(version);
-		wadl.setText(wadlPath);
+
 		OMNamespace wadlNamespace = wadlElement.getNamespace();
 		String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
 		String wadlNamespacePrefix = wadlNamespace.getPrefix();
@@ -189,11 +273,16 @@ public class RESTServiceUtils {
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);
-		overview.addChild(transports);
-		overview.addChild(wadl);
+
 		overview.addChild(endpoint);
 		data.addChild(overview);
 
+        OMElement interfaceElement = factory.createOMElement(INTERFACE, namespace);
+        OMElement wadl = factory.createOMElement(WADL, namespace);
+        wadl.setText(wadlPath);
+        interfaceElement.addChild(wadl);
+		interfaceElement.addChild(transports);
+        data.addChild(interfaceElement);
 		if (uriTemplates != null) {
 			for (OMElement uriTemplate : uriTemplates) {
 				data.addChild(uriTemplate);
@@ -215,8 +304,6 @@ public class RESTServiceUtils {
 		if(requestContext == null || data == null) {
 			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the rest service to registry. ");
 		}
-
-
 
 		Registry registry = requestContext.getRegistry();
 		//Creating new resource.
@@ -254,7 +341,11 @@ public class RESTServiceUtils {
 		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
 		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
+
 		registry.put(pathExpression, serviceResource);
+
+        String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
+		CommonUtil.applyDefaultLifeCycle(registry, serviceResource, pathExpression, defaultLifeCycle);
         if (log.isDebugEnabled()){
             log.debug("REST Service created at " + pathExpression);
         }
@@ -279,7 +370,19 @@ public class RESTServiceUtils {
                 .getPathFromPathExpression(pathExpression, requestContext.getResource().getProperties(), null);
         pathExpression = RegistryUtils.getAbsolutePath(requestContext.getRegistryContext(), CommonUtil
                 .replaceExpressionOfPath(pathExpression, "provider", serviceProvider));
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+		String servicePath = pathExpression;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			servicePath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), pathExpression);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + servicePath + " | value: " + pathExpression);
+			}
+			CurrentSession.getLocalPathMap().put(servicePath, pathExpression);
+		}
+		return servicePath;
     }
 
     /**
@@ -338,8 +441,19 @@ public class RESTServiceUtils {
         pathExpression = CommonUtil.getPathFromPathExpression(pathExpression, endpointElement,
                                                               requestContext.getResource().getProperties());
         endpointPath = CommonUtil.replaceExpressionOfPath(pathExpression, "name", endpointPath);
-
-        return CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+		String endpointRegistryPath = endpointPath;
+		/**
+		 * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+		 * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+		 */
+		if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+			endpointRegistryPath = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(), endpointPath);
+			if (log.isDebugEnabled()) {
+				log.debug("Saving current session local paths, key: " + endpointRegistryPath + " | value: " + endpointPath);
+			}
+			CurrentSession.getLocalPathMap().put(endpointRegistryPath, endpointPath);
+		}
+		return endpointRegistryPath;
     }
 
     /**
@@ -351,7 +465,22 @@ public class RESTServiceUtils {
 	 */
 	private static String getChildElementText(JsonObject object, String key) {
 		JsonElement element = object.get(key);
-		if (element != null) {
+		if (element != null && element.isJsonArray()) {
+			if (((JsonArray) element).size() == 1) {
+				return object.get(key).getAsString();
+			} else {
+				StringBuffer sb = new StringBuffer();
+				JsonArray elements = (JsonArray)object.get(key);
+				for (int i = 0; i < elements.size(); i++) {
+					JsonPrimitive ob = (JsonPrimitive)elements.get(i);
+					sb.append(ob.getAsString());
+					if (i < elements.size()-1) {
+						sb.append(",");
+					}
+				}
+				return sb.toString();
+			}
+		} else if (element != null && (element.isJsonObject() || element.isJsonPrimitive())) {
 			return object.get(key).getAsString();
 		}
 		return null;

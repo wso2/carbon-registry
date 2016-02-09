@@ -26,6 +26,7 @@ import org.apache.solr.common.SolrException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.config.Mount;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
@@ -33,6 +34,7 @@ import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.indexing.AsyncIndexer.File2Index;
 import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
@@ -66,17 +68,18 @@ public class IndexingHandler extends Handler {
 
     public void put(RequestContext requestContext) throws RegistryException {
         if (log.isDebugEnabled()){
-            log.debug(" Before put resources into indexer");
+            log.debug(" Before put resources into indexer " + requestContext.getResourcePath().getPath());
         }
-        if (isIndexable(requestContext)) {
+        if (isIndexablePutOperation(requestContext) || Utils.getRegistryService() == null) {
             return;
         }
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
 
-        submitFileForIndexing(getIndexer(), requestContext.getResource(), requestContext.getResourcePath().getPath(),
+        String path = getRegistryPath(requestContext);
+        submitFileForIndexing(getIndexer(), requestContext.getResource(), path,
                 null,carbonContext.getTenantId(), carbonContext.getTenantDomain() );
         if (log.isDebugEnabled()){
-            log.debug(" After put resources into indexer");
+            log.debug(" After put resources into indexer "+ requestContext.getResourcePath().getPath());
         }
     }
 
@@ -97,7 +100,9 @@ public class IndexingHandler extends Handler {
         }
         Resource resource = requestContext.getRegistry().get(oldPath);
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
+        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
+        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
+                              carbonContext.getTenantDomain());
         return super.move(requestContext);
     }
 
@@ -122,7 +127,9 @@ public class IndexingHandler extends Handler {
         }
         Resource resource = requestContext.getRegistry().get(oldPath);
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
+        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
+        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
+                              carbonContext.getTenantDomain());
         return super.rename(requestContext);
     }
 
@@ -135,8 +142,10 @@ public class IndexingHandler extends Handler {
         String newPath = requestContext.getTargetPath();
         Resource resource = requestContext.getRegistry().get(oldPath);
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
 
-        submitFileForIndexing(getIndexer(), resource, newPath, null, carbonContext.getTenantId(), carbonContext.getTenantDomain());
+        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
+                              carbonContext.getTenantDomain());
         return super.copy(requestContext);
     }
 
@@ -145,6 +154,13 @@ public class IndexingHandler extends Handler {
                 || requestContext.getResource() == null
                 || requestContext.getResource().getMediaType() == null
                 || requestContext.getResource() instanceof Collection;
+    }
+
+    private boolean isIndexablePutOperation(RequestContext requestContext) {
+        return (requestContext.getRegistry().getRegistryContext() == null)
+               || requestContext.getResource() == null
+               || requestContext.getResource().getMediaType() == null
+               || requestContext.getResource() instanceof Collection;
     }
 
     private boolean isExecutingMountedHandlerChain(RequestContext requestContext) {
@@ -216,8 +232,9 @@ public class IndexingHandler extends Handler {
         }
 
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-
-        submitFileForIndexing(getIndexer(), requestContext.getResource(), requestContext.getResourcePath().getPath(), requestContext.getSourceURL(), carbonContext.getTenantId(), carbonContext.getTenantDomain() );
+        String path = getRegistryPath(requestContext);
+        submitFileForIndexing(getIndexer(), requestContext.getResource(), path, requestContext.getSourceURL(),
+                              carbonContext.getTenantId(), carbonContext.getTenantDomain());
     }
 
     public void delete(RequestContext requestContext) throws RegistryException {
@@ -261,7 +278,8 @@ public class IndexingHandler extends Handler {
         }
     }
 
-    private void submitFileForIndexing(AsyncIndexer indexer, Resource resource, String path, String sourceURL, int tenantId, String tenantDomain) {
+    private void submitFileForIndexing(AsyncIndexer indexer, Resource resource, String path, String sourceURL,
+                                       int tenantId, String tenantDomain) {
         //if media type is null, mostly it is not a file. We will skip.
         String mediaType = resource.getMediaType();
         if (mediaType == null && path != null) {
@@ -271,8 +289,8 @@ public class IndexingHandler extends Handler {
                 // We are only making an attempt to determine the media type.
             }
         }
-        if (mediaType == null || IndexingManager.getInstance().getIndexerForMediaType(mediaType)
-                == null) {
+        if (mediaType == null || Utils.getRegistryService() == null ||
+            IndexingManager.getInstance().getIndexerForMediaType(mediaType) == null) {
             return;
         }
         if (log.isDebugEnabled()) {
@@ -307,5 +325,18 @@ public class IndexingHandler extends Handler {
             log.error("An error occurred while submitting file for indexing", e);
         }
     }
+
+    private String getRegistryPath(RequestContext requestContext) {
+        String servicePath = requestContext.getResourcePath().getPath();
+        List<Mount> mounts = requestContext.getRegistry().getRegistryContext().getMounts();
+        for (Mount mount: mounts) {
+            String mountPath = mount.getPath();
+            if (servicePath.startsWith(mount.getTargetPath())){
+                return servicePath.replace(mount.getTargetPath(), mountPath);
+            }
+        }
+        return servicePath;
+    }
+
 
 }

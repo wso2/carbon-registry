@@ -25,7 +25,6 @@ import org.osgi.service.http.HttpService;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.resource.download.DownloadManagerService;
-import org.wso2.carbon.registry.resource.services.utils.CommonUtil;
 import org.wso2.carbon.registry.resource.services.utils.ContentUtil;
 import org.wso2.carbon.registry.resource.servlets.ResourceServlet;
 
@@ -50,6 +49,8 @@ import java.util.Hashtable;
 public class RegistryMgtUIResourceServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIResourceServiceComponent.class);
+
+    private ResourceDataHolder dataHolder = ResourceDataHolder.getInstance();
 
     private RegistryService registryService = null;
     private HttpService httpService = null;
@@ -92,12 +93,12 @@ public class RegistryMgtUIResourceServiceComponent {
 
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
-        CommonUtil.setRegistryService(registryService);
+        dataHolder.setRegistryService(registryService);
     }
 
     protected void unsetRegistryService(RegistryService registryService) {
         this.registryService = null;
-        CommonUtil.setRegistryService(null);
+        dataHolder.setRegistryService(null);
         if (serviceRegistration != null) {
             serviceRegistration.unregister();
             serviceRegistration = null;
@@ -105,11 +106,11 @@ public class RegistryMgtUIResourceServiceComponent {
     }
 
     protected void setRegistryNotificationService(NotificationService notificationService) {
-        CommonUtil.setRegistryNotificationService(notificationService);
+        dataHolder.setRegistryNotificationService(notificationService);
     }
 
     protected void unsetRegistryNotificationService(NotificationService notificationService) {
-        CommonUtil.setRegistryNotificationService(null);
+        dataHolder.setRegistryNotificationService(null);
     }
 
     protected void setHttpService(HttpService httpService) {

@@ -30,10 +30,9 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
-import org.wso2.carbon.registry.core.config.Mount;
-import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
+import org.wso2.carbon.registry.core.session.CurrentSession;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.services.Utils;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
@@ -274,6 +273,9 @@ public class EndpointUtils {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+
+        String serviceVersion = CommonUtil.getServiceVersion(serviceElement);
+        endpointVersion = serviceVersion;
 
         // and add the associations and before adding them first remove all the endpoint dependencies
         removeEndpointDependencies(servicePath, registry);
@@ -520,6 +522,7 @@ public class EndpointUtils {
                                    Registry systemRegistry) throws RegistryException {
         String urlToPath = deriveEndpointFromUrl(url);
 
+
         String pathExpression = getEndpointLocation(context, url, systemRegistry, endpointLocation);
 
         String endpointAbsoluteBasePath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
@@ -560,13 +563,26 @@ public class EndpointUtils {
             String pathExpression = Utils.getRxtService().getStoragePath(CommonConstants.ENDPOINT_MEDIA_TYPE);
             pathExpression = CommonUtil
                     .replaceExpressionOfPath(pathExpression, "name", deriveEndpointNameWithNamespaceFromUrl(url));
+            pathExpression = CommonUtil
+                    .replaceExpressionOfPath(pathExpression, "version", endpointVersion);
             pathExpression =
                     CommonUtil.getPathFromPathExpression(pathExpression, context.getResource().getProperties(), null);
             String namespace = deriveEndpointNamespaceFromUrl(url).replace("//", "/");
             pathExpression = CommonUtil.replaceExpressionOfPath(pathExpression, "namespace", namespace);
             pathExpression = pathExpression.replace("//", "/");
             pathExpression =   RegistryUtils.getAbsolutePath(context.getRegistryContext(), pathExpression.replace("//", "/"));
-            String endPointPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),pathExpression);
+            String endPointPath = pathExpression;
+            /**
+             * Fix for the REGISTRY-3052 : validation is to check the whether this invoked by ZIPWSDLMediaTypeHandler
+             * Setting the registry and absolute paths to current session to avoid incorrect resource path entry in REG_LOG table
+             */
+            if (CurrentSession.getLocalPathMap() != null && !Boolean.valueOf(CurrentSession.getLocalPathMap().get(CommonConstants.ARCHIEVE_UPLOAD))) {
+                endPointPath = CommonUtil.getRegistryPath(context.getRegistry().getRegistryContext(),pathExpression);
+                if (log.isDebugEnabled()) {
+                    log.debug("Saving current session local paths, key: " + endPointPath + " | value: " + pathExpression);
+                }
+                CurrentSession.getLocalPathMap().put(endPointPath, pathExpression);
+            }
             return endPointPath;
         } else {
             String urlToPath = deriveEndpointFromUrl(url);

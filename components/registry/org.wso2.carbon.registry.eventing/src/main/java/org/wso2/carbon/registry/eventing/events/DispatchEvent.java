@@ -22,7 +22,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.wso2.carbon.event.core.Message;
+import org.wso2.carbon.registry.event.core.Message;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 
 import java.util.Map;
