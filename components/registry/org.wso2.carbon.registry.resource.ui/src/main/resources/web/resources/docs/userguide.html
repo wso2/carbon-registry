@@ -121,34 +121,6 @@ or the collection </p>
 
 <p>Figure 4 : The meta data panel </p>
 
-<h3><a name="viewVersion" id="viewVersion">View Version</a></h3>
-
-<p>Allows to view versions of a resource/collection. The importance of maintaining versions is to trace the changes made
-    to a resources and restore a resource back to that version if necessary. </p>
-
-<ul>
-    <li>Version - Shows the number of a resource/collection version.</li>
-    <li>Last Modified Date - Shows the last date of updating.</li>
-    <li>Last Modified By - Shows the author of alterations.</li>
-    <li>Actions</li>
-    <li>Details - Allows to get to the "Browse" page of a particular resource/collection version.</li>
-    <li>Restore - Allows to restore a resource/collection version.</li>
-</ul>
-
-<p><img src="images/version_view.png" width="900px"/></p>
-
-<p>Figure 5 : View version </p>
-
-<h3><a name="detailsView" id="detailsView">Details of version</a></h3>
-
-<p>When user clicks the Detail link from the View version of a resource the page get redirected to the Details page of that
-   version which illustrates the versioned components of a selected version of a resource. This would give a Browse view
-   of the versioned resource.</p>
-
-<p><img src="images/details_view.png" width="900px"/></p>
-
-<p>Figure 6 : Details view </p>
-
 <h3><a name="Properties" id="Properties">Properties Panel</a></h3>
 
 <p>This panel displays the properties of the currently selected resource
@@ -367,6 +339,7 @@ types supported by default are as follows:</p>
   <li>LC Approval Needed - Represents an event that fires when lifecycle transition required user approvals .</li>
   <li>LC Approval Withdrawn - Represents an event that fires when remove approval form(remove vote) transition event.</li>
   <li>LC Approved  - Represents an event that fires when approve(vote) a transition event.</li>
+  <li>LC Checkpoint Notification - Represents an event that fires when a lifecycle reaches its checkpoint.</li>
 </ul>
 
 <p>Please note that some of these events may not be available for certain types resources and
@@ -378,7 +351,7 @@ collections. We support a variety of notification methods as well.</p>
   <li>SOAP            - An endpoint accepting notifications as a SOAP message.</li>
   <li>User Profile    - A valid user's profile. Notifications will be sent to the e-mail address
   specified on the user's default profile.</li>
-  <li>Group Profile   - A valid role. Notifications will be sent to all the users in the
+  <li>Role Profile   - A valid role. Notifications will be sent to all the users in the
   specified role.</li>
   <li>Management Console       - A valid role. Notifications will be sent to work-list for role.</li>
   <li>JMX             - Notifications will be sent via JMX.</li>
