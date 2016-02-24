@@ -173,7 +173,10 @@ public class RegistryTaskServiceComponent {
                 }
             }
         } catch (TaskException e) {
-            log.warn("Unable to clean-up scheduled tasks", e);
+            //Since server is maintain mode, we can ignore Task related exceptions
+            if(log.isDebugEnabled()){
+                log.debug("TaskException: Unable to clean-up scheduled tasks ", e);
+            }
         }
     }
 }
