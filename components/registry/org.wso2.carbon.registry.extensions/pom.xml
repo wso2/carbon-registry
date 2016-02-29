@@ -102,6 +102,7 @@
                             org.codehaus.plexus.*,
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
+                            javax.xml.parsers; version=0.0.0,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             *;resolution:=optional
                         </Import-Package>
@@ -156,7 +157,7 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.commons</groupId>
+            <groupId>org.wso2.carbon.identity</groupId>
             <artifactId>org.wso2.carbon.user.mgt</artifactId>
         </dependency>
         <dependency>

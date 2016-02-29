@@ -125,7 +125,7 @@
     </dependency>
 
     <dependency>
-        <groupId>org.wso2.carbon.commons</groupId>
+        <groupId>org.wso2.carbon.identity</groupId>
         <artifactId>org.wso2.carbon.user.mgt</artifactId>
     </dependency>
 
