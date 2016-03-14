@@ -43,7 +43,12 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class EndpointUtils {
     private static final Log log = LogFactory.getLog(EndpointUtils.class);
@@ -99,8 +104,40 @@ public class EndpointUtils {
         return endpointMediaType;
     }
 
-    public static void removeEndpointEntry(String oldWSDL, OMElement serviceElement, Registry registry)
+    public static void removeEndpointEntry(String oldWSDL, String servicePath, OMElement serviceElement, Registry registry)
             throws RegistryException {
+        List<OMElement> serviceEndpointEntryElements = getOmElements(serviceElement);
+        if (serviceEndpointEntryElements == null || serviceEndpointEntryElements.size() == 0) {
+            return;
+        }
+        String endpointURL = null;
+        Resource serviceResource = registry.get(oldWSDL);
+        Association[] associations = registry.getAssociations(oldWSDL, CommonConstants.DEPENDS);
+        for (Association association: associations) {
+            String targetPath = association.getDestinationPath();
+            if (registry.resourceExists(targetPath)) {
+                Resource targetResource = registry.get(targetPath);
+                if (CommonConstants.ENDPOINT_MEDIA_TYPE.equals(targetResource.getMediaType())) {
+                    byte[] sourceContent = (byte[]) targetResource.getContent();
+                    if (sourceContent == null) {
+                       continue;
+                    }
+                    endpointURL = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                }
+            }
+        }
+
+       for(OMElement endpointOmElement : serviceEndpointEntryElements){
+            if(endpointOmElement!=null){
+                String entryText = endpointOmElement.getText();
+                if (endpointURL != null && entryText.contains(endpointURL) ){
+                    endpointOmElement.detach();
+                }
+            }
+        }
+    }
+
+    private static List<OMElement> getOmElements(OMElement serviceElement) throws RegistryException {
         List<OMElement> serviceEndpointEntryElements;
         try {
             serviceEndpointEntryElements = evaluateXPathToElements(SERVICE_ENDPOINT_ENTRY_EXPR, serviceElement);
@@ -109,15 +146,62 @@ public class EndpointUtils {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
-        if (serviceEndpointEntryElements == null || serviceEndpointEntryElements.size() == 0) {
-            return;
-        }
-        for(OMElement endpointOmElement : serviceEndpointEntryElements){
-            if(endpointOmElement!=null){
-                endpointOmElement.detach();
+        return serviceEndpointEntryElements;
+    }
+
+    public static void removeEndpointEntry(RequestContext requestContext, OMElement serviceElement ,String servicePath, Registry registry)
+            throws RegistryException {
+        Association[] associations = registry.getAssociations(servicePath, CommonConstants.DEPENDS);
+        for (Association association: associations) {
+            String targetPath = association.getDestinationPath();
+            if (registry.resourceExists(targetPath)) {
+                Resource targetResource = registry.get(targetPath);
+                if (CommonConstants.ENDPOINT_MEDIA_TYPE.equals(targetResource.getMediaType())) {
+                    registry.removeAssociation(servicePath, targetResource.getPath(),
+                            CommonConstants.DEPENDS);
+                    registry.removeAssociation(targetResource.getPath(), servicePath,
+                            CommonConstants.USED_BY);
+                }
             }
         }
+        List<OMElement> serviceEndpointEntryElements = getOmElements(serviceElement);
+
+        String serviceVersion = CommonUtil.getServiceVersion(serviceElement);
+        endpointVersion = serviceVersion;
+        for (OMElement endpointElement: serviceEndpointEntryElements) {
+            Map<String, String> properties = new HashMap<String, String>();
+
+            String entryText = endpointElement.getText();
+            String entryKey = null;
+            String entryVal;
+            int colonIndex = entryText.indexOf(":");
+            if (colonIndex < entryText.length()- 1) {
+                entryKey = entryText.substring(0, colonIndex);
+                entryText = entryText.substring(colonIndex + 1);
+            }
+            entryVal = entryText;
+
+            if (!"".equals(entryKey)) {
+                // here the key is the environment
+
+                String endpointPath = RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                        org.wso2.carbon.registry.core.RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+                                endpointLocation) + deriveEndpointFromUrl(entryVal);
+
+                String existingEnv = null;
+
+                if (registry.resourceExists(endpointPath)) {
+                    registry.get(endpointPath).removeProperty(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR);
+                }
+                existingEnv = entryKey;
+                properties.put(CommonConstants.ENDPOINT_ENVIRONMENT_ATTR, existingEnv);
+            }
+
+            // the entry value is the url
+            saveEndpoint(requestContext, registry, entryVal, servicePath, properties, CommonUtil.getUnchrootedSystemRegistry(requestContext));
+        }
     }
+
     public static void saveEndpointsFromWSDL(RequestContext context, String wsdlPath, Resource wsdlResource,
                                       Registry registry, Registry systemRegistry)
             throws RegistryException {
@@ -265,15 +349,7 @@ public class EndpointUtils {
 
         // first iterate through soap11 endpoints
         // saving soap11 endpoints
-        List<OMElement> serviceEndpointEntryElements;
-        try {
-            serviceEndpointEntryElements =  evaluateXPathToElements(SERVICE_ENDPOINT_ENTRY_EXPR, serviceElement);
-        } catch (Exception e) {
-            String msg = "Error in evaluating xpath expressions to extract endpoints, " +
-                    "service path: " + servicePath + ".";
-            log.error(msg, e);
-            throw new RegistryException(msg, e);
-        }
+        List<OMElement> serviceEndpointEntryElements = getOmElements(serviceElement);
 
         String serviceVersion = CommonUtil.getServiceVersion(serviceElement);
         endpointVersion = serviceVersion;
@@ -329,15 +405,7 @@ public class EndpointUtils {
         try {
             // first iterate through soap11 endpoints
             // saving soap11 endpoints
-            List<OMElement> serviceEndpointEntryElements;
-            try {
-                serviceEndpointEntryElements =  evaluateXPathToElements(SERVICE_ENDPOINT_ENTRY_EXPR, serviceElement);
-            } catch (Exception e) {
-                String msg = "Error in evaluating xpath expressions to extract endpoints, " +
-                        "service path: " + servicePath + ".";
-                log.error(msg, e);
-                throw new RegistryException(msg, e);
-            }
+            List<OMElement> serviceEndpointEntryElements = getOmElements(serviceElement);
 
             // and add the associations and before adding them first remove all the endpoint dependencies
             removeEndpointDependencies(servicePath, registry);
@@ -727,6 +795,46 @@ public class EndpointUtils {
             registry.put(servicePath, serviceResource);
         }
     }
+
+
+    public static OMElement addEndpointToService(OMElement serviceElement,
+                                                 String endpointUrl,
+                                                 String endpointEnv) throws RegistryException {
+        OMElement serviceEndpointElement;
+        OMNamespace namespace = OMAbstractFactory.getOMFactory().createOMNamespace(
+                CommonConstants.SERVICE_ELEMENT_NAMESPACE, null);
+        try {
+            List<OMElement> endpointElements = evaluateXPathToElements(SERVICE_ENDPOINT_EXPR, serviceElement);
+            if (endpointElements.size() == 0) {
+                // we need to create the element.
+                serviceEndpointElement = OMAbstractFactory.getOMFactory().createOMElement(
+                        SERVICE_ENDPOINTS_ELEMENT, namespace);
+                serviceElement.addChild(serviceEndpointElement);
+            } else {
+                serviceEndpointElement = endpointElements.get(0);
+            }
+        } catch (Exception e) {
+            String msg = "Error in getting the endpoint element of the service.";
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
+        Iterator it = serviceEndpointElement.getChildElements();
+        List<String> currentEndpoints = new ArrayList<String>();
+        while (it.hasNext()) {
+            currentEndpoints.add(((OMElement) it.next()).getText());
+        }
+        if (!currentEndpoints.contains(endpointEnv + ":" + endpointUrl)) {
+            OMElement entryElement = OMAbstractFactory.getOMFactory().createOMElement(
+                    SERVICE_ENDPOINTS_ENTRY_ELEMENT, namespace);
+            entryElement.setText(endpointEnv + ":" + endpointUrl);
+            serviceEndpointElement.addChild(entryElement);
+
+            // now we are saving it to the registry.
+            return serviceElement;
+        }
+        return serviceElement;
+    }
+
 
     public static void removeEndpointFromService(Registry registry,
                                             String servicePath,

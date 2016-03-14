@@ -240,6 +240,7 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     log.error(msg.toString());
                     throw new RegistryException(msg.toString(), e);
                 }
+                EndpointUtils.removeEndpointEntry(requestContext, serviceInfoElement,servicePath, registry);
             } else if ("true".equals(resource.getProperty("registry.DefinitionImport"))) {
                 resource.removeProperty("registry.DefinitionImport");
             }
@@ -252,7 +253,7 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                     try {
                         registry.removeAssociation(servicePath, oldDefinition, CommonConstants.DEPENDS);
                         registry.removeAssociation(oldDefinition, servicePath, CommonConstants.USED_BY);
-                        EndpointUtils.removeEndpointEntry(oldDefinition, serviceInfoElement, registry);
+                        EndpointUtils.removeEndpointEntry(oldDefinition,servicePath, serviceInfoElement, registry);
                         resource.setContent(RegistryUtils.decodeBytes((serviceInfoElement.toString()).getBytes()));
                     } catch (RegistryException e) {
                         throw new RegistryException("Failed to remove endpoints from Service UI : " + serviceName, e);
@@ -307,7 +308,10 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                 }
                 definitionURL = RegistryUtils.getRelativePath(requestContext.getRegistryContext(), definitionPath);
                 CommonUtil.setDefinitionURL(serviceInfoElement, definitionURL);
+
+                serviceInfoElement = setEndpoint(registry, definitionURL, serviceInfoElement);
                 resource.setContent(RegistryUtils.decodeBytes((serviceInfoElement.toString()).getBytes()));
+
                 // updating the wsdl/wadl url
                 ((ResourceImpl) resource).prepareContentForPut();
                 persistServiceResource(registry, resource, servicePath);
@@ -427,6 +431,28 @@ public class SOAPServiceMediaTypeHandler extends Handler {
         } finally {
             CommonUtil.releaseUpdateLock();
         }
+    }
+
+    private OMElement  setEndpoint(Registry registry, String definitionURL, OMElement serviceInfoElement)  throws RegistryException {
+        Association[] associations = registry.getAssociations(definitionURL, CommonConstants.DEPENDS);
+        for (Association association: associations) {
+            String targetPath = association.getDestinationPath();
+            if (registry.resourceExists(targetPath)) {
+                Resource targetResource = registry.get(targetPath);
+                if (CommonConstants.ENDPOINT_MEDIA_TYPE.equals(targetResource.getMediaType())) {
+                    byte[] sourceContent = (byte[]) targetResource.getContent();
+                    if (sourceContent == null) {
+                        return serviceInfoElement;
+                    }
+                    String endpointUrl = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
+                    try {
+                        serviceInfoElement = EndpointUtils.addEndpointToService(serviceInfoElement, endpointUrl, "");
+                    } catch (RegistryException e){}
+                }
+            }
+        }
+
+        return serviceInfoElement;
     }
 
     private String getServicePath(Registry registry, Resource resource, OMElement serviceInfoElement,
