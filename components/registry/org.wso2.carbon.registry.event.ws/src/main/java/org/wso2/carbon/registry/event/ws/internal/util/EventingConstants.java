@@ -114,7 +114,7 @@ public interface EventingConstants {
     String NOTIFICATION_NS_URI = "http://wso2.org/ns/2009/09/eventing/notify";
     String NOTIFICATION_NS_PREFIX = "ns";
 
-    String BROKER_SERVICE_NAME = "EventBrokerService";
+    String BROKER_SERVICE_NAME = "RegistryEventBrokerService";
 
     Pattern TO_ADDRESS_PATTERN = Pattern.compile("/services/.*/publish/(.*)");
 }
