@@ -1,3 +1,4 @@
+
 /*
  *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,9 +17,11 @@
  *  under the License.
  *
  */
+
 function submitActivityForm(page, pageNumber) {
     sessionAwareFunction(function() {
         //Do the normal logic when the seesion is not timed out
+
         var reasonDiv = document.getElementById('activityReason');
         var reason = "";
         var searchResuts = $('activityList');
@@ -43,6 +46,8 @@ function submitActivityForm(page, pageNumber) {
         var toDateValue = toDate.value;
         var userNameValue = userName.value;
         var pathValue = path.value;
+
+
 
         if(fromDateValue!="" && (fromDateValue == toDateValue)){
             $('activityList').innerHTML="";
@@ -106,6 +111,72 @@ function submitActivityForm(page, pageNumber) {
 
     }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
 }
+
+/**
+ * Method to send sort request to backend using Ajax call.
+ *
+ * @param pageNumber    current page of the search results
+ * @param sortOrder     ascending or descending
+ */
+function sort(pageNumber, sortOrder) {
+    sessionAwareFunction(function() {
+
+        // Do the normal logic when the seesion is not timed out
+
+        var searchResuts = $('activityList');
+        searchResuts.innerHTML = org_wso2_carbon_registry_activities_ui_jsi18n["searching"];
+
+        var fromDate = document.getElementById('fromDate');
+        var toDate = document.getElementById('toDate');
+        var userName = document.getElementById('user');
+        var path = document.getElementById('path');
+        var filterElement = document.getElementById('filter');
+        var filter = filterElement.options[filterElement.selectedIndex].value;
+
+        var fromDateValue = fromDate.value;
+        var toDateValue = toDate.value;
+        var userNameValue = userName.value;
+        var pathValue = path.value;
+
+
+        if (pageNumber) {
+            new Ajax.Request('../activities/activity-ajaxprocessor.jsp',
+            {
+                method:'post',
+                parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,requestedPage:pageNumber,sortOrder:sortOrder},
+
+                onSuccess: function(transport) {
+                    $('activityList').innerHTML = transport.responseText;
+                },
+
+                onFailure: function(transport) {
+                    CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["an.error.occured"] +
+                                               " " + transport.responseText);
+                }
+            });
+        } else {
+            new Ajax.Request('../activities/activity-ajaxprocessor.jsp',
+            {
+                method:'post',
+                parameters: {fromDate: fromDateValue, toDate: toDateValue, userName:userNameValue,path:pathValue,filter:filter,sortOrder:sortOrder},
+
+                onSuccess: function(transport) {
+                    $('activityList').innerHTML = transport.responseText;
+                },
+
+                onFailure: function(transport) {
+                    CARBON.showErrorDialog(org_wso2_carbon_registry_activities_ui_jsi18n["an.error.occured"] +
+                                               " " + transport.responseText);
+                    }
+            });
+        }
+
+
+    }, org_wso2_carbon_registry_activities_ui_jsi18n["session.timed.out"]);
+}
+
+
+
 
 function handleUserNameKeyPress(event) {
     if (event.keyCode == 13) {
