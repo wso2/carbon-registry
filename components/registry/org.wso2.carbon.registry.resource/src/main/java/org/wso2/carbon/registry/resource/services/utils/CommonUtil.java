@@ -77,6 +77,8 @@ public class CommonUtil {
      * Adding new properties to end of the properties array
      *
      * @param properties String[][] of properties
+     * @param key new key
+     * @param value new value for the new key
      * @return propertyArray    updated String[][] of properties
      */
     public static String[][] setProperties(String[][] properties, String key, String value) {

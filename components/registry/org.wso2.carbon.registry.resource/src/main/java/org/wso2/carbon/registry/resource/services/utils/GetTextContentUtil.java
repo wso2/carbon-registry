@@ -131,7 +131,6 @@ public class GetTextContentUtil {
 
         } catch (UnsupportedEncodingException e) {
             String msg = ENCODING + " is unsupported encoding type";
-            log.error(msg, e);
             throw new RegistryException(msg, e);
         }
         return bytes;
