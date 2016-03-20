@@ -139,33 +139,36 @@ public class SwaggerMediaTypeHandler extends Handler {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 
-            requestContext.setSourceURL(
-                    requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
+            requestContext
+                    .setSourceURL(requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
             String sourceURL = requestContext.getSourceURL();
 
-            boolean processingCompleted ;
+            boolean processingCompleted;
             if (StringUtils.isBlank(sourceURL)) {
                 inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
                 SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processingCompleted = processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
+                processingCompleted = processor
+                        .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
             } else {
                 //Open a stream to the sourceURL
                 inputStream = new URL(sourceURL).openStream();
 
                 SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processingCompleted = processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL);
+                processingCompleted = processor
+                        .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()),
+                                sourceURL);
             }
 
-            if(processingCompleted) {
+            if (processingCompleted) {
                 requestContext.setProcessingComplete(true);
             }
-		} catch (IOException e) {
+        } catch (IOException e) {
             throw new RegistryException("The URL " + requestContext.getSourceURL() + " is incorrect.", e);
         } finally {
-			CommonUtil.closeInputStream(inputStream);
-			CommonUtil.releaseUpdateLock();
-		}
-	}
+            CommonUtil.closeInputStream(inputStream);
+            CommonUtil.releaseUpdateLock();
+        }
+    }
 
 	/**
 	 * Creates a resource in the given path by fetching the resource content from the given URL.

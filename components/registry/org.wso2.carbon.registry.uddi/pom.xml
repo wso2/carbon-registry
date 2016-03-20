@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.5.1-SNAPSHOT</version>
+        <version>4.5.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -119,7 +119,7 @@
             <version>${commons-lang.wso2.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.neethi.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.neethi</groupId>
             <artifactId>neethi</artifactId>
         </dependency>
         <dependency>

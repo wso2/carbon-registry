@@ -249,7 +249,7 @@ public class ServiceMediaTypeHandler extends Handler {
                     try {
                         registry.removeAssociation(servicePath, oldDefinition, CommonConstants.DEPENDS);
                         registry.removeAssociation(oldDefinition, servicePath, CommonConstants.USED_BY);
-                        EndpointUtils.removeEndpointEntry(oldDefinition, serviceInfoElement, registry);
+                        EndpointUtils.removeEndpointEntry(oldDefinition, servicePath, serviceInfoElement, registry);
                         resource.setContent(RegistryUtils.decodeBytes((serviceInfoElement.toString()).getBytes()));
                     } catch (RegistryException e) {
                         throw new RegistryException("Failed to remove endpoints from Service UI : "+serviceName,e);

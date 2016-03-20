@@ -244,10 +244,10 @@ function initMiscFields() {
     }
 }
 
-function submitAdvSearchForm(pageNumber) {		
+function submitAdvSearchForm(pageNumber) {
     sessionAwareFunction(function() {
         document.getElementById('advancedSearchFormDiv').style.display = "none";
-	var resourceName = document.getElementById('#_resourceName');
+	    var resourceName = document.getElementById('#_resourceName');
         var reasonDiv = $('advSearchReason');
         var reason = "";
         var searchResuts = $('searchResuts');
@@ -415,6 +415,104 @@ function submitAdvSearchForm(pageNumber) {
             )
             ;
 }
+
+/**
+ * Method to send sort request to backend using Ajax call.
+ *
+ * @param pageNumber    current page of the search results
+ * @param sortOrder     ascending or descending
+ * @param sortBy        sort based on created date, author and rating
+ */
+function sort(pageNumber,sortOrder, sortBy) {
+    sessionAwareFunction(function() {
+        document.getElementById('advancedSearchFormDiv').style.display = "none";
+	    var resourceName = document.getElementById('#_resourceName');
+        var searchResuts = $('searchResuts');
+        searchResuts.style.display = "";
+        searchResuts.innerHTML = org_wso2_carbon_registry_search_ui_jsi18n["searching"];
+
+        var table = $('customTable');
+        var rows = table.getElementsByTagName('input');
+
+
+        var cFromDate, cToDate,
+                uFromDate, uToDate;
+
+
+        for (var i = 0; i < rows.length; i++) {
+            if ((rows[i].id == "cfromDate") && rows[i].value != "") {
+                cFromDate = rows[i];
+            }
+            else if ((rows[i].id == "ctoDate") && rows[i].value != "") {
+                cToDate = rows[i];
+            }
+            else if ((rows[i].id == "ufromDate") && rows[i].value != "") {
+                uFromDate = rows[i];
+            }
+            else if ((rows[i].id == "utoDate") && rows[i].value != "") {
+                uToDate = rows[i];
+            }
+        }
+
+        var customParamterList = "";
+
+        for (var i = 0; i < rows.length - 1; i++) {
+            if (rows[i].type == "text") {
+                customParamterList = customParamterList + rows[i].name + "^";
+                if (rows[i].value == "") {
+                    customParamterList = customParamterList + "null";
+                }
+                else {
+                    customParamterList = customParamterList + rows[i].value;
+                }
+                if (i != (rows.length - 1)) {
+                    customParamterList = customParamterList + "|";
+                }
+            }
+
+            if (rows[i].type == "checkbox") {
+                customParamterList = customParamterList + rows[i].name + "^";
+                if (rows[i].checked) {
+                    customParamterList = customParamterList + "on";
+                }
+                else {
+                    customParamterList = customParamterList + "null";
+                }
+                if (i != (rows.length - 1)) {
+                    customParamterList = customParamterList + "|";
+                }
+            }
+        }
+
+        var opList = table.getElementsByTagName('select');
+
+        for (var i = 0; i < opList.length; i++) {
+            customParamterList = customParamterList + opList[i].name + "^";
+            customParamterList = customParamterList + opList[i].value;
+            if (i != (opList.length - 1)) {
+                customParamterList = customParamterList + "|";
+            }
+        }
+
+
+        if (pageNumber) {
+            new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
+            { method: 'get', parameters: {parameterList:customParamterList,requestedPage:pageNumber, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+        } else {
+            new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
+            { method: 'get', parameters: {parameterList:customParamterList, sortOrder: sortOrder, sortBy: sortBy} , evalScripts: true });
+        }
+        $('#_0').focus();
+
+
+
+    }
+        ,
+        org_wso2_carbon_registry_search_ui_jsi18n["session.timed.out"]
+        )
+        ;
+}
+
 
 function adjustPropertyInput(){
 	var opLeft = document.getElementById('opLeft');

@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry.task-feature</artifactId>
-        <version>4.5.1-SNAPSHOT</version>
+        <version>4.5.3-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -63,7 +63,7 @@
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.ntask:${carbon.commons.version}</importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.ntask:compatible:${carbon.commons.version}</importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

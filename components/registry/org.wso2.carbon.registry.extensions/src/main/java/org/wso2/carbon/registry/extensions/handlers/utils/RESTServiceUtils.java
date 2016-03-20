@@ -51,7 +51,7 @@ public class RESTServiceUtils {
 
 	private static final Log log = LogFactory.getLog(RESTServiceUtils.class);
 	private static final String OVERVIEW = "overview";
-	private static final String PROVIDER = "provider";
+	//private static final String PROVIDER = "provider";
 	private static final String NAME = "name";
 	private static final String CONTEXT = "context";
 	private static final String VERSION = "version";
@@ -95,7 +95,7 @@ public class RESTServiceUtils {
 
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
-		OMElement provider = factory.createOMElement(PROVIDER, namespace);
+		//OMElement provider = factory.createOMElement(PROVIDER, namespace);
 		OMElement name = factory.createOMElement(NAME, namespace);
 		OMElement context = factory.createOMElement(CONTEXT, namespace);
 		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
@@ -112,7 +112,7 @@ public class RESTServiceUtils {
 		//get api description.
 		description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
 		//get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
-		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+		//provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 		endpoint.setText(endpointURL);
 
 		if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
@@ -124,7 +124,7 @@ public class RESTServiceUtils {
 			uriTemplates = createURITemplateFromSwagger12(resourceObjects);
 		}
 
-		overview.addChild(provider);
+		//overview.addChild(provider);
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);
@@ -170,7 +170,7 @@ public class RESTServiceUtils {
 
         OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
         OMElement overview = factory.createOMElement(OVERVIEW, namespace);
-        OMElement provider = factory.createOMElement(PROVIDER, namespace);
+        //OMElement provider = factory.createOMElement(PROVIDER, namespace);
         OMElement name = factory.createOMElement(NAME, namespace);
         OMElement context = factory.createOMElement(CONTEXT, namespace);
         OMElement apiVersion = factory.createOMElement(VERSION, namespace);
@@ -187,7 +187,7 @@ public class RESTServiceUtils {
         //get api description.
         description.setText(getChildElementText(infoObject, SwaggerConstants.DESCRIPTION));
         //get api provider. (Current logged in user) : Alternative - CurrentSession.getUser();
-        provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+        //provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
         endpoint.setText(endpointURL);
 
         if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
@@ -199,7 +199,7 @@ public class RESTServiceUtils {
             uriTemplates = createURITemplateFromSwagger12(resourceObjects);
         }
 
-        overview.addChild(provider);
+        //overview.addChild(provider);
         overview.addChild(name);
         overview.addChild(context);
         overview.addChild(apiVersion);
@@ -237,7 +237,7 @@ public class RESTServiceUtils {
 		}
 		OMElement data = factory.createOMElement(CommonConstants.SERVICE_ELEMENT_ROOT, namespace);
 		OMElement overview = factory.createOMElement(OVERVIEW, namespace);
-		OMElement provider = factory.createOMElement(PROVIDER, namespace);
+		//OMElement provider = factory.createOMElement(PROVIDER, namespace);
 		OMElement name = factory.createOMElement(NAME, namespace);
 		OMElement context = factory.createOMElement(CONTEXT, namespace);
 		OMElement apiVersion = factory.createOMElement(VERSION, namespace);
@@ -246,7 +246,7 @@ public class RESTServiceUtils {
 
 		List<OMElement> uriTemplates = null;
 
-		provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
+		//provider.setText(CarbonContext.getThreadLocalCarbonContext().getUsername());
 		String serviceName = wadlName.contains(".") ? wadlName.substring(0, wadlName.lastIndexOf(".")) : wadlName;
 		name.setText(serviceName);
 		context.setText("/"+serviceName);
@@ -269,7 +269,7 @@ public class RESTServiceUtils {
 			log.warn("WADL does not contains any resource paths. ");
 		}
 
-		overview.addChild(provider);
+		//overview.addChild(provider);
 		overview.addChild(name);
 		overview.addChild(context);
 		overview.addChild(apiVersion);

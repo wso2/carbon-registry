@@ -40,11 +40,13 @@ import org.wso2.carbon.registry.search.services.utils.CustomSearchParameterPopul
 import org.wso2.carbon.registry.search.services.utils.SearchResultsBeanPopulator;
 import org.wso2.carbon.registry.search.services.utils.SearchUtils;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  This class is dedicated for resource search
+ * This class is dedicated for resource search
  */
 public class SearchService extends RegistryAbstractAdmin implements
         ISearchService<SearchResultsBean, AdvancedSearchResultsBean, CustomSearchParameterBean, MediaTypeValueList> {
@@ -76,6 +78,7 @@ public class SearchService extends RegistryAbstractAdmin implements
 
     /**
      * Method to get Advance search result bean
+     *
      * @param parameters CustomSearchParameterBean
      * @return AdvancedSearchResultsBean
      * @throws RegistryException
@@ -116,8 +119,9 @@ public class SearchService extends RegistryAbstractAdmin implements
         }
         advancedSearchResultsBean = new AdvancedSearchResultsBean();
         if (advanceSearchResourceData != null && advanceSearchResourceData.length > 0) {
-
+            advanceSearchResourceData = getSortedSearchResults(advanceSearchResourceData);
             advancedSearchResultsBean.setResourceDataList(advanceSearchResourceData);
+
             if (!isEmptyResourceDataList(advancedSearchResultsBean)) {
                 return getPaginatedResult(advancedSearchResultsBean);
             }
@@ -127,8 +131,124 @@ public class SearchService extends RegistryAbstractAdmin implements
         return advancedSearchResultsBean;
     }
 
+
+    /**
+     * Method to sort search results based on created date, author and rating.
+     *
+     * @param results   search results
+     * @return          sorted search results based on sort criteria
+     */
+    private ResourceData[] getSortedSearchResults(ResourceData[] results) {
+        MessageContext messageContext = MessageContext.getCurrentMessageContext();
+        if (messageContext != null && PaginationUtils.isPaginationHeadersExist(messageContext)) {
+
+            String createdDate = "created";
+            String author = "author";
+            String rating = "rating";
+            try {
+                PaginationContext paginationContext = PaginationUtils.initPaginationContext(messageContext);
+
+                String sortOrder = paginationContext.getSortOrder();
+                String sortBy = paginationContext.getSortBy();
+                if (sortBy != null && sortOrder != null) {
+                    // Sort by created date
+                    if (createdDate.equals(sortBy)) {
+                        sortReultsOnCreatedDate(results, sortOrder);
+                    }
+                    // Sort by author
+                    else if (author.equals(sortBy)) {
+                        sortResultsOnAuthor(results, sortOrder);
+                    }
+                    // Sort by average rating
+                    else if (rating.equals(sortBy)) {
+                        sortResultsOnrating(results, sortOrder);
+                    }
+                }
+
+            } finally {
+                PaginationContext.destroy();
+            }
+            return results;
+        } else {
+            return results;
+        }
+    }
+
+
+    /**
+     * Method to sort search results based on created date.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on created date
+     */
+    private ResourceData[] sortReultsOnCreatedDate(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                if (sortCriteria.equals(sortOrder)) {
+                    return o1.getCreatedOn().compareTo(o2.getCreatedOn());
+                } else {
+                    return o2.getCreatedOn().compareTo(o1.getCreatedOn());
+                }
+            }
+        });
+
+        return results;
+    }
+
+
+    /**
+     * Method to sort search results based on author.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on author
+     */
+    private ResourceData[] sortResultsOnAuthor(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                if (sortCriteria.equals(sortOrder)) {
+                    return o1.getAuthorUserName().compareTo(o2.getAuthorUserName());
+                } else {
+                    return o2.getAuthorUserName().compareTo(o1.getAuthorUserName());
+                }
+            }
+        });
+        return results;
+    }
+
+
+    /**
+     * Method to sort search results based on average rating.
+     *
+     * @param results   search results
+     * @param sortOrder ascending or descending
+     * @return          sorted search results based on average rating
+     */
+    private ResourceData[] sortResultsOnrating(ResourceData[] results, final String sortOrder) {
+        final String sortCriteria = "ASC";
+        Arrays.sort(results, new Comparator<ResourceData>() {
+            @Override
+            public int compare(ResourceData o1, ResourceData o2) {
+                Float rating1 = Float.valueOf(o1.getAverageRating());
+                Float rating2 = Float.valueOf(o2.getAverageRating());
+                if (sortCriteria.equals(sortOrder)) {
+                    return rating1.compareTo(rating2);
+                } else {
+                    return rating2.compareTo(rating1);
+                }
+            }
+        });
+        return results;
+    }
+
     /**
      * Method to check whether the result set is empty
+     *
      * @param resultsBean AdvancedSearchResultsBean
      * @return boolean value of result empty or not
      */
@@ -147,6 +267,7 @@ public class SearchService extends RegistryAbstractAdmin implements
 
     /**
      * Method to get the advance search attribute validation error message
+     *
      * @param searchParameterValues search parameter values
      * @return validation error message
      */
@@ -199,6 +320,7 @@ public class SearchService extends RegistryAbstractAdmin implements
 
     /**
      * Method to get the advance search attribute Map
+     *
      * @param searchParameterValues search parameter array
      * @return attribute map
      */
@@ -293,6 +415,7 @@ public class SearchService extends RegistryAbstractAdmin implements
 
     /**
      * Method to get the paginated result for advance search
+     *
      * @param advancedSearchResultsBean AdvancedSearchResultsBean
      * @return paginated result
      */
@@ -309,6 +432,7 @@ public class SearchService extends RegistryAbstractAdmin implements
 
                 int start = paginationContext.getStart();
                 int count = paginationContext.getCount();
+
 
                 int startIndex;
                 if (start == 1) {

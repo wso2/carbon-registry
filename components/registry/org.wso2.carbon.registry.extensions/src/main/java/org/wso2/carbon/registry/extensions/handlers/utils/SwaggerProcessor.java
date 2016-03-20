@@ -43,6 +43,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,12 +135,15 @@ public class SwaggerProcessor {
 		 */
 		if (restServiceElement != null) {
 			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
-			String endpointPath =
-					RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
 			registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 			registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
-			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
-			registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
+
+            if(endpointUrl != null) {
+                String endpointPath = RESTServiceUtils
+                        .addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
+                registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
+                registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
+            }
 		} else {
 			log.warn("Service content is null. Cannot create the REST Service artifact.");
 		}
@@ -299,10 +303,27 @@ public class SwaggerProcessor {
 			String transport = (transports != null) ? transports.get(0).getAsString() + "://" : DEFAULT_TRANSPORT;
 			JsonElement hostElement = swaggerObject.get(SwaggerConstants.HOST);
 			String host = (hostElement != null) ? hostElement.getAsString() : null;
-			if (host == null) {
-				log.warn("Endpoint url is not specified in the swagger document. Endpoint creation might fail. ");
-				return;
-			}
+            if (host == null) {
+                log.warn("Endpoint(host) url is not specified in the swagger document. "
+                        + "The host serving the documentation is to be used(including the port) as endpoint host");
+
+                if(requestContext.getSourceURL() != null) {
+                    URL sourceURL = null;
+                    try {
+                        sourceURL = new URL(requestContext.getSourceURL());
+                    } catch (MalformedURLException e) {
+                        throw new RegistryException("Error in parsing the source URL. ", e);
+                    }
+                    host = sourceURL.getAuthority();
+                }
+            }
+
+            if (host == null) {
+                log.warn("Can't derive the endpoint(host) url when uploading swagger from file. "
+                        + "Endpoint creation might fail. ");
+                return;
+            }
+
 			JsonElement basePathElement = swaggerObject.get(SwaggerConstants.BASE_PATH);
 			String basePath = (basePathElement != null) ? basePathElement.getAsString() : DEFAULT_BASE_PATH;
 

@@ -16,7 +16,7 @@
  ! limitations under the License.
  !-->
 <serviceGroup>
-    <service name="EventBrokerService" scope="transportsession">
+    <service name="RegistryEventBrokerService" scope="transportsession">
 
         <transports>
             <transport>https</transport>
