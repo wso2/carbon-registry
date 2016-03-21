@@ -158,7 +158,7 @@ public class XSDMediaTypeHandler extends Handler {
                     }
                 } catch (Exception e) {
                     // Since SchemaValidator.validate method is throwing Exception need to catch it here
-                    throw new RegistryException("Exception occurred while validating the schema", e);
+                    throw new RegistryException("Exception occurred while validating the schema " + sourceURL, e);
                 }
 
                 savedName = processSchemaImport(requestContext, resourcePath, validationInfo);
@@ -173,6 +173,7 @@ public class XSDMediaTypeHandler extends Handler {
                     try {
                         InputStream in = new ByteArrayInputStream((byte[]) resourceContent);
                         if (!disableSchemaValidation) {
+                            // PublicId, SystemId, BaseSystemId and Encoding set to null.
                             validationInfo = SchemaValidator.
                                     validate(new XMLInputSource(null, null, null, in, null));
                         }

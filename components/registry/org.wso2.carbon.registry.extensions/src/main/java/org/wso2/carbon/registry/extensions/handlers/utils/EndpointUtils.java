@@ -111,18 +111,19 @@ public class EndpointUtils {
             return;
         }
         String endpointURL = null;
-        Resource serviceResource = registry.get(oldWSDL);
-        Association[] associations = registry.getAssociations(oldWSDL, CommonConstants.DEPENDS);
-        for (Association association: associations) {
-            String targetPath = association.getDestinationPath();
-            if (registry.resourceExists(targetPath)) {
-                Resource targetResource = registry.get(targetPath);
-                if (CommonConstants.ENDPOINT_MEDIA_TYPE.equals(targetResource.getMediaType())) {
-                    byte[] sourceContent = (byte[]) targetResource.getContent();
-                    if (sourceContent == null) {
-                       continue;
+        if (registry.resourceExists(oldWSDL)){
+            Association[] associations = registry.getAssociations(oldWSDL, CommonConstants.DEPENDS);
+            for (Association association: associations) {
+                String targetPath = association.getDestinationPath();
+                if (registry.resourceExists(targetPath)) {
+                    Resource targetResource = registry.get(targetPath);
+                    if (CommonConstants.ENDPOINT_MEDIA_TYPE.equals(targetResource.getMediaType())) {
+                        byte[] sourceContent = (byte[]) targetResource.getContent();
+                        if (sourceContent == null) {
+                            continue;
+                        }
+                        endpointURL = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                     }
-                    endpointURL = EndpointUtils.deriveEndpointFromContent(RegistryUtils.decodeBytes(sourceContent));
                 }
             }
         }
@@ -215,7 +216,6 @@ public class EndpointUtils {
             wsdlElement = buildOMElement(RegistryUtils.decodeBytes(wsdlContentBytes));
         } catch (Exception e) {
             String msg = "Error in building the wsdl element for path: " + wsdlPath + ".";
-            log.error(msg, e);
             throw new RegistryException(msg, e);
         }
 

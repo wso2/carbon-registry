@@ -455,7 +455,6 @@ public class WSDLMediaTypeHandler extends Handler {
                 } catch (IOException e) {
                     String msg = "An error occurred while uploading WSDL file or " +
                             "deleting the temporary files from local file system.";
-                    log.error(msg, e);
                     throw new RegistryException(msg, e);
                 }
             }
