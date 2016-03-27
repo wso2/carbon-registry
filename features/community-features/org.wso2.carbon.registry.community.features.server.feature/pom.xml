@@ -70,7 +70,7 @@
                                 <resource>
                                     <directory>resources</directory>
                                     <includes>
-                                        <include>conf/event-broker.xml</include>
+                                        <include>conf/registry-event-broker.xml</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>
