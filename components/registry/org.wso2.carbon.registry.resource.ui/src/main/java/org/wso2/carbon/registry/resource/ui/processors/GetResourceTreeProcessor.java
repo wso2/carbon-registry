@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.resource.ui.processors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.wso2.carbon.registry.common.ui.UIException;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -57,7 +58,7 @@ public class GetResourceTreeProcessor {
             throw new UIException(msg, e);
         }
 
-        String textBoxId = request.getParameter("textBoxId");
+        String textBoxId = Encode.forJavaScript(request.getParameter("textBoxId"));
         try {
             ResourceTreeData resourceTreeData = new ResourceTreeData();
             fillSubResourceTree(resourcePath, resourceTreeData, client,textBoxId, parentId,

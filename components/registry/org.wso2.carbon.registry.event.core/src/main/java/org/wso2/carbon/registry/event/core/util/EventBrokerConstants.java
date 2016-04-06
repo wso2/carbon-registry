@@ -18,7 +18,7 @@ package org.wso2.carbon.registry.event.core.util;
 
 public interface EventBrokerConstants {
 
-    String EB_CONF = "event-broker.xml";
+    String EB_CONF = "registry-event-broker.xml";
 
     String EB_CONF_NAMESPACE = "http://wso2.org/carbon/event/broker";
     String EB_CONF_ELE_ROOT = "eventBrokerConfig";

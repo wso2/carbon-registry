@@ -18,12 +18,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.GetResourceTreeProcessor" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+
 <%
     String errorMessage = null;
     String resourceTree = null;
 
     String path = request.getParameter("path");
-    String parentId = request.getParameter("parentId");
+    String parentId = Encode.forJavaScript(request.getParameter("parentId"));
     try {
         resourceTree = GetResourceTreeProcessor.process(request, response, config, path, parentId);
         if (resourceTree == null) {
