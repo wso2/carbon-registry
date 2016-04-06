@@ -17,6 +17,7 @@
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.RenameResourceProcessor" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     try {
         RenameResourceProcessor.process(request, response, config);
@@ -32,7 +33,7 @@
         // out.write("Failed to rename " + type + " " + oldResourcePath + " To " + newName);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("<%=Encode.forHtml(e.getMessage())%>");
 </script>
 <%
 

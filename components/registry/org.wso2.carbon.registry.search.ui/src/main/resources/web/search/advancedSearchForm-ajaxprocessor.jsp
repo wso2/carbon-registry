@@ -16,6 +16,7 @@
 ~ under the License.
 -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.search.ui.clients.SearchServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.search.stub.beans.xsd.CustomSearchParameterBean" %>
@@ -195,7 +196,7 @@
             response.setStatus(500);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("<%=Encode.forHtml(e.getMessage())%>");
 </script>
 <%
             return;
