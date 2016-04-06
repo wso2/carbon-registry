@@ -22,6 +22,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ResourceTreeEntryBean" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <jsp:include page="../dialog/display_messages.jsp"/>
 
@@ -57,7 +58,7 @@
     if( errorMsg != null) {
 %>
        <script type="text/javascript" >
-            CARBON.showErrorDialog("<%=errorMsg %>", function(){
+            CARBON.showErrorDialog("<%=Encode.forHtml(errorMsg) %>", function(){
                window.history.back();
                return false;
             });

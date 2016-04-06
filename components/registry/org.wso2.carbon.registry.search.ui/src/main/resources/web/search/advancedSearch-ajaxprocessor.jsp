@@ -16,9 +16,10 @@
 ~ under the License.
 -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
-
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIConstants" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
@@ -64,7 +65,7 @@
         response.setStatus(500);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("<%=Encode.forHtml(e.getMessage())%>");
 </script>
 
 

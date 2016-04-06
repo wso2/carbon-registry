@@ -19,6 +19,7 @@
 <%@ page import="org.wso2.carbon.registry.properties.ui.clients.PropertiesServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.core.exceptions.RegistryException" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     PropertiesServiceClient client = new PropertiesServiceClient(config, session);
 
@@ -28,7 +29,7 @@
         response.setStatus(500);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("<%=Encode.forHtml(e.getMessage())%>");
 </script>
 <%
         return;
