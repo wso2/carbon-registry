@@ -20,6 +20,7 @@
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 <%@ page import="org.wso2.carbon.registry.search.ui.clients.SearchServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 
 <%
@@ -31,7 +32,7 @@
         response.setStatus(500);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("<%=Encode.forHtml(e.getMessage())%>");
 </script>
 <%
         return;
