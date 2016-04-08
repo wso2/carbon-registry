@@ -186,6 +186,8 @@
    <field name="contentOnly" type="text_en" indexed="true" stored="true"/>
    
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
+
+    <field name="allowedRoles" type="string" indexed="true" stored="false" multiValued="true"/>
    <!-- #########################################3 -->
    <!--
      Some fields such as popularity and manu_exact could be modified to

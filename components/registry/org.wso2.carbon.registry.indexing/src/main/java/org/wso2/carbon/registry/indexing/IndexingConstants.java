@@ -83,6 +83,7 @@ public final class IndexingConstants {
     public static final String FIELD_RIGHT_PROPERTY_VAL = "rightPropertyValue";
     public static final String FIELD_RIGHT_OP = "rightOp";
     public static final String FIELD_LEFT_OP = "leftOp";
+    public static final String FIELD_ALLOWED_ROLES = "allowedRoles";
 
     //Constants for facet search
     public static final String FACET_FIELD_NAME = "facet.field";
