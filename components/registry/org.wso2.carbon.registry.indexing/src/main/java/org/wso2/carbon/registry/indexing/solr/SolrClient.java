@@ -319,6 +319,7 @@ public class SolrClient {
                         .equals(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS) || fieldList.getKey()
                         .equals(IndexingConstants.FIELD_ASSOCIATION_TYPES) || fieldList.getKey()
                         .equals(IndexingConstants.FIELD_COMMENTS) || fieldList.getKey()
+                        .equals(IndexingConstants.FIELD_TAXONOMY) || fieldList.getKey()
                         .equals(IndexingConstants.FIELD_TAGS)) {
                     if (fieldList.getKey().equals(IndexingConstants.FIELD_PROPERTY_VALUES)) {
                         for (String value : fieldList.getValue()) {
@@ -671,6 +672,7 @@ public class SolrClient {
         if (IndexingConstants.FIELD_TAGS.equals(sortBy) ||
                 IndexingConstants.FIELD_COMMENTS.equals(sortBy) ||
                 IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(sortBy) ||
+                IndexingConstants.FIELD_TAXONOMY.equals(sortBy) ||
                 IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(sortBy)) {
             log.error("Sorting in multivalued fields is not supported");
         } else if (IndexingConstants.FIELD_CREATED_DATE.equals(sortBy) ||
@@ -772,6 +774,7 @@ public class SolrClient {
         if (fieldName != null) {
             //set the field for the facet
             if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                    IndexingConstants.FIELD_TAXONOMY.equals(fieldName) ||
                     IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
                     IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
                     IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
@@ -827,6 +830,7 @@ public class SolrClient {
                 // Query for multivalued fields
                 if (field.getValue() != null && StringUtils.isNotEmpty(field.getValue())) {
                     if (field.getKey().equals(IndexingConstants.FIELD_TAGS) || field.getKey()
+                            .equals(IndexingConstants.FIELD_TAXONOMY) || field.getKey()
                             .equals(IndexingConstants.FIELD_COMMENTS) || field.getKey()
                             .equals(IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS) || field.getKey()
                             .equals(IndexingConstants.FIELD_ASSOCIATION_TYPES)) {
