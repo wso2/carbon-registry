@@ -90,7 +90,7 @@ public class SwaggerProcessor {
 	 * @param sourceUrl             source URL.
 	 * @throws RegistryException    If a failure occurs when adding the swagger to registry.
 	 */
-	public boolean processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
+	public String processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
 			throws RegistryException {
 		//create a collection if not exists.
 		createCollection(commonLocation);
@@ -117,7 +117,7 @@ public class SwaggerProcessor {
                 restServiceElement = (resourceObjects != null) ? RESTServiceUtils
                         .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects, swaggerResourcePath, documentVersion) : null;
             } else {
-                return false;
+                return null;
             }
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
@@ -126,7 +126,7 @@ public class SwaggerProcessor {
                 restServiceElement =
                         RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null, swaggerResourcePath, documentVersion);
             } else {
-                return false;
+                return null;
             }
 		}
 
@@ -150,7 +150,7 @@ public class SwaggerProcessor {
 
 		CommonUtil.closeOutputStream(swaggerContentStream);
 
-        return true;
+        return swaggerResourcePath;
 	}
 
 	/**
