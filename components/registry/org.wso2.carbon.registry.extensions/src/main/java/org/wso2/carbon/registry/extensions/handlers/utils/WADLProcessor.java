@@ -169,9 +169,11 @@ public class WADLProcessor {
             if (!skipValidation) {
                 File tempFile = null;
                 BufferedWriter bufferedWriter = null;
+                FileWriter fileWriter = null;
                 try {
                     tempFile = File.createTempFile(wadlName, null);
-                    bufferedWriter = new BufferedWriter(new FileWriter(tempFile));
+                    fileWriter = new FileWriter(tempFile);
+                    bufferedWriter = new BufferedWriter(fileWriter);
                     bufferedWriter.write(wadlElement.toString());
                     bufferedWriter.flush();
                 } catch (IOException e) {
@@ -179,6 +181,14 @@ public class WADLProcessor {
                     log.error(msg, e);
                     throw new RegistryException(msg, e);
                 } finally {
+                    if (fileWriter != null){
+                        try {
+                            fileWriter.close();
+                        } catch (IOException e) {
+                            String msg = "Error occurred while closing "+ wadlName +" file writer";
+                            log.warn(msg, e);
+                        }
+                    }
                     if (bufferedWriter != null) {
                         try {
                             bufferedWriter.close();
@@ -267,10 +277,11 @@ public class WADLProcessor {
         resource.setMediaType(wadlMediaType);
         resource.setProperties(requestContext.getResource().getProperties());
 
-        ByteArrayOutputStream outputStream;
+        ByteArrayOutputStream outputStream = null;
+        InputStream inputStream = null;
         OMElement wadlElement;
         try {
-            InputStream inputStream = new URL(uri).openStream();
+            inputStream = new URL(uri).openStream();
 
             outputStream = new ByteArrayOutputStream();
             int nextChar;
@@ -285,6 +296,23 @@ public class WADLProcessor {
             //This exception is unexpected because the WADL already validated
             throw new RegistryException("Unexpected error occured " +
                     "while reading the WADL at" + uri, e);
+        } finally {
+            if(outputStream != null){
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    String msg = "Error while closing  outputStream";
+                    log.warn(msg);
+                }
+            }
+            if(inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    String msg = "Error while closing  inputStream";
+                    log.warn(msg);
+                }
+            }
         }
 
         String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
@@ -366,6 +394,19 @@ public class WADLProcessor {
                 new WadlAstBuilder.SchemaCallback() {
 
                     public void processSchema(InputSource is) {
+                        try {
+
+                        } finally {
+                            if (is != null && is.getByteStream() != null) {
+                                try {
+
+                                    is.getByteStream().close();
+                                } catch (IOException e) {
+                                    String msg = "Error while closing  InputSource";
+                                    log.warn(msg);
+                                }
+                            }
+                        }
                     }
 
                     public void processSchema(String uri, Element node) {
