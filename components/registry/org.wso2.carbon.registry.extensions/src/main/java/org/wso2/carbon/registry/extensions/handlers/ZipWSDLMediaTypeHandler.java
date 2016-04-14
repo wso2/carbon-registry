@@ -570,7 +570,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
      *
      * @throws RegistryException if the operation failed.
      */
-    protected boolean addSwaggerFromZip(RequestContext requestContext, String uri)
+    protected String addSwaggerFromZip(RequestContext requestContext, String uri)
             throws RegistryException {
         if (uri != null) {
             Resource local = requestContext.getRegistry().newResource();
@@ -601,10 +601,18 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                         getChrootedSwaggerLocation(requestContext.getRegistryContext()), uri);
             } catch (IOException e) {
                 throw new RegistryException("Swagger URI is invalid", e);
+            } finally {
+                if (inputStream != null){
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        log.warn("Error while deleting Swagger temp files");
+                    }
+                }
             }
 
         }
-        return false;
+        return null;
     }
 
     /**
@@ -1118,7 +1126,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
         }
 
         protected void doProcessing(RequestContext requestContext, String uri) throws RegistryException {
-            addSwaggerFromZip(requestContext, uri);
+            result = addSwaggerFromZip(requestContext, uri);
         }
     }
 }
