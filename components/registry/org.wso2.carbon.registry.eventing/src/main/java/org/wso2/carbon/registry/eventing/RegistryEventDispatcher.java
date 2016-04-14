@@ -36,10 +36,6 @@ import org.apache.axis2.transport.mail.MailConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.registry.event.core.Message;
-import org.wso2.carbon.registry.event.core.subscription.Subscription;
-import org.wso2.carbon.registry.event.ws.internal.notify.WSEventDispatcher;
-import org.wso2.carbon.registry.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.governance.notifications.worklist.stub.WorkListServiceStub;
 import org.wso2.carbon.registry.common.eventing.RegistryEvent;
 import org.wso2.carbon.registry.common.eventing.WorkListConfig;
@@ -47,6 +43,10 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.event.core.Message;
+import org.wso2.carbon.registry.event.core.subscription.Subscription;
+import org.wso2.carbon.registry.event.ws.internal.notify.WSEventDispatcher;
+import org.wso2.carbon.registry.event.ws.internal.util.EventingConstants;
 import org.wso2.carbon.registry.eventing.bean.TenantWorkListConfig;
 import org.wso2.carbon.registry.eventing.events.DispatchEvent;
 import org.wso2.carbon.registry.eventing.internal.EventingDataHolder;
@@ -65,8 +65,23 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.SimpleTimeZone;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class RegistryEventDispatcher extends WSEventDispatcher {
 
@@ -428,12 +443,21 @@ public class RegistryEventDispatcher extends WSEventDispatcher {
     }
 
     private void sendWorkListNotification(Message event, String endpoint, String username, byte[] password, String url)
-            throws RemoteException, UnsupportedEncodingException {
-        WorkListServiceStub stub = new WorkListServiceStub(configContext, url + "WorkListService");
-        ServiceClient client = stub._getServiceClient();
-        CarbonUtils.setBasicAccessSecurityHeaders(username, new String(password, "UTF-8"), client);
-        client.getOptions().setManageSession(true);
-        stub.addTask(endpoint.substring(7),event.getMessage().getFirstElement().getText(), 5);
+            throws RemoteException, UnsupportedEncodingException, RegistryException {
+        try {
+            WorkListServiceStub stub = new WorkListServiceStub(configContext, url + "WorkListService");
+            ServiceClient client = stub._getServiceClient();
+            CarbonUtils.setBasicAccessSecurityHeaders(username, new String(password, "UTF-8"), client);
+            client.getOptions().setManageSession(true);
+            stub.addTask(endpoint.substring(7),event.getMessage().getFirstElement().getText(), 5);
+        } catch (Exception ex) {
+            if (url.startsWith("local") && ex.getMessage().equals("The input stream for an incoming message is null.")) {
+                //ignore exception from the local transport since empty response
+            } else {
+                throw new RegistryException(ex.getMessage(), ex);
+            }
+        }
+
     }
 
     private TenantWorkListConfig getTenantWorkListConfig(UserRegistry registry){
