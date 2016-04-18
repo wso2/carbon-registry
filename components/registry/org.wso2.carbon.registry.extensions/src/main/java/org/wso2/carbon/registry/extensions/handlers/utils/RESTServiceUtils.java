@@ -340,13 +340,7 @@ public class RESTServiceUtils {
 		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
 
 		serviceResource.setUUID(resourceId);
-		String servicePath = getChrootedServiceLocation(requestContext.getRegistryContext()) +
-		                     CarbonContext.getThreadLocalCarbonContext().getUsername() +
-		                     RegistryConstants.PATH_SEPARATOR + apiName +
-		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
-		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
-
 		registry.put(pathExpression, serviceResource);
 
         String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
