@@ -306,8 +306,13 @@ public class RESTServiceUtils {
 		}
 
 		Registry registry = requestContext.getRegistry();
-		//Creating new resource.
-		Resource serviceResource = new ResourceImpl();
+		Resource serviceResource = requestContext.getResource();
+
+		if(serviceResource == null) {
+			serviceResource = new ResourceImpl();
+		}
+		//setting API media type.
+		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
