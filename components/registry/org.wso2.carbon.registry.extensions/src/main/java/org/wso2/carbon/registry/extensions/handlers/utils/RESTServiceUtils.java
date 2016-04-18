@@ -261,7 +261,7 @@ public class RESTServiceUtils {
 			String endpointUrl =
 					resourcesElement.getAttributeValue(new QName("base"));
 			endpoint.setText(endpointUrl);
-			if(endpointUrl != null) {
+			if(endpointUrl != null && endpointUrl.contains("://")) {
 				transports.setText(endpointUrl.substring(0, endpointUrl.indexOf("://")));
 			}
 			uriTemplates = createURITemplateFromWADL(resourcesElement);
