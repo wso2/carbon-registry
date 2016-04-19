@@ -163,13 +163,7 @@ public class SwaggerProcessor {
 				String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
 				registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 				registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
-
-				if (endpointUrl != null) {
-					String endpointPath = RESTServiceUtils
-							.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
-					registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
-					registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
-				}
+				saveEndpointElement(servicePath);
 			} else {
 				log.warn("Service content is null. Cannot create the REST Service artifact.");
 			}
@@ -178,6 +172,21 @@ public class SwaggerProcessor {
 		CommonUtil.closeOutputStream(swaggerContentStream);
 
 		return swaggerResourcePath;
+	}
+
+	/**
+	 * Save endpoint element to the registry.
+	 *
+	 * @param servicePath           service path.
+	 * @throws RegistryException    If fails to save the endpoint.
+     */
+	public void saveEndpointElement(String servicePath) throws RegistryException {
+		if (endpointUrl != null) {
+			String endpointPath = RESTServiceUtils
+					.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
+			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
+			registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
+		}
 	}
 
 	/**

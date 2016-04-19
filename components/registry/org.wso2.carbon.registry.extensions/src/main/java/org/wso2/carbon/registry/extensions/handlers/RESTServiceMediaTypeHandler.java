@@ -167,24 +167,27 @@ public class RESTServiceMediaTypeHandler extends Handler {
                 wadlUrl = wadlElement != null ? wadlElement.getText().trim() : null;
             }
 
+            //Process swagger url if available
             String swaggerPath = null, wadlPath = null;
+            SwaggerProcessor swaggerProcessor = null;
             if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
                 requestContext.setSourceURL(swaggerUrl);
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext, false);
+                swaggerProcessor = new SwaggerProcessor(requestContext, false);
                 inputStream = new URL(swaggerUrl).openStream();
-                swaggerPath = processor.processSwagger(inputStream,
+                swaggerPath = swaggerProcessor.processSwagger(inputStream,
                         getChrootedLocation(requestContext.getRegistryContext(), swaggerLocation), swaggerUrl);
                 swaggerElement.detach();
                 swaggerElement.setText(swaggerPath);
                 interfaceElement.addChild(swaggerElement);
-
             }
 
+            //Process WADL url if available
+            WADLProcessor wadlProcessor = null;
             if (wadlUrl != null && !(wadlUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
                 requestContext.setSourceURL(wadlUrl);
-                WADLProcessor processor = new WADLProcessor(requestContext);
-                processor.setCreateService(false);
-                wadlPath = processor.importWADLToRegistry(requestContext, null, true);
+                wadlProcessor = new WADLProcessor(requestContext);
+                wadlProcessor.setCreateService(false);
+                wadlPath = wadlProcessor.importWADLToRegistry(requestContext, null, true);
                 wadlElement.detach();
                 wadlElement.setText(wadlPath);
                 interfaceElement.addChild(wadlElement);
@@ -193,18 +196,20 @@ public class RESTServiceMediaTypeHandler extends Handler {
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
 
             if (swaggerPath != null) {
+                swaggerProcessor.saveEndpointElement(servicePath);
                 registry.addAssociation(servicePath, swaggerPath, CommonConstants.DEPENDS);
                 registry.addAssociation(swaggerPath, servicePath, CommonConstants.USED_BY);
             }
 
             if (wadlPath != null) {
+                wadlProcessor.saveEndpointelement(requestContext, servicePath, serviceVersion);
                 registry.addAssociation(servicePath, wadlPath, CommonConstants.DEPENDS);
                 registry.addAssociation(wadlPath, servicePath, CommonConstants.USED_BY);
             }
 
             requestContext.setProcessingComplete(true);
         } catch (IOException e) {
-            throw new RegistryException("The URL is incorrect.", e);//todo add url
+            throw new RegistryException("The URL is incorrect.", e);
         } finally {
             CommonUtil.releaseUpdateLock();
             CommonUtil.closeInputStream(inputStream);
@@ -222,5 +227,4 @@ public class RESTServiceMediaTypeHandler extends Handler {
         return RegistryUtils
                 .getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + resourceLocation);
     }
-
 }

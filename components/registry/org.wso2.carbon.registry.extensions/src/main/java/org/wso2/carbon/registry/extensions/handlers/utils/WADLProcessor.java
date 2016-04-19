@@ -79,6 +79,7 @@ public class WADLProcessor {
     private VersionRepository versionRepository;
     private boolean createService = true;
     private List<String> importedSchemas = new LinkedList<String>();
+    private OMElement wadlElement;
 
     public WADLProcessor(RequestContext requestContext) {
         registry = requestContext.getRegistry();
@@ -259,13 +260,13 @@ public class WADLProcessor {
         String wadlName = RegistryUtils.getResourceName(resourcePath.getPath());
         String version = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 
-        if(version == null){
+        if (version == null) {
             version = CommonConstants.WADL_VERSION_DEFAULT_VALUE;
             requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
         }
 
         String uri = requestContext.getSourceURL();
-        if(!skipValidation) {
+        if (!skipValidation) {
             validateWADL(uri);
         }
 
@@ -279,7 +280,6 @@ public class WADLProcessor {
 
         ByteArrayOutputStream outputStream = null;
         InputStream inputStream = null;
-        OMElement wadlElement;
         try {
             inputStream = new URL(uri).openStream();
 
@@ -297,7 +297,7 @@ public class WADLProcessor {
             throw new RegistryException("Unexpected error occured " +
                     "while reading the WADL at" + uri, e);
         } finally {
-            if(outputStream != null){
+            if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -305,7 +305,7 @@ public class WADLProcessor {
                     log.warn(msg);
                 }
             }
-            if(inputStream != null){
+            if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
@@ -316,27 +316,25 @@ public class WADLProcessor {
         }
 
         String wadlNamespace = wadlElement.getNamespace().getNamespaceURI();
-        String namespaceSegment = CommonUtil.
-                derivePathFragmentFromNamespace(wadlNamespace).replace("//", "/");
 
         OMElement grammarsElement = wadlElement.
                 getFirstChildWithName(new QName(wadlNamespace, "grammars"));
         String wadlBaseUri = uri.substring(0, uri.lastIndexOf("/") + 1);
-        if(grammarsElement != null){
+        if (grammarsElement != null) {
             grammarsElement.detach();
             wadlElement.addChild(resolveImports(grammarsElement, wadlBaseUri, version,
-                                                requestContext.getResource().getProperties()));
+                    requestContext.getResource().getProperties()));
         }
 
         String actualPath;
-//        if(commonLocation != null){
-//            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
-//        } else {
-//            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
-//                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
-            actualPath = getWadlLocation(requestContext,wadlElement,wadlName,version);
-//        }
-        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null){
+        //        if(commonLocation != null){
+        //            actualPath = commonLocation + namespaceSegment + version + "/" + wadlName;
+        //        } else {
+        //            actualPath = RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH +
+        //                    commonWADLLocation + namespaceSegment  + version + "/" + wadlName;
+        actualPath = getWadlLocation(requestContext, wadlElement, wadlName, version);
+        //        }
+        if (resource.getProperty(CommonConstants.SOURCE_PROPERTY) == null) {
             resource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
         }
 
@@ -344,21 +342,31 @@ public class WADLProcessor {
         requestContext.setResourcePath(new ResourcePath(actualPath));
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
-        if(createService){
-	        OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
-	                                                                              RegistryUtils.getRelativePath(
-			                                                                              requestContext
-					                                                                              .getRegistryContext(),
-			                                                                              actualPath));
+        if (createService) {
+            OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
+                    RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
-	        addDependency(servicePath, actualPath);
-			String endpointPath = createEndpointElement(requestContext, wadlElement, version);
-	        if(endpointPath != null) {
-		        addDependency(servicePath, endpointPath);
-	        }
+            addDependency(servicePath, actualPath);
+            saveEndpointelement(requestContext, servicePath, version);
         }
 
         return actualPath;
+    }
+
+    /**
+     * Save endpoint element to the registry.
+     *
+     * @param requestContext        information about the current request.
+     * @param servicePath           service path.
+     * @param version               service version.
+     * @throws RegistryException    If fails to save the endpoint.
+     */
+    public void saveEndpointelement(RequestContext requestContext, String servicePath, String version)
+            throws RegistryException {
+        String endpointPath = createEndpointElement(requestContext, wadlElement, version);
+        if (endpointPath != null) {
+            addDependency(servicePath, endpointPath);
+        }
     }
 
     private OMElement resolveImports(OMElement grammarsElement,
