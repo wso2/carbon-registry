@@ -17,6 +17,7 @@
 
 package org.wso2.carbon.registry.extensions.handlers;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
@@ -149,17 +150,17 @@ public class RESTServiceMediaTypeHandler extends Handler {
 
         InputStream inputStream = null;
         try {
-            String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
-
             //Retrieve WADL or Swagger url if available.
             String swaggerUrl = null, wadlUrl = null;
             OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
                     new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
 
-            if(interfaceElement != null) {
-                OMElement swaggerElement = interfaceElement
+            OMElement swaggerElement = null, wadlElement = null;
+            if (interfaceElement != null) {
+                interfaceElement.detach();
+                swaggerElement = interfaceElement
                         .getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "swagger", ""));
-                OMElement wadlElement = interfaceElement
+                wadlElement = interfaceElement
                         .getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "wadl", ""));
 
                 swaggerUrl = swaggerElement != null ? swaggerElement.getText().trim() : null;
@@ -169,11 +170,13 @@ public class RESTServiceMediaTypeHandler extends Handler {
             String swaggerPath = null, wadlPath = null;
             if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
                 requestContext.setSourceURL(swaggerUrl);
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext);
-                processor.setCreateRestServiceArtifact(false);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext, false);
                 inputStream = new URL(swaggerUrl).openStream();
                 swaggerPath = processor.processSwagger(inputStream,
                         getChrootedLocation(requestContext.getRegistryContext(), swaggerLocation), swaggerUrl);
+                swaggerElement.detach();
+                swaggerElement.setText(swaggerPath);
+                interfaceElement.addChild(swaggerElement);
 
             }
 
@@ -181,8 +184,13 @@ public class RESTServiceMediaTypeHandler extends Handler {
                 requestContext.setSourceURL(wadlUrl);
                 WADLProcessor processor = new WADLProcessor(requestContext);
                 processor.setCreateService(false);
-                wadlPath = processor.importWADLToRegistry(requestContext, servicePath, true);
+                wadlPath = processor.importWADLToRegistry(requestContext, null, true);
+                wadlElement.detach();
+                wadlElement.setText(wadlPath);
+                interfaceElement.addChild(wadlElement);
             }
+            serviceInfoElement.addChild(interfaceElement);
+            String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
 
             if (swaggerPath != null) {
                 registry.addAssociation(servicePath, swaggerPath, CommonConstants.DEPENDS);
@@ -196,12 +204,11 @@ public class RESTServiceMediaTypeHandler extends Handler {
 
             requestContext.setProcessingComplete(true);
         } catch (IOException e) {
-            throw new RegistryException("The URL is incorrect.", e);
+            throw new RegistryException("The URL is incorrect.", e);//todo add url
         } finally {
             CommonUtil.releaseUpdateLock();
             CommonUtil.closeInputStream(inputStream);
         }
-
     }
 
     /**
