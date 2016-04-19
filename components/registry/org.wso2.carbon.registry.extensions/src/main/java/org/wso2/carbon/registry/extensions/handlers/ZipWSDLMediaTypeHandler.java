@@ -593,7 +593,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + swaggerName;
             requestContext.setResourcePath(new ResourcePath(path));
-            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext);
+            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext, true);
             InputStream inputStream = null;
             try {
                 inputStream = new URL(uri).openStream();

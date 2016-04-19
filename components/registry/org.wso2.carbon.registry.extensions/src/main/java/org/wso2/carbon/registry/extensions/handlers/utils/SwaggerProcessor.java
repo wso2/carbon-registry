@@ -77,10 +77,11 @@ public class SwaggerProcessor {
 	private String endpointLocation;
 	private boolean createRestServiceArtifact;
 
-	public SwaggerProcessor(RequestContext requestContext) {
+	public SwaggerProcessor(RequestContext requestContext, boolean createRestServiceArtifact) {
 		this.parser = new JsonParser();
 		this.requestContext = requestContext;
 		this.registry = requestContext.getRegistry();
+		this.createRestServiceArtifact = createRestServiceArtifact;
 	}
 
 	/**
