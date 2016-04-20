@@ -856,16 +856,16 @@ public class SolrClient {
                         rightOp = field.getValue();
                     } else if (IndexingConstants.FIELD_CREATED_BEFORE.equals(field.getKey())) {
                         // Get the value of created before date
-                        createdBefore = field.getValue();
+                        createdBefore = removeSpecialCharacters(field.getValue());
                     } else if (IndexingConstants.FIELD_CREATED_AFTER.equals(field.getKey())) {
                         // Get the value of created after date
-                        createdAfter = field.getValue();
+                        createdAfter = removeSpecialCharacters(field.getValue());
                     } else if (IndexingConstants.FIELD_UPDATED_BEFORE.equals(field.getKey())) {
                         // Get the value of update before date
-                        updatedBefore = field.getValue();
+                        updatedBefore = removeSpecialCharacters(field.getValue());
                     } else if (IndexingConstants.FIELD_UPDATED_AFTER.equals(field.getKey())) {
                         // Get the value of updated after date
-                        updatedAfter = field.getValue();
+                        updatedAfter = removeSpecialCharacters(field.getValue());
                     } else if (IndexingConstants.FIELD_RESOURCE_NAME.equals(field.getKey())) {
                         // Set the suffix value of the key
                         resourceName = field.getValue();
@@ -1241,6 +1241,16 @@ public class SolrClient {
      */
     private static String getLoggedInUserName(){
         return PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+    }
+
+    private String removeSpecialCharacters(String dateValue){
+        if (dateValue.startsWith("*")){
+            dateValue =  dateValue.substring(1,dateValue.length());
+        }
+        if(dateValue.endsWith("*")){
+            dateValue = dateValue.substring(0,dateValue.length()-1);
+        }
+        return dateValue;
     }
 
 }
