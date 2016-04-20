@@ -69,6 +69,7 @@ import java.util.UUID;
 public class WADLProcessor {
 
     private static final Log log = LogFactory.getLog(WADLProcessor.class);
+    private static final String WADL_EXTENSION = ".wadl";
     private String wadlMediaType = "application/wadl+xml";
     private String xsdMediaType = "application/xsd+xml";
     private static String commonWADLLocation = "/wadls/";
@@ -230,11 +231,7 @@ public class WADLProcessor {
 	        String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
 	        registry.addAssociation(servicePath, actualPath, CommonConstants.DEPENDS);
 	        registry.addAssociation(actualPath, servicePath, CommonConstants.USED_BY);
-	        String endpointPath = createEndpointElement(requestContext, wadlElement, version);
-	        if(endpointPath != null) {
-		        registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
-		        registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
-	        }
+	        saveEndpointElement(requestContext, servicePath, version);
         }
 
         return resource.getPath();
@@ -258,6 +255,11 @@ public class WADLProcessor {
 
         ResourcePath resourcePath = requestContext.getResourcePath();
         String wadlName = RegistryUtils.getResourceName(resourcePath.getPath());
+
+        if(!wadlName.endsWith(WADL_EXTENSION)) {
+            wadlName += WADL_EXTENSION;
+        }
+
         String version = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 
         if (version == null) {
@@ -347,7 +349,7 @@ public class WADLProcessor {
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
             addDependency(servicePath, actualPath);
-            saveEndpointelement(requestContext, servicePath, version);
+            saveEndpointElement(requestContext, servicePath, version);
         }
 
         return actualPath;
@@ -361,9 +363,9 @@ public class WADLProcessor {
      * @param version               service version.
      * @throws RegistryException    If fails to save the endpoint.
      */
-    public void saveEndpointelement(RequestContext requestContext, String servicePath, String version)
+    public void saveEndpointElement(RequestContext requestContext, String servicePath, String version)
             throws RegistryException {
-        String endpointPath = createEndpointElement(requestContext, wadlElement, version);
+        String endpointPath = createEndpointElement(requestContext, wadlElement, version, servicePath);
         if (endpointPath != null) {
             addDependency(servicePath, endpointPath);
         }
@@ -496,36 +498,37 @@ public class WADLProcessor {
 	 * @return                      Endpoint Path.
 	 * @throws RegistryException    If fails to create endpoint element.
 	 */
-	private String createEndpointElement(RequestContext requestContext, OMElement wadlElement, String version)
-			throws RegistryException {
-		OMNamespace wadlNamespace = wadlElement.getNamespace();
-		String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
-		String wadlNamespacePrefix = wadlNamespace.getPrefix();
-		OMElement resourcesElement =
-				wadlElement.getFirstChildWithName(new QName(wadlNamespaceURI, "resources", wadlNamespacePrefix));
-		if (resourcesElement != null) {
-			String endpointUrl = resourcesElement.getAttributeValue(new QName("base"));
-			if (!StringUtils.isBlank(endpointUrl)) {
-				String endpointPath = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
-				String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
-				String endpointContent =
-						EndpointUtils.getEndpointContentWithOverview(endpointUrl, endpointPath, endpointName, version);
-				OMElement endpointElement;
-				try {
-					endpointElement = AXIOMUtil.stringToOM(endpointContent);
-				} catch (XMLStreamException e) {
-					throw new RegistryException("Error in creating the endpoint element. ", e);
-				}
+    private String createEndpointElement(RequestContext requestContext, OMElement wadlElement, String version,
+            String servicePath) throws RegistryException {
+        OMNamespace wadlNamespace = wadlElement.getNamespace();
+        String wadlNamespaceURI = wadlNamespace.getNamespaceURI();
+        String wadlNamespacePrefix = wadlNamespace.getPrefix();
+        OMElement resourcesElement = wadlElement
+                .getFirstChildWithName(new QName(wadlNamespaceURI, "resources", wadlNamespacePrefix));
+        if (resourcesElement != null) {
+            String endpointUrl = resourcesElement.getAttributeValue(new QName("base"));
+            if (endpointUrl != null) {
+                String endpointPath = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
+                String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
+                String endpointContent = EndpointUtils
+                        .getEndpointContentWithOverview(endpointUrl, endpointPath, endpointName, version);
+                OMElement endpointElement;
+                EndpointUtils.addEndpointToService(requestContext.getRegistry(), servicePath, endpointUrl, "");
+                try {
+                    endpointElement = AXIOMUtil.stringToOM(endpointContent);
+                } catch (XMLStreamException e) {
+                    throw new RegistryException("Error in creating the endpoint element. ", e);
+                }
 
-				return RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointPath);
-			} else {
-				log.warn("Base path does not exist. endpoint creation may fail. ");
-			}
-		} else {
-			log.warn("Resources element is null. ");
-		}
-		return null;
-	}
+                return RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointPath);
+            } else {
+                log.warn("Base path does not exist. endpoint creation may fail. ");
+            }
+        } else {
+            log.warn("Resources element is null. ");
+        }
+        return null;
+    }
 
     private void addImportAssociations(String path) throws RegistryException {
         for (String schema : importedSchemas) {

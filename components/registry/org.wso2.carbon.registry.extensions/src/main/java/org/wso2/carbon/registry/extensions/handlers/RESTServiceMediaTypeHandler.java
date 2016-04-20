@@ -17,7 +17,6 @@
 
 package org.wso2.carbon.registry.extensions.handlers;
 
-import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
@@ -46,6 +45,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 
 public class RESTServiceMediaTypeHandler extends Handler {
     private static final Log log = LogFactory.getLog(RESTServiceMediaTypeHandler.class);
@@ -152,13 +152,13 @@ public class RESTServiceMediaTypeHandler extends Handler {
         InputStream inputStream = null;
         try {
             //Retrieve WADL or Swagger url if available.
-            String swaggerUrl = null, wadlUrl = null;
+            String swaggerUrl, wadlUrl;
             SwaggerProcessor swaggerProcessor = null;
             WADLProcessor wadlProcessor = null;
             OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
                     new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
 
-            OMElement swaggerElement = null, wadlElement = null;
+            OMElement swaggerElement, wadlElement;
             String swaggerPath = null, wadlPath = null;
             if (interfaceElement != null) {
                 interfaceElement.detach();
@@ -204,7 +204,7 @@ public class RESTServiceMediaTypeHandler extends Handler {
             }
 
             if (wadlPath != null) {
-                wadlProcessor.saveEndpointelement(requestContext, servicePath, serviceVersion);
+                wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
                 registry.addAssociation(servicePath, wadlPath, CommonConstants.DEPENDS);
                 registry.addAssociation(wadlPath, servicePath, CommonConstants.USED_BY);
             }

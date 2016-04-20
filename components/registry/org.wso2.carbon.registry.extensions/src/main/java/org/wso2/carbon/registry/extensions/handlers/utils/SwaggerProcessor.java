@@ -182,6 +182,7 @@ public class SwaggerProcessor {
      */
 	public void saveEndpointElement(String servicePath) throws RegistryException {
 		if (endpointUrl != null) {
+			EndpointUtils.addEndpointToService(requestContext.getRegistry(), servicePath, endpointUrl, "");
 			String endpointPath = RESTServiceUtils
 					.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
 			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);

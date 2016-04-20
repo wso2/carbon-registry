@@ -343,6 +343,9 @@ public class RESTServiceUtils {
 		//saving the api resource to repository.
 		registry.put(pathExpression, serviceResource);
 
+		EndpointUtils.saveEndpointsFromServices(requestContext, pathExpression, data, registry,
+				requestContext.getSystemRegistry());
+
         String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
 		CommonUtil.applyDefaultLifeCycle(registry, serviceResource, pathExpression, defaultLifeCycle);
         if (log.isDebugEnabled()){
