@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.RESTServiceUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.handlers.utils.WADLProcessor;
@@ -152,10 +153,13 @@ public class RESTServiceMediaTypeHandler extends Handler {
         try {
             //Retrieve WADL or Swagger url if available.
             String swaggerUrl = null, wadlUrl = null;
+            SwaggerProcessor swaggerProcessor = null;
+            WADLProcessor wadlProcessor = null;
             OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
                     new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
 
             OMElement swaggerElement = null, wadlElement = null;
+            String swaggerPath = null, wadlPath = null;
             if (interfaceElement != null) {
                 interfaceElement.detach();
                 swaggerElement = interfaceElement
@@ -165,34 +169,32 @@ public class RESTServiceMediaTypeHandler extends Handler {
 
                 swaggerUrl = swaggerElement != null ? swaggerElement.getText().trim() : null;
                 wadlUrl = wadlElement != null ? wadlElement.getText().trim() : null;
+
+                //Process swagger url if available
+                if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
+                    requestContext.setSourceURL(swaggerUrl);
+                    swaggerProcessor = new SwaggerProcessor(requestContext, false);
+                    inputStream = new URL(swaggerUrl).openStream();
+                    swaggerPath = swaggerProcessor.processSwagger(inputStream,
+                            getChrootedLocation(requestContext.getRegistryContext(), swaggerLocation), swaggerUrl);
+                    swaggerElement.detach();
+                    swaggerElement.setText(swaggerPath);
+                    interfaceElement.addChild(swaggerElement);
+                }
+
+                //Process WADL url if available
+                if (wadlUrl != null && !(wadlUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
+                    requestContext.setSourceURL(wadlUrl);
+                    wadlProcessor = new WADLProcessor(requestContext);
+                    wadlProcessor.setCreateService(false);
+                    wadlPath = wadlProcessor.importWADLToRegistry(requestContext, null, true);
+                    wadlElement.detach();
+                    wadlElement.setText(wadlPath);
+                    interfaceElement.addChild(wadlElement);
+                }
+                serviceInfoElement.addChild(interfaceElement);
             }
 
-            //Process swagger url if available
-            String swaggerPath = null, wadlPath = null;
-            SwaggerProcessor swaggerProcessor = null;
-            if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
-                requestContext.setSourceURL(swaggerUrl);
-                swaggerProcessor = new SwaggerProcessor(requestContext, false);
-                inputStream = new URL(swaggerUrl).openStream();
-                swaggerPath = swaggerProcessor.processSwagger(inputStream,
-                        getChrootedLocation(requestContext.getRegistryContext(), swaggerLocation), swaggerUrl);
-                swaggerElement.detach();
-                swaggerElement.setText(swaggerPath);
-                interfaceElement.addChild(swaggerElement);
-            }
-
-            //Process WADL url if available
-            WADLProcessor wadlProcessor = null;
-            if (wadlUrl != null && !(wadlUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
-                requestContext.setSourceURL(wadlUrl);
-                wadlProcessor = new WADLProcessor(requestContext);
-                wadlProcessor.setCreateService(false);
-                wadlPath = wadlProcessor.importWADLToRegistry(requestContext, null, true);
-                wadlElement.detach();
-                wadlElement.setText(wadlPath);
-                interfaceElement.addChild(wadlElement);
-            }
-            serviceInfoElement.addChild(interfaceElement);
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
 
             if (swaggerPath != null) {
