@@ -497,7 +497,7 @@ public class WADLProcessor {
 				wadlElement.getFirstChildWithName(new QName(wadlNamespaceURI, "resources", wadlNamespacePrefix));
 		if (resourcesElement != null) {
 			String endpointUrl = resourcesElement.getAttributeValue(new QName("base"));
-			if (endpointUrl != null) {
+			if (!StringUtils.isBlank(endpointUrl)) {
 				String endpointPath = EndpointUtils.deriveEndpointFromUrl(endpointUrl);
 				String endpointName = EndpointUtils.deriveEndpointNameWithNamespaceFromUrl(endpointUrl);
 				String endpointContent =
