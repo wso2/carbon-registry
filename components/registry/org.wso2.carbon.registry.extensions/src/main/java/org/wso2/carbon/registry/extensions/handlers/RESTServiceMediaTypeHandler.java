@@ -167,7 +167,7 @@ public class RESTServiceMediaTypeHandler extends Handler {
                 interfaceElement.detach();
 
                 //Process swagger url if available
-                if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
+                if (CommonUtil.isValidUrl(swaggerUrl)) {
                     requestContext.setSourceURL(swaggerUrl);
                     swaggerProcessor = new SwaggerProcessor(requestContext, false);
                     inputStream = new URL(swaggerUrl).openStream();
@@ -181,7 +181,7 @@ public class RESTServiceMediaTypeHandler extends Handler {
                 }
 
                 //Process WADL url if available
-                if (wadlUrl != null && !(wadlUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
+                if (CommonUtil.isValidUrl(wadlUrl)) {
                     requestContext.setSourceURL(wadlUrl);
                     wadlProcessor = new WADLProcessor(requestContext);
                     wadlProcessor.setCreateService(false);
@@ -200,17 +200,17 @@ public class RESTServiceMediaTypeHandler extends Handler {
             if (StringUtils.isNotBlank(swaggerPath)) {
                 String endpointPath = swaggerProcessor.saveEndpointElement(servicePath);
                 if(StringUtils.isNotBlank(endpointPath)) {
-                    addDependency(registry, swaggerPath, endpointPath);
+                    CommonUtil.addDependency(registry, swaggerPath, endpointPath);
                 }
-                addDependency(registry, servicePath, swaggerPath);
+                CommonUtil.addDependency(registry, servicePath, swaggerPath);
             }
 
             if (StringUtils.isNotBlank(wadlPath)) {
                 String endpointPath = wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
                 if(StringUtils.isNotBlank(endpointPath)) {
-                    addDependency(registry, wadlPath, endpointPath);
+                    CommonUtil.addDependency(registry, wadlPath, endpointPath);
                 }
-                addDependency(registry, servicePath, wadlPath);
+                CommonUtil.addDependency(registry, servicePath, wadlPath);
             }
 
             requestContext.setProcessingComplete(true);
@@ -232,10 +232,5 @@ public class RESTServiceMediaTypeHandler extends Handler {
     private String getChrootedLocation(RegistryContext registryContext, String resourceLocation) {
         return RegistryUtils
                 .getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + resourceLocation);
-    }
-
-    private void addDependency(Registry registry, String source, String target) throws RegistryException {
-        registry.addAssociation(source, target, CommonConstants.DEPENDS);
-        registry.addAssociation(target, source, CommonConstants.USED_BY);
     }
 }

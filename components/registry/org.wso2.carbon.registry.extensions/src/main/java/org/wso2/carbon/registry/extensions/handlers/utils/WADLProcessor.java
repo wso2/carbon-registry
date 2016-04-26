@@ -223,17 +223,14 @@ public class WADLProcessor {
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(getCreateService()){
-	        OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
-	                                                                              RegistryUtils.getRelativePath(
-			                                                                              requestContext
-					                                                                              .getRegistryContext(),
-			                                                                              actualPath));
-	        String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
+            OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
+                    RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
+            String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
 	        registry.addAssociation(servicePath, actualPath, CommonConstants.DEPENDS);
 	        registry.addAssociation(actualPath, servicePath, CommonConstants.USED_BY);
 	        String endpointPath = saveEndpointElement(requestContext, servicePath, version);
             if (StringUtils.isNotBlank(endpointPath)) {
-                addDependency(actualPath, endpointPath);
+                CommonUtil.addDependency(registry, actualPath, endpointPath);
             }
         }
 
@@ -351,10 +348,10 @@ public class WADLProcessor {
             OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
-            addDependency(servicePath, actualPath);
+            CommonUtil.addDependency(registry, servicePath, actualPath);
             String endpointPath = saveEndpointElement(requestContext, servicePath, version);
             if (StringUtils.isNotBlank(endpointPath)) {
-                addDependency(actualPath, endpointPath);
+                CommonUtil.addDependency(registry, actualPath, endpointPath);
             }
         }
 
@@ -374,7 +371,7 @@ public class WADLProcessor {
             throws RegistryException {
         String endpointPath = createEndpointElement(requestContext, wadlElement, version, servicePath);
         if (StringUtils.isNotBlank(endpointPath)) {
-            addDependency(servicePath, endpointPath);
+            CommonUtil.addDependency(registry, servicePath, endpointPath);
             return endpointPath;
         }
         return null;
@@ -541,7 +538,7 @@ public class WADLProcessor {
 
     private void addImportAssociations(String path) throws RegistryException {
         for (String schema : importedSchemas) {
-            addDependency(path, schema);
+            CommonUtil.addDependency(registry, path, schema);
         }
     }
 
@@ -553,11 +550,6 @@ public class WADLProcessor {
     private String getChrootedSchemaLocation(RegistryContext registryContext) {
         return RegistryUtils.getAbsolutePath(registryContext,
                 RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + getCommonSchemaLocation());
-    }
-
-    private void addDependency(String source, String target) throws RegistryException {
-        registry.addAssociation(source, target, CommonConstants.DEPENDS);
-        registry.addAssociation(target, source, CommonConstants.USED_BY);
     }
 
     private String getWadlLocation(RequestContext context, OMElement wadlElement, String wadlName,
