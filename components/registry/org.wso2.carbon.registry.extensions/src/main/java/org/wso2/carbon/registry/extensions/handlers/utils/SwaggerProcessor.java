@@ -24,6 +24,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -163,7 +164,11 @@ public class SwaggerProcessor {
 				String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
 				registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
 				registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
-				saveEndpointElement(servicePath);
+				String endpointPath = saveEndpointElement(servicePath);
+				if(StringUtils.isNotBlank(endpointPath)) {
+					registry.addAssociation(swaggerResourcePath, endpointPath, CommonConstants.DEPENDS);
+					registry.addAssociation(endpointPath, swaggerResourcePath, CommonConstants.USED_BY);
+				}
 			} else {
 				log.warn("Service content is null. Cannot create the REST Service artifact.");
 			}
@@ -180,14 +185,16 @@ public class SwaggerProcessor {
 	 * @param servicePath           service path.
 	 * @throws RegistryException    If fails to save the endpoint.
      */
-	public void saveEndpointElement(String servicePath) throws RegistryException {
+	public String saveEndpointElement(String servicePath) throws RegistryException {
+		String endpointPath = null;
 		if (endpointUrl != null) {
 			EndpointUtils.addEndpointToService(requestContext.getRegistry(), servicePath, endpointUrl, "");
-			String endpointPath = RESTServiceUtils
-					.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
+			endpointPath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
 			registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
 			registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
 		}
+
+		return endpointPath;
 	}
 
 	/**
@@ -221,8 +228,10 @@ public class SwaggerProcessor {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 			if (resourceContent.equals(contentStream.toString())) {
-				log.info("Old content is same as the new content. Skipping the put action.");
-				return false;
+				if (log.isDebugEnabled()) {
+					log.debug("Old content is same as the new content. Skipping the put action.");
+				}
+				return true;
 			}
 		} else {
 			//If a resource does not exist in the given path.

@@ -19,6 +19,7 @@ package org.wso2.carbon.registry.extensions.handlers;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.core.Registry;
@@ -29,7 +30,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.extensions.handlers.utils.EndpointUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.RESTServiceUtils;
 import org.wso2.carbon.registry.extensions.handlers.utils.SwaggerProcessor;
 import org.wso2.carbon.registry.extensions.handlers.utils.WADLProcessor;
@@ -50,6 +50,8 @@ import java.util.List;
 public class RESTServiceMediaTypeHandler extends Handler {
     private static final Log log = LogFactory.getLog(RESTServiceMediaTypeHandler.class);
     private static final String INTERFACE_ELEMENT_LOCAL_NAME = "interface";
+    private static final String SWAGGER_ELEMENT_LOCAL_NAME = "swagger";
+    private static final String WADL_ELEMENT_LOCAL_NAME = "wadl";
     private String swaggerLocation;
     private String wadlLocation;
 
@@ -158,17 +160,11 @@ public class RESTServiceMediaTypeHandler extends Handler {
             OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
                     new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
 
-            OMElement swaggerElement, wadlElement;
             String swaggerPath = null, wadlPath = null;
             if (interfaceElement != null) {
+                swaggerUrl = RESTServiceUtils.getDefinitionURL(serviceInfoElement, SWAGGER_ELEMENT_LOCAL_NAME);
+                wadlUrl = RESTServiceUtils.getDefinitionURL(serviceInfoElement, WADL_ELEMENT_LOCAL_NAME);
                 interfaceElement.detach();
-                swaggerElement = interfaceElement
-                        .getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "swagger", ""));
-                wadlElement = interfaceElement
-                        .getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "wadl", ""));
-
-                swaggerUrl = swaggerElement != null ? swaggerElement.getText().trim() : null;
-                wadlUrl = wadlElement != null ? wadlElement.getText().trim() : null;
 
                 //Process swagger url if available
                 if (swaggerUrl != null && !(swaggerUrl.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH))) {
@@ -177,6 +173,8 @@ public class RESTServiceMediaTypeHandler extends Handler {
                     inputStream = new URL(swaggerUrl).openStream();
                     swaggerPath = swaggerProcessor.processSwagger(inputStream,
                             getChrootedLocation(requestContext.getRegistryContext(), swaggerLocation), swaggerUrl);
+                    OMElement swaggerElement = interfaceElement.getFirstChildWithName(
+                            new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, SWAGGER_ELEMENT_LOCAL_NAME, ""));
                     swaggerElement.detach();
                     swaggerElement.setText(swaggerPath);
                     interfaceElement.addChild(swaggerElement);
@@ -188,6 +186,8 @@ public class RESTServiceMediaTypeHandler extends Handler {
                     wadlProcessor = new WADLProcessor(requestContext);
                     wadlProcessor.setCreateService(false);
                     wadlPath = wadlProcessor.importWADLToRegistry(requestContext, null, true);
+                    OMElement wadlElement = interfaceElement.getFirstChildWithName(
+                            new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, WADL_ELEMENT_LOCAL_NAME, ""));
                     wadlElement.detach();
                     wadlElement.setText(wadlPath);
                     interfaceElement.addChild(wadlElement);
@@ -197,16 +197,20 @@ public class RESTServiceMediaTypeHandler extends Handler {
 
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
 
-            if (swaggerPath != null) {
-                swaggerProcessor.saveEndpointElement(servicePath);
-                registry.addAssociation(servicePath, swaggerPath, CommonConstants.DEPENDS);
-                registry.addAssociation(swaggerPath, servicePath, CommonConstants.USED_BY);
+            if (StringUtils.isNotBlank(swaggerPath)) {
+                String endpointPath = swaggerProcessor.saveEndpointElement(servicePath);
+                if(StringUtils.isNotBlank(endpointPath)) {
+                    addDependency(registry, swaggerPath, endpointPath);
+                }
+                addDependency(registry, servicePath, swaggerPath);
             }
 
-            if (wadlPath != null) {
-                wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
-                registry.addAssociation(servicePath, wadlPath, CommonConstants.DEPENDS);
-                registry.addAssociation(wadlPath, servicePath, CommonConstants.USED_BY);
+            if (StringUtils.isNotBlank(wadlPath)) {
+                String endpointPath = wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
+                if(StringUtils.isNotBlank(endpointPath)) {
+                    addDependency(registry, wadlPath, endpointPath);
+                }
+                addDependency(registry, servicePath, wadlPath);
             }
 
             requestContext.setProcessingComplete(true);
@@ -228,5 +232,10 @@ public class RESTServiceMediaTypeHandler extends Handler {
     private String getChrootedLocation(RegistryContext registryContext, String resourceLocation) {
         return RegistryUtils
                 .getAbsolutePath(registryContext, RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH + resourceLocation);
+    }
+
+    private void addDependency(Registry registry, String source, String target) throws RegistryException {
+        registry.addAssociation(source, target, CommonConstants.DEPENDS);
+        registry.addAssociation(target, source, CommonConstants.USED_BY);
     }
 }
