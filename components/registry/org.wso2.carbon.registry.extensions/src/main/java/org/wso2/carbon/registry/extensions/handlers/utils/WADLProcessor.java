@@ -123,7 +123,6 @@ public class WADLProcessor {
             requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, version);
         }
 
-        OMElement wadlElement;
         String wadlContent;
         Object resourceContent = resource.getContent();
         if (resourceContent instanceof String) {
