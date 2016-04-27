@@ -23,6 +23,7 @@ package org.wso2.carbon.registry.extensions.services;
 public class Utils {
 
     private static RXTStoragePathService rxtService;
+    private static TaxonomyStorageService taxonomyService;
 
     /**
      * This method returns the instance of the RXTStoragePathService
@@ -38,5 +39,13 @@ public class Utils {
      */
     public static void setRxtService(RXTStoragePathService rxtServiceInstance) {
         rxtService = rxtServiceInstance;
+    }
+
+    public static TaxonomyStorageService getTaxonomyService() {
+        return taxonomyService;
+    }
+
+    public static void setTaxonomyService(TaxonomyStorageService taxonomyServiceInstance) {
+        taxonomyService = taxonomyServiceInstance;
     }
 }
