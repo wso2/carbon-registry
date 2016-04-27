@@ -553,8 +553,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
             WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
-            return wadlProcessor.importWADLToRegistry(requestContext,
-                    getChrootedWADLLocation(requestContext.getRegistryContext()), disableWADLValidation);
+            return wadlProcessor.importWADLToRegistry(requestContext, disableWADLValidation);
 
         }
         return null;

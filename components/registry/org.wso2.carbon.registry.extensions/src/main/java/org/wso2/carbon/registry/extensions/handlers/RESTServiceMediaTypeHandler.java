@@ -185,7 +185,7 @@ public class RESTServiceMediaTypeHandler extends Handler {
                     requestContext.setSourceURL(wadlUrl);
                     wadlProcessor = new WADLProcessor(requestContext);
                     wadlProcessor.setCreateService(false);
-                    wadlPath = wadlProcessor.importWADLToRegistry(requestContext, null, true);
+                    wadlPath = wadlProcessor.importWADLToRegistry(requestContext, true);
                     OMElement wadlElement = interfaceElement.getFirstChildWithName(
                             new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, WADL_ELEMENT_LOCAL_NAME, ""));
                     wadlElement.detach();

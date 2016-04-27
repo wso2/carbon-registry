@@ -249,7 +249,7 @@ public class WADLProcessor {
         }
     }
 
-    public String importWADLToRegistry(RequestContext requestContext, String commonLocation, boolean skipValidation)
+    public String importWADLToRegistry(RequestContext requestContext, boolean skipValidation)
             throws RegistryException {
 
         ResourcePath resourcePath = requestContext.getResourcePath();
