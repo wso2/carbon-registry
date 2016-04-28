@@ -227,10 +227,7 @@ public class WADLProcessor {
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
 	        registry.addAssociation(servicePath, actualPath, CommonConstants.DEPENDS);
 	        registry.addAssociation(actualPath, servicePath, CommonConstants.USED_BY);
-	        String endpointPath = saveEndpointElement(requestContext, servicePath, version);
-            if (StringUtils.isNotBlank(endpointPath)) {
-                CommonUtil.addDependency(registry, actualPath, endpointPath);
-            }
+	        saveEndpointElement(requestContext, servicePath, version);
         }
 
         return resource.getPath();
@@ -348,10 +345,7 @@ public class WADLProcessor {
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
             CommonUtil.addDependency(registry, servicePath, actualPath);
-            String endpointPath = saveEndpointElement(requestContext, servicePath, version);
-            if (StringUtils.isNotBlank(endpointPath)) {
-                CommonUtil.addDependency(registry, actualPath, endpointPath);
-            }
+            saveEndpointElement(requestContext, servicePath, version);
         }
 
         return actualPath;
@@ -364,16 +358,13 @@ public class WADLProcessor {
      * @param servicePath           service path.
      * @param version               service version.
      * @throws RegistryException    If fails to save the endpoint.
-     * @return                      Endpoint path
      */
-    public String saveEndpointElement(RequestContext requestContext, String servicePath, String version)
+    public void saveEndpointElement(RequestContext requestContext, String servicePath, String version)
             throws RegistryException {
         String endpointPath = createEndpointElement(requestContext, wadlElement, version, servicePath);
         if (StringUtils.isNotBlank(endpointPath)) {
             CommonUtil.addDependency(registry, servicePath, endpointPath);
-            return endpointPath;
         }
-        return null;
     }
 
     private OMElement resolveImports(OMElement grammarsElement,

@@ -339,8 +339,8 @@ public class RESTServiceUtils {
 		String pathExpression = getRestServicePath(requestContext, serviceInfoElement, apiName, serviceProvider);
 
 		if (registry.resourceExists(pathExpression)) {
-			Resource oldresource = registry.get(pathExpression);
-			Object resourceContent = oldresource.getContent();
+			Resource oldResource = registry.get(pathExpression);
+			Object resourceContent = oldResource.getContent();
 			OMElement oldServiceContentElement;
 			String oldServiceInfo;
 
@@ -363,14 +363,22 @@ public class RESTServiceUtils {
 			}
 
 			if (serviceInfoElement.equals(oldServiceContentElement)) {
-				requestContext.setProcessingComplete(true);
-			}
+                if (log.isDebugEnabled()) {
+                    log.debug("Old service content is similar to the updated service content. "
+                            + "Skipping further processing.");
+                }
+                requestContext.setProcessingComplete(true);
+            }
 
 			String oldSwaggerUrl = getDefinitionURL(oldServiceContentElement, SWAGGER);
 			String oldWadlUrl = getDefinitionURL(oldServiceContentElement, WADL);
 			String servicePath = CommonUtil
 					.getRegistryPath(registry.getRegistryContext(), requestContext.getResourcePath().getPath());
 
+			/*
+			If definition url (swagger/wadl) is changed and if there exists a previously imported resource, removing
+			associations created by the old resource and removing the endpoint entries created.
+			 */
 			if (StringUtils.isNotBlank(oldSwaggerUrl) && !oldSwaggerUrl
 					.equals(getDefinitionURL(serviceInfoElement, SWAGGER))) {
 				registry.removeAssociation(servicePath, oldSwaggerUrl, CommonConstants.DEPENDS);
@@ -420,6 +428,9 @@ public class RESTServiceUtils {
      * @return                      definition url.
      */
 	public static String getDefinitionURL(OMElement serviceInfoElement, String localName) {
+		if(serviceInfoElement == null) {
+			throw new IllegalArgumentException("serviceInfoElement is null. Cannot read content.");
+		}
 		OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
 				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
 		if( interfaceElement != null) {

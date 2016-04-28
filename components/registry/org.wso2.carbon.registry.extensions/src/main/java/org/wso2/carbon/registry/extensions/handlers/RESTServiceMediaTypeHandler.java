@@ -198,24 +198,18 @@ public class RESTServiceMediaTypeHandler extends Handler {
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceInfoElement);
 
             if (StringUtils.isNotBlank(swaggerPath)) {
-                String endpointPath = swaggerProcessor.saveEndpointElement(servicePath);
-                if(StringUtils.isNotBlank(endpointPath)) {
-                    CommonUtil.addDependency(registry, swaggerPath, endpointPath);
-                }
+                swaggerProcessor.saveEndpointElement(servicePath);
                 CommonUtil.addDependency(registry, servicePath, swaggerPath);
             }
 
             if (StringUtils.isNotBlank(wadlPath)) {
-                String endpointPath = wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
-                if(StringUtils.isNotBlank(endpointPath)) {
-                    CommonUtil.addDependency(registry, wadlPath, endpointPath);
-                }
+                wadlProcessor.saveEndpointElement(requestContext, servicePath, serviceVersion);
                 CommonUtil.addDependency(registry, servicePath, wadlPath);
             }
 
             requestContext.setProcessingComplete(true);
         } catch (IOException e) {
-            throw new RegistryException("The URL is incorrect.", e);
+            throw new RegistryException("Cannot open a stream for the given URL, " + requestContext.getSourceURL(), e);
         } finally {
             CommonUtil.releaseUpdateLock();
             CommonUtil.closeInputStream(inputStream);
