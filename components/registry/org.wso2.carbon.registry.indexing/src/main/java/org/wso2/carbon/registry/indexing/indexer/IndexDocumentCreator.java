@@ -200,12 +200,21 @@ public class IndexDocumentCreator {
         Tag[] tags;
         tags = registry.getTags(resourcePath);
         List<String> tagList = new ArrayList<>();
+        List<String> taxonomyList = new ArrayList<>();
         if (tags != null && tags.length > 0) {
             for (Tag tag : tags) {
+                if (tag.getTagName().contains("/")) {
+                    taxonomyList.add(tag.getTagName());
+                } else {
+                    tagList.add(tag.getTagName());
+                }
                 tagList.add(tag.getTagName());
             }
             if (tagList.size() > 0) {
                 attributes.put(IndexingConstants.FIELD_TAGS, tagList);
+            }
+            if (taxonomyList.size() > 0) {
+                attributes.put(IndexingConstants.FIELD_TAXONOMY, taxonomyList);
             }
         }
     }
