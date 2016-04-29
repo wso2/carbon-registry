@@ -55,6 +55,7 @@ public final class IndexingConstants {
     public static final String FIELD_OVERVIEW_NAME = "overview_name";
 
     // New fields are added for indexing
+    public static final String FIELD_TAXONOMY = "taxonomy";
     public static final String FIELD_TAGS = "tags";
     public static final String FIELD_CONTENT = "content";
     public static final String FIELD_CREATED_DATE = "createdDate";
