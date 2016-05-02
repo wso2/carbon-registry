@@ -383,14 +383,12 @@ public class RESTServiceUtils {
 					.equals(getDefinitionURL(serviceInfoElement, SWAGGER))) {
 				registry.removeAssociation(servicePath, oldSwaggerUrl, CommonConstants.DEPENDS);
 				registry.removeAssociation(oldSwaggerUrl, servicePath, CommonConstants.USED_BY);
-				EndpointUtils.removeEndpointEntry(oldSwaggerUrl, servicePath, serviceInfoElement, registry);
 			}
 
 			if (StringUtils.isNotBlank(oldWadlUrl) && !oldWadlUrl
 					.equals(getDefinitionURL(serviceInfoElement, WADL))) {
 				registry.removeAssociation(servicePath, oldWadlUrl, CommonConstants.DEPENDS);
 				registry.removeAssociation(oldWadlUrl, servicePath, CommonConstants.USED_BY);
-				EndpointUtils.removeEndpointEntry(oldWadlUrl, servicePath, serviceInfoElement, registry);
 			}
 		}
 
