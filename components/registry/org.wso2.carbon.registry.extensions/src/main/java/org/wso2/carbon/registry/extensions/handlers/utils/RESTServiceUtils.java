@@ -362,12 +362,12 @@ public class RESTServiceUtils {
 			}
 
 			if (serviceInfoElement.equals(oldServiceContentElement)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Old service content is similar to the updated service content. "
-                            + "Skipping further processing.");
-                }
-                requestContext.setProcessingComplete(true);
-            }
+				if (log.isDebugEnabled()) {
+					log.debug("Old service content is similar to the updated service content. "
+							+ "Skipping further processing.");
+				}
+				requestContext.setProcessingComplete(true);
+			}
 
 			String oldSwaggerUrl = getDefinitionURL(oldServiceContentElement, SWAGGER);
 			String oldWadlUrl = getDefinitionURL(oldServiceContentElement, WADL);
@@ -384,8 +384,7 @@ public class RESTServiceUtils {
 				registry.removeAssociation(oldSwaggerUrl, servicePath, CommonConstants.USED_BY);
 			}
 
-			if (StringUtils.isNotBlank(oldWadlUrl) && !oldWadlUrl
-					.equals(getDefinitionURL(serviceInfoElement, WADL))) {
+			if (StringUtils.isNotBlank(oldWadlUrl) && !oldWadlUrl.equals(getDefinitionURL(serviceInfoElement, WADL))) {
 				registry.removeAssociation(servicePath, oldWadlUrl, CommonConstants.DEPENDS);
 				registry.removeAssociation(oldWadlUrl, servicePath, CommonConstants.USED_BY);
 			}
