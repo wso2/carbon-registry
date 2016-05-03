@@ -324,7 +324,6 @@ public class RESTServiceUtils {
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
-		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
 
 		OMElement overview = serviceInfoElement
 				.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
@@ -392,11 +391,9 @@ public class RESTServiceUtils {
 			}
 		}
 
-		//set version property.
 		serviceResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, serviceVersion);
-		//copy other property
-		serviceResource.setProperties(copyProperties(requestContext));
-		//set content.
+		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+		//set content
 		serviceResource.setContent(RegistryUtils.encodeString(serviceInfoElement.toString()));
 
 		String resourceId = serviceResource.getUUID();
@@ -434,7 +431,7 @@ public class RESTServiceUtils {
 		if( interfaceElement != null) {
 			OMElement element = interfaceElement
 					.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, localName, ""));
-			return element != null ? element.getText().trim() : null;
+			return element != null ? !"null".equals(element.getText().trim()) ? element.getText().trim(): null : null;
 		}
 		return null;
 	}
