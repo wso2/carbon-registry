@@ -320,9 +320,6 @@ public class RESTServiceUtils {
 		if (serviceResource == null) {
 			serviceResource = new ResourceImpl();
 		}
-		//setting API media type.
-		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
-		//setting API media type.
 		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
 
 		OMElement overview = serviceInfoElement
