@@ -120,6 +120,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
     private boolean disableWSDLValidation = false;
     private boolean disableSchemaValidation = false;
     private boolean useOriginalSchema = false;
+    private boolean createService = true;
 
     private boolean disableSymlinkCreation = true;
     private static int numberOfRetry = 5;
@@ -168,6 +169,22 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
         }
         this.wadlLocationConfiguration = locationConfiguration;
+    }
+
+    /**
+     * @return createService
+     */
+    public boolean isCreateService() {
+        return createService;
+    }
+
+    /**
+     * Extracts createService property from the registry.xml
+     *
+     * @param createService createService property.
+     */
+    public void setCreateService(String createService) {
+        this.createService = Boolean.valueOf(createService);
     }
 
     public void put(RequestContext requestContext) throws RegistryException {
@@ -553,6 +570,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
             WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
+            wadlProcessor.setCreateService(isCreateService());
             return wadlProcessor.importWADLToRegistry(requestContext, disableWADLValidation);
 
         }
@@ -592,7 +610,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + swaggerName;
             requestContext.setResourcePath(new ResourcePath(path));
-            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext, true);
+            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext, isCreateService());
             InputStream inputStream = null;
             try {
                 inputStream = new URL(uri).openStream();

@@ -39,6 +39,7 @@ public class WADLMediaTypeHandler extends Handler {
     private OMElement wadlLocationConfiguration;
     private String wadlLocation;
     private boolean disableWADLValidation = false;
+    private boolean createService = true;
 
 
     public OMElement getWADLLocationConfiguration() {
@@ -90,6 +91,22 @@ public class WADLMediaTypeHandler extends Handler {
         this.disableWADLValidation = Boolean.getBoolean(disableWADLValidation);
     }
 
+    /**
+     * @return createService
+     */
+    public boolean isCreateService() {
+        return createService;
+    }
+
+    /**
+     * Extracts createService property from the registry.xml
+     *
+     * @param createService createService property.
+     */
+    public void setCreateService(String createService) {
+        this.createService = Boolean.valueOf(createService);
+    }
+
     public void put(RequestContext requestContext) throws RegistryException {
         try{
             if (!CommonUtil.isUpdateLockAvailable()) {
@@ -101,6 +118,7 @@ public class WADLMediaTypeHandler extends Handler {
             requestContext.setSourceURL(
                     requestContext.getResource().getProperty(CommonConstants.SOURCEURL_PARAMETER_NAME));
             WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
+            wadlProcessor.setCreateService(isCreateService());
             wadlProcessor.addWadlToRegistry(requestContext, resource,
                     resourcePath, disableWADLValidation);
             requestContext.setProcessingComplete(true);
@@ -116,6 +134,7 @@ public class WADLMediaTypeHandler extends Handler {
             }
             CommonUtil.acquireUpdateLock();
             WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
+            wadlProcessor.setCreateService(isCreateService());
             wadlProcessor.importWADLToRegistry(requestContext, disableWADLValidation);
             requestContext.setProcessingComplete(true);
         } finally {

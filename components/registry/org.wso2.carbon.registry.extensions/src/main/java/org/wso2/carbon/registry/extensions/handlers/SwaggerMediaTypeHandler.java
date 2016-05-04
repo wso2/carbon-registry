@@ -45,6 +45,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 	private String swaggerLocation;
 	private String restServiceLocation;
 	private String endpointLocation;
+	private boolean createService = true;
 
 	/**
 	 * Extracts the common location for swagger docs from registry.xml entry
@@ -112,6 +113,22 @@ public class SwaggerMediaTypeHandler extends Handler {
 	}
 
 	/**
+	 * @return createService
+	 */
+	public boolean isCreateService() {
+		return createService;
+	}
+
+	/**
+	 * Extracts createService property from the registry.xml
+	 *
+	 * @param createService createService property
+	 */
+	public void setCreateService(String createService) {
+		this.createService = Boolean.valueOf(createService);
+	}
+
+	/**
 	 * Processes the PUT action for swagger files.
 	 *
 	 * @param requestContext        information about the current request.
@@ -146,14 +163,14 @@ public class SwaggerMediaTypeHandler extends Handler {
             String swaggerPath;
             if (StringUtils.isBlank(sourceURL)) {
                 inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext, isCreateService());
 				swaggerPath = processor
                         .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
             } else {
                 //Open a stream to the sourceURL
                 inputStream = new URL(sourceURL).openStream();
 
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext, isCreateService());
 				swaggerPath = processor
                         .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()),
                                 sourceURL);
@@ -200,7 +217,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 			//Open a stream to the sourceURL
 			inputStream = new URL(sourceURL).openStream();
 
-			SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
+			SwaggerProcessor processor = new SwaggerProcessor(requestContext, isCreateService());
 			if(processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL) != null) {
                 requestContext.setProcessingComplete(true);
             }
