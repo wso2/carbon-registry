@@ -24,6 +24,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -72,14 +73,30 @@ public class SwaggerProcessor {
 	private String swaggerResourcesPath;
 	private String documentVersion;
 	private String endpointUrl;
-	OMElement restServiceElement = null;
-	OMElement endpointElement = null;
+	private OMElement restServiceElement = null;
+	private OMElement endpointElement = null;
 	private String endpointLocation;
+	private boolean createRestServiceArtifact;
 
-	public SwaggerProcessor(RequestContext requestContext) {
+	public SwaggerProcessor(RequestContext requestContext, boolean createRestServiceArtifact) {
 		this.parser = new JsonParser();
 		this.requestContext = requestContext;
 		this.registry = requestContext.getRegistry();
+		this.createRestServiceArtifact = createRestServiceArtifact;
+	}
+
+	/**
+	 * @return createRestServiceArtifact
+	 */
+	public boolean isCreateRestServiceArtifact() {
+		return createRestServiceArtifact;
+	}
+
+	/**
+	 * @param createRestServiceArtifact boolean to set createRestServiceArtifact
+	 */
+	public void setCreateRestServiceArtifact(boolean createRestServiceArtifact) {
+		this.createRestServiceArtifact = createRestServiceArtifact;
 	}
 
 	/**
@@ -88,6 +105,7 @@ public class SwaggerProcessor {
 	 * @param inputStream           input stream to read content.
 	 * @param commonLocation        root location of the swagger artifacts.
 	 * @param sourceUrl             source URL.
+	 * @return                      swagger resource path.
 	 * @throws RegistryException    If a failure occurs when adding the swagger to registry.
 	 */
 	public String processSwagger(InputStream inputStream, String commonLocation, String sourceUrl)
@@ -102,7 +120,7 @@ public class SwaggerProcessor {
 		documentVersion = requestContext.getResource().getProperty(RegistryConstants.VERSION_PARAMETER_NAME);
 		if (documentVersion == null) {
 			documentVersion = CommonConstants.SWAGGER_DOC_VERSION_DEFAULT_VALUE;
-            requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
+			requestContext.getResource().setProperty(RegistryConstants.VERSION_PARAMETER_NAME, documentVersion);
 		}
 		String swaggerResourcePath = getSwaggerDocumentPath(commonLocation, swaggerDocObject);
 
@@ -111,46 +129,65 @@ public class SwaggerProcessor {
 		using the relevant documents.
 		 */
 		if (SwaggerConstants.SWAGGER_VERSION_12.equals(swaggerVersion)) {
-			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
-                List<JsonObject> resourceObjects =
-                        addResourceDocsToRegistry(swaggerDocObject, sourceUrl, swaggerResourcePath);
-                restServiceElement = (resourceObjects != null) ? RESTServiceUtils
-                        .createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, resourceObjects, swaggerResourcePath, documentVersion) : null;
-            } else {
-                return null;
-            }
+			if (addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+				List<JsonObject> resourceObjects = addResourceDocsToRegistry(swaggerDocObject, sourceUrl,
+						swaggerResourcePath);
+				if (isCreateRestServiceArtifact()) {
+					restServiceElement = (resourceObjects != null) ?
+							RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl,
+									resourceObjects, swaggerResourcePath, documentVersion) :
+							null;
+				}
+			} else {
+				return null;
+			}
 
 		} else if (SwaggerConstants.SWAGGER_VERSION_2.equals(swaggerVersion)) {
-			if(addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
-                createEndpointElement(swaggerDocObject, swaggerVersion);
-                restServiceElement =
-                        RESTServiceUtils.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null, swaggerResourcePath, documentVersion);
-            } else {
-                return null;
-            }
+			if (addSwaggerDocumentToRegistry(swaggerContentStream, swaggerResourcePath, documentVersion)) {
+				createEndpointElement(swaggerDocObject, swaggerVersion);
+				if (isCreateRestServiceArtifact()) {
+					restServiceElement = RESTServiceUtils
+							.createRestServiceArtifact(swaggerDocObject, swaggerVersion, endpointUrl, null,
+									swaggerResourcePath, documentVersion);
+				}
+			} else {
+				return null;
+			}
 		}
 
 		/*
-		If REST Service content is not empty, saves the REST service and adds the relevant associations.
+		If REST Service content is not empty and createRestServiceArtifact is true,
+		saves the REST service and adds the relevant associations.
 		 */
-		if (restServiceElement != null) {
-			String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
-			registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
-			registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
-
-            if(endpointUrl != null) {
-                String endpointPath = RESTServiceUtils
-                        .addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
-                registry.addAssociation(servicePath, endpointPath, CommonConstants.DEPENDS);
-                registry.addAssociation(endpointPath, servicePath, CommonConstants.USED_BY);
-            }
-		} else {
-			log.warn("Service content is null. Cannot create the REST Service artifact.");
+		if(isCreateRestServiceArtifact()) {
+			if (restServiceElement != null) {
+				String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, restServiceElement);
+				registry.addAssociation(servicePath, swaggerResourcePath, CommonConstants.DEPENDS);
+				registry.addAssociation(swaggerResourcePath, servicePath, CommonConstants.USED_BY);
+				saveEndpointElement(servicePath);
+			} else {
+				log.warn("Service content is null. Cannot create the REST Service artifact.");
+			}
 		}
 
 		CommonUtil.closeOutputStream(swaggerContentStream);
 
-        return swaggerResourcePath;
+		return swaggerResourcePath;
+	}
+
+	/**
+	 * Save endpoint element to the registry.
+	 *
+	 * @param servicePath           service path.
+	 * @throws RegistryException    If fails to save the endpoint.
+     */
+	public void saveEndpointElement(String servicePath) throws RegistryException {
+		String endpointPath;
+		if (StringUtils.isNotBlank(endpointUrl)) {
+			EndpointUtils.addEndpointToService(requestContext.getRegistry(), servicePath, endpointUrl, "");
+			endpointPath = RESTServiceUtils.addEndpointToRegistry(requestContext, endpointElement, endpointLocation);
+			CommonUtil.addDependency(registry, servicePath, endpointPath);
+		}
 	}
 
 	/**
@@ -184,8 +221,10 @@ public class SwaggerProcessor {
 				throw new RegistryException(CommonConstants.INVALID_CONTENT);
 			}
 			if (resourceContent.equals(contentStream.toString())) {
-				log.info("Old content is same as the new content. Skipping the put action.");
-				return false;
+				if (log.isDebugEnabled()) {
+					log.debug("Old content is same as the new content. Skipping the put action.");
+				}
+				return true;
 			}
 		} else {
 			//If a resource does not exist in the given path.

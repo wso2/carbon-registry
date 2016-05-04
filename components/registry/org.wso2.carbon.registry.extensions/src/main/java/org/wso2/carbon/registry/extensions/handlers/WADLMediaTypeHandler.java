@@ -116,8 +116,7 @@ public class WADLMediaTypeHandler extends Handler {
             }
             CommonUtil.acquireUpdateLock();
             WADLProcessor wadlProcessor = new WADLProcessor(requestContext);
-            wadlProcessor.importWADLToRegistry(requestContext, getChrootedWADLLocation(
-                    requestContext.getRegistryContext()), disableWADLValidation);
+            wadlProcessor.importWADLToRegistry(requestContext, disableWADLValidation);
             requestContext.setProcessingComplete(true);
         } finally {
             CommonUtil.releaseUpdateLock();

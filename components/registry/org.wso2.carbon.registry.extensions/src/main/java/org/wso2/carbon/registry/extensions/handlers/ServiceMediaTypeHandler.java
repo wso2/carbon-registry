@@ -285,7 +285,7 @@ public class ServiceMediaTypeHandler extends Handler {
                     tmpResource.setProperty("version", serviceVersion);
                     tmpResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
                     context.setResource(tmpResource);
-                    definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
+                    definitionPath = wadlProcessor.importWADLToRegistry(context, disableWADLValidation);
                 } else {
                     throw new RegistryException("Invalid service definition found. " +
                             "Please enter a valid WSDL/WADL URL");

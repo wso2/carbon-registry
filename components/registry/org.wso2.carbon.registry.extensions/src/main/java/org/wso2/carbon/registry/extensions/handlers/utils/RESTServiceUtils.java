@@ -24,6 +24,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
@@ -41,6 +43,10 @@ import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -68,7 +74,8 @@ public class RESTServiceUtils {
 	private static final String PATH = "path";
 	private static final String RESOURCE = "resource";
     private static final String INTERFACE = "interface";
-    private static final String SWAGGER = "swagger";
+	private static final String SWAGGER = "swagger";
+	private static final String INTERFACE_ELEMENT_LOCAL_NAME = "interface";
 
 	private static OMFactory factory = OMAbstractFactory.getOMFactory();
 	private static OMNamespace namespace = factory.createOMNamespace(CommonConstants.SERVICE_ELEMENT_NAMESPACE, "");
@@ -296,69 +303,142 @@ public class RESTServiceUtils {
 	 * Saves the REST Service registry artifact created from the imported swagger definition.
 	 *
 	 * @param requestContext        information about current request.
-	 * @param data                  service artifact metadata.
+	 * @param serviceInfoElement    service artifact metadata.
 	 * @throws RegistryException    If a failure occurs when adding the api to registry.
 	 */
-	public static String addServiceToRegistry(RequestContext requestContext, OMElement data) throws RegistryException {
+	public static String addServiceToRegistry(RequestContext requestContext, OMElement serviceInfoElement)
+			throws RegistryException {
 
-		if(requestContext == null || data == null) {
-			throw new IllegalArgumentException("Some or all of the arguments may be null. Cannot add the rest service to registry. ");
+		if (requestContext == null || serviceInfoElement == null) {
+			throw new IllegalArgumentException(
+					"Some or all of the arguments may be null. Cannot add the rest service to registry. ");
 		}
 
 		Registry registry = requestContext.getRegistry();
-		//Creating new resource.
-		Resource serviceResource = new ResourceImpl();
-		//setting API media type.
-		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
-		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+		Resource serviceResource = requestContext.getResource();
 
-		OMElement overview = data.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
-		String serviceVersion =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION)).getText();
-		String apiName =
-				overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME)).getText();
+		if (serviceResource == null) {
+			serviceResource = new ResourceImpl();
+		}
+		serviceResource.setMediaType(CommonConstants.REST_SERVICE_MEDIA_TYPE);
+
+		OMElement overview = serviceInfoElement
+				.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, OVERVIEW));
+		String serviceVersion = overview
+				.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, VERSION)).getText();
+		String apiName = overview.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, NAME))
+				.getText();
 		serviceVersion = (serviceVersion == null) ? CommonConstants.SERVICE_VERSION_DEFAULT_VALUE : serviceVersion;
 
-        String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
+		String serviceProvider = CarbonContext.getThreadLocalCarbonContext().getUsername();
 
-        String pathExpression = getRestServicePath(requestContext, data, apiName, serviceProvider);
+		String pathExpression = getRestServicePath(requestContext, serviceInfoElement, apiName, serviceProvider);
 
-		//set version property.
+		if (registry.resourceExists(pathExpression)) {
+			Resource oldResource = registry.get(pathExpression);
+			Object resourceContent = oldResource.getContent();
+			OMElement oldServiceContentElement;
+			String oldServiceInfo;
+
+			if (resourceContent instanceof String) {
+				oldServiceInfo = (String) resourceContent;
+			} else {
+				oldServiceInfo = RegistryUtils.decodeBytes((byte[]) resourceContent);
+			}
+
+			XMLStreamReader reader;
+			try {
+				reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(oldServiceInfo));
+				StAXOMBuilder builder = new StAXOMBuilder(reader);
+				oldServiceContentElement = builder.getDocumentElement();
+			} catch (XMLStreamException e) {
+				StringBuilder msg = new StringBuilder("Error in parsing the service content of the service. Path: ")
+						.append(requestContext.getResourcePath().getPath()).append(".");
+				log.error(msg.toString());
+				throw new RegistryException(msg.toString(), e);
+			}
+
+			if (serviceInfoElement.equals(oldServiceContentElement)) {
+				if (log.isDebugEnabled()) {
+					log.debug("Old service content is similar to the updated service content. "
+							+ "Skipping further processing.");
+				}
+				requestContext.setProcessingComplete(true);
+			}
+
+			String oldSwaggerUrl = getDefinitionURL(oldServiceContentElement, SWAGGER);
+			String oldWadlUrl = getDefinitionURL(oldServiceContentElement, WADL);
+			String servicePath = CommonUtil
+					.getRegistryPath(registry.getRegistryContext(), requestContext.getResourcePath().getPath());
+
+			/*
+			If definition url (swagger/wadl) is changed and if there exists a previously imported resource, removing
+			associations created by the old resource and removing the endpoint entries created.
+			 */
+			if (StringUtils.isNotBlank(oldSwaggerUrl) && !oldSwaggerUrl
+					.equals(getDefinitionURL(serviceInfoElement, SWAGGER))) {
+				registry.removeAssociation(servicePath, oldSwaggerUrl, CommonConstants.DEPENDS);
+				registry.removeAssociation(oldSwaggerUrl, servicePath, CommonConstants.USED_BY);
+			}
+
+			if (StringUtils.isNotBlank(oldWadlUrl) && !oldWadlUrl.equals(getDefinitionURL(serviceInfoElement, WADL))) {
+				registry.removeAssociation(servicePath, oldWadlUrl, CommonConstants.DEPENDS);
+				registry.removeAssociation(oldWadlUrl, servicePath, CommonConstants.USED_BY);
+			}
+		}
+
 		serviceResource.setProperty(RegistryConstants.VERSION_PARAMETER_NAME, serviceVersion);
-        //copy other property
-        serviceResource.setProperties(copyProperties(requestContext));
-		//set content.
-		serviceResource.setContent(RegistryUtils.encodeString(data.toString()));
+		serviceResource.setProperty(CommonConstants.SOURCE_PROPERTY, CommonConstants.SOURCE_AUTO);
+		//set content
+		serviceResource.setContent(RegistryUtils.encodeString(serviceInfoElement.toString()));
 
 		String resourceId = serviceResource.getUUID();
 		//set resource UUID
 		resourceId = (resourceId == null) ? UUID.randomUUID().toString() : resourceId;
 
 		serviceResource.setUUID(resourceId);
-		String servicePath = getChrootedServiceLocation(requestContext.getRegistryContext()) +
-		                     CarbonContext.getThreadLocalCarbonContext().getUsername() +
-		                     RegistryConstants.PATH_SEPARATOR + apiName +
-		                     RegistryConstants.PATH_SEPARATOR + serviceVersion +
-		                     RegistryConstants.PATH_SEPARATOR + apiName + "-rest_service";
 		//saving the api resource to repository.
-
 		registry.put(pathExpression, serviceResource);
 
-        String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
+		EndpointUtils.saveEndpointsFromServices(requestContext, pathExpression, serviceInfoElement, registry,
+				requestContext.getSystemRegistry());
+
+		String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "restservice");
 		CommonUtil.applyDefaultLifeCycle(registry, serviceResource, pathExpression, defaultLifeCycle);
-        if (log.isDebugEnabled()){
-            log.debug("REST Service created at " + pathExpression);
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("REST Service created at " + pathExpression);
+		}
 		return pathExpression;
+	}
+
+	/**
+	 * Get definition url from the service content.
+	 *
+	 * @param serviceInfoElement    service metadata element.
+	 * @param localName             local name of the definition element (swagger/wadl)
+     * @return                      definition url.
+     */
+	public static String getDefinitionURL(OMElement serviceInfoElement, String localName) {
+		if(serviceInfoElement == null) {
+			throw new IllegalArgumentException("serviceInfoElement is null. Cannot read content.");
+		}
+		OMElement interfaceElement = serviceInfoElement.getFirstChildWithName(
+				new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, INTERFACE_ELEMENT_LOCAL_NAME, ""));
+		if( interfaceElement != null) {
+			OMElement element = interfaceElement
+					.getFirstChildWithName(new QName(CommonConstants.SERVICE_ELEMENT_NAMESPACE, localName, ""));
+			return element != null ? !"null".equals(element.getText().trim()) ? element.getText().trim(): null : null;
+		}
+		return null;
 	}
 
     /**
      * Generate REST service path
-      * @param requestContext Request Context
-     * @param data REST Service content(OMElement)
-     * @param serviceName REST Service name
-     * @param serviceProvider Service Provider(current user)
-     * @return Populated Path
+     * @param requestContext    Request Context
+     * @param data              REST Service content(OMElement)
+     * @param serviceName       REST Service name
+     * @param serviceProvider   Service Provider(current user)
+     * @return                  Populated Path
      */
     private static String getRestServicePath(RequestContext requestContext, OMElement data, String serviceName,
                                              String serviceProvider) {

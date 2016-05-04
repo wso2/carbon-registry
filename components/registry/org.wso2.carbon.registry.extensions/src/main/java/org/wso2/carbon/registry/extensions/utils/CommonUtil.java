@@ -1267,4 +1267,27 @@ public class CommonUtil {
 		}
 	}
 
+    /**
+     * Adds associations for a given source and target
+     *
+     * @param registry              registry.
+     * @param source                source path.
+     * @param target                target path.
+     * @throws RegistryException    If fails to add a dependency.
+     */
+    public static void addDependency(Registry registry, String source, String target) throws RegistryException {
+        registry.addAssociation(source, target, CommonConstants.DEPENDS);
+        registry.addAssociation(target, source, CommonConstants.USED_BY);
+    }
+
+    /**
+     * Checks if a interface url is valid to import.
+     *
+     * @param url   url.
+     * @return      True if url is valid and false otherwise.
+     */
+    public static boolean isValidUrl(String url) {
+        return StringUtils.isNotBlank(url) && !(url.startsWith(RegistryConstants.GOVERNANCE_REGISTRY_BASE_PATH));
+    }
+
 }

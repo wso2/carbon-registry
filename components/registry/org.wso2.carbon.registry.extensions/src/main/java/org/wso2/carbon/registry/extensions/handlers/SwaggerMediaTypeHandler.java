@@ -146,14 +146,14 @@ public class SwaggerMediaTypeHandler extends Handler {
             String swaggerPath;
             if (StringUtils.isBlank(sourceURL)) {
                 inputStream = new ByteArrayInputStream((byte[]) resourceContentObj);
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
 				swaggerPath = processor
                         .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), null);
             } else {
                 //Open a stream to the sourceURL
                 inputStream = new URL(sourceURL).openStream();
 
-                SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+                SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
 				swaggerPath = processor
                         .processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()),
                                 sourceURL);
@@ -200,7 +200,7 @@ public class SwaggerMediaTypeHandler extends Handler {
 			//Open a stream to the sourceURL
 			inputStream = new URL(sourceURL).openStream();
 
-			SwaggerProcessor processor = new SwaggerProcessor(requestContext);
+			SwaggerProcessor processor = new SwaggerProcessor(requestContext, true);
 			if(processor.processSwagger(inputStream, getChrootedLocation(requestContext.getRegistryContext()), sourceURL) != null) {
                 requestContext.setProcessingComplete(true);
             }

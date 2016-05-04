@@ -298,7 +298,7 @@ public class SOAPServiceMediaTypeHandler extends Handler {
                         tmpResource.addProperty(entry.getKey(), entry.getValue());
                     }
                     context.setResource(tmpResource);
-                    definitionPath = wadlProcessor.importWADLToRegistry(context, null, disableWADLValidation);
+                    definitionPath = wadlProcessor.importWADLToRegistry(context, disableWADLValidation);
                 } else {
                     throw new RegistryException("Invalid service definition found. Please enter a valid WSDL/WADL URL");
                 }

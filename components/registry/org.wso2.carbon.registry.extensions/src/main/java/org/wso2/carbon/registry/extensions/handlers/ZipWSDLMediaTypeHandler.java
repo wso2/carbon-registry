@@ -553,8 +553,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             path = path + wadlName;
             requestContext.setResourcePath(new ResourcePath(path));
             WADLProcessor wadlProcessor = new WADLProcessor (requestContext);
-            return wadlProcessor.importWADLToRegistry(requestContext,
-                    getChrootedWADLLocation(requestContext.getRegistryContext()), disableWADLValidation);
+            return wadlProcessor.importWADLToRegistry(requestContext, disableWADLValidation);
 
         }
         return null;
@@ -593,7 +592,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
             }
             path = path + swaggerName;
             requestContext.setResourcePath(new ResourcePath(path));
-            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext);
+            SwaggerProcessor swaggerProcessor = new SwaggerProcessor (requestContext, true);
             InputStream inputStream = null;
             try {
                 inputStream = new URL(uri).openStream();
