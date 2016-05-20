@@ -222,6 +222,10 @@ public class WADLProcessor {
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(getCreateService()){
+            // when creating REST service for wadl, Both resources had same uuid.
+            // to overcome that, setting uuid to null here. From createRestServiceArtifact, it will check for uuid.
+            // And it will create new random UUID for REST service
+            resource.setUUID(null);
             OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
