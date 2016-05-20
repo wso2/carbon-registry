@@ -223,7 +223,7 @@ public class WADLProcessor {
         addImportAssociations(actualPath);
         if(getCreateService()){
             // when creating REST service for wadl, Both resources had same uuid.
-            // to overcome that, setting uuid to null here. From createRestServiceArtifact, it will check for uuid.
+            // to overcome that, setting uuid to null here. From addServiceToRegistry, it will check for uuid.
             // And it will create new random UUID for REST service
             resource.setUUID(null);
             requestContext.setResource(resource);
