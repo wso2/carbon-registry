@@ -226,6 +226,7 @@ public class WADLProcessor {
             // to overcome that, setting uuid to null here. From createRestServiceArtifact, it will check for uuid.
             // And it will create new random UUID for REST service
             resource.setUUID(null);
+            requestContext.setResource(resource);
             OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
