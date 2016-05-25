@@ -55,6 +55,8 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
+import static org.wso2.carbon.registry.extensions.utils.WSDLUtil.getSecuredDocumentBuilder;
+
 public class WSDLUtils {
 
     public static final String WSDL_VALIDATION_MESSAGE = "WSDL Validation Message ";
@@ -96,7 +98,7 @@ public class WSDLUtils {
             builder.parse(uri);
 
             DocumentBuilder db;
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
             dbf.setNamespaceAware(true);
 
             try {
@@ -373,7 +375,7 @@ public class WSDLUtils {
             ResourceBundle rb = ResourceBundle.getBundle("validatewsdl");
             MessageGenerator messagegenerator = new MessageGenerator(rb);
             DocumentBuilder db;
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
             dbf.setNamespaceAware(true);
 
             try {
