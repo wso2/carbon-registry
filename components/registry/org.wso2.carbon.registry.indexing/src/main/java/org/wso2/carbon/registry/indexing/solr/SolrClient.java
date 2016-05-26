@@ -45,6 +45,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RegistryConfigLoader;
+import org.wso2.carbon.registry.indexing.RxtDataManager;
 import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
@@ -65,11 +66,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
-import java.util.Locale;
 
 public class SolrClient {
 
@@ -358,10 +359,24 @@ public class SolrClient {
                         } else {
                             fieldKeyValue = fieldList.getKey();
                         }
-                        // Add single field String values
-                        solrInputDocument
-                                .addField(fieldKeyValue + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
-                                        fieldList.getValue().get(0));
+
+                        String mediaType = null;
+                        List<String> mediaTypeArray = fields.get("mediaType");
+                        if (mediaTypeArray.size() > 0) {
+                            mediaType = mediaTypeArray.get(0);
+                        }
+
+                        if (fieldList.getValue() != null && mediaType != null && isMultiValueField(mediaType,
+                                fieldList.getKey())) {
+                            solrInputDocument
+                                    .addField(fieldKeyValue + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX,
+                                            fieldList.getValue());
+                        } else {
+                            // Add single field String values
+                            solrInputDocument
+                                    .addField(fieldKeyValue + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX,
+                                            fieldList.getValue().get(0));
+                        }
                     }
                 }
             }
@@ -902,7 +917,11 @@ public class SolrClient {
                         updatedRangeNegate = field.getValue();
                     } else {
                         // Set the suffix value of the key
-                        fieldKeySuffix = SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+                        if (isMultiValueField(fields.get("mediaType"), field.getKey())) {
+                            fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
+                        } else {
+                            fieldKeySuffix = SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
+                        }
                         query.addFilterQuery(field.getKey() + fieldKeySuffix + (field.getValue()));
                     }
                 }
@@ -1257,4 +1276,22 @@ public class SolrClient {
         return dateValue;
     }
 
+    /**
+     * This method is used to check whether a filed is a multi value filed or not.
+     *
+     * @param mediaType media type
+     * @param fieldKey  field key
+     * @return
+     */
+    private boolean isMultiValueField(String mediaType, String fieldKey) {
+        boolean result = false;
+        HashMap<String, List<String>> rxtDetails = RxtDataManager.getInstance().getRxtDetails();
+        List<String> fields = rxtDetails.get(mediaType);
+        if (fields != null) {
+            if (fields.contains(fieldKey)) {
+                result = true;
+            }
+        }
+        return result;
+    }
 }
