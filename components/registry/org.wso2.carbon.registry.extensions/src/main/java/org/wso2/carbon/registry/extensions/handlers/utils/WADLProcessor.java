@@ -28,10 +28,7 @@ import org.jvnet.ws.wadl.ast.InvalidWADLException;
 import org.jvnet.ws.wadl.ast.WadlAstBuilder;
 import org.jvnet.ws.wadl.util.MessageListener;
 import org.w3c.dom.Element;
-import org.wso2.carbon.registry.core.Registry;
-import org.wso2.carbon.registry.core.RegistryConstants;
-import org.wso2.carbon.registry.core.Resource;
-import org.wso2.carbon.registry.core.ResourcePath;
+import org.wso2.carbon.registry.core.*;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.jdbc.Repository;
@@ -222,6 +219,11 @@ public class WADLProcessor {
         registry.put(actualPath, resource);
         addImportAssociations(actualPath);
         if(getCreateService()){
+            // when creating REST service for wadl, Both resources had same uuid.
+            // By adding new resource to request context. Inside addServiceToRegistry, it will check for uuid.
+            // And it will create new random UUID for REST service
+            Resource tempResource = new ResourceImpl();
+            requestContext.setResource(tempResource);
             OMElement serviceElement = RESTServiceUtils.createRestServiceArtifact(wadlElement, wadlName, version,
                     RegistryUtils.getRelativePath(requestContext.getRegistryContext(), actualPath));
             String servicePath = RESTServiceUtils.addServiceToRegistry(requestContext, serviceElement);
