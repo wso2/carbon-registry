@@ -22,12 +22,14 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
+import org.wso2.carbon.registry.indexing.bean.AllTenantsUnboundedFieldBean;
 import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.xml.sax.SAXException;
@@ -54,15 +56,14 @@ public class RxtDataLoadUtils {
     /**
      * This method is used to get rxt data.
      *
-     * @param registryService registry service.
+     * @param userRegistry userRegistry.
      * @return
      * @throws RegistryException
      */
-    public static HashMap<String, List<String>> getRxtData(RegistryService registryService) throws RegistryException {
-        String[] paths = getRxtPathLists(registryService.getRegistry());
+    public static HashMap<String, List<String>> getRxtData(UserRegistry userRegistry) throws RegistryException {
 
+        String[] paths = getRxtPathLists(userRegistry);
         HashMap<String, List<String>> RxtDetails = new HashMap<>();
-        UserRegistry userRegistry = registryService.getRegistry();
         for (String path : paths) {
             String rxtContent = RegistryUtils.decodeBytes((byte[]) userRegistry.get(path).getContent());
             RxtUnboundedEntryBean rxtUnboundedEntryBean = getRxtUnboundedEntries(rxtContent);

@@ -18,12 +18,9 @@
 
 package org.wso2.carbon.registry.indexing.internal;
 
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.registry.indexing.utils.RxtDataLoadUtils;
-
-import java.util.HashMap;
-import java.util.List;
+import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
+import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * This class acts as the data holder class to rxt data service.
@@ -31,9 +28,9 @@ import java.util.List;
 public class RxtDataServiceDataHolder {
 
     private static RxtDataServiceDataHolder instance = new RxtDataServiceDataHolder();
-    // Map to keep the rxt unbounded table entries.
-    private static HashMap<String, List<String>> RxtDetails = new HashMap<>();
     private RegistryService registryService;
+    private TenantRegistryLoader tenantRegistryLoader;
+    private RealmService realmService;
 
     public static RxtDataServiceDataHolder getInstance() {
         return instance;
@@ -58,25 +55,38 @@ public class RxtDataServiceDataHolder {
     }
 
     /**
-     * This method is used to set rxt details.
+     * This method is used to set TenantRegistryLoader
      *
-     * @param rxtDetails map of rxt details.
-     * @throws RegistryException
+     * @param tenantRegistryLoader tenantRegistryLoader
      */
-    public void setRxtDetails(HashMap<String, List<String>> rxtDetails) throws RegistryException {
-        if (rxtDetails != null) {
-            RxtDetails = rxtDetails;
-        } else {
-            RxtDetails = RxtDataLoadUtils.getRxtData(getRegistryService());
-        }
+    public void setTenantRegistryLoader(TenantRegistryLoader tenantRegistryLoader) {
+        this.tenantRegistryLoader = tenantRegistryLoader;
     }
 
     /**
-     * This method is used to get rxt details.
+     * This method is used to get TenantRegistryLoader.
      *
-     * @return  map of rxt details.
+     * @return tenantRegistryLoader
      */
-    public HashMap<String, List<String>> getRxtDetails() {
-        return RxtDetails;
+    public TenantRegistryLoader getTenantRegistryLoader() {
+        return tenantRegistryLoader;
+    }
+
+    /**
+     * This method is used to set RealmService
+     *
+     * @param realmService tenantRegistryLoader
+     */
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
+    /**
+     * This method is used to get RealmService.
+     *
+     * @return tenantRegistryLoader
+     */
+    public RealmService getRealmService() {
+        return realmService;
     }
 }

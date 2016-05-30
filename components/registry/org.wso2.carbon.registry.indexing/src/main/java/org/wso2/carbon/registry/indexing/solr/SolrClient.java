@@ -1285,7 +1285,10 @@ public class SolrClient {
      */
     private boolean isMultiValueField(String mediaType, String fieldKey) {
         boolean result = false;
-        HashMap<String, List<String>> rxtDetails = RxtDataManager.getInstance().getRxtDetails();
+        HashMap<Integer, HashMap<String, List<String>>> allTenantsUnboundedFields = RxtDataManager.getInstance()
+                .getTenantsUnboundedFileds();
+        HashMap<String, List<String>> rxtDetails = allTenantsUnboundedFields.get(PrivilegedCarbonContext
+                .getThreadLocalCarbonContext().getTenantId());
         List<String> fields = rxtDetails.get(mediaType);
         if (fields != null) {
             if (fields.contains(fieldKey)) {
