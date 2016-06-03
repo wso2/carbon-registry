@@ -22,7 +22,6 @@ import org.wso2.carbon.registry.core.config.RegistryConfiguration;
 import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
-import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
 import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -54,7 +53,6 @@ public class BaseTestCase extends TestCase {
         RegistryCoreServiceComponent.setRegistryConfig(regConfig);
 
         RealmService realmService = new InMemoryRealmService();
-        RegistryDataHolder.getInstance().setRealmService(realmService);
         InputStream is;
 
         try {
