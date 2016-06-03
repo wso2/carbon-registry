@@ -20,7 +20,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.jdbc.handlers.Handler;
 import org.wso2.carbon.registry.core.jdbc.handlers.RequestContext;
-import org.wso2.carbon.registry.extensions.utils.SchemaValidator;
+import org.wso2.carbon.registry.core.utils.SchemaValidator;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 
 import java.io.ByteArrayInputStream;
