@@ -20,12 +20,15 @@ import junit.framework.Assert;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.internal.RegistryCoreServiceComponent;
+import org.wso2.carbon.registry.core.internal.RegistryDataHolder;
 import org.wso2.carbon.registry.core.jdbc.EmbeddedRegistryService;
+import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.extensions.aspects.DefaultLifecycle;
 import org.wso2.carbon.registry.extensions.test.utils.BaseTestCase;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
 import java.util.List;
