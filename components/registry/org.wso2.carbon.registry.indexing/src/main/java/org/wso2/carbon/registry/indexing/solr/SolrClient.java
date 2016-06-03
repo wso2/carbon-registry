@@ -45,7 +45,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RegistryConfigLoader;
-import org.wso2.carbon.registry.indexing.RxtDataManager;
+import org.wso2.carbon.registry.indexing.RxtUnboundedFiledManager;
 import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
@@ -1285,14 +1285,19 @@ public class SolrClient {
      */
     private boolean isMultiValueField(String mediaType, String fieldKey) {
         boolean result = false;
-        HashMap<Integer, HashMap<String, List<String>>> allTenantsUnboundedFields = RxtDataManager.getInstance()
-                .getTenantsUnboundedFileds();
-        HashMap<String, List<String>> rxtDetails = allTenantsUnboundedFields.get(PrivilegedCarbonContext
-                .getThreadLocalCarbonContext().getTenantId());
-        List<String> fields = rxtDetails.get(mediaType);
-        if (fields != null) {
-            if (fields.contains(fieldKey)) {
-                result = true;
+        HashMap<Integer, HashMap<String, List<String>>> allTenantsUnboundedFields = RxtUnboundedFiledManager
+                .getInstance().getTenantsUnboundedFileds();
+
+        if (allTenantsUnboundedFields.size() > 0) {
+            HashMap<String, List<String>> rxtDetails = allTenantsUnboundedFields.get(PrivilegedCarbonContext
+                    .getThreadLocalCarbonContext().getTenantId());
+            if (rxtDetails != null) {
+                List<String> fields = rxtDetails.get(mediaType);
+                if (fields != null) {
+                    if (fields.contains(fieldKey)) {
+                        result = true;
+                    }
+                }
             }
         }
         return result;

@@ -21,10 +21,9 @@ package org.wso2.carbon.registry.indexing;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.TenantRegistryLoader;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.internal.RxtDataServiceDataHolder;
-import org.wso2.carbon.registry.indexing.utils.RxtDataLoadUtils;
+import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.TenantManager;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -35,13 +34,13 @@ import java.util.List;
 /**
  * This class is used to set rxt unbounded filed details to the memory.
  */
-public class RxtDataManager extends AbstractAdmin {
+public class RxtUnboundedFiledManager extends AbstractAdmin {
 
-    private static RxtDataManager rxtDataManagerInstance = new RxtDataManager();
+    private static RxtUnboundedFiledManager rxtUnboundedFiledManagerInstance = new RxtUnboundedFiledManager();
     private static HashMap<Integer, HashMap<String, List<String>>> allTenantsUnboundedFields = new HashMap<>();
 
-    public static RxtDataManager getInstance() {
-        return rxtDataManagerInstance;
+    public static RxtUnboundedFiledManager getInstance() {
+        return rxtUnboundedFiledManagerInstance;
     }
 
     /**
@@ -54,35 +53,6 @@ public class RxtDataManager extends AbstractAdmin {
     }
 
     /**
-     * This method is used to set unbounded rxt filed values to memory.
-     *
-     * @throws RegistryException
-     */
-    public void setAllTenantsUnboundedFields() throws RegistryException {
-
-        try {
-            TenantManager tenantManager = RxtDataServiceDataHolder.getInstance().getRealmService().getTenantManager();
-            Tenant[] tenants = tenantManager.getAllTenants();
-
-            for (Tenant tenant : tenants) {
-                int tenantId = tenant.getId();
-                tenant = tenantManager.getTenant(tenant.getId());
-                RxtDataServiceDataHolder.getInstance().getTenantRegistryLoader().loadTenantRegistry(tenantId);
-                UserRegistry registry = RxtDataServiceDataHolder.getInstance()
-                        .getRegistryService().getRegistry(tenant.getAdminName(), tenantId);
-                HashMap<String, List<String>> rxtDetails = RxtDataLoadUtils.getRxtData(registry);
-                allTenantsUnboundedFields.put(tenantId, rxtDetails);
-            }
-            // Add super tenant's rxt unbounded fields
-            UserRegistry registry = RxtDataServiceDataHolder.getInstance().getRegistryService().getRegistry();
-            HashMap<String, List<String>> rxtDetails = RxtDataLoadUtils.getRxtData(registry);
-            allTenantsUnboundedFields.put(-1234, rxtDetails);
-        } catch (UserStoreException e) {
-            throw new RegistryException("Error while getting all tenant list", e);
-        }
-    }
-
-    /**
      * This method is used to update a specific tenants unbounded fields.
      *
      * @param rxtConfig rxt configuration
@@ -92,7 +62,17 @@ public class RxtDataManager extends AbstractAdmin {
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
         UserRegistry registry = RxtDataServiceDataHolder.getInstance().getRegistryService().getRegistry();
-        HashMap<String, List<String>> superTenantRxtUnboundedEntries = RxtDataLoadUtils.getRxtData(registry);
-        allTenantsUnboundedFields.put(tenantId, superTenantRxtUnboundedEntries);
+        HashMap<String, List<String>> tenantRxtUnboundedEntries = RxtUnboundedDataLoadUtils.getRxtData(registry);
+        allTenantsUnboundedFields.put(tenantId, tenantRxtUnboundedEntries);
+    }
+
+    /**
+     * This method is used to set a specific tenants unbounded filed values.
+     *
+     * @param tenantId      tenant Id
+     * @param rxtUnboundedFiledMap    rxt unbounded filed map.
+     */
+    public void setTenantsUnboundedFields(Integer tenantId, HashMap<String, List<String>> rxtUnboundedFiledMap){
+        allTenantsUnboundedFields.put(tenantId, rxtUnboundedFiledMap);
     }
 }

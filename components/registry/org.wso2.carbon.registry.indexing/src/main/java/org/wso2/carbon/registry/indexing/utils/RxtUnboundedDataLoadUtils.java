@@ -22,16 +22,13 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
-import org.wso2.carbon.registry.indexing.bean.AllTenantsUnboundedFieldBean;
-import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.wso2.carbon.registry.indexing.SolrConstants;
+import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -49,9 +46,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This class is used to load rxt data
+ * This class is used to load rxt data.
  */
-public class RxtDataLoadUtils {
+public class RxtUnboundedDataLoadUtils {
 
     /**
      * This method is used to get rxt data.
@@ -80,7 +77,7 @@ public class RxtDataLoadUtils {
     /**
      * This method is used to get rxt path list.
      *
-     * @param registry  registry object.
+     * @param registry registry object.
      * @return
      * @throws RegistryException
      */
@@ -165,8 +162,7 @@ public class RxtDataLoadUtils {
             }
             rxtUnboundedEntryBean.setFields(fields);
         } catch (ParserConfigurationException | SAXException | XPathExpressionException | IOException e) {
-            //TODO: Enter the log message
-            throw new RegistryException("", e);
+            throw new RegistryException("Failed to read rxt configuration and filter the unbounded fields", e);
         }
         return rxtUnboundedEntryBean;
     }
