@@ -42,8 +42,9 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is used to load rxt data.
@@ -57,10 +58,10 @@ public class RxtUnboundedDataLoadUtils {
      * @return
      * @throws RegistryException
      */
-    public static HashMap<String, List<String>> getRxtData(UserRegistry userRegistry) throws RegistryException {
+    public static Map<String, List<String>> getRxtData(UserRegistry userRegistry) throws RegistryException {
 
         String[] paths = getRxtPathLists(userRegistry);
-        HashMap<String, List<String>> RxtDetails = new HashMap<>();
+        Map<String, List<String>> RxtDetails = new ConcurrentHashMap<>();
         for (String path : paths) {
             String rxtContent = RegistryUtils.decodeBytes((byte[]) userRegistry.get(path).getContent());
             RxtUnboundedEntryBean rxtUnboundedEntryBean = getRxtUnboundedEntries(rxtContent);
