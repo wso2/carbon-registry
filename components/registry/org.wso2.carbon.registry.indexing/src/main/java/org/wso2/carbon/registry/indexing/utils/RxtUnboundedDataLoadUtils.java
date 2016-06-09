@@ -111,8 +111,7 @@ public class RxtUnboundedDataLoadUtils {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document doc;
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rxtContent.getBytes());
-        try {
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rxtContent.getBytes())) {
             builder = factory.newDocumentBuilder();
             if (builder != null) {
                 doc = builder.parse(byteArrayInputStream);

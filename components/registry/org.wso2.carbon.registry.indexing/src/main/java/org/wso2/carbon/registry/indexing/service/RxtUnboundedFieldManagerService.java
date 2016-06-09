@@ -22,7 +22,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.registry.indexing.internal.RxtDataServiceDataHolder;
+import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.utils.RxtUnboundedDataLoadUtils;
 
 import java.util.List;
@@ -60,7 +60,7 @@ public class RxtUnboundedFieldManagerService extends AbstractAdmin {
     public void setActiveTenantsUnboundedFields(String rxtConfig) throws RegistryException {
 
         int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
-        UserRegistry registry = RxtDataServiceDataHolder.getInstance().getRegistryService().getRegistry();
+        UserRegistry registry = Utils.getRegistryService().getRegistry();
         Map<String, List<String>> tenantRxtUnboundedEntries = RxtUnboundedDataLoadUtils.getRxtData(registry);
         allTenantsUnboundedFields.put(tenantId, tenantRxtUnboundedEntries);
     }
