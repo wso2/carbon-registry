@@ -86,7 +86,31 @@ public final class SolrConstants {
     public static final Pattern INT_PATTERN = Pattern.compile("-?\\d+");
     // Constant for regex double
     public static final Pattern DOUBLE_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
-    //constant for governance path to solr queries
-    public static final String GOVERNANCE_REGISTRY_BASE_PATH =  "\\/_system\\/governance\\/";
-
+    // Constant for governance path to solr queries
+    public static final String GOVERNANCE_REGISTRY_BASE_PATH = "\\/_system\\/governance\\/";
+    // Constant for rxt root xPath
+    public static final String RXT_ROOT_XPATH = "/artifactType";
+    // Constant for word type used in rxt configuration
+    public static final String WORD_TYPE = "type";
+    // Constant for word name used in rxt configuration
+    public static final String WORD_NAME = "name";
+    // Constant for unbounded table xPath
+    public static final String UNBOUNDED_TABLE_XPATH = "/artifactType/content/table[@maxoccurs=\"unbounded\"]";
+    // Constant for unbounded field xPath
+    public static final String UNBOUNDED_FIELD_XPATH = "/artifactType/content/table/field[@maxoccurs=\"unbounded\"]";
+    // Constant for rxt media type
+    public static final String RXT_MEDIA_TYPE = "application/vnd.wso2.registry-ext-type+xml";
+    // Constant for unbounded table xPAth prefix
+    public static final String UNBOUNDED_TABLE_XPATH_PREFIX =
+            "/artifactType/content/table[@maxoccurs=\"unbounded\"][@name=\"";
+    // Constant for unbounded table xPAth suffix
+    public static final String UNBOUNDED_TABLE_XPATH_SUFFIX = "\"]/field/name";
+    // Constant for unbounded field xPAth prefix
+    public static final String UNBOUNDED_FIELD_XPATH_PREFIX = "/artifactType/content/table[@name=\"";
+    // Constant for unbounded field xPAth suffix
+    public static final String UNBOUNDED_FIELD_XPATH_SUFFIX = "\"]/field[@maxoccurs=\"unbounded\"]/name";
+    // Constant for underscore
+    public static final String UNDERSCORE = "_";
+    // Constant for _entry
+    public static final String UNDERSCORE_ENTRY = "_entry";
 }
