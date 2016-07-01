@@ -1412,7 +1412,7 @@
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
         <org.wso2.securevault.version>1.0.0</org.wso2.securevault.version>
 
-        <carbon.identity.version>5.1.1-SNAPSHOT</carbon.identity.version>
+        <carbon.identity.version>5.1.0</carbon.identity.version>
 
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v17</axis2.version>
