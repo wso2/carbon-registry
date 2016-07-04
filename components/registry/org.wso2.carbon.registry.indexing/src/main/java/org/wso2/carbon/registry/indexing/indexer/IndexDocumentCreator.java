@@ -204,7 +204,7 @@ public class IndexDocumentCreator {
         if (tags != null && tags.length > 0) {
             for (Tag tag : tags) {
                 if (tag.getTagName().contains("/")) {
-                    taxonomyList.add(tag.getTagName());
+                    taxonomyList.add(tag.getTagName().toLowerCase());
                 } else {
                     tagList.add(tag.getTagName());
                 }
