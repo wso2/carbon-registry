@@ -40,6 +40,8 @@ import java.util.regex.PatternSyntaxException;
 
 public class RegistryConfigLoader {
 
+    public static final String SKIP_CACHE = "skipCache";
+    public static final String TRUE = "true";
     private static volatile RegistryConfigLoader registryConfigLoaderInstance = new RegistryConfigLoader();
 
     private static Log log = LogFactory.getLog(RegistryConfigLoader.class);
@@ -63,6 +65,16 @@ public class RegistryConfigLoader {
     }
 
     private  int indexerPoolSize = 50;
+
+    private boolean skipIndexingCache = false;
+
+    public boolean isSkipIndexingCache() {
+        return skipIndexingCache;
+    }
+
+    public void setSkipIndexingCache(boolean skipIndexingCache) {
+        this.skipIndexingCache = skipIndexingCache;
+    }
 
     public long getBatchSize() {
         return batchSize;
@@ -186,6 +198,18 @@ public class RegistryConfigLoader {
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
             log.error("Error occurred when retriving lastAccessTimeLocation, hence using the default value", e);
+        }
+
+        try {
+            // Reads whether to skip cache for indexing purposes.
+            OMElement skipIndexingCacheEle = indexingConfig.getFirstChildWithName(
+                    new QName(SKIP_CACHE));
+            if (skipIndexingCacheEle != null) {
+                this.setSkipIndexingCache(TRUE.equals(skipIndexingCacheEle.getText()));
+            }
+        } catch (OMException e) {
+            // we can use default value and continue if no OMElement found in indexingConfig
+            log.error("Error occurred when retrieving skipCache info, hence using the default value", e);
         }
         
         // solr server url for initiate the solr server	
