@@ -1406,13 +1406,13 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.4.5</carbon.kernel.version>
+        <carbon.kernel.version>4.4.6</carbon.kernel.version>
         <carbon.kernel.package.import.version.range>[4.4.0, 4.5.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
         <org.wso2.securevault.version>1.0.0</org.wso2.securevault.version>
 
-        <carbon.identity.version>5.0.8</carbon.identity.version>
+        <carbon.identity.version>5.1.0</carbon.identity.version>
 
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v17</axis2.version>
@@ -1516,7 +1516,7 @@
         <amber.version>0.22.1358727-wso2v2</amber.version>
         
         <!-- Carbon Commons -->        
-        <carbon.commons.version>4.5.2</carbon.commons.version>
+        <carbon.commons.version>4.5.4</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.4.0, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- jms -->

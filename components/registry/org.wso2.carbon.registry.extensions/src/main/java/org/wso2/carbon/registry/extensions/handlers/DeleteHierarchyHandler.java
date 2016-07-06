@@ -40,6 +40,13 @@ public class DeleteHierarchyHandler extends Handler {
         try {
             Registry registry =  requestContext.getRegistry();
             String parentPath =  requestContext.getResource().getParentPath();
+            Resource currentResource = registry.get(requestContext.getResource().getPath());
+            if ((currentResource instanceof Collection) && ((Collection)currentResource).getChildCount() != 0 ){
+                String[] childPaths = ((Collection)currentResource).getChildren();
+                for (String childPath : childPaths) {
+                    deleteChildRecursively(childPath,registry);
+                }
+            }
 
 //        First we are going to delete the actual service resource
             registry.delete(requestContext.getResource().getPath());
@@ -60,6 +67,21 @@ public class DeleteHierarchyHandler extends Handler {
         if((currentResource instanceof Collection) && ((Collection)currentResource).getChildCount() == 0 ){
             registry.delete(path);
             deleteRecursively(currentResource.getParentPath(),registry);
+        }
+
+    }
+
+    private void deleteChildRecursively(String path,Registry registry) throws RegistryException {
+        Resource currentResource = registry.get(path);
+
+        if((currentResource instanceof Collection) && ((Collection)currentResource).getChildCount() == 0 ){
+            String[] childPaths = ((Collection)currentResource).getChildren();
+            for (String childPath : childPaths) {
+                deleteChildRecursively(childPath,registry);
+            }
+            registry.delete(path);
+        } else {
+            registry.delete(path);
         }
 
     }
