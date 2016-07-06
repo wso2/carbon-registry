@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 
 <script type="text/javascript" src="../yui/build/utilities/utilities.js"></script>
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
@@ -135,7 +136,7 @@
                                             <form method="post"
                                                   name="extensionUploadForm"
                                                   id="extensionUploadForm"
-                                                  action="../../fileupload/registryextensions"
+                                                  action="../../fileupload/registryextensions?<csrf:tokenname/>=<csrf:tokenvalue/>"
                                                   enctype="multipart/form-data" target="_self">
                                                  <input type="hidden" id="uRedirect" name="redirect" value="extensions/list_extensions.jsp?region=region3&item=list_extensions_menu"/>
                                                  <input type="hidden" id="uErrorRedirect" name="errorRedirect" value="extensions/add_extensions.jsp?errorUpload=errorUpload"/>
