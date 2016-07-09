@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.resource.ui.processors;
 
+import org.owasp.encoder.Encode;
 import org.wso2.carbon.registry.resource.ui.UIProcessor;
 import org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient;
 import org.wso2.carbon.registry.core.Registry;
@@ -35,6 +36,8 @@ public class SetDescriptionProcessor {
 
         String resourcePath = request.getParameter("resourcePath");
         String description = request.getParameter("description");
+        description = Encode.forHtmlContent(description);
+
         description = description.replaceAll("<br>", "\n");
         String cookie = (String) request.
                 getSession().getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
