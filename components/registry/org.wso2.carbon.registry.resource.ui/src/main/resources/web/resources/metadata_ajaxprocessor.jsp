@@ -31,6 +31,7 @@
 <%@ page import="org.wso2.carbon.registry.core.utils.MediaTypesUtils" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.net.URLDecoder" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
@@ -366,7 +367,7 @@ TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=mediaType%><
                     key="description"/>:
             </td>
             <td valign="top" colspan="2">
-                <div id="descView" style="display:block;"><% if (metadata.getDescription() != null) { %><%=metadata.getDescription()%><% } %></div>
+                <div id="descView" style="display:block;"><% if (metadata.getDescription() != null) { %><%=Encode.forHtml(metadata.getDescription())%><% } %></div>
                 <% if (metadata.getPutAllowed() && !metadata.getVersionView()) { %>
                 <div id="editButton" class="registryWriteOperation" style="display:inline;">
                     <% if (!Boolean.parseBoolean(metadata.getWriteLocked())) {
