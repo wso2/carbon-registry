@@ -42,9 +42,8 @@
                 comment = client.getComments(request);
             } catch (Exception e) {
                 response.setStatus(500);
-                CarbonUIMessage uiMsg = new CarbonUIMessage(CarbonUIMessage.ERROR, e.getMessage(), e);
-                session.setAttribute(CarbonUIMessage.ID, uiMsg);
-        %>
+                %><%=e.getMessage()%>
+
         <jsp:include page="../admin/error.jsp?<%=e.getMessage()%>"/>
         <%
                 return;

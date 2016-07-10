@@ -32,26 +32,19 @@
 <%
     RatingBean ratingBean;
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
-    boolean displayPlainError = true;
     try{
         InfoServiceClient client = null;
         if (request.getParameter("rating") != null) {
             client = new InfoServiceClient(cookie, config, session);
             client.rateResource(request);
         } else {
-            displayPlainError = false;
             client = new InfoServiceClient(cookie, config, session);
         }
         ratingBean = client.getRatings(request);
     } catch (Exception e){
         response.setStatus(500);
-        if (displayPlainError) {
-            %><%=e.getMessage()%><%
-            return;
-        }
-        CarbonUIMessage uiMsg = new CarbonUIMessage(CarbonUIMessage.ERROR, e.getMessage(), e);
-        session.setAttribute(CarbonUIMessage.ID, uiMsg);
-%>
+        %><%=e.getMessage()%>
+
         <jsp:include page="../admin/error.jsp?<%=e.getMessage()%>"/>
 <%
         return;
