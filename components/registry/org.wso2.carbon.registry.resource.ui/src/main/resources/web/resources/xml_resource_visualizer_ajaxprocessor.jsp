@@ -31,6 +31,7 @@
         try {
             ResourceServiceClient client = new ResourceServiceClient(cookie, config, session);
             textContent = client.getTextContent(request);
+            response.setHeader("X-Frame-Options", "SAMEORIGIN");
         } catch (Exception e) {
             return;
         }
