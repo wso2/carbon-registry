@@ -53,7 +53,6 @@
     boolean canAdd = true;
     String username = null;
     String[] roles = null;
-    boolean displayPlainError = true;
     String url = null;
     boolean isCollection=true;
     ResourceServiceClient resourceServiceClient=null;
@@ -83,7 +82,6 @@
             client = new InfoServiceClient(cookie, config, session);
             client.unsubscribe(request);
         } else {
-            displayPlainError = false;
             client = new InfoServiceClient(cookie, config, session);
         }
         if (request.getParameter("path") != null) {
@@ -130,13 +128,7 @@
         }
     } catch (Exception e){
         response.setStatus(500);
-        if (displayPlainError) {
-            %><%=e.getMessage()%><%
-            return;
-        }
-        CarbonUIMessage uiMsg = new CarbonUIMessage(CarbonUIMessage.ERROR, e.getMessage(), e);
-        session.setAttribute(CarbonUIMessage.ID, uiMsg);
-%>
+        %><%=e.getMessage()%>
         <jsp:include page="../admin/error.jsp?<%=e.getMessage()%>"/>
 <%
         return;
