@@ -206,7 +206,7 @@ public class IndexDocumentCreator {
                 if (tag.getTagName().contains("/")) {
                     taxonomyList.add(tag.getTagName().toLowerCase());
                 } else {
-                    tagList.add(tag.getTagName().toLowerCase());
+                    tagList.add(tag.getTagName());
                 }
             }
             if (tagList.size() > 0) {
