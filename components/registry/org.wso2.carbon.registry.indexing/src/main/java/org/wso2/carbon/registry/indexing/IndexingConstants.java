@@ -53,6 +53,9 @@ public final class IndexingConstants {
     public static final String FIELD_LC_NAME = "lcName";
     public static final String FIELD_LC_STATE = "lcState";
     public static final String FIELD_OVERVIEW_NAME = "overview_name";
+    public static final String FIELD_AUTHOR = "author";
+    public static final String FIELD_UPDATER = "updater";
+    public static final String OVERVIEW_CONSTANT = "overview";
 
     // New fields are added for indexing
     public static final String FIELD_TAXONOMY = "taxonomy";
