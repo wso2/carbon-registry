@@ -735,7 +735,8 @@ public class EndpointUtils {
             registry.put(endpointAbsolutePath, resource);
             // we need to create a version here.
         }
-
+        String defaultLifeCycle = CommonUtil.getDefaultLifecycle(registry, "endpoint");
+        CommonUtil.applyDefaultLifeCycle(registry, resource, endpointAbsolutePath, defaultLifeCycle);
         registry.addAssociation(associatedPath, endpointAbsolutePath, CommonConstants.DEPENDS);
         registry.addAssociation(endpointAbsolutePath, associatedPath, CommonConstants.USED_BY);
     }
