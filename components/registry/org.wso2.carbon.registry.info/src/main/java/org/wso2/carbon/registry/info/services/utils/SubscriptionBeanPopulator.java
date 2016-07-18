@@ -213,6 +213,7 @@ public class SubscriptionBeanPopulator {
                 }
             }
             log.debug("Found " + subscriptions.size() + " subscriptions");
+            String currentUser = userRegistry.getUserName();
             List<SubscriptionInstance> subscriptionInstances = new LinkedList<SubscriptionInstance>();
             for (Subscription subscription : subscriptions) {
                 String testPath;
@@ -267,10 +268,12 @@ public class SubscriptionBeanPopulator {
                         continue;
                     }
                 }
-                SubscriptionInstance subscriptionInstance = populate(testPath, subscription);
-                if (subscriptionInstance != null) {
-                    subscriptionInstance.setOwner(username);
-                    subscriptionInstances.add(subscriptionInstance);
+                if (currentUser != null && currentUser.equals(username)) {
+                    SubscriptionInstance subscriptionInstance = populate(testPath, subscription);
+                    if (subscriptionInstance != null) {
+                        subscriptionInstance.setOwner(username);
+                        subscriptionInstances.add(subscriptionInstance);
+                    }
                 }
             }
             subscriptionBean.setSubscriptionInstances(subscriptionInstances.toArray(new SubscriptionInstance[0]));
