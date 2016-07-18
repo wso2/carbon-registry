@@ -268,7 +268,7 @@ public class SubscriptionBeanPopulator {
                         continue;
                     }
                 }
-                if(currentUser != null && currentUser.equals(username)) {
+                if (currentUser != null && currentUser.equals(username)) {
                     SubscriptionInstance subscriptionInstance = populate(testPath, subscription);
                     if (subscriptionInstance != null) {
                         subscriptionInstance.setOwner(username);
