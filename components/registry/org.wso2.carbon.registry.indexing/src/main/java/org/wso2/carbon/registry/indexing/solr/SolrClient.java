@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SolrClient {
 
@@ -550,7 +551,9 @@ public class SolrClient {
             } else if (keywords.equals("[* TO *]")) {
                 query = new SolrQuery("* TO *");
             } else {
-                query = new SolrQuery(keywords);
+                //convert the search query to solr readable fields
+                String solrQuery = convertFieldNames(keywords);
+                query = new SolrQuery(solrQuery);
             }
 
             // Set no of rows
@@ -633,6 +636,55 @@ public class SolrClient {
             String message = "Failure at query ";
             throw new SolrException(ErrorCode.SERVER_ERROR, message + keywords, e);
         }
+    }
+
+    /**
+     * This method will return solr readable query String for the keywords
+     *
+     * @param keywords search query string
+     * @return solr aware string
+     */
+    private String convertFieldNames(String keywords) {
+        Pattern p = Pattern.compile("([^-\\s -()]*?):");
+        Matcher m = p.matcher(keywords);
+        while (m.find()) {
+            String fieldName = m.group(1);
+            if (IndexingConstants.FIELD_TAGS.equals(fieldName) ||
+                    IndexingConstants.FIELD_TAXONOMY.equals(fieldName) ||
+                    IndexingConstants.FIELD_COMMENTS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_DESTINATIONS.equals(fieldName) ||
+                    IndexingConstants.FIELD_ASSOCIATION_TYPES.equals(fieldName)) {
+                keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX);
+            } else if (IndexingConstants.FIELD_CREATED_DATE.equals(fieldName) ||
+                    IndexingConstants.FIELD_LAST_UPDATED_DATE.equals(fieldName)) {
+                keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_DATE_FIELD_KEY_SUFFIX);
+            } else if (IndexingConstants.FIELD_LC_NAME.equals(fieldName) ||
+                    IndexingConstants.FIELD_LC_STATE.equals(fieldName) ||
+                    IndexingConstants.FIELD_AUTHOR.equals(fieldName) ||
+                    IndexingConstants.FIELD_MEDIA_TYPE.equals(fieldName) ||
+                    IndexingConstants.FIELD_UPDATER.equals(fieldName)) {
+                keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX);
+            } else if (IndexingConstants.FIELD_CONTENT.equals(fieldName)) {
+                keywords = keywords.replace(IndexingConstants.FIELD_CONTENT + ":", "");
+            } else if (!fieldName.contains("_")) {
+                keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX);
+            } else {
+                keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX);
+            }
+        }
+        log.debug("Solr Query Search | Search Query:::: " + keywords);
+        return keywords;
+    }
+
+    private String replaceKeyword(String keyword, String fieldName, String suffix) {
+        int count = StringUtils.countMatches(keyword, fieldName);
+        if (count > 1) {
+            keyword = keyword.replace(fieldName, fieldName + suffix);
+            keyword = keyword.replace(IndexingConstants.OVERVIEW_CONSTANT + "_" + fieldName + suffix, IndexingConstants.OVERVIEW_CONSTANT + "_" + fieldName);
+        } else {
+            keyword = keyword.replace(fieldName, fieldName + suffix);
+        }
+        return keyword;
     }
 
     /**
