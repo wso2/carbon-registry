@@ -45,11 +45,11 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.RegistryConfigLoader;
-import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.Indexer;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
+import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -61,6 +61,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -763,6 +764,7 @@ public class SolrClient {
     }
 
     public List<FacetField.Count> facetQuery(String keywords, int tenantId, Map<String, String> fields) throws SolrException {
+        List<FacetField.Count> fieldsList = new ArrayList<>();
         String facetField = null;
         try {
             SolrQuery query;
@@ -851,7 +853,10 @@ public class SolrClient {
                     log.debug("Solr index queried query: " + query);
                 }
             }
-            return queryresponse.getFacetField(facetField).getValues();
+            if (queryresponse.getFacetField(facetField) != null) {
+                fieldsList = queryresponse.getFacetField(facetField).getValues();
+            }
+            return fieldsList;
 
         } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
