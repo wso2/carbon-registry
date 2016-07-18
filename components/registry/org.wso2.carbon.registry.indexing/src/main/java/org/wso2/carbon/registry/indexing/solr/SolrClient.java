@@ -752,10 +752,37 @@ public class SolrClient {
         }
     }
 
+    public List<FacetField.Count> facetQuery(String keywords, String facetField, int tenantId) throws SolrException {
+        Map<String, String> fields = new HashMap<>();
+        fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
+        return facetQuery(keywords, tenantId, fields);
+    }
+
     public List<FacetField.Count> facetQuery(int tenantId, Map<String, String> fields) throws SolrException {
+        return facetQuery("[* TO *]", tenantId, fields);
+    }
+
+    public List<FacetField.Count> facetQuery(String keywords, int tenantId, Map<String, String> fields) throws SolrException {
         String facetField = null;
         try {
-            SolrQuery query = new SolrQuery("* TO *");
+            SolrQuery query;
+            // Get the attribute value for content
+            String contentAttribute = fields.get(IndexingConstants.FIELD_CONTENT);
+            if (contentAttribute != null && StringUtils.isNotEmpty(contentAttribute)) {
+                if (getCharCount(contentAttribute, '"') > 0) {
+                    query = new SolrQuery(contentAttribute);
+                } else {
+                    // Check for '&&' and replace with AND, Check for ' ' and replace with OR
+                    query = new SolrQuery(contentAttribute.replaceAll(" ", " OR ").replaceAll("&&", " AND "));
+                }
+                fields.remove(IndexingConstants.FIELD_CONTENT);
+            } else if (keywords.equals("[* TO *]")) {
+                query = new SolrQuery("* TO *");
+            } else {
+                //convert the search query to solr readable fields
+                String solrQuery = convertFieldNames(keywords);
+                query = new SolrQuery(solrQuery);
+            }
             // Set no of rows
             query.setRows(Integer.MAX_VALUE);
             // Solr does not allow to search with special characters ,therefore this fix allow

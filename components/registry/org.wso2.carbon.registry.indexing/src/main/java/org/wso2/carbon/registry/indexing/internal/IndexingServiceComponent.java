@@ -35,11 +35,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
-import org.wso2.carbon.registry.indexing.service.ContentBasedSearchService;
-import org.wso2.carbon.registry.indexing.service.ContentSearchService;
-import org.wso2.carbon.registry.indexing.service.SearchResultsBean;
-import org.wso2.carbon.registry.indexing.service.TenantIndexingLoader;
-import org.wso2.carbon.registry.indexing.service.TermsSearchService;
+import org.wso2.carbon.registry.indexing.service.*;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
@@ -76,6 +72,8 @@ public class IndexingServiceComponent {
                 AttributeSearchService.class.getName(), new AttributeSearchServiceImpl(), null));
         registrations.push(context.getBundleContext().registerService(
                 TermsSearchService.class.getName(), new TermsSearchServiceImpl(), null));
+        registrations.push(context.getBundleContext().registerService(
+                TermsQuerySearchService.class.getName(), new TermsQuerySearchServiceImpl(), null));
         registrations.push(context.getBundleContext().registerService(
                 WaitBeforeShutdownObserver.class.getName(), new WaitBeforeShutdownObserver() {
             boolean status = false;
@@ -227,6 +225,44 @@ public class IndexingServiceComponent {
                 tenantId = MultitenantConstants.SUPER_TENANT_ID;
             }
             return search(tenantId, query);
+        }
+    }
+
+    private static class TermsQuerySearchServiceImpl implements TermsQuerySearchService {
+
+        @Override
+        public TermData[] search(UserRegistry registry, String query, String facetField) throws RegistryException {
+            SearchResultsBean resultsBean;
+            try {
+                resultsBean = new ContentBasedSearchService().searchTermsByQuery(query, facetField, registry);
+            } catch (IndexerException e) {
+                throw new RegistryException("Unable to obtain an instance of a Solr client", e);
+            }
+            String errorMessage = resultsBean.getErrorMessage();
+            if (errorMessage != null) {
+                throw new RegistryException(errorMessage);
+            }
+            return resultsBean.getTermDataList();
+        }
+
+        @Override
+        public TermData[] search(int tenantId, String query, String facetField) throws RegistryException {
+            return search(Utils.getRegistryService().getRegistry(
+                    CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId), query, facetField);
+        }
+
+        @Override
+        public TermData[] search(String query, String facetField) throws RegistryException {
+            int tenantId;
+            try {
+                tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+            } catch (Exception ignored) {
+                tenantId = MultitenantConstants.SUPER_TENANT_ID;
+            }
+            if (tenantId == MultitenantConstants.INVALID_TENANT_ID) {
+                tenantId = MultitenantConstants.SUPER_TENANT_ID;
+            }
+            return search(tenantId, query, facetField);
         }
     }
 
