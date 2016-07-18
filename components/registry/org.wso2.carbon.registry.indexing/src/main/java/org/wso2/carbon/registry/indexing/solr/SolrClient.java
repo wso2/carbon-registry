@@ -672,7 +672,7 @@ public class SolrClient {
                 keywords = replaceKeyword(keywords, fieldName, SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX);
             }
         }
-        log.info("Solr Query Search | Search Query:::: " + keywords);
+        log.debug("Solr Query Search | Search Query:::: " + keywords);
         return keywords;
     }
 
