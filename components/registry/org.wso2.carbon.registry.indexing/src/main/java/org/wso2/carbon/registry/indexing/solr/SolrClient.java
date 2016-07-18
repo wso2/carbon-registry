@@ -18,6 +18,7 @@
 package org.wso2.carbon.registry.indexing.solr;
 
 import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.util.ArrayStack;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,15 +62,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -763,6 +757,7 @@ public class SolrClient {
     }
 
     public List<FacetField.Count> facetQuery(String keywords, int tenantId, Map<String, String> fields) throws SolrException {
+        List<FacetField.Count> fieldsList = new ArrayList<>();
         String facetField = null;
         try {
             SolrQuery query;
@@ -851,7 +846,10 @@ public class SolrClient {
                     log.debug("Solr index queried query: " + query);
                 }
             }
-            return queryresponse.getFacetField(facetField).getValues();
+            if (queryresponse.getFacetField(facetField) != null) {
+                fieldsList = queryresponse.getFacetField(facetField).getValues();
+            }
+            return fieldsList;
 
         } catch (SolrServerException | IOException e) {
             String message = "Failure at query ";
