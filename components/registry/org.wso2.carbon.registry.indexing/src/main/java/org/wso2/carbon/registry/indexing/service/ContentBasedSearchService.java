@@ -367,11 +367,21 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 	}
 
     public SearchResultsBean searchTerms(Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
+        return searchTermsInternal(null, null, attributes, registry);
+    }
+
+    public SearchResultsBean searchTermsByQuery(String searchQuery, String facetField,
+                                                 UserRegistry registry) throws IndexerException, RegistryException {
+        return searchTermsInternal(searchQuery, facetField, Collections.<String, String>emptyMap(), registry);
+    }
+
+    private SearchResultsBean searchTermsInternal(String searchQuery, String facetField, Map<String, String> attributes, UserRegistry registry) throws IndexerException, RegistryException {
         SearchResultsBean resultsBean = new SearchResultsBean();
         SolrClient client = SolrClient.getInstance();
         //authenticate required attribute is not used, since we are going to authorize each time and not depends on this flag.
         attributes.remove(IndexingConstants.AUTH_REQUIRED);
-        List<FacetField.Count> results = client.facetQuery(registry.getTenantId(), attributes);
+        List<FacetField.Count> results = (searchQuery == null) ? client.facetQuery(registry.getTenantId(), attributes) :
+                client.facetQuery(searchQuery, facetField, registry.getTenantId());
 
         if (log.isDebugEnabled()) {
             log.debug("result for the term search: " + results);
