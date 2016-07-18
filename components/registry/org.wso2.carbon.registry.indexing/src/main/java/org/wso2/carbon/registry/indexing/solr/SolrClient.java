@@ -18,7 +18,6 @@
 package org.wso2.carbon.registry.indexing.solr;
 
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.util.ArrayStack;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
