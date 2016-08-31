@@ -28,6 +28,7 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -719,10 +720,10 @@ public class SolrClient {
             for (String userRole : userRoles) {
                 if (rolesQuery.length() == 0) {
                     rolesQuery.append('(');
-                    rolesQuery.append(userRole.toLowerCase());
+                    rolesQuery.append(ClientUtils.escapeQueryChars(userRole.toLowerCase()));
                 } else {
                     rolesQuery.append(" OR ");
-                    rolesQuery.append(userRole.toLowerCase());
+                    rolesQuery.append(ClientUtils.escapeQueryChars(userRole.toLowerCase()));
                 }
             }
             rolesQuery.append(')');
