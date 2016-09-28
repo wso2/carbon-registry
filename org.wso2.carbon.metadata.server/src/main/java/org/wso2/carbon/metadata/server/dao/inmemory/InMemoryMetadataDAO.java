@@ -50,8 +50,8 @@ public class InMemoryMetadataDAO implements MetadataDAO {
     public void add(Resource resource) throws MetadataStoreException {
         String resourcePath = resource.getKey();
         if (exists(resourcePath)) {
-            logger.error("Resource exists already");
-            throw new MetadataStoreException("Resource exists already in inMemoryMetaDataStore");
+            logger.error("Resource already exists at "+resourcePath);
+            throw new MetadataStoreException("Resource already exists at "+ resourcePath);
         }
         //if not in the path map, then create entry
         if (resource instanceof CollectionImpl) {
