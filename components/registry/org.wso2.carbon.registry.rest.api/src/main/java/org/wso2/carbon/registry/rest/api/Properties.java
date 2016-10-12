@@ -176,7 +176,7 @@ public class Properties extends PaginationCalculation<PropertyModel> {
 
         } else {
             paginatedModels = new PropertyModel[size];
-            System.arraycopy(paginatedModels, start, paginatedModels, 0, size);
+            System.arraycopy(propertyModels, start, paginatedModels, 0, size);
         }
         return Response.ok(paginatedModels).build();
     }
