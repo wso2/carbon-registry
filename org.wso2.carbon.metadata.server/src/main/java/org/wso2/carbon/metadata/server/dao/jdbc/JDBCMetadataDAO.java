@@ -17,7 +17,7 @@
 package org.wso2.carbon.metadata.server.dao.jdbc;
 
 import org.wso2.carbon.metadata.server.api.Key;
-import org.wso2.carbon.metadata.server.api.MetadataStoreException;
+import org.wso2.carbon.metadata.server.api.NotImplementedException;
 import org.wso2.carbon.metadata.server.api.Resource;
 import org.wso2.carbon.metadata.server.dao.MetadataDAO;
 import org.wso2.carbon.metadata.server.impl.CollectionImpl;
@@ -30,27 +30,27 @@ import java.util.ArrayList;
 public class JDBCMetadataDAO implements MetadataDAO {
 
     @Override
-    public void add(Resource resource) throws MetadataStoreException {
+    public void add(Resource resource) throws NotImplementedException {
 
     }
 
     @Override
-    public void removeByUUID(String uuid) throws MetadataStoreException {
+    public void removeByUUID(String uuid) throws NotImplementedException {
 
     }
 
     @Override
-    public void removeByKey(Key path) throws MetadataStoreException {
+    public void removeByKey(Key path) throws NotImplementedException {
 
     }
 
     @Override
-    public void update(Resource resource) throws MetadataStoreException {
+    public void update(Resource resource) throws NotImplementedException {
 
     }
 
     @Override
-    public Resource get(Key path) throws MetadataStoreException {
+    public Resource get(Key path) throws NotImplementedException {
         return null;
     }
 
