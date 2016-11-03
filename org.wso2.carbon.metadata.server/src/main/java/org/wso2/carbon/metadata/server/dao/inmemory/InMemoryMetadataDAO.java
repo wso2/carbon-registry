@@ -37,9 +37,9 @@ public class InMemoryMetadataDAO implements MetadataDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryMetadataDAO.class);
     //stores resources against the path
-    private static HashMap<String, Resource> inMemoryStore;
+    private static Map<String, Resource> inMemoryStore;
     //stores UUID against path
-    private static HashMap<String, String> uuidStore;
+    private static Map<String, String> uuidStore;
 
     static {
         inMemoryStore = new HashMap<>();
