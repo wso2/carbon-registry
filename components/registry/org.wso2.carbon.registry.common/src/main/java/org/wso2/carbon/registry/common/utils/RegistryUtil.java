@@ -16,11 +16,11 @@
 
 package org.wso2.carbon.registry.common.utils;
 
+import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.context.MessageContext;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,7 +41,7 @@ public class RegistryUtil {
         if (path == null || "".equals(path)) {
             path = (String) request.getAttribute("path");
         }
-
+        path = sanitizeHTML(path);
         return path;
     }
 
@@ -95,7 +95,7 @@ public class RegistryUtil {
         return resourcePath;
     }
 
-    public static String generateOptionsFor(String value, String [] options) {
+    public static String generateOptionsFor(String value, String[] options) {
         StringBuffer ret = new StringBuffer();
         for (String option : options) {
             ret.append("<option value=\"");
@@ -112,7 +112,20 @@ public class RegistryUtil {
     }
 
     public static String getResourcePathFromVersionPath(String path) {
-         return path.substring(0,path.indexOf(";version:")) ;
+        return path.substring(0, path.indexOf(";version:"));
+    }
+
+    /**
+     * Sanitize html.
+     *
+     * @param untrustedHTML untrusted html code
+     * @return Sanitized html
+     */
+    private static String sanitizeHTML(String untrustedHTML) {
+        return untrustedHTML
+                .replaceAll("(?i)<script.*?>.*?</script.*?>", "")
+                .replaceAll("(?i)<.*?javascript:.*?>.*?</.*?>", "")
+                .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "");
     }
 
 }
