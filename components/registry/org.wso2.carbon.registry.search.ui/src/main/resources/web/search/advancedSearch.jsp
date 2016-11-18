@@ -16,6 +16,7 @@
 ~ under the License.
 -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -78,68 +79,68 @@
 //
 //    }
 
-    String createdAfter = request.getParameter("createdAfter");
+    String createdAfter = Encode.forHtml(request.getParameter("createdAfter"));
     if (createdAfter == null) {
         createdAfter = "";
     } else {
         hasParameters = true;
     }
-    String createdBefore = request.getParameter("createdBefore");
+    String createdBefore = Encode.forHtml(request.getParameter("createdBefore"));
     if (createdBefore == null) {
         createdBefore = "";
     } else {
         hasParameters = true;
     }
-    String updatedAfter = request.getParameter("updatedAfter");
+    String updatedAfter = Encode.forHtml(request.getParameter("updatedAfter"));
     if (updatedAfter == null) {
         updatedAfter = "";
     } else {
         hasParameters = true;
     }
-    String updatedBefore = request.getParameter("updatedBefore");
+    String updatedBefore = Encode.forHtml(request.getParameter("updatedBefore"));
     if (updatedBefore == null) {
         updatedBefore = "";
     } else {
         hasParameters = true;
     }
-    String resourcePath = request.getParameter("resourcePath");
+    String resourcePath = Encode.forHtml(request.getParameter("resourcePath"));
     if (resourcePath == null) {
         resourcePath = "";
     } else {
         hasParameters = true;
     }
-    String author = request.getParameter("author");
+    String author = Encode.forHtml(request.getParameter("author"));
     if (author == null) {
         author = "";
     } else {
         hasParameters = true;
     }
-    String updater = request.getParameter("updater");
+    String updater = Encode.forHtml(request.getParameter("updater"));
     if (updater == null) {
         updater = "";
     } else {
         hasParameters = true;
     }
-    String tags = request.getParameter("tags");
+    String tags = Encode.forHtml(request.getParameter("tags"));
     if (tags == null) {
         tags = "";
     } else {
         hasParameters = true;
     }
-    String commentWords = request.getParameter("commentWords");
+    String commentWords = Encode.forHtml(request.getParameter("commentWords"));
     if (commentWords == null) {
         commentWords = "";
     } else {
         hasParameters = true;
     }
-    String propertyName = request.getParameter("propertyName");
+    String propertyName = Encode.forHtml(request.getParameter("propertyName"));
     if (propertyName == null) {
         propertyName = "";
     } else {
         hasParameters = true;
     }
-    String leftPropertyValue = request.getParameter("leftPropertyValue");
-    String rightPropertyValue = request.getParameter("rightPropertyValue");
+    String leftPropertyValue = Encode.forHtml(request.getParameter("leftPropertyValue"));
+    String rightPropertyValue = Encode.forHtml(request.getParameter("rightPropertyValue"));
 
     if (leftPropertyValue == null) {
         leftPropertyValue = "";
@@ -149,53 +150,53 @@
     if (rightPropertyValue == null) {
         rightPropertyValue = "";
     }
-    String associationType = request.getParameter("associationType");
+    String associationType = Encode.forHtml(request.getParameter("associationType"));
     if (associationType == null) {
         associationType = "";
     } else {
         hasParameters = true;
     }
-    String associationDest = request.getParameter("associationDest");
+    String associationDest = Encode.forHtml(request.getParameter("associationDest"));
     if (associationDest == null) {
         associationDest = "";
     } else {
         hasParameters = true;
     }
-    String content = request.getParameter("content");
+    String content = Encode.forHtml(request.getParameter("content"));
     if (content == null) {
         content = "";
     } else {
         hasParameters = true;
     }
-    String authorNameNegate = request.getParameter("authorNameNegate");
+    String authorNameNegate = Encode.forHtml(request.getParameter("authorNameNegate"));
     if(authorNameNegate == null)
      	authorNameNegate = "";
-    
-    String updaterNameNegate = request.getParameter("updaterNameNegate");
+
+    String updaterNameNegate = Encode.forHtml(request.getParameter("updaterNameNegate"));
     if(updaterNameNegate == null)
     	updaterNameNegate = "";
-    
-    String createdRangeNegate = request.getParameter("createdRangeNegate");
+
+    String createdRangeNegate = Encode.forHtml(request.getParameter("createdRangeNegate"));
     if(createdRangeNegate == null)
     	createdRangeNegate = "";
-    
-    String updatedRangeNegate = request.getParameter("updatedRangeNegate");
+
+    String updatedRangeNegate = Encode.forHtml(request.getParameter("updatedRangeNegate"));
     if(updatedRangeNegate == null)
-    	updatedRangeNegate = ""; 
-    
-    String mediaTypeNegate = request.getParameter("mediaTypeNegate");
+    	updatedRangeNegate = "";
+
+    String mediaTypeNegate = Encode.forHtml(request.getParameter("mediaTypeNegate"));
     if(mediaTypeNegate == null)
     	mediaTypeNegate = "";
 
-    String mediaType = request.getParameter("mediaType");
+    String mediaType = Encode.forHtml(request.getParameter("mediaType"));
     if(mediaType == null)
        	mediaType = "";
-    
-    String leftOp = request.getParameter("leftOp");
-    String rightOp = request.getParameter("rightOp");
+
+    String leftOp = Encode.forHtml(request.getParameter("leftOp"));
+    String rightOp = Encode.forHtml(request.getParameter("rightOp"));
     if(rightOp == null) rightOp = "";
     if(leftOp == null) leftOp = "";
-    
+
     
     //this was added so that the custom parameters are also checked.
 
