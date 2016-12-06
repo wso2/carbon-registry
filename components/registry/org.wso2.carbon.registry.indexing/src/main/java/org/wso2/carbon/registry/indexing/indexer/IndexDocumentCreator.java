@@ -32,12 +32,14 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer.File2Index;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
 import org.wso2.carbon.registry.indexing.IndexingManager;
+import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.registry.indexing.utils.IndexingUtils;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -266,7 +268,8 @@ public class IndexDocumentCreator {
         // Set the last updated date
         Date updatedDate = resource.getLastModified();
         if (updatedDate != null) {
-            attributes.put(IndexingConstants.FIELD_LAST_UPDATED_DATE, Arrays.asList(updatedDate.toString()));
+            SimpleDateFormat sdf = new SimpleDateFormat(SolrConstants.REG_LOG_DATE_FORMAT);
+            attributes.put(IndexingConstants.FIELD_LAST_UPDATED_DATE, Arrays.asList(sdf.format(updatedDate)));
         }
     }
 
@@ -277,7 +280,8 @@ public class IndexDocumentCreator {
         // Set the created date
         Date createdDate = resource.getCreatedTime();
         if (createdDate != null) {
-            attributes.put(IndexingConstants.FIELD_CREATED_DATE, Arrays.asList(createdDate.toString()));
+            SimpleDateFormat sdf = new SimpleDateFormat(SolrConstants.REG_LOG_DATE_FORMAT);
+            attributes.put(IndexingConstants.FIELD_CREATED_DATE, Arrays.asList(sdf.format(createdDate)));
         }
     }
 
