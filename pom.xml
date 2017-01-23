@@ -1073,6 +1073,11 @@
                 <version>${commons-httpclient.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${wso2-commons-httpclient.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
                 <version>${commons-fileupload.version}</version>
@@ -1509,6 +1514,7 @@
         <commons-io.wso2.version>2.4.0.wso2v1</commons-io.wso2.version>
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <commons-httpclient.version>3.0.1</commons-httpclient.version>
+        <wso2-commons-httpclient.version>4.3.2.wso2v1</wso2-commons-httpclient.version>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
         <commons-logging.version>1.1</commons-logging.version>
         <commons-lang.wso2.version>2.6.0.wso2v1</commons-lang.wso2.version>

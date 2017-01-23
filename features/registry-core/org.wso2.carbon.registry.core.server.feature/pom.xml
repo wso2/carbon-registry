@@ -43,6 +43,10 @@
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.search</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -71,6 +75,7 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.resource</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.search</bundleDef>
                                 <bundleDef>commons-io.wso2:commons-io</bundleDef>
+                                <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpclient</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.version}</importFeatureDef>
