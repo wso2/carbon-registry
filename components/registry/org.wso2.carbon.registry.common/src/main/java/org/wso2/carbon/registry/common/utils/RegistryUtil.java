@@ -41,7 +41,9 @@ public class RegistryUtil {
         if (path == null || "".equals(path)) {
             path = (String) request.getAttribute("path");
         }
-        path = sanitizeHTML(path);
+        if (path != null) {
+            path = sanitizeHTML(path);
+        }
         return path;
     }
 
