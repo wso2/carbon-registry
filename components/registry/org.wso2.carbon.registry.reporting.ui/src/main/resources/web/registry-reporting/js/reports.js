@@ -270,7 +270,7 @@ function loadAttributes(reportClass, reportName, isAutoLoad){
 
 function deleteReport(reportName){
     sessionAwareFunction(function(){
-        CARBON.showConfirmationDialog(org_wso2_carbon_registry_reporting_ui_jsi18n["are.you.sure.you.want.to.delete"] + "<strong>'" + reportName + "'</strong> " + org_wso2_carbon_registry_reporting_ui_jsi18n["permanently"], function() {
+        CARBON.showConfirmationDialog(org_wso2_carbon_registry_reporting_ui_jsi18n["are.you.sure.you.want.to.delete"] + " '" + reportName + "' " + org_wso2_carbon_registry_reporting_ui_jsi18n["permanently"], function() {
             new Ajax.Request('../registry-reporting/delete_report_ajaxprocessor.jsp', {
                 method: 'post',
                 parameters: {reportName: reportName},
