@@ -84,7 +84,7 @@ function submitAdvSearchForm() {
         reasonDiv.style.display = "block";
 
         new Ajax.Updater('searchResuts', './advancedSearch-ajaxprocessor.jsp',
-        { method: 'get', parameters: {createdAfter: $('cfromDate').value,createdBefore:$('ctoDate').value, updatedAfter: $('ufromDate').value,updatedBefore:$('utoDate').value,resourcePath:$('#_resourceName').value,author:$('#_author').value,updater:$('#_updater').value,tags:$('#_tags').value,commentWords:$('#_comments').value,propertyName:$('#_propertyName').value,propertyValue:$('#_propertyValue').value, content:$('#_content').value} });
+        { method: 'post', parameters: {createdAfter: $('cfromDate').value,createdBefore:$('ctoDate').value, updatedAfter: $('ufromDate').value,updatedBefore:$('utoDate').value,resourcePath:$('#_resourceName').value,author:$('#_author').value,updater:$('#_updater').value,tags:$('#_tags').value,commentWords:$('#_comments').value,propertyName:$('#_propertyName').value,propertyValue:$('#_propertyValue').value, content:$('#_content').value} });
 
     }
 }

@@ -2080,7 +2080,7 @@ function deleteResource(pathToDelete, parentPath) {
     sessionAwareFunction(function() {
         CARBON.showConfirmationDialog(
                 org_wso2_carbon_registry_resource_ui_jsi18n["are.you.sure.you.want.to.delete"] +
-                " <strong>'" + pathToDelete + "'</strong> " +
+                " '" + pathToDelete + "' " +
                 org_wso2_carbon_registry_resource_ui_jsi18n["permanently"], function() {
             deleteConfirms = 0;
             var addSuccess = true;

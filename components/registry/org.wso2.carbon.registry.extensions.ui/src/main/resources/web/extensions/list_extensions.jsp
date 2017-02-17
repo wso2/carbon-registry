@@ -60,8 +60,8 @@
 
     function deleteExtension(extensionName, redirectPath) {
         sessionAwareFunction(function() {
-            CARBON.showConfirmationDialog(org_wso2_carbon_registry_extensions_ui_jsi18n["are.you.sure.you.want.to.delete"] + "<strong>'" +
-                                          extensionName + "'</strong> " + org_wso2_carbon_registry_extensions_ui_jsi18n["permanently"],
+            CARBON.showConfirmationDialog(org_wso2_carbon_registry_extensions_ui_jsi18n["are.you.sure.you.want.to.delete"] + " '" +
+                                          extensionName + "' " + org_wso2_carbon_registry_extensions_ui_jsi18n["permanently"],
                     function() {
                         var addSuccess = true;
                         new Ajax.Request('../extensions/deleteExtension-ajaxprocessor.jsp', {

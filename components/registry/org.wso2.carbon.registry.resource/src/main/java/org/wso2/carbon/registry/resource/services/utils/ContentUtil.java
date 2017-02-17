@@ -29,7 +29,12 @@ import org.jaxen.JaxenException;
 import org.wso2.carbon.registry.common.CommonConstants;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.utils.UserUtil;
-import org.wso2.carbon.registry.core.*;
+import org.wso2.carbon.registry.core.Association;
+import org.wso2.carbon.registry.core.Collection;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.RegistryConstants;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.ResourcePath;
 import org.wso2.carbon.registry.core.config.RemoteConfiguration;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.pagination.PaginationContext;
@@ -42,20 +47,29 @@ import org.wso2.carbon.registry.resource.beans.ContentDownloadBean;
 import org.wso2.carbon.registry.resource.download.DownloadManagerService;
 import org.wso2.carbon.utils.CarbonUtils;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.xml.namespace.QName;
 
 public class ContentUtil {
 
     private static final Log log = LogFactory.getLog(ContentUtil.class);
+
+    private static final String IMPORT_SCHEMA_LOCATION = "//xs:schema/xs:import[@schemaLocation]";
+    private static final String INCLUDE_SCHEMA_LOCATION = "//xs:schema/xs:include[@schemaLocation]";
     private static DownloadManagerService downloadManagerService;
 
     public static void setDownloadManagerService(DownloadManagerService downloadManagerService) {
@@ -463,7 +477,8 @@ public class ContentUtil {
 
         if(scrPath.endsWith(".wsdl") || scrPath.endsWith(".xsd")) {
             OMElement srcOMElement = AXIOMUtil.stringToOM(content);
-            updateSchemaImports(srcOMElement,isMasterArtifact);
+            updateSchemaImports(srcOMElement, isMasterArtifact, IMPORT_SCHEMA_LOCATION);
+            updateSchemaImports(srcOMElement, isMasterArtifact, INCLUDE_SCHEMA_LOCATION);
             updateWSDLImports(srcOMElement,isMasterArtifact);
             IOUtils.write(srcOMElement.toString().getBytes(), srcOutputStream);
         } else {
@@ -484,9 +499,10 @@ public class ContentUtil {
     }
 
 
-    private static OMElement updateSchemaImports(OMElement omElement,boolean isMasterArtifact) throws JaxenException {
+    private static OMElement updateSchemaImports(OMElement omElement, boolean isMasterArtifact, String xpath)
+            throws JaxenException {
 
-        AXIOMXPath xPath = new AXIOMXPath("//xs:schema/xs:import[@schemaLocation]");
+        AXIOMXPath xPath = new AXIOMXPath(xpath);
 //        "http://schemas.xmlsoap.org/wsdl/"
         xPath.addNamespace("xs", "http://www.w3.org/2001/XMLSchema");
         Object result = xPath.evaluate(omElement);
