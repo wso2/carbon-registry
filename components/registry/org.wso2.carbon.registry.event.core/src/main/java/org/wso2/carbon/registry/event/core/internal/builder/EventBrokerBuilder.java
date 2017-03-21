@@ -20,6 +20,7 @@ import org.wso2.carbon.registry.event.core.EventBroker;
 import org.wso2.carbon.registry.event.core.EventBrokerFactory;
 import org.wso2.carbon.registry.event.core.exception.EventBrokerConfigurationException;
 import org.wso2.carbon.registry.event.core.util.EventBrokerConstants;
+import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ServerConstants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
@@ -73,8 +74,7 @@ public class EventBrokerBuilder {
      */
     private static OMElement loadConfigXML() throws EventBrokerConfigurationException {
 
-        String carbonHome = System.getProperty(ServerConstants.CARBON_HOME);
-        String path = carbonHome + File.separator + "repository" + File.separator + "conf" + File.separator + EventBrokerConstants.EB_CONF;
+        String path = CarbonUtils.getCarbonConfigDirPath() + File.separator + EventBrokerConstants.EB_CONF;
         BufferedInputStream inputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(new File(path)));
