@@ -211,24 +211,24 @@ public class GetResourceTreeProcessor {
                 } else if (hideResources) {
                     continue;
                 }
-                treeData.appendToTree("<div class=\"father-object\" id=\"" + fatherId + "\">");
+                treeData.appendToTree("<div class=\"father-object\" id=\"" + Encode.forHtml(fatherId) + "\">");
                 /* if this has children we let it expandable */
                 if (childResouceEntry.getCollection()) {
                     if (childHasChildren) {
-                        treeData.appendToTree("<a onclick=\"loadSubTree('" + childPaths[i] + "', '" + parentId + "_" + i + "', '" + textBoxId + "', '" + (hideResources? "true" : "false") + "')\">");
+                        treeData.appendToTree("<a onclick=\"loadSubTree('" + childPaths[i] + "', '" + Encode.forJavaScript(parentId) + "_" + i + "', '" + Encode.forJavaScript(textBoxId) + "', '" + (hideResources? "true" : "false") + "')\">");
                         treeData.appendToTree("<img src=\"../resources/images/icon-tree-plus.jpg\" id=\"plus_" + parentId + "_" + i + "\" style=\"margin-right:5px;\"  />" +
-                                "<img src=\"../resources/images/icon-tree-minus.jpg\" id=\"minus_" + parentId + "_" + i + "\" style=\"display:none;margin-right:5px;\"/>");
+                                "<img src=\"../resources/images/icon-tree-minus.jpg\" id=\"minus_" + Encode.forHtml(parentId) + "_" + i + "\" style=\"display:none;margin-right:5px;\"/>");
                     } else {
                        treeData.appendToTree("<img src=\"../resources/images/spacer.gif\" style=\"width:18px;height:10px;\" />");
                     }
-                    treeData.appendToTree("<a onclick=\"pickPath('" + childPaths[i] + "','" + textBoxId + "', '" + parentId + "_" + i + "');\" title=\"" + childPaths[i] + "\">" +
+                    treeData.appendToTree("<a onclick=\"pickPath('" + childPaths[i] + "','" + Encode.forJavaScript(textBoxId) + "', '" + Encode.forJavaScript(parentId) + "_" + i + "');\" title=\"" + childPaths[i] + "\">" +
                             "<img src=\"../resources/images/" + getTreeFolderIcon(childResouceEntry) + "\" style=\"margin-right:2px;\" />" +
                             resourceName +
                             "</a>");
-                    treeData.appendToTree("</div>" + "<div class=\"child-objects\" id=\"" + childId + "\"></div>");
+                    treeData.appendToTree("</div>" + "<div class=\"child-objects\" id=\"" + Encode.forHtml(childId) + "\"></div>");
                 } else {
                     treeData.appendToTree("<img src=\"../resources/images/spacer.gif\" style=\"width:18px;height:10px;\" />");
-                    treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + childPaths[i] + "','" + textBoxId + "', '" + parentId + "_" + i + "');\" title=\"" + childPaths[i] + "\">" + "<img src=\"../resources/images/" + getTreeResourceIcon(childResouceEntry) + "\" style=\"margin-right:2px;\"/>" + resourceName + "</a></div>");
+                    treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + childPaths[i] + "','" + Encode.forJavaScript(textBoxId) + "', '" + Encode.forJavaScript(parentId) + "_" + i + "');\" title=\"" + childPaths[i] + "\">" + "<img src=\"../resources/images/" + getTreeResourceIcon(childResouceEntry) + "\" style=\"margin-right:2px;\"/>" + resourceName + "</a></div>");
                 }
             }
         }
