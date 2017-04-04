@@ -213,7 +213,7 @@
              src="../resources/images/icon-tree-minus.jpg"/></a>
     <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
             '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
-                                                    src="../resources/images/icon-folder-small.gif"/><%=rootPath%>
+                                                    src="../resources/images/icon-folder-small.gif"/><%=Encode.forHtml(rootPath)%>
     </a>
 </div>
 <div id="<%=Encode.forHtmlAttribute(childId)%>" class="child-objects"></div>

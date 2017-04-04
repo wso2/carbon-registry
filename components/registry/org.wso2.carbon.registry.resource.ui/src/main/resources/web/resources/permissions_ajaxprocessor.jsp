@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.PermissionBean" %>
@@ -253,7 +254,7 @@
                                     if (roles == null) roles = new String[0];
                                     for (String regRole : roles) {
                                         %>
-                                        <option value="<%=regRole%>"><%=regRole%>
+                                        <option value="<%=Encode.forHtml(regRole)%>"><%=Encode.forHtml(regRole)%>
                                         </option>
                                         <%
                                       }
@@ -343,48 +344,48 @@
                 <tr>
                     <td class="lineSeperationRight"><%=permission.getUserName()%>
                     </td>
-                    <td><input type="checkbox" id="<%=permission.getUserName()%>^rra"
-                               onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rra', '<%=permission.getUserName()%>^rrd')"
-                               name="<%=permission.getUserName()%>"
+                    <td><input type="checkbox" id="<%=Encode.forHtml(permission.getUserName())%>^rra"
+                               onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rra', '<%=Encode.forJavaScript(permission.getUserName())%>^rrd')"
+                               name="<%=Encode.forHtml(permission.getUserName())%>"
                                value="ra" <% if (permission.getReadAllow()) { %> checked <% } %>/>
                     </td>
                     <td class="lineSeperationRight"><input type="checkbox"
-                                                           id="<%=permission.getUserName()%>^rrd"
-                                                           onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rrd', '<%=permission.getUserName()%>^rra')"
-                                                           name="<%=permission.getUserName()%>"
+                                                           id="<%=Encode.forHtml(permission.getUserName())%>^rrd"
+                                                           onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rrd', '<%=Encode.forJavaScript(permission.getUserName())%>^rra')"
+                                                           name="<%=Encode.forHtml(permission.getUserName())%>"
                                                            value="rd" <% if (permission.getReadDeny()) { %>
                                                            checked <% } %>/></td>
-                    <td><input type="checkbox" id="<%=permission.getUserName()%>^rwa"
-                               onclick="handlePeerCheckbox('<%=permission.getUserName()%>^rwa', '<%=permission.getUserName()%>^rwd')"
-                               name="<%=permission.getUserName()%>"
+                    <td><input type="checkbox" id="<%=Encode.forHtml(permission.getUserName())%>^rwa"
+                               onclick="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rwa', '<%=Encode.forJavaScript(permission.getUserName())%>^rwd')"
+                               name="<%=Encode.forHtml(permission.getUserName())%>"
                                value="wa" <% if (permission.getWriteAllow()) { %> checked <% } %>/>
                     </td>
                     <td class="lineSeperationRight"><input type="checkbox"
-                                                           id="<%=permission.getUserName()%>^rwd"
-                                                           onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rwd', '<%=permission.getUserName()%>^rwa')"
-                                                           name="<%=permission.getUserName()%>"
+                                                           id="<%=Encode.forHtml(permission.getUserName())%>^rwd"
+                                                           onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rwd', '<%=Encode.forJavaScript(permission.getUserName())%>^rwa')"
+                                                           name="<%=Encode.forHtml(permission.getUserName())%>"
                                                            value="wd" <% if (permission.getWriteDeny()) { %>
                                                            checked <% } %>/></td>
-                    <td><input type="checkbox" id="<%=permission.getUserName()%>^rda"
-                               onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rda', '<%=permission.getUserName()%>^rdd')"
-                               name="<%=permission.getUserName()%>"
+                    <td><input type="checkbox" id="<%=Encode.forHtml(permission.getUserName())%>^rda"
+                               onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rda', '<%=Encode.forJavaScript(permission.getUserName())%>^rdd')"
+                               name="<%=Encode.forHtml(permission.getUserName())%>"
                                value="da" <% if (permission.getDeleteAllow()) { %> checked <% } %>/>
                     </td>
                     <td class="lineSeperationRight"><input type="checkbox"
-                                                           id="<%=permission.getUserName()%>^rdd"
-                                                           onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rdd', '<%=permission.getUserName()%>^rda')"
-                                                           name="<%=permission.getUserName()%>"
+                                                           id="<%=Encode.forHtml(permission.getUserName())%>^rdd"
+                                                           onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rdd', '<%=Encode.forJavaScript(permission.getUserName())%>^rda')"
+                                                           name="<%=Encode.forHtml(permission.getUserName())%>"
                                                            value="dd" <% if (permission.getDeleteDeny()) { %>
                                                            checked <% } %>/></td>
-                    <td class="lineSeperationRight"><input type="checkbox" id="<%=permission.getUserName()%>^raa"
-                               onchange="handlePeerCheckbox('<%=permission.getUserName()%>^raa', '<%=permission.getUserName()%>^rad')"
-                               name="<%=permission.getUserName()%>"
+                    <td class="lineSeperationRight"><input type="checkbox" id="<%=Encode.forHtml(permission.getUserName())%>^raa"
+                               onchange="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^raa', '<%=Encode.forJavaScript(permission.getUserName())%>^rad')"
+                               name="<%=Encode.forHtml(permission.getUserName())%>"
                                value="aa" <% if (permission.getAuthorizeAllow()) { %>
                                checked <% } %>/></td>
                     <td class="lineSeperationRight"><input type="checkbox"
-                                                           id="<%=permission.getUserName()%>^rad"
-                                                           onmouseup="handlePeerCheckbox('<%=permission.getUserName()%>^rad', '<%=permission.getUserName()%>^raa')"
-                                                           name="<%=permission.getUserName()%>"
+                                                           id="<%=Encode.forHtml(permission.getUserName())%>^rad"
+                                                           onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rad', '<%=Encode.forJavaScript(permission.getUserName())%>^raa')"
+                                                           name="<%=Encode.forHtml(permission.getUserName())%>"
                                                            value="ad" <% if (permission.getAuthorizeDeny()) { %>
                                                            checked <% } %>/></td>
                 </tr>
