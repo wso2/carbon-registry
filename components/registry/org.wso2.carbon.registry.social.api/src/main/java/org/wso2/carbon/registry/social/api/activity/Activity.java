@@ -375,7 +375,7 @@ public interface Activity {
 
     /**
      * Set a map of custom key/value pairs associated with this activity. The data has type
-     * {@link Map<String, Object>}. The object may be either a String or an {@link Person}. When
+     * {@link "Map<String, String>"}. The object may be either a String or an {@link Person}. When
      * passing in a person with key PersonKey, can use the following replacement variables in the
      * template:
      * <ul>

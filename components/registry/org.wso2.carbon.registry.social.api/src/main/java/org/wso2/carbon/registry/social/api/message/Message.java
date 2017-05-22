@@ -287,7 +287,7 @@ public interface Message {
     /**
      * Gets the list of Replies to this message
      *
-     * @return
+     * @return the list of Replies to this message
      */
     List<String> getReplies();
 
