@@ -1,3 +1,4 @@
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.AddMediaTypeProcessor" %>
 <!--
 ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
@@ -30,7 +31,7 @@
 
     } catch (Exception e) {
         response.setStatus(500);
-%><%=e.getMessage()%><%
+%><%=Encode.forHtml(e.getMessage())%><%
         return;
     }
 %>
