@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.SetDescriptionProcessor" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
@@ -28,7 +29,7 @@
 
     } catch (Exception e) {
            response.setStatus(500);
-   %><%=e.getMessage()%><%
+   %><%=Encode.forHtml(e.getMessage())%><%
            return;
        }
    %>
