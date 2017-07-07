@@ -19,6 +19,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.core.utils.RegistryUtils" %>
@@ -28,8 +29,8 @@
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
         String path = request.getParameter("path");
-        String parentPath = RegistryUtils.getParentPath(path);
-        String resourceName = RegistryUtils.getResourceName(path);
+        String parentPath = Encode.forHtml(RegistryUtils.getParentPath(path));
+        String resourceName = Encode.forHtml(RegistryUtils.getResourceName(path));
         String mediaType;
         String description;
         try {
@@ -45,7 +46,7 @@
             }
         } catch (Exception e) {
             response.setStatus(500);
-            %><%=e.getMessage()%><%
+            %><%=Encode.forHtml(e.getMessage())%><%
             return;
         }
     %>
@@ -59,7 +60,7 @@
     <input type="hidden" id="uMediaType" name="mediaType" value="<%=mediaType%>"/>
     <input type="hidden" id="uDescription" name="description" value="<%=description%>"/>
     <input type="hidden" id="uResourceName" name="filename" value="<%=resourceName%>"/>
-    <input type="hidden" id="uRedirect" name="redirect" value="resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=path.replaceAll("&","%26")%>&viewType=std"/>
+    <input type="hidden" id="uRedirect" name="redirect" value="resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=Encode.forHtml(path.replaceAll("&","%26"))%>&viewType=std"/>
     <%
         if ("application/wsdl+xml".equals(mediaType) || "application/x-xsd+xml".equals(mediaType) || "application/policy+xml".equals(mediaType)) {
             %><input type="hidden" id="uSymlinkLocation" name="symlinkLocation" value="<%=parentPath%>"/><%

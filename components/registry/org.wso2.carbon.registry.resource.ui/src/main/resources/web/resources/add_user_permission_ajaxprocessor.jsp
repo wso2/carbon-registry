@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.AddUserPermissionProcessor" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 <fmt:bundle basename="org.wso2.carbon.registry.resource.ui.i18n.Resources">
@@ -27,7 +28,7 @@
     try {
         AddUserPermissionProcessor.process(request, response, config);
     } catch (UIException e) {
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
         response.setStatus(500);
     }
 

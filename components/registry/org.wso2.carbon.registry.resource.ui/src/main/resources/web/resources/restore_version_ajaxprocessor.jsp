@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.RestoreVersionProcessor" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
@@ -36,7 +37,7 @@
         request.getSession().setAttribute(CarbonUIMessage.ID, carbonMessage);
 
     } catch (Exception e) {
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
         response.setStatus(500);
         CarbonUIMessage uiMsg = new CarbonUIMessage("Faled to restore the resource.", CarbonUIMessage.ERROR, e);
         session.setAttribute(CarbonUIMessage.ID, uiMsg);

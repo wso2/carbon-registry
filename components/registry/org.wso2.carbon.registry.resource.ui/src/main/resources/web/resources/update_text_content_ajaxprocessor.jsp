@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.UpdateTextContentProcessor" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 
@@ -29,7 +30,7 @@
         response.setStatus(500);
 %>
 <fmt:bundle basename="org.wso2.carbon.registry.resource.ui.i18n.Resources">
-    <fmt:message key="error.updating.text.message"/>.<br/><%=e.getMessage()%>
+    <fmt:message key="error.updating.text.message"/>.<br/><%=Encode.forHtml(e.getMessage())%>
 </fmt:bundle>
 <%
         return;

@@ -16,13 +16,14 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.AddTextResourceProcessor" %>
 <%
     String errorMessage = null;
     try {
         AddTextResourceProcessor.process(request, response, config);
     } catch (Exception e) {
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
         response.setStatus(500);
         out.write(errorMessage);
         return;

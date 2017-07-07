@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.MoveProcessor" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
@@ -26,7 +27,7 @@
 
     } catch (Exception e) {
         request.setAttribute(CarbonUIMessage.ID,new CarbonUIMessage(RegistryConstants.REGISTRY_UNAUTHORIZED_ERROR, RegistryConstants.REGISTRY_UNAUTHORIZED_ERROR,null));
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
     }
 %>
 
