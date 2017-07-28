@@ -19,7 +19,9 @@
 package org.apache.openjpa.lib.conf;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ParseException;
 
 /**
  * A plugin {@link Value} consisting of plugin name and properties.
@@ -101,11 +103,33 @@ public class PluginValue extends ObjectValue {
     public Object instantiate(Class<?> type, Configuration conf, boolean fatal)
     {
         Object obj = newInstance(_name, type, conf, fatal);
+        
+        // ensure plugin value is compatible with plugin type
+        if (obj != null && !type.isAssignableFrom(obj.getClass())) {
+            Log log = (conf == null) ? null : conf.getConfigurationLog();
+            String msg = getIncompatiblePluginMessage(obj, type);
+            if (log != null && log.isErrorEnabled()) {
+                log.error(msg);
+            }
+            if (fatal) {
+                throw new ParseException(msg);
+            }
+            return null;
+        }
+        
         Configurations.configureInstance(obj, conf, _props,
             (fatal) ? getProperty() : null);
         if (_singleton)
             set(obj, true);
         return obj;
+    }
+
+    private String getIncompatiblePluginMessage(Object obj, Class<?> type) {
+        return _loc.get("incompatible-plugin", 
+            new Object[]{ _name, 
+                          obj == null ? null : obj.getClass().getName(),
+                          type == null ? null : type.getName()
+                          }).toString();
     }
 
     /**
@@ -132,7 +156,7 @@ public class PluginValue extends ObjectValue {
     }
 
     public void setString(String str) {
-    	assertChangeable();
+        assertChangeable();
         _name = Configurations.getClassName(str);
         _name = unalias(_name);
         _props = Configurations.getProperties(str);

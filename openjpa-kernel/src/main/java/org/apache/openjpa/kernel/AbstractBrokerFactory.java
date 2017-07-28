@@ -472,8 +472,14 @@ public abstract class AbstractBrokerFactory
         // reset these transient fields to empty values
         _transactional = new ConcurrentHashMap<Object,Collection<Broker>>();
         _brokers = newBrokerSet();
-
+        
+        // turn off logging while de-serializing BrokerFactory
+        String saveLogConfig = _conf.getLog();
+        _conf.setLog("none");
         makeReadOnly();
+        // re-enable any logging which was in effect
+        _conf.setLog(saveLogConfig);  
+        
         return this;
     }
 
@@ -645,7 +651,7 @@ public abstract class AbstractBrokerFactory
             _conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
             _conf.instantiateAll();
             if (_conf.isInitializeEagerly())
-            	_conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
+                _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
             // fire an event for all the broker factory listeners
             // registered on the configuration.
             _conf.getBrokerFactoryEventManager().fireEvent(
@@ -808,7 +814,7 @@ public abstract class AbstractBrokerFactory
 
         public void afterCompletion(int status) {
             _transactional.remove (_trans);
-		}
+    	   }
 	}
     
     /**
