@@ -13,3 +13,4 @@
 ; limitations under the License.
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.contentsearch.server_${feature.version}/conf/registry.xml,target:${installFolder}/../../conf/registry.xml,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.wso2.carbon.registry.contentsearch.server_${feature.version}/solr,target:${installFolder}/../../conf/solr,overwrite:true);\
