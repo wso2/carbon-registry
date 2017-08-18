@@ -145,15 +145,6 @@ function scheduleReport() {
         reason = validateEmpty($('cronExpression'), org_wso2_carbon_registry_reporting_ui_jsi18n["cron.expression"]);
     }
     if (reason.length == 0) {
-        reason = validateEmpty($('registryURL'), org_wso2_carbon_registry_reporting_ui_jsi18n["registry.url"]);
-    }
-    if (reason.length == 0) {
-        reason = validateEmpty($('username'), org_wso2_carbon_registry_reporting_ui_jsi18n["username"]);
-    }
-    if (reason.length == 0) {
-        reason = validateEmpty($('password'), org_wso2_carbon_registry_reporting_ui_jsi18n["password"]);
-    }
-    if (reason.length == 0) {
         reason = validateEmpty($('resourcePath'), org_wso2_carbon_registry_reporting_ui_jsi18n["resource.path"]);
     }
     if (reason.length == 0) {
@@ -161,9 +152,6 @@ function scheduleReport() {
     }
     if (reason.length == 0) {
         reason = validateResourcePathAndLength($('resourcePath'));
-    }
-    if (reason.length == 0) {
-        reason = validateConnection($('registryURL').value, $('username').value, $('password').value);
     }
     if (reason.length != 0) {
         CARBON.showWarningDialog(reason);
@@ -175,9 +163,6 @@ function scheduleReport() {
     var reportType = $('reportType').value;
     var reportClass = $('reportClass').value;
     var cronExpression = $('cronExpression').value;
-    var registryURL = $('registryURL').value;
-    var username = $('username').value;
-    var password = $('password').value;
     var resourcePath = $('resourcePath').value;
 
     var customTable = $('customTable');
@@ -206,7 +191,6 @@ function scheduleReport() {
             method: 'post',
             parameters: {reportName: reportName, reportTemplate: reportTemplate,
                 reportType: reportType, cronExpression: cronExpression,reportClass: reportClass,
-                registryURL: registryURL, username: username, password: password,
                 resourcePath: resourcePath, attributes: attributes},
             onSuccess: function(transport) {
                 if (!transport) {return;}
@@ -217,26 +201,6 @@ function scheduleReport() {
             }
         });
     }, org_wso2_carbon_registry_reporting_ui_jsi18n["session.timed.out"]);
-}
-
-function validateConnection(registryURL, username, password) {
-    var error = "";
-    new Ajax.Request('../registry-reporting/connection_valid_ajaxprocessor.jsp',
-    {
-        method:'post',
-        parameters: {registryURL: registryURL, username: username, password: password, random:getRandom()},
-        asynchronous:false,
-        onSuccess: function(transport) {
-            var returnValue = transport.responseText;
-            if (returnValue.search(/----ConnectionExists----/) == -1){
-                error = org_wso2_carbon_registry_reporting_ui_jsi18n["unable.to.connect"]+ " <strong>" + registryURL + "</strong>.";
-            }
-        },
-        onFailure: function() {
-
-        }
-    });
-    return error;
 }
 
 function submitPage(page, pageNumber){

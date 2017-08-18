@@ -21,10 +21,10 @@ package org.wso2.carbon.registry.reporting.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.ntask.core.AbstractTask;
-import org.wso2.carbon.registry.app.RemoteRegistry;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.reporting.internal.ReportingServiceComponent;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,9 +38,9 @@ public class ReportingTask extends AbstractTask {
 
     public void execute() {
         try {
-            Registry registry = new RemoteRegistry(getProperties().get("reporting.registry.url"),
+            Registry registry = ReportingServiceComponent.getRegistryService().getRegistry(
                     getProperties().get("reporting.registry.username"),
-                    getProperties().get("reporting.registry.password"));
+                    Integer.parseInt(getProperties().get("reporting.registry.tenantId")));
             Map<String, String> attributes = new HashMap<String, String>();
             for (Map.Entry<String, String> e : getProperties().entrySet()) {
                 if (!e.getKey().startsWith("reporting.")) {
@@ -70,8 +70,6 @@ public class ReportingTask extends AbstractTask {
             } catch (Exception e) {
                 log.error("Unable to obtain reporting content stream", e);
             }
-        } catch (MalformedURLException e) {
-            log.error("Invalid Registry Connection URL", e);
         } catch (RegistryException e) {
             log.error("Unable to connect to remote registry", e);
         }

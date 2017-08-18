@@ -21,21 +21,28 @@ package org.wso2.carbon.registry.reporting.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.registry.core.service.RegistryService;
 
 /**
  * @scr.component name="org.wso2.carbon.registry.reporting" immediate="true"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ * @scr.reference name="registry.service"
+ * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
+ * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  */
 public class ReportingServiceComponent {
 
     private static final Log log = LogFactory.getLog(ReportingServiceComponent.class);
     private static final String REPORTING_TASK_MANAGER = "registryReportingTasks";
     private static TaskService taskService;
+    private static RegistryService registryService;
 
     /**
      * Method to trigger when the OSGI component become active.
@@ -44,6 +51,11 @@ public class ReportingServiceComponent {
      */
     protected void activate(ComponentContext context) {
         log.debug("******* Registry Reporting bundle is activated ******* ");
+        initialize();
+    }
+
+    private void initialize() {
+        getTaskManager(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     /**
@@ -59,7 +71,7 @@ public class ReportingServiceComponent {
         try {
             PrivilegedCarbonContext.startTenantFlow();
             try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId, true);
                 TaskManager taskManager =  taskService.getTaskManager(REPORTING_TASK_MANAGER);
                 taskService.registerTaskType(REPORTING_TASK_MANAGER);
                 return taskManager;
@@ -77,6 +89,14 @@ public class ReportingServiceComponent {
 
     }
 
+    protected void setRegistryService(RegistryService service) {
+        registryService = service;
+    }
+
+    protected void unsetRegistryService(RegistryService registryService) {
+        setRegistryService(null);
+    }
+
     public void unsetTaskService(TaskService taskService) {
         updateTaskService(null);
     }
@@ -84,5 +104,10 @@ public class ReportingServiceComponent {
     // Method to update task service.
     private static void updateTaskService(TaskService service) {
         taskService = service;
+    }
+
+    // Method to update task service.
+    public static RegistryService getRegistryService() {
+        return registryService;
     }
 }
