@@ -28,7 +28,6 @@ import org.wso2.carbon.registry.reporting.internal.ReportingServiceComponent;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
