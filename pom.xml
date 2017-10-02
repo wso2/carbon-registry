@@ -1340,6 +1340,11 @@
                 <artifactId>encoder</artifactId>
                 <version>${encoder.wso2.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1530,6 +1535,7 @@
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
         <slf4j.version>1.6.1</slf4j.version>
+        <mockito.version>2.4.2</mockito.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
