@@ -173,7 +173,7 @@ function removeProperty(propertyName) {
     }
     propertyOperationStarted = true;
     sessionAwareFunction(function() {
-        CARBON.showConfirmationDialog(org_wso2_carbon_registry_properties_ui_jsi18n["are.you.sure.you.want.to.delete"]+ " <strong>'"+ propertyName +"'</strong> " + org_wso2_carbon_registry_properties_ui_jsi18n["permanently"], function(){
+        CARBON.showConfirmationDialog(org_wso2_carbon_registry_properties_ui_jsi18n["are.you.sure.you.want.to.delete"]+ " '"+ propertyName +"' " + org_wso2_carbon_registry_properties_ui_jsi18n["permanently"], function(){
             var resourcePath = document.getElementById('propRPath').value;
             new Ajax.Request('../properties/properties-ajaxprocessor.jsp',
             {

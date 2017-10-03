@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.DeleteProcessor" %>
 <%
     String errorMessage = null;
@@ -23,7 +24,7 @@
         DeleteProcessor.process(request, response, config);
 
     } catch (Exception e) {
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
     }
 %>
 

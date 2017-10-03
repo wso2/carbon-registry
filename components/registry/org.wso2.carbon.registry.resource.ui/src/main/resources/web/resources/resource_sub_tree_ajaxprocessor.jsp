@@ -32,7 +32,7 @@
             return;
         }
     } catch (Exception e) {
-        errorMessage = e.getMessage();
+        errorMessage = Encode.forHtml(e.getMessage());
     }
 
     // Set standard HTTP/1.1 no-cache headers.

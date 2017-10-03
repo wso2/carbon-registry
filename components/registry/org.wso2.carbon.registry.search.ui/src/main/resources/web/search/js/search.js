@@ -395,10 +395,10 @@ function submitAdvSearchForm(pageNumber) {
 
             if (pageNumber) {
                 new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
-                { method: 'get', parameters: {parameterList:customParamterList,requestedPage:pageNumber} , evalScripts: true });
+                { method: 'post', parameters: {parameterList:customParamterList,requestedPage:pageNumber} , evalScripts: true });
             } else {
                 new Ajax.Updater('searchResuts', '../search/advancedSearch-ajaxprocessor.jsp',
-                { method: 'get', parameters: {parameterList:customParamterList} , evalScripts: true });
+                { method: 'post', parameters: {parameterList:customParamterList} , evalScripts: true });
             }
             $('#_0').focus();
 
@@ -711,7 +711,7 @@ function submitSaveSearchForm() {
 function saveSearchFilter(customParameterList, saveFilterName) {
     new Ajax.Request('../search/saveSearchFilter-ajaxprocessor.jsp',
     {
-        method: 'get',
+        method: 'post',
         parameters: {parameterList:customParameterList,saveFilterName:saveFilterName},
         evalScripts: true,
 
@@ -762,8 +762,8 @@ function deleteSearchFilter(filterName) {
 
      sessionAwareFunction(function() {
 
-         CARBON.showConfirmationDialog(org_wso2_carbon_registry_search_ui_jsi18n["are.you.sure.you.want.to.delete.the.filter"] + "&nbsp;<strong>'" +
-                                                              filterName + "'</strong> ",
+         CARBON.showConfirmationDialog(org_wso2_carbon_registry_search_ui_jsi18n["are.you.sure.you.want.to.delete.the.filter"] + "&nbsp;'" +
+                                                              filterName + "' ",
         function() {
             new Ajax.Request('../search/deleteSearchFilter-ajaxprocessor.jsp',
             {

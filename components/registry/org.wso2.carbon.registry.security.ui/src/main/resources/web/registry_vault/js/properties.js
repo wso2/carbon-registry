@@ -271,9 +271,9 @@ function removeProperty(propertyName) {
 				CARBON
 						.showConfirmationDialog(
 								org_wso2_carbon_registry_secure_vault_ui_jsi18n["are.you.sure.you.want.to.delete"]
-										+ " <strong>'"
+										+ " '"
 										+ propertyName
-										+ "'</strong> "
+										+ "' "
 										+ org_wso2_carbon_registry_secure_vault_ui_jsi18n["permanently"],
 								function() {
 									var resourcePath = document

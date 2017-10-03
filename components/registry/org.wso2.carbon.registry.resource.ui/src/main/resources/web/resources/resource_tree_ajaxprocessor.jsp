@@ -102,7 +102,7 @@
                                                 class="picked-path-textbox" <%= (expansionPath != null) ? "value=\"" + expansionPath + "\"" : ""%> style="width:500px;"
                                                 onfocus="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>');" onchange="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>')"/>
                                             <input type="button" class="button" value="<fmt:message key="ok"/>"
-                                                   onclick="if ((typeof(isMediationLocalEntrySelected) == undefined )|| !isMediationLocalEntrySelected) { if (validateResoucePath()) { handle<%= relativeRoot ? "Relative" : "" %>WindowOk(<%= relativeRoot ? "'" + displayPath + "', " : "" %>'<%=Encode.forJavaScript(textBoxId)%>'<%= onOKCallback != null ? ", " + onOKCallback : ""%>); CARBON.closeWindow(); return true; } return false; }; CARBON.closeWindow(); return true;"/>
+                                                   onclick="if ((typeof(isMediationLocalEntrySelected) == undefined )|| !isMediationLocalEntrySelected) { if (validateResoucePath()) { handle<%= relativeRoot ? "Relative" : "" %>WindowOk(<%= relativeRoot ? "'" + displayPath + "', " : "" %>'<%=Encode.forJavaScript(textBoxId)%>'<%= onOKCallback != null ? ", " + Encode.forJavaScript(onOKCallback) : ""%>); CARBON.closeWindow(); return true; } return false; }; CARBON.closeWindow(); return true;"/>
     </div>
     </fmt:bundle>
     <%      } %>
@@ -213,7 +213,7 @@
              src="../resources/images/icon-tree-minus.jpg"/></a>
     <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
             '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
-                                                    src="../resources/images/icon-folder-small.gif"/><%=rootPath%>
+                                                    src="../resources/images/icon-folder-small.gif"/><%=Encode.forHtml(rootPath)%>
     </a>
 </div>
 <div id="<%=Encode.forHtmlAttribute(childId)%>" class="child-objects"></div>

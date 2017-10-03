@@ -16,13 +16,14 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.CommandHandler" %>
 <%
     String content = null;
     try {
         content = CommandHandler.process(request, response, config);
     } catch (Exception e) {
-        content = "Error occured while processing the request. " + e.getMessage();
+        content = "Error occurred while processing the request. " + Encode.forHtml(e.getMessage());
     }
 %>
 

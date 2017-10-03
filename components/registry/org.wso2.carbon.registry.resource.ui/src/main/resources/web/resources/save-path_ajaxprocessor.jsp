@@ -17,9 +17,10 @@
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%    
     String path = Utils.getResourcePath(request);
     String synapseRegistryRoot = Utils.getSynapseRoot(request);      
     String resolvedPath = Utils.resolveResourceKey(path, synapseRegistryRoot);
 %>
-<%=resolvedPath%>
+<%=Encode.forHtml(resolvedPath)%>

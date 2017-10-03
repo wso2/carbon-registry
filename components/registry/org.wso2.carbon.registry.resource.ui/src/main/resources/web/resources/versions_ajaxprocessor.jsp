@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.common.utils.CommonUtil" %>
@@ -37,7 +38,7 @@
         versionBean = client.getVersionsBean(path);
     } catch (Exception e) {
 %>
-<jsp:forward page="../admin/error.jsp?<%=e.getMessage()%>"/>
+<jsp:forward page="../admin/error.jsp?<%=Encode.forHtml(e.getMessage())%>"/>
 <%
         return;
     }
