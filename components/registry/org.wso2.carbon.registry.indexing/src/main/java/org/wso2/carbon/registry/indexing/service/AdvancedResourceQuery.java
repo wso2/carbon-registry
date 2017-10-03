@@ -380,6 +380,9 @@ public class AdvancedResourceQuery {
 
     public Set<String> parseTags(String tags) {
         Set<String> result = new HashSet<String>();
+        if (tags == null) {
+            return null;
+        }
 
         String[] parts = tags.split(",");
         for (String part1 : parts) {

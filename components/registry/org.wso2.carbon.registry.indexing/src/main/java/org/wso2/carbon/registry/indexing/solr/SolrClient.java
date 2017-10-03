@@ -365,7 +365,7 @@ public class SolrClient {
 
                         String mediaType = null;
                         List<String> mediaTypeArray = fields.get("mediaType");
-                        if (mediaTypeArray.size() > 0) {
+                        if (mediaTypeArray != null && mediaTypeArray.size() > 0) {
                             mediaType = mediaTypeArray.get(0);
                         }
 
@@ -401,7 +401,8 @@ public class SolrClient {
             switch (valueType) {
                 case SolrConstants.TYPE_INT:
                     intValue = Integer.parseInt(propValue);
-                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX, intValue);
+                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX,
+                        intValue);
                     break;
                 case SolrConstants.TYPE_DOUBLE:
                     doubleValue = Double.parseDouble(propValue);
