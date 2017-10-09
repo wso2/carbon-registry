@@ -96,7 +96,6 @@
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-enableassertions</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <excludes>
                         <exclude>**/NonCarbonPubSubTest.java</exclude>
