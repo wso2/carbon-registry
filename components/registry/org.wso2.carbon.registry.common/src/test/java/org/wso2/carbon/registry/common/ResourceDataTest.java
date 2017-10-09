@@ -107,7 +107,11 @@ public class ResourceDataTest extends TestCase {
 
     public void testGetFormattedCreatedOn() throws Exception {
         resourceData.setCreatedOn(calendar);
-        assertEquals("on 26 Jan 00:01:00 1985 (on Sat Jan 26 00:00:00 IST 1985)", resourceData.getFormattedCreatedOn());
+        String createdOn = resourceData.getFormattedCreatedOn();
+        boolean hasYear = createdOn.contains("1985");
+        assertTrue(hasYear);
+        boolean hasFirstPart = createdOn.contains("on 26 Jan 00:01:00 1985");
+        assertTrue(hasFirstPart);
     }
 
     public void testIsDeleteAllowed() throws Exception {

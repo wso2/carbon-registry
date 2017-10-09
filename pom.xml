@@ -1527,7 +1527,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
+                <version>${surefire.version}</version>
                 <configuration>
                     <argLine>${argLine} -enableassertions</argLine>
                 </configuration>
@@ -1670,6 +1670,7 @@
         <project.scm.id>wso2-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <surefire.version>2.16</surefire.version>
         <test.framework.version>4.4.3</test.framework.version>
         <jacoco.agent.version>0.7.5.201505241946</jacoco.agent.version>
         <testng.verson>6.1.1</testng.verson>
