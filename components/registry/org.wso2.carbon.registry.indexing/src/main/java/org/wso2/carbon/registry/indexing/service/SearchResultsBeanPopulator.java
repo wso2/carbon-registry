@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.common.utils.CommonUtil;
 import java.util.Map;
 import java.util.Calendar;
 
+@Deprecated
 public class SearchResultsBeanPopulator {
     public static SearchResultsBean populate(UserRegistry userRegistry, String searchType, String criteria) {
 

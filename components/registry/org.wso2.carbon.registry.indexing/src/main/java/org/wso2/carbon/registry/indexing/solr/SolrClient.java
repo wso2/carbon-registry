@@ -1322,6 +1322,7 @@ public class SolrClient {
         return result;
     }
 
+    @Deprecated
     public void cleanAllDocuments() {
         try {
             QueryResponse results = server.query(new SolrQuery("ICWS"));

@@ -18,8 +18,6 @@
 package org.wso2.carbon.registry.indexing.service;
 
 import junit.framework.TestCase;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
 import org.wso2.carbon.registry.core.ResourceImpl;
@@ -32,33 +30,35 @@ import java.util.Properties;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AdvancedSearchResultsBeanPopulatorTest extends TestCase {
     public void testPopulate() throws Exception {
 
-        ResourceImpl resource = PowerMockito.mock(ResourceImpl.class);
-        UserRegistry registry = PowerMockito.mock(UserRegistry.class);
-        Mockito.when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
-        Mockito.when(resource.getAuthorUserName()).thenReturn("admin");
-        Mockito.when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getContent()).thenReturn(null);
-        Mockito.when(resource.getDescription()).thenReturn("Testing Resource");
-        Mockito.when(resource.getMediaType()).thenReturn("application/test");
-        Mockito.when(resource.getPath()).thenReturn("/_system/local/temp");
-        Mockito.when(resource.getContent()).thenReturn(new String[]{"/_system/local/temp"});
+        ResourceImpl resource = mock(ResourceImpl.class);
+        UserRegistry registry = mock(UserRegistry.class);
+        when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
+        when(resource.getAuthorUserName()).thenReturn("admin");
+        when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getContent()).thenReturn(null);
+        when(resource.getDescription()).thenReturn("Testing Resource");
+        when(resource.getMediaType()).thenReturn("application/test");
+        when(resource.getPath()).thenReturn("/_system/local/temp");
+        when(resource.getContent()).thenReturn(new String[]{"/_system/local/temp"});
         Properties properties = new Properties();
         properties.put("key1", Arrays.asList("val1"));
         properties.put("key2", Arrays.asList("val12"));
-        Mockito.when(resource.getProperties()).thenReturn(properties);
+        when(resource.getProperties()).thenReturn(properties);
 
-        Collection collection = PowerMockito.mock(Collection.class);
-        Mockito.when(collection.getContent()).thenReturn(new String[]{"/_system/local/temp"});
-        Mockito.when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(collection);
-        Mockito.when(registry.get("/_system/local/temp")).thenReturn(resource);
+        Collection collection = mock(Collection.class);
+        when(collection.getContent()).thenReturn(new String[]{"/_system/local/temp"});
+        when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(collection);
+        when(registry.get("/_system/local/temp")).thenReturn(resource);
         CollectionImpl coll = new CollectionImpl();
         coll.setAuthorUserName("admin");
-        Mockito.when(registry.newCollection()).thenReturn(coll);
+        when(registry.newCollection()).thenReturn(coll);
 
         AdvancedSearchResultsBean resultsBean = AdvancedSearchResultsBeanPopulator.populate(registry, "testResource",
                 "admin",
@@ -70,7 +70,7 @@ public class AdvancedSearchResultsBeanPopulatorTest extends TestCase {
     }
 
     public void testPopulateWithoutQuery() {
-        UserRegistry registry = PowerMockito.mock(UserRegistry.class);
+        UserRegistry registry = mock(UserRegistry.class);
         AdvancedSearchResultsBean resultsBean = AdvancedSearchResultsBeanPopulator.populate(registry, null,
                 null,
                 null, null,

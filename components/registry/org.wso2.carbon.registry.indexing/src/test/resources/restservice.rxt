@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<!--
+ ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<artifactType type="application/vnd.wso2-restservice+xml" shortName="restservice" singularLabel="REST Service" pluralLabel="REST Services" hasNamespace="false" iconSet="7">
+    <storagePath>/trunk/restservices/@{overview_version}/@{overview_name}</storagePath>
+    <nameAttribute>overview_name</nameAttribute>
+    <lifecycle>ServiceLifeCycle</lifecycle>
+    <ui>
+        <list>
+            <column name="Name">
+                <data type="path" value="overview_name" href="@{storagePath}"/>
+            </column>
+            <column name="Version">
+                <data type="path" value="overview_version" href="@{storagePath}"/>
+            </column>
+        </list>
+    </ui>
+    <content>
+        <table name="Overview">
+            <field type="text" required="true" readonly="true">
+                <name>Name</name>
+            </field>
+            <field type="text" required="true">
+                <name>Context</name>
+            </field>
+            <field type="text" required="true" readonly="true">
+                <name>Version</name>
+            </field>
+            <field type="text-area">
+                <name>Description</name>
+            </field>
+        </table>
+        <table name="Interface">
+            <field type="text">
+                <name>Transports</name>
+            </field>
+            <field type="text">
+                <name>WADL</name>
+            </field>
+            <field type="text">
+                <name>Swagger</name>
+            </field>
+        </table>
+        <table name="Contacts">
+            <subheading>
+                <heading>Contact Type</heading>
+                <heading>Contact Name/Organization Name/Email Address</heading>
+            </subheading>
+            <field type="option-text" maxoccurs="unbounded">
+                <name label="Contact">Contact</name>
+                <values>
+                    <value>None</value>
+                    <value>Technical Owner</value>
+                    <value>Technical Owner Email</value>
+                    <value>Business Owner</value>
+                    <value>Business Owner Email</value>
+                </values>
+            </field>
+        </table>
+        <table name="Security">
+            <field type="options">
+                <name label="Authentication Type">Authentication Type</name>
+                <values>
+                    <value>None</value>
+                    <value>OAuth1</value>
+                    <value>OAuth2</value>
+                    <value>Basic Auth</value>
+                    <value>Custom</value>
+                </values>
+            </field>
+        </table>
+        <table name="URITemplate" columns="3" maxoccurs="unbounded">
+            <subheading>
+                <heading>URL Pattern</heading>
+                <heading>HTTP Verb</heading>
+                <heading>Auth Type</heading>
+            </subheading>
+            <field type="text">
+                <name label="URL Pattern">urlPattern</name>
+            </field>
+            <field type="text">
+                <name label="HTTP Verb">httpVerb</name>
+            </field>
+            <field type="text">
+                <name label="Auth Type">authType</name>
+            </field>
+        </table>
+         <table name="Endpoints">
+            <subheading>
+                <heading>Environments</heading>
+                <heading>URL</heading>
+            </subheading>
+            <field type="option-text" maxoccurs="unbounded" url="true">
+                <name label="Endpoint">Endpoint</name>
+                <values>
+                    <value>None</value>
+                    <value>Default</value>
+                    <value>Dev</value>
+                    <value>Test</value>
+                    <value>Stag</value>
+                    <value>Prod</value>
+                </values>
+            </field>
+        </table>
+        <table name="Doc Links" columns="3">
+            <subheading>
+                <heading>Document Type</heading>
+                <heading>URL</heading>
+                <heading>Comment</heading>
+            </subheading>
+            <field type="text">
+                <name label="Document Type">Document Type</name>
+            </field>
+            <field type="text" url="true">
+                <name label="URL">URL</name>
+            </field>
+            <field type="text-area">
+                <name label="Document Comment">Document Comment</name>
+            </field>
+            <field type="text">
+                <name label="Document Type1">Document Type1</name>
+            </field>
+            <field type="text" url="true">
+                <name label="URL1">URL1</name>
+            </field>
+            <field type="text-area">
+                <name label="Document Comment1">Document Comment1</name>
+            </field>
+            <field type="text">
+                <name label="Document Type2">Document Type2</name>
+            </field>
+            <field type="text" url="true">
+                <name label="URL2">URL2</name>
+            </field>
+            <field type="text-area">
+                <name label="Document Comment2">Document Comment2</name>
+            </field>
+        </table>
+    </content>
+
+</artifactType>
