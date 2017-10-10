@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.6.12-SNAPSHOT</version>
+        <version>4.6.14-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -115,7 +115,6 @@
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-enableassertions</argLine>
                     <testFailureIgnore>false</testFailureIgnore>
                     <excludes>
                         <exclude>**/APPBasedLifeCycleTest.java</exclude>
@@ -190,8 +189,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database.wso2</groupId>
-            <artifactId>h2-database-engine</artifactId>
+            <groupId>org.wso2.orbit.com.h2database</groupId>
+            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
