@@ -42,6 +42,7 @@ public class ArtifactManagerTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         testSampleDirectory.delete();
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1);
         super.tearDown();
     }
 
