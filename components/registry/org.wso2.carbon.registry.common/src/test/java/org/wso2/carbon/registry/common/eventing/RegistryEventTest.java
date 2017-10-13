@@ -18,8 +18,6 @@ package org.wso2.carbon.registry.common.eventing;
 
 import junit.framework.TestCase;
 import org.wso2.carbon.base.ServerConfiguration;
-import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.utils.ServerConstants;
 
 import java.io.File;

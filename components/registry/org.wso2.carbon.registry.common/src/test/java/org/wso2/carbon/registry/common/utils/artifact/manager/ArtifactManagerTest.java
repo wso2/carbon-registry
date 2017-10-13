@@ -42,7 +42,6 @@ public class ArtifactManagerTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         testSampleDirectory.delete();
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1);
         super.tearDown();
     }
 
@@ -56,31 +55,37 @@ public class ArtifactManagerTest extends TestCase {
     public void testGetTenantArtifactRepository() throws Exception {
         String tmpDir = testSampleDirectory.getAbsolutePath();
         System.setProperty("java.io.tmpdir", tmpDir);
-        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234);
-        ArtifactRepository artifactRepository = artifactManager.getTenantArtifactRepository();
-        assertNotNull(artifactRepository);
+        System.setProperty("carbon.home", "");
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(-1234);
+            ArtifactRepository artifactRepository = artifactManager.getTenantArtifactRepository();
+            assertNotNull(artifactRepository);
 
-        String trunk = "/_system/governance/trunk";
+            String trunk = "/_system/governance/trunk";
 
-        //add a path
-        artifactRepository.addArtifact(trunk);
+            //add a path
+            artifactRepository.addArtifact(trunk);
 
-        //check path is exist
-        assertEquals(1, artifactRepository.getArtifacts().size());
-        assertTrue(artifactRepository.getArtifacts().contains(trunk));
+            //check path is exist
+            assertEquals(1, artifactRepository.getArtifacts().size());
+            assertTrue(artifactRepository.getArtifacts().contains(trunk));
 
-        String service = "/_system/governance/service";
-        //add another path
-        artifactRepository.addArtifact(service);
+            String service = "/_system/governance/service";
+            //add another path
+            artifactRepository.addArtifact(service);
 
-        //check both paths
-        assertEquals(2, artifactRepository.getArtifacts().size());
-        assertTrue(artifactRepository.getArtifacts().contains(service));
-        assertTrue(artifactRepository.getArtifacts().contains(trunk));
+            //check both paths
+            assertEquals(2, artifactRepository.getArtifacts().size());
+            assertTrue(artifactRepository.getArtifacts().contains(service));
+            assertTrue(artifactRepository.getArtifacts().contains(trunk));
 
-        //remove paths
-        artifactRepository.removeArtifact(trunk);
-        artifactRepository.removeArtifact(service);
+            //remove paths
+            artifactRepository.removeArtifact(trunk);
+            artifactRepository.removeArtifact(service);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
 
     }
 }
