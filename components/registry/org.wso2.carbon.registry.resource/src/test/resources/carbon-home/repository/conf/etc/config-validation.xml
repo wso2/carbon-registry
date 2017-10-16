@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+~ Copyright 2005-2011 WSO2, Inc. (http://wso2.com)
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
+<!--configuration bit values should be given in Mega Bytes (1KB = 1024 bytes, 1MB = 1024 KB, 1GB = 1024 MB), CPU value in MHz-->
+<Configuration enabled="true">
+	<!--Configuration Validators to validate system configs against recommended config settings-->	
+	<Validator class="org.wso2.carbon.core.bootup.validator.SystemValidator">
+		<Parameter id="CPU">800</Parameter>
+		<Parameter id="RAM">2048</Parameter>
+		<Parameter id="swap">2048</Parameter>
+		<Parameter id="freeDisk">1024</Parameter>
+		<Parameter id="ulimit">4096</Parameter>
+        <Parameter id="certFingerprint">02:FB:AA:5F:20:64:49:4A:27:29:55:71:83:F7:46:CD</Parameter>
+	</Validator>
+	<Validator class="org.wso2.carbon.core.bootup.validator.JVMValidator">
+		<Parameter id="initHeapSize">256</Parameter>
+		<Parameter id="maxHeapSize">512</Parameter>
+		<Parameter id="maxPermGenSize">256</Parameter>
+	</Validator>
+	<Validator class="org.wso2.carbon.core.bootup.validator.RequiredSystemPropertiesValidator">
+		<Parameter id="p1">carbon.home</Parameter>
+		<Parameter id="p2">carbon.config.dir.path</Parameter>
+		<Parameter id="p3">axis2.home</Parameter>
+	</Validator>
+	<Validator class="org.wso2.carbon.core.bootup.validator.SupportedOSValidator">
+		<Parameter id="os1">Linux</Parameter>
+		<Parameter id="os2">Unix</Parameter>
+		<Parameter id="os3">Mac OS</Parameter>
+		<Parameter id="os4">Windows Server 2003</Parameter>
+		<Parameter id="os5">Windows XP</Parameter>
+		<Parameter id="os6">Windows Vista</Parameter>
+		<Parameter id="os7">Windows 7</Parameter>
+		<Parameter id="os8">Mac OS X</Parameter>
+		<Parameter id="os9">Windows Server 2008</Parameter>
+		<Parameter id="os10">Windows Server 2008 R2</Parameter>
+		<Parameter id="os11">AIX</Parameter>
+	</Validator>
+</Configuration>
+
