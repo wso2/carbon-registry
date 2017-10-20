@@ -439,7 +439,7 @@ public class CommonUtil {
             simulationService.setSimulation(true);
             rootRegistry.editComment(path, comment);
             simulationService.setSimulation(false);
-        } else if (operation.toLowerCase().equals("removeComment")) {
+        } else if (operation.toLowerCase().equals("removecomment")) {
             String path = simulationRequest.getPath();
             if (isInvalidateValue(path)) {
                 return;
