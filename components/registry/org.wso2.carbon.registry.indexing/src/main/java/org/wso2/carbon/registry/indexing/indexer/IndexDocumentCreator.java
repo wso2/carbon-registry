@@ -87,8 +87,9 @@ public class IndexDocumentCreator {
         file2Index.lcState = file2Index.lcName != null ? resource.getProperty("registry.lifecycle." + file2Index.lcName + ".state") : null;
         file2Index.mediaType = resource.getMediaType();
         // Check for resources that can get the byte content
+        // If the resource is a collection, no need to check for media type mapping/
         if (!(resource instanceof Collection)
-                || IndexingManager.getInstance().getIndexerForMediaType(file2Index.mediaType) != null) {
+                && IndexingManager.getInstance().getIndexerForMediaType(file2Index.mediaType) != null) {
             file2Index.data = IndexingUtils.getByteContent(resource, file2Index.sourceURL);
         }
         // Get the indexDocument
