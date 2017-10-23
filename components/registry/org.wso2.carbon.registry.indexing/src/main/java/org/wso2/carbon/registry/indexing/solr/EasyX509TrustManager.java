@@ -78,6 +78,7 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  */
 
+@Deprecated
 public class EasyX509TrustManager implements X509TrustManager
 {
     private X509TrustManager standardTrustManager = null;

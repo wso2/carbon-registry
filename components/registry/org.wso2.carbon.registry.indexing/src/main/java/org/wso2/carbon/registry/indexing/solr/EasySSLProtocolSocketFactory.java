@@ -83,6 +83,7 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  */
 
+@Deprecated
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
     /** Log object for this class. */

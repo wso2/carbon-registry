@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.registry.indexing;
 
+@Deprecated
 public class IndexingInterruptedException extends Exception {
     public IndexingInterruptedException(String message) {
         super(message);
