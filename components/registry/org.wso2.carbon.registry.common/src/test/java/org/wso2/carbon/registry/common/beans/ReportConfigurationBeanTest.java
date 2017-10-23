@@ -66,23 +66,11 @@ public class ReportConfigurationBeanTest extends TestCase {
         reportConfigurationBean.setCronExpression("* * * * 10");
         assertEquals("* * * * 10", reportConfigurationBean.getCronExpression());
     }
-
-    public void testGetRegistryURL() throws Exception {
-        assertNull(reportConfigurationBean.getRegistryURL());
-        reportConfigurationBean.setRegistryURL("http://localhost:9443/registry");
-        assertEquals("http://localhost:9443/registry", reportConfigurationBean.getRegistryURL());
-    }
-
+    
     public void testGetUsername() throws Exception {
         assertNull(reportConfigurationBean.getUsername());
         reportConfigurationBean.setUsername("admin");
         assertEquals("admin", reportConfigurationBean.getUsername());
-    }
-
-    public void testGetPassword() throws Exception {
-        assertNull(reportConfigurationBean.getPassword());
-        reportConfigurationBean.setPassword("admin");
-        assertEquals("admin", reportConfigurationBean.getPassword());
     }
 
     public void testGetResourcePath() throws Exception {
