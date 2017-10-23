@@ -32,9 +32,6 @@
         bean.setType(request.getParameter("reportType"));
         bean.setCronExpression(request.getParameter("cronExpression"));
         bean.setReportClass(request.getParameter("reportClass"));
-        bean.setRegistryURL(request.getParameter("registryURL"));
-        bean.setUsername(request.getParameter("username"));
-        bean.setPassword(request.getParameter("password"));
         bean.setResourcePath(request.getParameter("resourcePath"));
         String attributes = request.getParameter("attributes");
         if (attributes != null && attributes.length() > 0) {
