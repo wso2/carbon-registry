@@ -130,7 +130,7 @@ public class RxtUnboundedDataLoadUtils {
                     NodeList n2 = (NodeList) expr2.evaluate(doc, XPathConstants.NODESET);
 
                     // Stop the iteration if no unbounded table entries were found in rxt configuration.
-                    if (n1.getLength() != 0 && n2.getLength() != 0) {
+                    if (n1.getLength() != 0 || n2.getLength() != 0) {
                         // Add unbounded table values
                         for (int i = 0; i < n1.getLength(); i++) {
                             Node n = n1.item(i);
@@ -144,7 +144,7 @@ public class RxtUnboundedDataLoadUtils {
                                 for (int j = 0; j < n3.getLength(); j++) {
                                     Node node = n3.item(j);
                                     fields.add(
-                                            tableName.toLowerCase() + SolrConstants.UNDERSCORE + node.getTextContent());
+                                            toCamelCase(tableName) + SolrConstants.UNDERSCORE + node.getTextContent());
                                 }
                             }
                         }
@@ -154,7 +154,7 @@ public class RxtUnboundedDataLoadUtils {
                             String tableName = node.getParentNode().getAttributes().getNamedItem(
                                     SolrConstants.WORD_NAME).getTextContent();
                             if (tableName != null) {
-                                fields.add(tableName.toLowerCase() + SolrConstants.UNDERSCORE_ENTRY);
+                                fields.add(toCamelCase(tableName) + SolrConstants.UNDERSCORE_ENTRY);
                             }
                         }
                     }
@@ -167,4 +167,23 @@ public class RxtUnboundedDataLoadUtils {
         return rxtUnboundedEntryBean;
     }
 
+
+    private static String toCamelCase(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return key;
+        }
+        String[] parts = key.split(" ");
+        String camelCaseString = parts[0].toLowerCase();
+        if (parts.length > 1) {
+            for (int i = 1; i < parts.length; i++) {
+                camelCaseString = camelCaseString + toProperCase(parts[i]);
+            }
+        }
+        return camelCaseString;
+    }
+
+    private static String toProperCase(String s) {
+        return s.substring(0, 1).toUpperCase() +
+                s.substring(1).toLowerCase();
+    }
 }
