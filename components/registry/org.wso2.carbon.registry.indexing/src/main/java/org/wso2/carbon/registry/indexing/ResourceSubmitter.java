@@ -222,7 +222,16 @@ public class ResourceSubmitter implements Runnable {
                                 + path, e);
                     }
                 }
-
+            } else {
+                // remove the indexer for this tenant, if this is a tenant load triggered
+                // by an anonymous user (without explicitly logging in).
+                // should not stop super tenant indexing.
+                if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+                    if (IndexingServiceComponent.isTenantIndexLoadedFromLogin(tenantId) != null &&
+                            !IndexingServiceComponent.isTenantIndexLoadedFromLogin(tenantId)) {
+                        IndexingServiceComponent.unloadTenantIndex(tenantId);
+                    }
+                }
             }
             if (log.isTraceEnabled()) {
                 log.trace("last successfully indexed activity time is : " +
