@@ -42,8 +42,7 @@ import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -63,7 +62,7 @@ public class IndexingServiceComponent {
 
     private static Stack<ServiceRegistration> registrations = new Stack<ServiceRegistration>();
 
-    private static List<Integer> initializedTenants = new LinkedList<Integer>();
+    private static Map<Integer, Boolean> initializedTenants = new HashMap<>();
 
     protected void activate(ComponentContext context) {
         registrations.push(context.getBundleContext().registerService(
@@ -266,7 +265,19 @@ public class IndexingServiceComponent {
         }
     }
 
+    public static Boolean isTenantIndexLoadedFromLogin(int tenantId) {
+        return initializedTenants.get(tenantId);
+    }
 
+    public static void unloadTenantIndex(int tenantId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing tenant: " + tenantId);
+        }
+        if (initializedTenants.remove(tenantId) != null && log.isDebugEnabled()) {
+            log.debug("Size of initializedTenants after removing tenant " + tenantId + ": "
+                    + initializedTenants.size());
+        }
+    }
 
 
     // An implementation of an Axis2 Configuration Context observer,
@@ -275,26 +286,41 @@ public class IndexingServiceComponent {
     private static class TenantDeploymentListenerImpl extends AbstractAxis2ConfigurationContextObserver
             implements TenantIndexingLoader {
 
+        @Override
         public void createdConfigurationContext(ConfigurationContext configurationContext) {
-            loadTenantIndex(MultitenantUtils.getTenantId(configurationContext));
+            // load index tracking that this is the result of a tenant load
+            loadTenantIndex(MultitenantUtils.getTenantId(configurationContext), true);
         }
 
+        @Override
         public void terminatingConfigurationContext(ConfigurationContext configContext) {
             // It is important to create an object when removing to avoid REGISTRY-2015.
-            initializedTenants.remove(new Integer(MultitenantUtils.getTenantId(configContext)));
+            unloadTenantIndex(MultitenantUtils.getTenantId(configContext));
+        }
+
+        private synchronized void loadTenantIndex(int tenantId, boolean isTenantLoaded) {
+            // need to add only if there are no existing entry or when there is
+            // already an entry for the flow triggered by an anonymous user login
+            if (isTenantIndexLoadedFromLogin(tenantId) == null || !isTenantIndexLoadedFromLogin(tenantId)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding tenant: " + tenantId + ", isTenantLoaded: " + isTenantLoaded);
+                }
+                initializedTenants.put(tenantId, isTenantLoaded);
+                if (log.isDebugEnabled()) {
+                    log.debug("Size of initializedTenants after adding tenant " + tenantId + ": "
+                            + initializedTenants.size());
+                }
+            }
         }
 
         public void loadTenantIndex(int tenantId) {
-            if(initializedTenants.contains(tenantId))
-            {
-                return;
-            }
-            initializedTenants.add(tenantId);
+            // load index tracking that this is the result of a anonymous login
+            loadTenantIndex(tenantId, false);
         }
     }
 
     public static boolean canIndexTenant(int tenantId) {
-        return tenantId == MultitenantConstants.SUPER_TENANT_ID || initializedTenants.contains(tenantId);
+        return tenantId == MultitenantConstants.SUPER_TENANT_ID || initializedTenants.containsKey(tenantId);
     }
 }
 
