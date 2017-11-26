@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>handler.configuration-feature</artifactId>
-        <version>4.6.14-SNAPSHOT</version>
+        <version>4.6.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
