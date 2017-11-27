@@ -18,7 +18,6 @@
 package org.wso2.carbon.registry.indexing.service;
 
 import junit.framework.TestCase;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
 import org.wso2.carbon.registry.core.Collection;
@@ -27,12 +26,20 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class AdvancedResourceQueryTest extends TestCase {
+
     public void testExecute() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setResourceName("testResource");
@@ -50,24 +57,24 @@ public class AdvancedResourceQueryTest extends TestCase {
 
         Collection resource = PowerMockito.mock(Collection.class);
         UserRegistry registry = PowerMockito.mock(UserRegistry.class);
-        Mockito.when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
-        Mockito.when(resource.getAuthorUserName()).thenReturn("admin");
-        Mockito.when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getContent()).thenReturn(null);
-        Mockito.when(resource.getDescription()).thenReturn("Testing Resource");
-        Mockito.when(resource.getMediaType()).thenReturn("application/test");
-        Mockito.when(resource.getPath()).thenReturn("/_system/local/temp");
-        Mockito.when(resource.getContent()).thenReturn(new String[]{"/_system/local/temp"});
+        when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
+        when(resource.getAuthorUserName()).thenReturn("admin");
+        when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getContent()).thenReturn(null);
+        when(resource.getDescription()).thenReturn("Testing Resource");
+        when(resource.getMediaType()).thenReturn("application/test");
+        when(resource.getPath()).thenReturn("/_system/local/temp");
+        when(resource.getContent()).thenReturn(new String[]{"/_system/local/temp"});
         Properties properties = new Properties();
         properties.put("key1", Arrays.asList("val1"));
         properties.put("key2", Arrays.asList("val12"));
-        Mockito.when(resource.getProperties()).thenReturn(properties);
+        when(resource.getProperties()).thenReturn(properties);
 
-        Mockito.when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(resource);
+        when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(resource);
         CollectionImpl coll = new CollectionImpl();
         coll.setAuthorUserName("admin");
-        Mockito.when(registry.newCollection()).thenReturn(coll);
+        when(registry.newCollection()).thenReturn(coll);
 
         Resource resource1 = query.execute(registry);
         assertNotNull(resource1.getContent());
@@ -93,6 +100,67 @@ public class AdvancedResourceQueryTest extends TestCase {
         Set<String> tagsSet = query.parseTags(tags);
         assertNotNull(tagsSet);
         assertEquals(3, tagsSet.size());
+
+        Set<String> tagsSet2 = query.parseTags(null);
+        assertNull(tagsSet2);
+    }
+
+    public void testGetResourceName() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        query.setResourceName("test");
+        assertEquals("test", query.getResourceName());
+    }
+
+    public void testGetAuthorName() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        query.setAuthorName("admin");
+        assertEquals("admin", query.getAuthorName());
+    }
+
+    public void testGetUpdaterName() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        query.setUpdaterName("admin");
+        assertEquals("admin", query.getUpdaterName());
+    }
+
+    public void testGetCreatedAfter() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        Date createdAfter = Calendar.getInstance().getTime();
+        query.setCreatedAfter(createdAfter);
+        assertEquals(createdAfter, query.getCreatedAfter());
+    }
+
+    public void testGetCreatedBefore() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        Date createdBefore = Calendar.getInstance().getTime();
+        query.setCreatedBefore(createdBefore);
+        assertEquals(createdBefore, query.getCreatedBefore());
+    }
+
+    public void testGetUpdatedAfter() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        Date updatedAfter = Calendar.getInstance().getTime();
+        query.setUpdatedAfter(updatedAfter);
+        assertEquals(updatedAfter, query.getUpdatedAfter());
+    }
+
+    public void testGetUpdatedBefore() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        Date updatedBefore = Calendar.getInstance().getTime();
+        query.setUpdatedBefore(updatedBefore);
+        assertEquals(updatedBefore, query.getUpdatedBefore());
+    }
+
+    public void testGetCommentWords() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        query.setCommentWords("testiug...");
+        assertEquals("testiug...", query.getCommentWords());
+    }
+
+    public void testGetContent() throws Exception {
+        AdvancedResourceQuery query = new AdvancedResourceQuery();
+        query.setContent("testing....");
+        assertEquals("testing....", query.getContent());
     }
 
 }

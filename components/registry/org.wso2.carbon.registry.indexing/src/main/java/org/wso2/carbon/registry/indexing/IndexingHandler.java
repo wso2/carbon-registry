@@ -83,70 +83,8 @@ public class IndexingHandler extends Handler {
         }
     }
 
-    @Override
-    public String move(RequestContext requestContext) throws RegistryException {
-        if (isExecutingMountedHandlerChain(requestContext)) {
-            return super.move(requestContext);
-        }
-        String oldPath = requestContext.getSourcePath();
-        String newPath = requestContext.getTargetPath();
-        int tenantId = CurrentSession.getTenantId();
-        try {
-            deleteFromIndex(oldPath, tenantId);
-        } catch (SolrException e) {
-            log.error("Could not delete file for Solr server", e);
-        } catch (RegistryException e) {
-            log.error("Could not delete file for Solr server", e);
-        }
-        Resource resource = requestContext.getRegistry().get(oldPath);
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
-        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
-                              carbonContext.getTenantDomain());
-        return super.move(requestContext);
-    }
-
     private void deleteFromIndex(String oldPath, int tenantId) throws RegistryException {
         getIndexer().getClient().deleteFromIndex(oldPath, tenantId);
-    }
-
-    @Override
-    public String rename(RequestContext requestContext) throws RegistryException {
-        if (isExecutingMountedHandlerChain(requestContext)) {
-            return super.rename(requestContext);
-        }
-        String oldPath = requestContext.getSourcePath();
-        String newPath = requestContext.getTargetPath();
-        int tenantId = CurrentSession.getTenantId();
-        try {
-            deleteFromIndex(oldPath, tenantId);
-        } catch (SolrException e) {
-            log.error("Could not delete file for Solr server", e);
-        } catch (RegistryException e) {
-            log.error("Could not delete file for Solr server", e);
-        }
-        Resource resource = requestContext.getRegistry().get(oldPath);
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
-        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
-                              carbonContext.getTenantDomain());
-        return super.rename(requestContext);
-    }
-
-    @Override
-    public String copy(RequestContext requestContext) throws RegistryException {
-        if (isExecutingMountedHandlerChain(requestContext)) {
-            return super.rename(requestContext);
-        }
-        String oldPath = requestContext.getSourcePath();
-        String newPath = requestContext.getTargetPath();
-        Resource resource = requestContext.getRegistry().get(oldPath);
-        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        String path = CommonUtil.getRegistryPath(requestContext.getRegistry().getRegistryContext(),newPath);
-
-        submitFileForIndexing(getIndexer(), resource, path, null, carbonContext.getTenantId(),
-                              carbonContext.getTenantDomain());
-        return super.copy(requestContext);
     }
 
     private boolean isIndexable(RequestContext requestContext) {
@@ -300,13 +238,19 @@ public class IndexingHandler extends Handler {
             String lcName = resource.getProperty("registry.LC.name");
             String lcState = lcName != null ? resource.getProperty("registry.lifecycle." + lcName + ".state") : null;
             File2Index file2Index = new File2Index(IndexingUtils.getByteContent(resource, sourceURL), mediaType, path,
-                                                   CurrentSession.getTenantId(), tenantDomain, lcName, lcState);
+                                                   tenantId, tenantDomain, lcName, lcState);
             String resourcePath = file2Index.path;
             Registry registry = IndexingManager.getInstance().getRegistry(file2Index.tenantId);
-            Resource resourceToIndex;
-            //Check whether resource exists before indexing the resource
-            if (resourcePath != null && registry.resourceExists(resourcePath) &&
-                (resourceToIndex = registry.get(resourcePath)) != null) {
+            // Check whether resource exists before indexing the resource. if resource does not exist, consider as new
+            // resource.
+            if (resourcePath != null) {
+                Resource resourceToIndex;
+                if (registry.resourceExists(resourcePath)) {
+                    resourceToIndex = registry.get(resourcePath);
+                } else {
+                    resourceToIndex = resource;
+                }
+
                 // Create the IndexDocument
                 IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resourceToIndex);
                 indexDocumentCreator.createIndexDocument();

@@ -19,7 +19,7 @@
 		
     <indexingConfiguration>
         <startIndexing>true</startIndexing>
-	    <solrServerUrl>http://localhost:8983/solr/registry-indexing</solrServerUrl>
+        <!--<solrServerUrl>http://localhost:8983/solr/registry-indexing</solrServerUrl>-->
         <startingDelayInSeconds>35</startingDelayInSeconds>
         <indexingFrequencyInSeconds>3</indexingFrequencyInSeconds>
         <!--number of resources submit for given indexing thread -->
@@ -30,24 +30,21 @@
         <lastAccessTimeLocation>/_system/local/repository/components/org.wso2.carbon.registry/indexing/lastaccesstime</lastAccessTimeLocation>
         <!-- the indexers that implement the indexer interface for a relevant media type/(s) -->
         <indexers>
-<!--            <indexer class="org.wso2.carbon.registry.indexing.indexer.MSExcelIndexer" mediaTypeRegEx="application/vnd.ms-excel"/>
+            <indexer class="org.wso2.carbon.registry.indexing.indexer.MSExcelIndexer" mediaTypeRegEx="application/vnd.ms-excel"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.MSPowerpointIndexer" mediaTypeRegEx="application/vnd.ms-powerpoint"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.MSWordIndexer" mediaTypeRegEx="application/msword"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.PDFIndexer" mediaTypeRegEx="application/pdf"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.XMLIndexer" mediaTypeRegEx="application/xml"/>
-            <indexer class="org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer" mediaTypeRegEx="application/wsdl\+xml" profiles ="default,uddi-registry"/>
-            <indexer class="org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer" mediaTypeRegEx="application/x-xsd\+xml" profiles ="default,uddi-registry"/>
-            <indexer class="org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer" mediaTypeRegEx="application/policy\+xml" profiles ="default,uddi-registry"/>
-            <indexer class="org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer" mediaTypeRegEx="application/vnd.(.)+\+xml" profiles ="default,uddi-registry"/>
-            <indexer class="org.wso2.carbon.governance.registry.extensions.indexers.RXTIndexer" mediaTypeRegEx="application/wadl\+xml" profiles ="default,uddi-registry"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.XMLIndexer" mediaTypeRegEx="application/(.)+\+xml"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.JSONIndexer" mediaTypeRegEx="application/swagger\+json"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.PlainTextIndexer" mediaTypeRegEx="application/(.)+\+json"/>
             <indexer class="org.wso2.carbon.registry.indexing.indexer.PlainTextIndexer" mediaTypeRegEx="text/(.)+"/>
-            <indexer class="org.wso2.carbon.registry.indexing.indexer.PlainTextIndexer" mediaTypeRegEx="application/x-javascript"/>-->
+            <indexer class="org.wso2.carbon.registry.indexing.indexer.PlainTextIndexer" mediaTypeRegEx="application/x-javascript"/>
         </indexers>
         <exclusions>
             <exclusion pathRegEx="/_system/config/repository/dashboards/gadgets/swfobject1-5/.*[.]html"/>
             <exclusion pathRegEx="/_system/local/repository/components/org[.]wso2[.]carbon[.]registry/mount/.*"/>
         </exclusions>
+    </indexingConfiguration>
+
 </wso2registry>

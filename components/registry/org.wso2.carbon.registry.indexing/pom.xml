@@ -62,6 +62,27 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/internal/**</exclude>
+                    </excludes>
+                    <includes>
+
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <inherited>true</inherited>
+                <configuration>
+                    <forkMode>pertest</forkMode>
+                    <argLine>-XX:-UseSplitVerifier ${argLine} -enableassertions</argLine>
+                    <testFailureIgnore>true</testFailureIgnore>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -124,6 +145,21 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.lucene</groupId>
+            <artifactId>lucene</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper.wso2</groupId>
+            <artifactId>apache-zookeeper</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.noggit</groupId>
+            <artifactId>noggit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

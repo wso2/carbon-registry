@@ -18,7 +18,6 @@
 package org.wso2.carbon.registry.indexing.indexer;
 
 import junit.framework.TestCase;
-import org.junit.Assert;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.AsyncIndexer;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
@@ -41,7 +40,7 @@ public class JSONIndexerTest extends TestCase {
                 path, tenantID, tenantDomain);
         JSONIndexer jsonIndexer = new JSONIndexer();
         IndexDocument document = jsonIndexer.getIndexedDocument(fileData);
-        Assert.assertEquals(path, document.getPath());
+        assertEquals(path, document.getPath());
     }
 
     public void testGetIndexedDocumentWithLC() throws Exception {
@@ -53,7 +52,7 @@ public class JSONIndexerTest extends TestCase {
         fileData.lcState = "Development";
         JSONIndexer jsonIndexer = new JSONIndexer();
         IndexDocument document = jsonIndexer.getIndexedDocument(fileData);
-        Assert.assertEquals(path, document.getPath());
+        assertEquals(path, document.getPath());
     }
 
 }
