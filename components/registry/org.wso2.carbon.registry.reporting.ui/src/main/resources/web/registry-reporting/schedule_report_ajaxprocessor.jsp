@@ -1,4 +1,4 @@
-<!--
+<%--
 ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 ~
 ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,7 +14,7 @@
 ~ KIND, either express or implied.  See the License for the
 ~ specific language governing permissions and limitations
 ~ under the License.
--->
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ page import="org.wso2.carbon.registry.reporting.ui.clients.ReportGeneratorClient" %>
@@ -32,9 +32,6 @@
         bean.setType(request.getParameter("reportType"));
         bean.setCronExpression(request.getParameter("cronExpression"));
         bean.setReportClass(request.getParameter("reportClass"));
-        bean.setRegistryURL(request.getParameter("registryURL"));
-        bean.setUsername(request.getParameter("username"));
-        bean.setPassword(request.getParameter("password"));
         bean.setResourcePath(request.getParameter("resourcePath"));
         String attributes = request.getParameter("attributes");
         if (attributes != null && attributes.length() > 0) {

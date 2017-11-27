@@ -20,8 +20,8 @@ package org.wso2.carbon.registry.reporting.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.core.util.CryptoException;
-import org.wso2.carbon.core.util.CryptoUtil;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
@@ -42,7 +42,11 @@ import org.wso2.carbon.registry.reporting.utils.ReportingTask;
 import org.wso2.carbon.registry.reporting.utils.Utils;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class ReportingAdminService extends RegistryAbstractAdmin implements
         IReportingAdminService<ReportConfigurationBean> {
@@ -62,16 +66,16 @@ public class ReportingAdminService extends RegistryAbstractAdmin implements
             throws Exception {
         HashMap<String, String> propertyMap = new HashMap<String, String>(
                 CommonUtil.attributeArrayToMap(configuration.getAttributes()));
-        propertyMap.put("reporting.registry.url", configuration.getRegistryURL());
-        propertyMap.put("reporting.registry.username", configuration.getUsername());
-        propertyMap.put("reporting.registry.password", configuration.getPassword());
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
+        propertyMap.put("reporting.registry.username", username);
+        propertyMap.put("reporting.registry.tenantId", String.valueOf(tenantId));
         propertyMap.put("reporting.type", configuration.getType());
         propertyMap.put("reporting.class", configuration.getReportClass());
         propertyMap.put("reporting.template", configuration.getTemplate());
         propertyMap.put("reporting.resource.path", configuration.getResourcePath());
         String clazz = ReportingTask.class.getName();
-        TaskManager taskManager = ReportingServiceComponent.getTaskManager(
-                ((UserRegistry) getRootRegistry()).getTenantId());
+        TaskManager taskManager = ReportingServiceComponent.getTaskManager(tenantId);
         taskManager.registerTask(new TaskInfo(configuration.getName(), clazz, propertyMap,
                 new TaskInfo.TriggerInfo(configuration.getCronExpression())));
         taskManager.rescheduleTask(configuration.getName());
@@ -89,6 +93,8 @@ public class ReportingAdminService extends RegistryAbstractAdmin implements
     public void saveReport(ReportConfigurationBean configuration)
             throws RegistryException, CryptoException {
         Registry registry = getConfigSystemRegistry();
+        int tenantId = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId();
+        String username = PrivilegedCarbonContext.getThreadLocalCarbonContext().getUsername();
         Resource resource = registry.newResource();
         resource.setMediaType("application/vnd.wso2.registry-report");
         if (configuration.getName().equals(null) || configuration.getName().equals(""))
@@ -123,25 +129,10 @@ public class ReportingAdminService extends RegistryAbstractAdmin implements
 	        } else {
 	            resource.setProperty("type", "");
 	        }
-	        if (configuration.getRegistryURL() != null) {
-	            resource.setProperty("registry.url", configuration.getRegistryURL());
-	        } else {
-	            resource.setProperty("registry.url", "");
-	        }
-	        if (configuration.getUsername() != null) {
-	            resource.setProperty("registry.username", configuration.getUsername());
-	        } else {
-	            resource.setProperty("registry.username", "");
-	        }
-	        if (configuration.getPassword() != null) {
-	            resource.setProperty("registry.password",
-	                    CryptoUtil.getDefaultCryptoUtil().encryptAndBase64Encode(
-	                            configuration.getPassword().getBytes()));
-	        } else {
-	            resource.setProperty("registry.password",
-	                    CryptoUtil.getDefaultCryptoUtil().encryptAndBase64Encode(
-	                            "".getBytes()));
-	        }
+
+            resource.setProperty("registry.username", username);
+            resource.setProperty("registry.tenantId", String.valueOf(tenantId));
+
 	        for (Map.Entry<String, String> e :
 	                CommonUtil.attributeArrayToMap(configuration.getAttributes()).entrySet()) {
 	            resource.setProperty("attribute." + e.getKey(), e.getValue());
@@ -238,11 +229,8 @@ public class ReportingAdminService extends RegistryAbstractAdmin implements
         bean.setResourcePath(resource.getProperty("resourcePath"));
         bean.setTemplate(resource.getProperty("template"));
         bean.setType(resource.getProperty("type"));
-        bean.setRegistryURL(resource.getProperty("registry.url"));
         bean.setUsername(resource.getProperty("registry.username"));
-        bean.setPassword(new String(
-                CryptoUtil.getDefaultCryptoUtil().base64DecodeAndDecrypt(
-                        resource.getProperty("registry.password"))));
+        bean.setTenantId(Integer.parseInt(resource.getProperty("registry.tenantId")));
         Map<String, String> attributes = new HashMap<String, String>();
         Properties props = resource.getProperties();
         for (Object key : props.keySet()) {

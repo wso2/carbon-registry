@@ -118,24 +118,6 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="leftCol-small" ><fmt:message key="registry.url"/>&nbsp;<span class="required">*</span></td>
-                                        <td>
-                                            <input type="text" id="registryURL" name="registryURL" value="<%=reports.getRegistryURL() == null ? CarbonUIUtil.getServerURL(config.getServletContext(), session).replace("/services", "/registry") : reports.getRegistryURL()%>" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="leftCol-small" ><fmt:message key="username"/>&nbsp;<span class="required">*</span></td>
-                                        <td>
-                                            <input type="text" id="username" name="username" value="<%=reports.getUsername() == null ? request.getSession().getAttribute("logged-user") : reports.getUsername()%>" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="leftCol-small" ><fmt:message key="password"/>&nbsp;<span class="required">*</span></td>
-                                        <td>
-                                            <input type="password" id="password" name="password" value="<%=reports.getPassword() == null ? "" : reports.getPassword()%>" />
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td class="leftCol-small" ><fmt:message key="resource.path"/>&nbsp;<span class="required">*</span></td>
                                         <td>
                                             <input type="text" id="resourcePath" name="resourcePath" value="<%=reports.getResourcePath() == null ? "" : reports.getResourcePath()%>" />
