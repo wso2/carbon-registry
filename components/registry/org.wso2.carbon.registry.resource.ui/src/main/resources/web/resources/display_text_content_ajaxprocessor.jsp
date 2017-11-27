@@ -37,7 +37,7 @@
 %>
 <fmt:bundle basename="org.wso2.carbon.registry.resource.ui.i18n.Resources">
     <br/>
-    <textarea readonly="readonly" style="width:99%;height:200px"><%=textContent.replace("&", "&amp;")%></textarea>
+    <textarea readonly="readonly" style="width:99%;height:200px"><%=Encode.forHtml(textContent)%></textarea>
     <br/>
     <input type='button' class='button' id="cancelContentButtonID"
            onclick='cancelTextContentDisplay()'

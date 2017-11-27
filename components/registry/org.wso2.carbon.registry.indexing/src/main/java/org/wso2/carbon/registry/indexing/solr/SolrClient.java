@@ -400,13 +400,28 @@ public class SolrClient {
         for (String propValue : values) {
             switch (valueType) {
                 case SolrConstants.TYPE_INT:
-                    intValue = Integer.parseInt(propValue);
-                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX,
-                        intValue);
+                    try {
+                        intValue = Integer.parseInt(propValue);
+                        solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_INT_FIELD_KEY_SUFFIX,
+                                intValue);
+                    } catch (NumberFormatException e) {
+                        log.debug("Number format error when parsing the value, Hence indexing as string value. " +
+                                "Field: " + fieldKey);
+                        solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX,
+                                propValue);
+                    }
                     break;
                 case SolrConstants.TYPE_DOUBLE:
-                    doubleValue = Double.parseDouble(propValue);
-                    solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX, doubleValue);
+                    try {
+                        doubleValue = Double.parseDouble(propValue);
+                        solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_DOUBLE_FIELD_KEY_SUFFIX,
+                                doubleValue);
+                    } catch (NumberFormatException e) {
+                        log.debug("Number format error when parsing the value, Hence indexing as string value. " +
+                                "Field: " + fieldKey);
+                        solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX,
+                                propValue);
+                    }
                     break;
                 case SolrConstants.TYPE_STRING:
                     solrInputDocument.addField(fieldKey + SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX, propValue);
