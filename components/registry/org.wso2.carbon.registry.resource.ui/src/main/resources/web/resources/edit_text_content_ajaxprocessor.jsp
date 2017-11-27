@@ -1,4 +1,4 @@
-<!--
+<%--
  ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,7 +14,7 @@
  ~ KIND, either express or implied.  See the License for the
  ~ specific language governing permissions and limitations
  ~ under the License.
- -->
+ --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
@@ -65,9 +65,9 @@
         <input id="editTextContentIDRichText1" type="radio" name="editTextContentIDRichText" <%=(showPlainText) ? "checked=\"checked\"" : "" %> value="plain" onclick="handleUpdateRichText()" /> <fmt:message key="plain.text.editor"/>
         <input id="editTextContentIDRichText0" type="radio" name="editTextContentIDRichText" <%=(showPlainText) ? "" : "checked=\"checked\"" %> <%=(hideRichText) ? "disabled=\"disabled\"" : "" %> value="rich" onclick="handleUpdateRichText()" /> <fmt:message key="rich.text.editor"/>
     </div>
-    <textarea id="editTextContentIDPlain" style="<%=(showPlainText) ? "" : "display:none;" %>width:99%;height:200px"><%=textContent.replace("&", "&amp;")%></textarea>
+    <textarea id="editTextContentIDPlain" style="<%=(showPlainText) ? "" : "display:none;" %>width:99%;height:200px"><%=Encode.forHtml(textContent)%></textarea>
     <div class="yui-skin-sam" id="editTextContentTextAreaPanel" <%=(showPlainText) ? "style=\"display:none\"" : "" %> >
-        <textarea id="editTextContentID" name="editTextContentID" style="display:none;"><%=textContent.replace("&", "&amp;")%></textarea>
+        <textarea id="editTextContentID" name="editTextContentID" style="display:none;"><%=Encode.forHtml(textContent)%></textarea>
     </div>
     <br/>
     <input type='button' class='button' id ="saveContentButtonID" onclick='updateTextContent("<%=path%>","<%=mediaType%>","false")'

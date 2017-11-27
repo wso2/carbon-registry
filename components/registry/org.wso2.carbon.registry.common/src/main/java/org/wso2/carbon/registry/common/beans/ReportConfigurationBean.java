@@ -29,9 +29,8 @@ public class ReportConfigurationBean {
     private String type;
     private String[] attributes = new String[0];
     private String cronExpression;
-    private String registryURL;
     private String username;
-    private String password;
+    private int tenantId;
     private String resourcePath;
     private boolean isScheduled;
 
@@ -83,14 +82,6 @@ public class ReportConfigurationBean {
         this.cronExpression = cronExpression;
     }
 
-    public String getRegistryURL() {
-        return registryURL;
-    }
-
-    public void setRegistryURL(String registryURL) {
-        this.registryURL = registryURL;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -99,12 +90,12 @@ public class ReportConfigurationBean {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public int getTenantId() {
+        return tenantId;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getResourcePath() {

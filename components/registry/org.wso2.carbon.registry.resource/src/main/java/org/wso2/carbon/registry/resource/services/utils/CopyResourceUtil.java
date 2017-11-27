@@ -36,6 +36,10 @@ public class CopyResourceUtil {
         if (!destinationPath.startsWith(RegistryConstants.PATH_SEPARATOR)) {
             destinationPath = RegistryConstants.PATH_SEPARATOR + destinationPath;
         }
+        if (!registry.resourceExists(oldResourcePath)) {
+            String msg = "Failed to copy the resource. Old resource path( " + oldResourcePath + " ) is not valid";
+            throw new RegistryException(msg);
+        }
 
         String newResourcePath;
         if (destinationPath.equals(RegistryConstants.PATH_SEPARATOR)) {

@@ -72,7 +72,7 @@ public class RestApiBasicAuthenticationHandler implements RequestHandler {
             return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", HttpAuthHeader.AUTH_TYPE_BASIC).build();
         }
 
-        return null;
+        return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", HttpAuthHeader.AUTH_TYPE_BASIC).build();
     }
 
     /**

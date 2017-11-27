@@ -1,4 +1,4 @@
-<!--
+<%--
  ~ Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
@@ -14,7 +14,7 @@
  ~ KIND, either express or implied.  See the License for the
  ~ specific language governing permissions and limitations
  ~ under the License.
- -->
+ --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
@@ -37,7 +37,7 @@
 %>
 <fmt:bundle basename="org.wso2.carbon.registry.resource.ui.i18n.Resources">
     <br/>
-    <textarea readonly="readonly" style="width:99%;height:200px"><%=textContent.replace("&", "&amp;")%></textarea>
+    <textarea readonly="readonly" style="width:99%;height:200px"><%=Encode.forHtml(textContent)%></textarea>
     <br/>
     <input type='button' class='button' id="cancelContentButtonID"
            onclick='cancelTextContentDisplay()'
