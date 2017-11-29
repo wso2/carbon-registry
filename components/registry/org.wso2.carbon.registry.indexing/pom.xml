@@ -153,7 +153,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.zookeeper.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.zookeeper</groupId>
             <artifactId>apache-zookeeper</artifactId>
             <scope>test</scope>
         </dependency>
