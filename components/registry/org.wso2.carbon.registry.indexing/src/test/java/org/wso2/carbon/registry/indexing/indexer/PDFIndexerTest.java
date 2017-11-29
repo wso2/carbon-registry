@@ -34,7 +34,7 @@ import java.nio.file.Path;
 
 public class PDFIndexerTest extends TestCase {
 
-    public static final Log log = LogFactory.getLog(PDFIndexerTest.class);
+    private static final Log log = LogFactory.getLog(PDFIndexerTest.class);
     private String pdfFileInText = null;
     private byte[] fileContent = null;
     private String mediaType = "application/pdf";
@@ -44,8 +44,9 @@ public class PDFIndexerTest extends TestCase {
     public void setUp() throws Exception {
         Path resourcePath = IndexingTestUtils.getResourcePath("unit-test-sample.pdf");
 
+        assert resourcePath != null;
         fileContent = Files.readAllBytes(resourcePath);
-        if (resourcePath != null && resourcePath.toFile().exists()) {
+        if (resourcePath.toFile().exists()) {
             File pdfFile = resourcePath.toFile();
             PDDocument document = null;
             try {

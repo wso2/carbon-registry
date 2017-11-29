@@ -18,7 +18,7 @@
 package org.wso2.carbon.registry.indexing.indexer;
 
 import junit.framework.TestCase;
-import org.mockito.Mockito;
+import org.junit.After;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -41,42 +41,45 @@ import java.util.Calendar;
 import java.util.Properties;
 
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @PrepareForTest({IndexingManager.class, SolrClient.class})
 public class IndexDocumentCreatorTest extends TestCase {
 
     public void testCreateIndexDocument() throws Exception {
-        IndexingManager manager = PowerMockito.mock(IndexingManager.class);
+        IndexingManager manager = mock(IndexingManager.class);
         PowerMockito.mockStatic(IndexingManager.class);
         Whitebox.setInternalState(IndexingManager.class, "instance", manager);
 
-        ResourceImpl resource = PowerMockito.mock(ResourceImpl.class);
-        UserRegistry registry = PowerMockito.mock(UserRegistry.class);
-        Mockito.when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
-        Mockito.when(resource.getAuthorUserName()).thenReturn("admin");
-        Mockito.when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
-        Mockito.when(resource.getContent()).thenReturn(null);
-        Mockito.when(resource.getDescription()).thenReturn("Testing Resource");
-        Mockito.when(resource.getMediaType()).thenReturn("application/test");
-        Mockito.when(resource.getPath()).thenReturn("/_system/local/temp");
+        ResourceImpl resource = mock(ResourceImpl.class);
+        UserRegistry registry = mock(UserRegistry.class);
+        when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
+        when(resource.getAuthorUserName()).thenReturn("admin");
+        when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getLastModified()).thenReturn(Calendar.getInstance().getTime());
+        when(resource.getContent()).thenReturn(null);
+        when(resource.getDescription()).thenReturn("Testing Resource");
+        when(resource.getMediaType()).thenReturn("application/test");
+        when(resource.getPath()).thenReturn("/_system/local/temp");
         Properties properties = new Properties();
         properties.put("key1", Arrays.asList("val1"));
         properties.put("key2", Arrays.asList("val12"));
-        Mockito.when(resource.getProperties()).thenReturn(properties);
+        when(resource.getProperties()).thenReturn(properties);
 
         RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
         RegistryAuthorizationManager authorizationManager = PowerMockito.mock(RegistryAuthorizationManager.class);
-        Mockito.when(authorizationManager.getAllowedRolesForResource("/_system/local/temp", ActionConstants.GET))
+        when(authorizationManager.getAllowedRolesForResource("/_system/local/temp", ActionConstants.GET))
                 .thenReturn(new String[]{"admin"});
-        Mockito.when(registryRealm.getAuthorizationManager()).thenReturn(authorizationManager);
+        when(registryRealm.getAuthorizationManager()).thenReturn(authorizationManager);
         Tag tag = new Tag();
         tag.setTagName("aaa");
 
-        Mockito.when(registry.getTags("/_system/local/temp")).thenReturn(new Tag[]{tag});
-        Mockito.when(registry.get("/_system/local/temp")).thenReturn(resource);
-        Mockito.when(registry.getUserRealm()).thenReturn(registryRealm);
-        Mockito.when(manager.getRegistry(-1234)).thenReturn(registry);
+        when(registry.getTags("/_system/local/temp")).thenReturn(new Tag[]{tag});
+        when(registry.get("/_system/local/temp")).thenReturn(resource);
+        when(registry.getUserRealm()).thenReturn(registryRealm);
+        when(manager.getRegistry(-1234)).thenReturn(registry);
 
         System.setProperty("carbon.home", "temp");
         SolrClient client = PowerMockito.mock(SolrClient.class);
@@ -85,7 +88,7 @@ public class IndexDocumentCreatorTest extends TestCase {
 
 
         final IndexDocument[] document = {null};
-        Mockito.doAnswer(new Answer<Void>() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
                 document[0] = (IndexDocument) args[0];
@@ -106,5 +109,24 @@ public class IndexDocumentCreatorTest extends TestCase {
         creator.createIndexDocument();
         assertEquals(1, document.length);
         assertEquals("/_system/local/temp", document[0].getPath());
+    }
+
+    public void testInitiazeIndexDocument() {
+        String path = "/_system/governance/trunk/test";
+        String contentAsText = "testing";
+        String rawContent = "testing raw content";
+        int tenantId = 1234;
+        IndexDocument indexDocument = new IndexDocument(path, contentAsText, rawContent, tenantId);
+        assertEquals(path, indexDocument.getPath());
+        assertEquals(contentAsText, indexDocument.getContentAsText());
+        assertEquals(rawContent, indexDocument.getRawContent());
+        assertEquals(tenantId, indexDocument.getTenantId());
+    }
+
+    @After
+    public void cleanUp() {
+        System.clearProperty("wso2.registry.xml");
+        System.clearProperty("carbon.home");
+        System.clearProperty("carbon.config.dir.path");
     }
 }

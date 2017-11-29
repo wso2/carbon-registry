@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  */
-
+@Deprecated
 public class ContentBasedSearchServiceComponet {
 
     private static Log log = LogFactory.getLog(ContentBasedSearchServiceComponet.class);

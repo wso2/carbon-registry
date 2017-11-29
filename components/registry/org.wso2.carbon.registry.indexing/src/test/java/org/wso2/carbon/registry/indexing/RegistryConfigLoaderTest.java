@@ -18,7 +18,7 @@
 package org.wso2.carbon.registry.indexing;
 
 import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.After;
 import org.wso2.carbon.registry.indexing.util.IndexingTestUtils;
 
 import java.nio.file.Path;
@@ -27,67 +27,75 @@ public class RegistryConfigLoaderTest extends TestCase {
 
     RegistryConfigLoader configLoader = null;
     public void setUp() throws Exception {
-        Path registryPath = IndexingTestUtils.getResourcePath("registry.xml");
+        Path registryPath = IndexingTestUtils.getResourcePath("registry-indexing.xml");
         System.setProperty("wso2.registry.xml", registryPath.toString());
         System.setProperty("carbon.home", registryPath.toString());
         configLoader = RegistryConfigLoader.getInstance();
     }
 
+    @After
+    public void cleanUp() {
+        System.clearProperty("wso2.registry.xml");
+        System.clearProperty("carbon.home");
+        System.clearProperty("carbon.config.dir.path");
+    }
+
     public void testGetIndexerPoolSize() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(50, configLoader.getIndexerPoolSize());
+        assertNotNull(configLoader);
+        assertEquals(50, configLoader.getIndexerPoolSize());
     }
 
     public void testIsSkipIndexingCache() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(false, configLoader.isSkipIndexingCache());
+        assertNotNull(configLoader);
+        assertEquals(false, configLoader.isSkipIndexingCache());
     }
 
     public void testSetSkipIndexingCache() throws Exception {
-        Assert.assertNotNull(configLoader);
+        assertNotNull(configLoader);
         configLoader.setSkipIndexingCache(true);
-        Assert.assertEquals(true, configLoader.isSkipIndexingCache());
+        assertEquals(true, configLoader.isSkipIndexingCache());
         configLoader.setSkipIndexingCache(false);
     }
 
     public void testGetBatchSize() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(50, configLoader.getBatchSize());
+        assertNotNull(configLoader);
+        assertEquals(50, configLoader.getBatchSize());
     }
 
     public void testGetSolrServerUrl() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals("http://localhost:8983/solr/registry-indexing", configLoader.getSolrServerUrl());
+        assertNotNull(configLoader);
+        assertNull(configLoader.getSolrServerUrl());
     }
 
     public void testGetIndexingFreqInSecs() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(3, configLoader.getIndexingFreqInSecs());
+        assertNotNull(configLoader);
+        assertEquals(3, configLoader.getIndexingFreqInSecs());
     }
 
     public void testGetLastAccessTimeLocation() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals("/_system/local/repository/components/org.wso2.carbon.registry/indexing/lastaccesstime",
+        assertNotNull(configLoader);
+        assertEquals("/_system/local/repository/components/org.wso2.carbon.registry/indexing/lastaccesstime",
                 configLoader.getLastAccessTimeLocation());
     }
 
     public void testGetIndexerMap() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertTrue(configLoader.getIndexerMap().isEmpty());
+        assertNotNull(configLoader);
+        assertFalse(configLoader.getIndexerMap().isEmpty());
+        assertEquals(10, configLoader.getIndexerMap().size());
     }
 
     public void testGetExclusionPatterns() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(2, configLoader.getExclusionPatterns().length);
+        assertNotNull(configLoader);
+        assertEquals(2, configLoader.getExclusionPatterns().length);
     }
 
     public void testIsStartIndexing() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(true, configLoader.IsStartIndexing());
+        assertNotNull(configLoader);
+        assertEquals(true, configLoader.IsStartIndexing());
     }
 
     public void testGetStartingDelayInSecs() throws Exception {
-        Assert.assertNotNull(configLoader);
-        Assert.assertEquals(35, configLoader.getStartingDelayInSecs());
+        assertNotNull(configLoader);
+        assertEquals(35, configLoader.getStartingDelayInSecs());
     }
 }

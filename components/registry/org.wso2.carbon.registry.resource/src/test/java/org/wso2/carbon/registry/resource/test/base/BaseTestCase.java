@@ -17,6 +17,7 @@
 package org.wso2.carbon.registry.resource.test.base;
 
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
@@ -30,6 +31,7 @@ import org.wso2.carbon.registry.core.jdbc.realm.InMemoryRealmService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class BaseTestCase extends TestCase {
@@ -57,14 +59,21 @@ public class BaseTestCase extends TestCase {
 
         RealmService realmService = new InMemoryRealmService();
         RegistryDataHolder.getInstance().setRealmService(realmService);
-        InputStream is;
+        InputStream is = null;
 
         try {
             is = this.getClass().getClassLoader().getResourceAsStream("registry.xml");
-        } catch (Exception e) {
-            is = null;
+            ctx = RegistryContext.getBaseInstance(is, realmService);
+        } finally {
+            if( is != null) {
+                try {
+                    is.close();
+                } catch (IOException ignore) {
+
+                }
+            }
         }
-        ctx = RegistryContext.getBaseInstance(is, realmService);
+
         ctx.setSetup(true);
         ctx.selectDBConfig("h2-db");
 
