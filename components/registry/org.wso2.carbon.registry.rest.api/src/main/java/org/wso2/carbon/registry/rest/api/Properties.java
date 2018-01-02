@@ -147,16 +147,15 @@ public class Properties extends PaginationCalculation<PropertyModel> {
     }
     private PropertyModel[] getPropertyModels(java.util.Properties properties) {
 
-        List<PropertyModel> list = new ArrayList<PropertyModel>();
+        List<PropertyModel> list = new ArrayList<>();
         Enumeration<Object> propName = properties.keys();
         while (propName.hasMoreElements()) {
             PropertyModel propModel = new PropertyModel();
             String property = propName.nextElement().toString();
-            String propValue = properties.get(property).toString();
-            propValue = propValue.substring(propValue.indexOf('[') + 1, propValue.indexOf(']'));
-            String[] propString = propValue.split(",");
+            ArrayList<String> propValue = (ArrayList<String>) properties.get(property);
+            String[] values = propValue.toArray(new String[propValue.size()]);
             propModel.setName(property);
-            propModel.setValue(propString);
+            propModel.setValue(values);
             list.add(propModel);
         }
         return list.toArray(new PropertyModel[list.size()]);
