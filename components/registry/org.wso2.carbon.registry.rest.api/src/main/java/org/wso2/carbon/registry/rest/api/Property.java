@@ -40,6 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -199,10 +200,10 @@ public class Property extends RegistryRestSuper {
      */
     private Response getSingleProperty(String propName, Properties prop) {
         HashMap<Object, Object> map = new HashMap<Object, Object>();
-        String propVal = prop.get(propName).toString();
-        propVal = propVal.substring(propVal.indexOf('[') + 1, propVal.lastIndexOf(']'));
-        String[] propValues = propVal.split(",");
-        map.put(propName, propValues);
+        ArrayList<String> propVal = (ArrayList<String>) prop.get(propName);
+        String[] values = propVal.toArray(new String[propVal.size()]);
+        map.put(propName, values);
+
         return Response.ok(map).build();
     }
 
