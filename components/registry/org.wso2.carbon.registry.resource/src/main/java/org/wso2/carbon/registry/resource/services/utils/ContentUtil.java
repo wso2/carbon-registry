@@ -569,6 +569,16 @@ public class ContentUtil {
             throw new org.wso2.carbon.registry.api.RegistryException("Error occurred while zipping the file");
         }
     }
+    
+    /**
+     * Replace illegal characters in the filename with '_'
+     * 
+     * @param filename  name of the file
+     * @return sanitized filename
+     */
+    public static String sanitizeFilename(String filename) {
+        return filename.replaceAll("[:\\\\/*\"?|<>]", "_");
+    }
 
 }
 

@@ -295,9 +295,8 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
     }
 
     public boolean addExtension(String name, DataHandler content) throws Exception {
-    	String sanitizedFilename = CommonUtil.sanitizeFilename(name);
-        File extension = new File(RegistryUtils.getExtensionLibDirectoryPath() + File.separator +
-        		sanitizedFilename);
+        String sanitizedFilename = ContentUtil.sanitizeFilename(name);
+        File extension = new File(RegistryUtils.getExtensionLibDirectoryPath() + File.separator + sanitizedFilename);
         File extensionsDirectory = extension.getParentFile();
         if (extensionsDirectory.exists() || extensionsDirectory.mkdir()) {
             OutputStream os = new FileOutputStream(extension);
