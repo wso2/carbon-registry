@@ -134,6 +134,11 @@ public class ContentUtilTest extends BaseTestCase {
         assertNull(contentDownloadBean.getMediatype());
         assertNotNull(contentDownloadBean.getContent());
     }
+    
+    public void testSanitizeFilename() throws Exception {
+        assertEquals(".._.._test.jar", ContentUtil.sanitizeFilename("../../test.jar"));
+        assertEquals("path_test.jar", ContentUtil.sanitizeFilename("path\\test.jar"));
+    }
 
     @Override
     protected void tearDown() throws Exception {
