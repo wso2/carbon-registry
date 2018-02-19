@@ -94,4 +94,14 @@ public class CommonUtil {
         }
         return new String[0][];
     }
+    
+    /**
+     * Replace illegal characters in the filename with '_'
+     * 
+     * @param filename name of the file
+     * @return sanitized filename
+     */
+	public static String sanitizeFilename(String filename) {
+		return filename.replaceAll("[:\\\\/*\"?|<>]", "_");
+	}
 }
