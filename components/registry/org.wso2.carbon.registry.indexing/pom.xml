@@ -153,11 +153,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.noggit</groupId>
             <artifactId>noggit</artifactId>
             <scope>test</scope>
