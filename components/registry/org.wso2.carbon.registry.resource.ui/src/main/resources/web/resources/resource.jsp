@@ -185,7 +185,7 @@
                     %>
                     <td id="resourceMain" <% if (contraction.equals("min")){ %>style="width:70%"<% } %>>
                         <table><tr><td nowrap="nowrap" style="width:100%">
-                        <fmt:message key="location"/>: <input id="uLocationBar" onkeypress="if (event.keyCode == 13) {loadFromPath();}" type="text" name="locationBar" style="width:400px;margin-bottom:10px;" value="<%=location%>"/> <input type="button" class="button" value="<fmt:message key="go"/>" onclick="loadFromPath();"/>
+                        <fmt:message key="location"/>: <input id="uLocationBar" onkeypress="if (event.keyCode == 13) {loadFromPath();}" type="text" name="locationBar" style="width:400px;margin-bottom:10px;" value="<%=Encode.forHtmlAttribute(location)%>"/> <input type="button" class="button" value="<fmt:message key="go"/>" onclick="loadFromPath();"/>
                         </td></tr></table>
                         <div class="tabview">
                             <a id="treeView" title="<fmt:message key="tree.view"/>"

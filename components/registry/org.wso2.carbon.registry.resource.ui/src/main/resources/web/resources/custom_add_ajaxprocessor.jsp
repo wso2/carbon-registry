@@ -28,7 +28,7 @@
     } else {
         %>
         <script type="text/javascript">
-            CARBON.showErrorDialog("Custom UI is not defined for the media type <%=mediaType%>. Please make sure that the custom UI is properly configured and the media type is spelled correctly.");
+            CARBON.showErrorDialog("Custom UI is not defined for the media type <%=Encode.forJavaScriptBlock(mediaType)%>. Please make sure that the custom UI is properly configured and the media type is spelled correctly.");
         </script>
         <%
         return;
