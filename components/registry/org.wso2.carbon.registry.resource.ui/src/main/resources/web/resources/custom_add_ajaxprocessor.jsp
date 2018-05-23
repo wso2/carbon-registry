@@ -17,6 +17,7 @@
  --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.CustomUIHandler" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String mediaType = request.getParameter("mediaType");
     String parentPath = request.getParameter("parentPath");
