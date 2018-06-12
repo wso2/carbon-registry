@@ -205,7 +205,8 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                     // TODO: Add logic to compare content, and return only if the content didn't change.
                     return;
                 }
-            } catch (Exception ignore) { }
+            } catch (Exception ignore) {
+            }
             try {
                 if (resource != null) {
                     Object resourceContent = resource.getContent();
@@ -244,6 +245,14 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                             entry = zs.getNextEntry();
                             while (entry != null) {
                                 String entryName = entry.getName();
+                                String destPath = tempFile.getAbsolutePath().substring(0, tempFile.getAbsolutePath().length()
+                                        - archiveExtension.length());
+                                String canonicalEntryPath = new File(destPath + File.separator
+                                        + entryName).getCanonicalPath();
+                                String canonicalDirPath = new File(destPath).getCanonicalPath();
+                                if (!canonicalEntryPath.startsWith(canonicalDirPath)) {
+                                    throw new IOException("Entry is outside of the target directory: " + entry.getName());
+                                }
                                 FileOutputStream os;
                                 File file = new File(tempFile.getAbsolutePath().substring(0,
                                         tempFile.getAbsolutePath().length() -
@@ -286,7 +295,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                     }
                                     uri = "file:///" + uri;
                                     if (uri.endsWith("/")) {
-                                        uri = uri.substring(0, uri.length() -1);
+                                        uri = uri.substring(0, uri.length() - 1);
                                     }
                                     wsdlUriList.add(uri);
                                 } else if (entryName != null &&
@@ -302,11 +311,11 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                     }
                                     uri = "file:///" + uri;
                                     if (uri.endsWith("/")) {
-                                        uri = uri.substring(0, uri.length() -1);
+                                        uri = uri.substring(0, uri.length() - 1);
                                     }
                                     xsdUriList.add(uri);
-                                } else if(entryName != null &&
-                                        entryName.toLowerCase().endsWith(wadlExtension)){
+                                } else if (entryName != null &&
+                                        entryName.toLowerCase().endsWith(wadlExtension)) {
                                     String uri = tempFile.toURI().toString();
                                     uri = uri.substring(0, uri.length() -
                                             archiveExtension.length()) + "/" + entryName;
@@ -318,11 +327,11 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                     }
                                     uri = "file:///" + uri;
                                     if (uri.endsWith("/")) {
-                                        uri = uri.substring(0, uri.length() -1);
+                                        uri = uri.substring(0, uri.length() - 1);
                                     }
                                     wadlUriList.add(uri);
-                                } else if(entryName != null &&
-                                        entryName.toLowerCase().endsWith(swaggerExtension)){
+                                } else if (entryName != null &&
+                                        entryName.toLowerCase().endsWith(swaggerExtension)) {
                                     String uri = tempFile.toURI().toString();
                                     uri = uri.substring(0, uri.length() -
                                             archiveExtension.length()) + "/" + entryName;
@@ -334,7 +343,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                     }
                                     uri = "file:///" + uri;
                                     if (uri.endsWith("/")) {
-                                        uri = uri.substring(0, uri.length() -1);
+                                        uri = uri.substring(0, uri.length() - 1);
                                     }
                                     swaggerUriList.add(uri);
                                 } else if (entryName != null) {
@@ -345,7 +354,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                             break;
                                         }
                                     }
-                                    if(!isSkipFileExtension){
+                                    if (!isSkipFileExtension) {
                                         String uri = tempFile.toURI().toString();
                                         uri = uri.substring(0, uri.length() -
                                                 archiveExtension.length()) + "/" + entryName;
@@ -357,7 +366,7 @@ public class ZipWSDLMediaTypeHandler extends WSDLMediaTypeHandler {
                                         }
                                         uri = "file:///" + uri;
                                         if (uri.endsWith("/")) {
-                                            uri = uri.substring(0, uri.length() -1);
+                                            uri = uri.substring(0, uri.length() - 1);
                                         }
                                         uriList.add(uri);
                                     }
