@@ -100,7 +100,7 @@
     <div class="resource-tree-headding">
         <fmt:message key="picked.path"/> : <input type="text" id="pickedPath"
                                                 class="picked-path-textbox" <%= (expansionPath != null) ? "value=\"" + expansionPath + "\"" : ""%> style="width:500px;"
-                                                onfocus="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>');" onchange="setResolvedResourcePathOnConsumer('<%=resourceConsumer%>','<%=synapseRegistryRoot%>')"/>
+                                                onfocus="setResolvedResourcePathOnConsumer('<%=Encode.forJavaScript(resourceConsumer)%>','<%=synapseRegistryRoot%>');" onchange="setResolvedResourcePathOnConsumer('<%=Encode.forJavaScript(resourceConsumer)%>','<%=synapseRegistryRoot%>')"/>
                                             <input type="button" class="button" value="<fmt:message key="ok"/>"
                                                    onclick="if ((typeof(isMediationLocalEntrySelected) == undefined )|| !isMediationLocalEntrySelected) { if (validateResoucePath()) { handle<%= relativeRoot ? "Relative" : "" %>WindowOk(<%= relativeRoot ? "'" + Encode.forHtml(displayPath) + "', " : "" %>'<%=Encode.forJavaScript(textBoxId)%>'<%= onOKCallback != null ? ", " + Encode.forJavaScript(onOKCallback) : ""%>); CARBON.closeWindow(); return true; } return false; }; CARBON.closeWindow(); return true;"/>
     </div>
