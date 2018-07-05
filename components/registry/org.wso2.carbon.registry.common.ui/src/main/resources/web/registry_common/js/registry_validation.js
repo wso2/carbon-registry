@@ -20,7 +20,7 @@ function validateEmpty(fld,fldName) {
     var error = "";
     fld.value = fld.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     if (fld.value.length == 0) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the.required.field"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.filled"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the.required.field"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.filled"] ;
     } else {
 //        fld.style.background = 'White';
     }
@@ -41,7 +41,7 @@ function validateRegex(regexStr, fldEleArr, fldName) {
 
     if (!regex.test(actual)) {
         return fldName + " " + org_wso2_carbon_registry_common_ui_jsi18n["invalid.regex"] + ": " +
-            regexStr  + "<br />";
+            regexStr  ;
     } else {
         return "";
     }
@@ -52,7 +52,7 @@ function validateUrl(fld,fldName) {
 	var error = "";
 	var regx = RegExp("(http|https|ftp|file)://[^\\s]*?.*");
 	if(!(fld.value.match(regx))){
-		error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.valid.url"] + "<br />";
+		error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["not.valid.url"] ;
 	}
 
 
@@ -74,7 +74,7 @@ function validateIllegal(fld,fldName){
     var illegalChars = /([~!@#;%^*+={}\|\\<>\"\',])/; // disallow ~!@#$;%^*+={}|\<>"',
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"] ;
     } else{
 //        fld.style.background = 'White';
     }
@@ -87,7 +87,7 @@ function validateIllegalNoPercent(fld,fldName){
     var illegalChars = /([~!@#;^*+={}\|\\<>\"\',])/; // disallow ~!@#$;%^*+={}|\<>"',
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["contains.illegal.chars"];
     } else{
 //        fld.style.background = 'White';
     }
@@ -100,7 +100,7 @@ function validateForInput(fld,fldName){
     var illegalChars = /(\<[a-zA-Z0-9\s\/]*>)/; // match any starting tag
 
     if (illegalChars.test(fld.value)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["input.contains.illegal.chars"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+" " + org_wso2_carbon_registry_common_ui_jsi18n["input.contains.illegal.chars"] ;
     } else{
 //        fld.style.background = 'White';
     }
@@ -112,7 +112,7 @@ function validateValueForInput(fldValue,fldName){
     var illegalChars = /(\<[a-zA-Z0-9\s\/]*>)/; // match any starting tag
 
     if (illegalChars.test(fldValue)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_common_ui_jsi18n["input.contains.illegal.chars"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_common_ui_jsi18n["input.contains.illegal.chars"] ;
     }
    return error;
 }
@@ -132,7 +132,7 @@ function validateDate(fld,fldName){
 //        fld.style.background = 'White';
     }
     else {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+ " " + org_wso2_carbon_registry_common_ui_jsi18n["invalid.date"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["the"] + " "+fldName+ " " + org_wso2_carbon_registry_common_ui_jsi18n["invalid.date"] ;
     }
     return error;
 }
@@ -148,9 +148,9 @@ function validateUsername(fld) {
     }
     var regex = RegExp(regexString);
     if (fld.value == "") {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["no.username"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["no.username"] ;
     }  else if (!(fld.value.match(regex))) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.username"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.username"] ;
     } else {
 //        fld.style.background = 'White';
     }
@@ -162,14 +162,14 @@ function validatePassword(fld) {
     var illegalChars = /[\W_]/; // allow only letters and numbers
 
     if (fld.value == "") {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["no.password"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["no.password"] ;
     } else if ((fld.value.length < 3) || (fld.value.length > 15)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["wrong.password"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["wrong.password"] ;
 
     } else if (illegalChars.test(fld.value)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.password"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.password"] ;
     } /*else if (!((fld.value.search(/(a-z)+/)) && (fld.value.search(/(0-9)+/)))) {
-        error = "The password must contain at least one numeral.<br />";
+        error = "The password must contain at least one numeral.";
     } */else {
 //        fld.style.background = 'White';
     }
@@ -196,11 +196,11 @@ function validateEmail(fld) {
     var illegalChars= /[\(\)\<\>\,\;\:\\\"\'\$\[\]]/ ;
 
     if (fld.value == "") {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["no.email"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["no.email"] ;
     } else if (!emailFilter.test(tfld)) {             //test email for illegal characters
-        error = org_wso2_carbon_registry_common_ui_jsi18n["wrong.email"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["wrong.email"] ;
     } else if (fld.value.match(illegalChars)) {
-        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.email"] + "<br />";
+        error = org_wso2_carbon_registry_common_ui_jsi18n["illegal.email"] ;
     } else {
 //        fld.style.background = 'White';
     }
@@ -278,7 +278,7 @@ function validateIllegalContentSearchString(fld, fldName) {
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
         error = org_wso2_carbon_registry_search_ui_jsi18n["the"] +
-        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars"] + "<br />";
+        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars"] ;
     }
 
     return error;
@@ -290,7 +290,7 @@ function validateTagsInput(fld, fldName) {
 
     if (illegalChars.test(fld.value)) {
         error = org_wso2_carbon_registry_search_ui_jsi18n["the"] +
-        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.invalid.tag.search"] + "<br />";
+        " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.invalid.tag.search"] ;
     }
     if (error != "") {
         return error;
@@ -304,7 +304,7 @@ function validateIllegalSearchString(fld, fldName) {
     var illegalChars = /([~!@#$;^*+{}\|\\<>\"\',\[\]\(\)])/;
     var illegalCharsInput = /(\<[a-zA-Z0-9\s\/]*>)/;
     if (illegalChars.test(fld.value) || illegalCharsInput.test(fld.value)) {
-        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] + "<br />";
+        error = org_wso2_carbon_registry_search_ui_jsi18n["the"] + " " + fldName + " " + org_wso2_carbon_registry_search_ui_jsi18n["contains.illegal.chars.second"] ;
     }
 
     return error;
