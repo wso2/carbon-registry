@@ -731,7 +731,11 @@ public class SolrClient {
         try {
             UserRegistry registry = Utils.getRegistryService().getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, tenantId);
             UserRealm realm = registry.getUserRealm();
-            String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(getLoggedInUserName());
+            String userName = getLoggedInUserName();
+            if (userName == null) {
+                userName = CarbonConstants.REGISTRY_ANONNYMOUS_USERNAME;
+            }
+            String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(userName);
             StringBuilder rolesQuery = new StringBuilder();
             for (String userRole : userRoles) {
                 if (rolesQuery.length() == 0) {
