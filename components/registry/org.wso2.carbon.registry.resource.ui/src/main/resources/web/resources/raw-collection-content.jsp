@@ -532,7 +532,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
                 String[] mimeMappingArray = colMimeMappings.split(",");
                 for(String mimeMapping: mimeMappingArray) {
                     String[] mimeParts = mimeMapping.split(":");
-                    %><option value="<%=mimeParts[1]%>"><%=mimeParts[1]%></option><%
+                    %><option value="<%=Encode.forHtml(mimeParts[1])%>"><%=mimeParts[1]%></option><%
                 }
             }
 %>
@@ -819,7 +819,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             <table class="normal">
                 <tr>
                     <td class="info-emp"><fmt:message key="media.type1"/>:</td>
-                    <td><% if (metadata != null && metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { %><%=metadata.getMediaType()%><% } else { %>
+                    <td><% if (metadata != null && metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { %><%=Encode.forHtml(metadata.getMediaType())%><% } else { %>
                 <fmt:message key="unknown"/><% } %></td>
                 </tr>
                 <tr>
