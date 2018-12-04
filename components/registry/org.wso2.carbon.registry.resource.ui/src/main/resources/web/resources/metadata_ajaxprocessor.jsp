@@ -241,11 +241,11 @@
             <td><fmt:message key="media.type1"/>:</td>
             <td colspan="2">
                      <div style="width:100%">
-                    <div id="toggleSaveMediaType_view" style="float:left;line-height: 25px;"><% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { String mediaType = MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(metadata.getMediaType());
+                    <div id="toggleSaveMediaType_view" style="float:left;line-height: 25px;"><% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { String mediaType = MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(Encode.forHtml(metadata.getMediaType()));
 TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=mediaType%><% } else { %>
                             <fmt:message key="unknown"/><% } %>
                             </div>
-                            <input style="display:none;float:left" id="toggleSaveMediaType_edit" value="<% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { %><%=MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(metadata.getMediaType())%><% } else { %><fmt:message key="unknown"/><% } %>" />
+                            <input style="display:none;float:left" id="toggleSaveMediaType_edit" value="<% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { %><%=MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(Encode.forHtml(metadata.getMediaType()))%><% } else { %><fmt:message key="unknown"/><% } %>" />
                             &nbsp;
                             &nbsp;
                             &nbsp;

@@ -155,7 +155,7 @@
             %>
 
             <span style="clear:both;"/>
-            <input id="hidden_media_type" type="hidden" value="<%=metadata.getMediaType()%>"/>
+            <input id="hidden_media_type" type="hidden" value="<%=Encode.forHtml(metadata.getMediaType())%>"/>
         </td>
 
     </tr>
