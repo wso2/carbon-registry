@@ -51,6 +51,7 @@
                             org.wso2.carbon.registry.resource.*,
                         </Export-Package>
                         <Import-Package>
+                            javax.activation.*;version="[0.0.0, 1.0.0)",
                             org.wso2.carbon.registry.common.*;version="0.0.0",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             !javax.xml.namespace,
