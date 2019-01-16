@@ -93,6 +93,7 @@
                             org.wso2.carbon.registry.ws.api.*;
                         </Export-Package>
                         <Import-Package>
+                            javax.activation.*;version="[0.0.0, 1.0.0)",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             org.apache.commons.logging.*,
