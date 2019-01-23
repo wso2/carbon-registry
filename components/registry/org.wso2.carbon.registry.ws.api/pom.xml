@@ -103,6 +103,7 @@
                             org.wso2.carbon.utils.*; version="${carbon.kernel.package.import.version.range}",
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
+                            javax.activation; version="0.0.0",
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             javax.xml.stream.*; version="1.0.1",
