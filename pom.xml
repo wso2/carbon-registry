@@ -1695,7 +1695,7 @@
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
-        <slf4j.version>1.6.1</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
         <mockito.version>2.4.2</mockito.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
@@ -1703,7 +1703,7 @@
 
         <surefire.version>2.16</surefire.version>
         <test.framework.version>4.4.3</test.framework.version>
-        <jacoco.agent.version>0.7.5.201505241946</jacoco.agent.version>
+        <jacoco.agent.version>0.8.2</jacoco.agent.version>
         <testng.verson>6.1.1</testng.verson>
     </properties>
 </project>
