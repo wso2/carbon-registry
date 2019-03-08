@@ -213,7 +213,7 @@
             <artifactId>mail</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.activation</groupId>
+            <groupId>org.wso2.orbit.javax.activation</groupId>
             <artifactId>activation</artifactId>
         </dependency>
         <dependency>
