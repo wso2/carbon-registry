@@ -906,12 +906,12 @@
 
             <!-- OSGi dependencies -->
             <dependency>
-                <groupId>org.eclipse.osgi</groupId>
+                <groupId>org.wso2.eclipse.osgi</groupId>
                 <artifactId>org.eclipse.osgi</artifactId>
                 <version>${version.equinox.osgi}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.osgi</groupId>
+                <groupId>org.wso2.eclipse.osgi</groupId>
                 <artifactId>org.eclipse.osgi.services</artifactId>
                 <version>${version.equinox.osgi.services}</version>
             </dependency>
@@ -1658,8 +1658,8 @@
         <orbit.version.rampart>1.6.1.wso2v19</orbit.version.rampart>
 
         <!-- Equinox -->
-        <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
-        <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
+        <version.equinox.osgi.services>3.5.100.v20160504-1419</version.equinox.osgi.services>
+        <version.equinox.osgi>3.11.0.v20160603-1336</version.equinox.osgi>
 
         <!-- Commons -->
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
