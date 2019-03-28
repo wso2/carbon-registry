@@ -1573,7 +1573,7 @@
         <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
 
         <!-- Misc -->
-        <google.guava.wso2.version>19.0</google.guava.wso2.version>
+        <google.guava.wso2.version>23.0</google.guava.wso2.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
         <version.solr>5.5.5.wso2v1</version.solr>
         <version.solr.import.version.range>[5.5.5,5.6.0)</version.solr.import.version.range>
