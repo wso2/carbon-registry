@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>contentsearch-feature</artifactId>
-        <version>4.6.46</version>
+        <version>4.6.47-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
