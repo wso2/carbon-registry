@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.6.42-SNAPSHOT</version>
+        <version>4.6.44-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -96,6 +96,7 @@
                             org.wso2.carbon.registry.extensions.*,
                         </Private-Package>
                         <Import-Package>
+                            javax.activation.*;version="[0.0.0, 1.0.0)",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.ui.*;version="${carbon.kernel.package.import.version.range}",
                             org.apache.maven.scm.*,
@@ -158,6 +159,12 @@
         <dependency>
             <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.user.mgt</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -206,7 +213,7 @@
             <artifactId>mail</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.activation</groupId>
+            <groupId>org.wso2.orbit.javax.activation</groupId>
             <artifactId>activation</artifactId>
         </dependency>
         <dependency>
@@ -214,7 +221,7 @@
             <artifactId>commons-fileupload</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-httpclient</groupId>
+            <groupId>org.wso2.orbit.commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
