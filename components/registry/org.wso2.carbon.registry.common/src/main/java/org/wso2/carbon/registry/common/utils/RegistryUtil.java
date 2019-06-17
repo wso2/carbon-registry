@@ -19,6 +19,7 @@ package org.wso2.carbon.registry.common.utils;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.encoder.Encode;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -42,7 +43,7 @@ public class RegistryUtil {
             path = (String) request.getAttribute("path");
         }
         if (path != null) {
-            path = sanitizeHTML(path);
+            path = Encode.forHtml(path);
         }
         return path;
     }
@@ -116,18 +117,4 @@ public class RegistryUtil {
     public static String getResourcePathFromVersionPath(String path) {
         return path.substring(0, path.indexOf(";version:"));
     }
-
-    /**
-     * Sanitize html.
-     *
-     * @param untrustedHTML untrusted html code
-     * @return Sanitized html
-     */
-    private static String sanitizeHTML(String untrustedHTML) {
-        return untrustedHTML
-                .replaceAll("(?i)<script.*?>.*?</script.*?>", "")
-                .replaceAll("(?i)<.*?javascript:.*?>.*?</.*?>", "")
-                .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "");
-    }
-
 }
