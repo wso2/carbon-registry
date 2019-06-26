@@ -25,36 +25,37 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.ws.api.utils.WSDeploymentInterceptor;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="registry.ws.api.component" immediate="true"
- * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- *                policy="dynamic" bind="setConfigurationContextService"
- *                unbind="unsetConfigurationContextService"
- * @scr.reference name="registry.service"
- *                interface="org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
- */
+@Component(
+         name = "registry.ws.api.component", 
+         immediate = true)
 public class WSRegistryServiceComponent {
 
-	private static Log log = LogFactory.getLog(WSRegistryServiceComponent.class);
+    private static Log log = LogFactory.getLog(WSRegistryServiceComponent.class);
 
     private WSDataHolder dataHolder = WSDataHolder.getInstance();
 
     private ConfigurationContext configContext;
-	 /**
+
+    /**
      * @param ctxt
      */
+    @Activate
     protected void activate(ComponentContext ctxt) {
         if (log.isDebugEnabled()) {
             log.info("Registry WS API bundle is activated");
         }
         try {
-        	AxisConfiguration config = configContext.getAxisConfiguration();
-        	WSDeploymentInterceptor interceptor = new WSDeploymentInterceptor();
-        	interceptor.init(config);
-        	config.addObservers(interceptor);
+            AxisConfiguration config = configContext.getAxisConfiguration();
+            WSDeploymentInterceptor interceptor = new WSDeploymentInterceptor();
+            interceptor.init(config);
+            config.addObservers(interceptor);
         } catch (Throwable e) {
             log.error("Error occured while updating Registry WS API service", e);
         }
@@ -63,21 +64,28 @@ public class WSRegistryServiceComponent {
     /**
      * @param ctxt
      */
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
         if (log.isDebugEnabled()) {
             log.info("Identity RP bundle is deactivated");
         }
     }
-    
+
     /**
      * @param contextService
      */
+    @Reference(
+             name = "config.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
         if (log.isDebugEnabled()) {
             log.info("ConfigurationContextService set in Registry WS API bundle");
         }
         configContext = contextService.getServerConfigContext();
-//        configContext.getAxisConfiguration().addObservers(new WSDeploymentInterceptor());
+    // configContext.getAxisConfiguration().addObservers(new WSDeploymentInterceptor());
     }
 
     /**
@@ -90,6 +98,12 @@ public class WSRegistryServiceComponent {
         configContext = null;
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         dataHolder.setRegistryService(registryService);
     }
@@ -98,3 +112,4 @@ public class WSRegistryServiceComponent {
         dataHolder.setRegistryService(null);
     }
 }
+

@@ -25,16 +25,21 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathService;
 import org.wso2.carbon.registry.extensions.services.RXTStoragePathServiceImpl;
 import org.wso2.carbon.registry.extensions.services.Utils;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.extensions" immediate="true"
- * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
 @SuppressWarnings({ "unused", "JavaDoc" })
+@Component(
+         name = "org.wso2.carbon.registry.extensions", 
+         immediate = true)
 public class RegistryRXTStoragePathComponent {
 
     private static Log log = LogFactory.getLog(RegistryRXTStoragePathComponent.class);
+
     private RegistryService registryService;
 
     private ServiceRegistration extensionServiceRegistration = null;
@@ -43,10 +48,10 @@ public class RegistryRXTStoragePathComponent {
      * Method to activate bundle.
      * @param context osgi component context.
      */
+    @Activate
     protected void activate(ComponentContext context) {
         RXTStoragePathService service = new RXTStoragePathServiceImpl();
-        extensionServiceRegistration =
-                context.getBundleContext().registerService(RXTStoragePathService.class.getName(), service, null);
+        extensionServiceRegistration = context.getBundleContext().registerService(RXTStoragePathService.class.getName(), service, null);
         Utils.setRxtService(service);
         if (log.isDebugEnabled()) {
             log.debug("******* Registry Extensions bundle is activated ******* ");
@@ -57,6 +62,7 @@ public class RegistryRXTStoragePathComponent {
      * Method to deactivate bundle.
      * @param context osgi component context.
      */
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         if (extensionServiceRegistration != null) {
             extensionServiceRegistration.unregister();
@@ -68,6 +74,12 @@ public class RegistryRXTStoragePathComponent {
         }
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
     }
@@ -75,5 +87,5 @@ public class RegistryRXTStoragePathComponent {
     protected void unsetRegistryService(RegistryService registryService) {
         this.registryService = null;
     }
-
 }
+

@@ -29,7 +29,6 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -39,14 +38,16 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.task" immediate="true"
- * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
- * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
- */
+@Component(
+         name = "org.wso2.carbon.registry.task", 
+         immediate = true)
 public class RegistryTaskServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryTaskServiceComponent.class);
@@ -55,14 +56,22 @@ public class RegistryTaskServiceComponent {
 
     private static final String REGISTRY_TASK_MANAGER = "registryTasks";
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("Registry Tasks bundle is activated ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Registry Tasks bundle is deactivated ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         dataHolder.setRegistryService(registryService);
     }
@@ -71,6 +80,12 @@ public class RegistryTaskServiceComponent {
         dataHolder.setRegistryService(null);
     }
 
+    @Reference(
+             name = "ntask.component", 
+             service = org.wso2.carbon.ntask.core.service.TaskService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetTaskService")
     protected void setTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting the Task Service");
@@ -104,8 +119,7 @@ public class RegistryTaskServiceComponent {
             for (TaskInfo taskInfo : taskManager.getAllTasks()) {
                 taskManager.deleteTask(taskInfo.getName());
             }
-        } catch (TaskException ignore){
-
+        } catch (TaskException ignore) {
         }
         String configPath = CarbonUtils.getRegistryXMLPath();
         if (configPath != null) {
@@ -113,16 +127,14 @@ public class RegistryTaskServiceComponent {
             if (registryXML.exists()) {
                 try {
                     FileInputStream fileInputStream = new FileInputStream(registryXML);
-                    StAXOMBuilder builder = new StAXOMBuilder(
-                            CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
+                    StAXOMBuilder builder = new StAXOMBuilder(CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
                     OMElement configElement = builder.getDocumentElement();
                     OMElement taskElement = configElement.getFirstChildWithName(new QName("tasks"));
                     if (taskElement != null) {
                         Iterator tasks = taskElement.getChildrenWithName(new QName("task"));
                         while (tasks.hasNext()) {
                             OMElement task = (OMElement) tasks.next();
-                            String cronExpression = task.getFirstChildWithName(new QName(
-                                    "trigger")).getAttributeValue(new QName("cron"));
+                            String cronExpression = task.getFirstChildWithName(new QName("trigger")).getAttributeValue(new QName("cron"));
                             TaskInfo.TriggerInfo trigger;
                             if (cronExpression != null) {
                                 trigger = new TaskInfo.TriggerInfo(cronExpression);
@@ -139,8 +151,7 @@ public class RegistryTaskServiceComponent {
                             Iterator properties = task.getChildrenWithName(new QName("property"));
                             while (properties.hasNext()) {
                                 OMElement property = (OMElement) properties.next();
-                                propertyMap.put(property.getAttributeValue(new QName("key")),
-                                                property.getAttributeValue(new QName("value")));
+                                propertyMap.put(property.getAttributeValue(new QName("key")), property.getAttributeValue(new QName("value")));
                             }
                             taskManager.registerTask(new TaskInfo(name, clazz, propertyMap, trigger));
                         }
@@ -161,8 +172,7 @@ public class RegistryTaskServiceComponent {
             TaskManager taskManager = null;
             PrivilegedCarbonContext.startTenantFlow();
             try {
-                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(
-                        MultitenantConstants.SUPER_TENANT_ID);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
                 taskManager = taskService.getTaskManager(REGISTRY_TASK_MANAGER);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
@@ -173,10 +183,11 @@ public class RegistryTaskServiceComponent {
                 }
             }
         } catch (TaskException e) {
-            //Since server is maintain mode, we can ignore Task related exceptions
-            if(log.isDebugEnabled()){
+            // Since server is maintain mode, we can ignore Task related exceptions
+            if (log.isDebugEnabled()) {
                 log.debug("TaskException: Unable to clean-up scheduled tasks ", e);
             }
         }
     }
 }
+

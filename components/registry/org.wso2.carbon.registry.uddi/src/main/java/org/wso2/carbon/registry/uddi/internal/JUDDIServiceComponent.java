@@ -21,71 +21,77 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.FileManipulator;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="registry.uddi.component" immediate="true"
- * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
- */
+@Component(
+         name = "registry.uddi.component", 
+         immediate = true)
 public class JUDDIServiceComponent {
 
     private static final Log log = LogFactory.getLog(JUDDIServiceComponent.class);
+
     private static final String ENABLE = "enable";
+
     private static final String UDDI_SYSTEM_PROPERTY = "uddi";
+
     private static final String TEMP_WEBAPP_DIR = "webapps";
 
+    @Activate
     protected void activate(ComponentContext ctxt) {
-        if(ENABLE.equalsIgnoreCase(System.getProperty(UDDI_SYSTEM_PROPERTY))){
+        if (ENABLE.equalsIgnoreCase(System.getProperty(UDDI_SYSTEM_PROPERTY))) {
             try {
                 copyWebAppIfNotExist();
             } catch (IOException ignore) {
-            log.error("Error occurred while copying inbuilt webapps to web app dir" +ignore.getMessage());
+                log.error("Error occurred while copying inbuilt webapps to web app dir" + ignore.getMessage());
             }
         }
     }
 
-
     private void copyWebAppIfNotExist() throws IOException {
-        String tempWebAppDir = CarbonUtils.getCarbonHome()
-                + File.separator + "repository" + File.separator + "resources" + File.separator + TEMP_WEBAPP_DIR;
-
-        String webAppDir = CarbonUtils.getCarbonHome() +File.separator + "repository" +
-                File.separator + "deployment" +File.separator+ "server" +File.separator+"webapps";
+        String tempWebAppDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "resources" + File.separator + TEMP_WEBAPP_DIR;
+        String webAppDir = CarbonUtils.getCarbonHome() + File.separator + "repository" + File.separator + "deployment" + File.separator + "server" + File.separator + "webapps";
         File pluginsDir = new File(tempWebAppDir);
         String[] children = pluginsDir.list(new FilenameFilter() {
+
             public boolean accept(File dir, String name) {
                 return name.startsWith("juddi") && name.toLowerCase().endsWith(".war");
             }
-        }
-        );
-
-        for(String childName:children){
+        });
+        for (String childName : children) {
             String source = tempWebAppDir + File.separator + childName;
             File sourceFile = new File(source);
             File dstFile = new File(webAppDir + File.separator + childName);
             log.info("Copying webapp " + sourceFile.getAbsolutePath() + " to " + dstFile.getAbsolutePath());
-            if(!dstFile.exists()) {
+            if (!dstFile.exists()) {
                 FileManipulator.copyFile(sourceFile, dstFile);
             }
         }
-
-
     }
 
     /**
      * @param ctxt
      */
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
     }
 
     /**
      * @param contextService
      */
+    @Reference(
+             name = "config.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
     }
 
@@ -94,5 +100,5 @@ public class JUDDIServiceComponent {
      */
     protected void unsetConfigurationContextService(ConfigurationContextService contextService) {
     }
-
 }
+

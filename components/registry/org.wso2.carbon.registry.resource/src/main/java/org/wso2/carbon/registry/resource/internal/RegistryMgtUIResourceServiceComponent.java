@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.registry.resource.internal;
 
 import org.apache.commons.logging.Log;
@@ -27,25 +26,19 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.resource.download.DownloadManagerService;
 import org.wso2.carbon.registry.resource.services.utils.ContentUtil;
 import org.wso2.carbon.registry.resource.servlets.ResourceServlet;
-
 import javax.servlet.Servlet;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.resource" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="http.service" interface="org.osgi.service.http.HttpService"
- * cardinality="1..1" policy="dynamic" bind="setHttpService" unbind="unsetHttpService"
- * @scr.reference name="registry.notification.service"
- * interface="org.wso2.carbon.registry.common.eventing.NotificationService" cardinality="0..1"
- * policy="dynamic" bind="setRegistryNotificationService" unbind="unsetRegistryNotificationService"
- * @scr.reference name="registry.download.service"
- * interface="org.wso2.carbon.registry.resource.download.DownloadManagerService" cardinality="0..1"
- * policy="dynamic" bind="setDownloadManagerService" unbind="unsetDownloadManagerService"
- */
+@Component(
+         name = "org.wso2.carbon.registry.resource", 
+         immediate = true)
 public class RegistryMgtUIResourceServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIResourceServiceComponent.class);
@@ -53,9 +46,12 @@ public class RegistryMgtUIResourceServiceComponent {
     private ResourceDataHolder dataHolder = ResourceDataHolder.getInstance();
 
     private RegistryService registryService = null;
+
     private HttpService httpService = null;
+
     private ServiceRegistration serviceRegistration = null;
 
+    @Activate
     protected void activate(ComponentContext context) {
         try {
             registerServlet(context.getBundleContext());
@@ -65,18 +61,17 @@ public class RegistryMgtUIResourceServiceComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("******* Registry Resources UI Management bundle is deactivated ******* ");
     }
 
     public void registerServlet(BundleContext bundleContext) throws Exception {
-
         if (registryService == null) {
             String msg = "Unable to Register Servlet. Registry Service Not Found.";
             log.error(msg);
             throw new Exception(msg);
         }
-
         Dictionary servletParam = new Hashtable(2);
         servletParam.put("org.apache.abdera.protocol.server.Provider", "org.wso2.carbon.registry.app.RegistryProvider");
         Dictionary servletAttributes = new Hashtable(2);
@@ -85,12 +80,17 @@ public class RegistryMgtUIResourceServiceComponent {
         params.put("servlet-params", servletParam);
         params.put("url-pattern", "/registry/resources");
         params.put("servlet-attributes", servletAttributes);
-
         ResourceServlet resourceServlet = new ResourceServlet();
         // The HTTP Service must be available for this operation
         serviceRegistration = bundleContext.registerService(Servlet.class.getName(), resourceServlet, params);
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
         dataHolder.setRegistryService(registryService);
@@ -105,6 +105,12 @@ public class RegistryMgtUIResourceServiceComponent {
         }
     }
 
+    @Reference(
+             name = "registry.notification.service", 
+             service = org.wso2.carbon.registry.common.eventing.NotificationService.class, 
+             cardinality = ReferenceCardinality.OPTIONAL, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryNotificationService")
     protected void setRegistryNotificationService(NotificationService notificationService) {
         dataHolder.setRegistryNotificationService(notificationService);
     }
@@ -113,6 +119,12 @@ public class RegistryMgtUIResourceServiceComponent {
         dataHolder.setRegistryNotificationService(null);
     }
 
+    @Reference(
+             name = "http.service", 
+             service = org.osgi.service.http.HttpService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetHttpService")
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -121,6 +133,12 @@ public class RegistryMgtUIResourceServiceComponent {
         this.httpService = null;
     }
 
+    @Reference(
+             name = "registry.download.service", 
+             service = org.wso2.carbon.registry.resource.download.DownloadManagerService.class, 
+             cardinality = ReferenceCardinality.OPTIONAL, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetDownloadManagerService")
     protected void setDownloadManagerService(DownloadManagerService downloadManagerService) {
         ContentUtil.setDownloadManagerService(downloadManagerService);
     }
@@ -128,6 +146,5 @@ public class RegistryMgtUIResourceServiceComponent {
     protected void unsetDownloadManagerService(DownloadManagerService downloadManagerService) {
         ContentUtil.setDownloadManagerService(null);
     }
-
 }
 

@@ -31,7 +31,6 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.statistics.StatisticsCollector;
 import org.wso2.carbon.registry.extensions.jmx.*;
 import org.wso2.carbon.utils.CarbonUtils;
-
 import javax.management.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -43,34 +42,39 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.jmx" immediate="true"
- * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
-@SuppressWarnings({"unused", "JavaDoc"})
+@SuppressWarnings({ "unused", "JavaDoc" })
+@Component(
+         name = "org.wso2.carbon.registry.jmx", 
+         immediate = true)
 public class RegistryJMXServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryJMXServiceComponent.class);
+
     private boolean isJMXEnabled = false;
+
     private Map<String, Boolean> jmxServices = new HashMap<String, Boolean>();
+
     private Stack<ServiceRegistration> serviceRegistrations = new Stack<ServiceRegistration>();
+
     private Stack<ObjectName> mBeans = new Stack<ObjectName>();
+
     private RegistryService registryService;
 
+    @Activate
     protected void activate(ComponentContext context) {
         if (isJMXEnabled()) {
             try {
-                registerMBean(context, new InvocationStatistics(),
-                        StatisticsCollector.class.getName());
+                registerMBean(context, new InvocationStatistics(), StatisticsCollector.class.getName());
                 registerMBean(context, new Subscriptions(), Subscriptions.class.getName());
-                registerMBean(context, new Activities(registryService.getRegistry(
-                        CarbonConstants.REGISTRY_SYSTEM_USERNAME)),
-                        ActivitiesMBean.class.getName());
-                registerMBean(context, new Properties(registryService.getRegistry(
-                        CarbonConstants.REGISTRY_SYSTEM_USERNAME)),
-                        PropertiesMBean.class.getName());
+                registerMBean(context, new Activities(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME)), ActivitiesMBean.class.getName());
+                registerMBean(context, new Properties(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME)), PropertiesMBean.class.getName());
                 registerMBean(context, new Events(), Events.class.getName());
             } catch (JMException e) {
                 log.error("Unable to register JMX extensions", e);
@@ -81,35 +85,38 @@ public class RegistryJMXServiceComponent {
         log.debug("Registry JMX component is activated");
     }
 
-    private void registerMBean(ComponentContext context, Object object, String serviceClass)
-            throws MalformedObjectNameException, InstanceAlreadyExistsException,
-            MBeanRegistrationException, NotCompliantMBeanException {
+    private void registerMBean(ComponentContext context, Object object, String serviceClass) throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         String simpleName = object.getClass().getSimpleName();
         // It is required to do a != Boolean.TRUE to avoid the NPE here.
         if (jmxServices.get(simpleName.toLowerCase()) != Boolean.TRUE) {
             return;
         }
-        mBeans.push(new ObjectName("org.wso2.carbon:Type=Registry,ConnectorName=" +
-                simpleName));
+        mBeans.push(new ObjectName("org.wso2.carbon:Type=Registry,ConnectorName=" + simpleName));
         ManagementFactory.getPlatformMBeanServer().registerMBean(object, mBeans.peek());
-        serviceRegistrations.push(context.getBundleContext().registerService(
-                serviceClass, object, null));
+        serviceRegistrations.push(context.getBundleContext().registerService(serviceClass, object, null));
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
-        while(!mBeans.empty()) {
+        while (!mBeans.empty()) {
             try {
                 ManagementFactory.getPlatformMBeanServer().unregisterMBean(mBeans.pop());
             } catch (JMException e) {
                 log.error("Unable to un-register JMX extensions", e);
             }
         }
-        while(!serviceRegistrations.empty()) {
+        while (!serviceRegistrations.empty()) {
             serviceRegistrations.pop().unregister();
         }
         log.debug("Registry JMX component is deactivated");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         this.registryService = registryService;
     }
@@ -128,20 +135,15 @@ public class RegistryJMXServiceComponent {
             if (registryXML.exists()) {
                 try {
                     FileInputStream fileInputStream = new FileInputStream(registryXML);
-                    StAXOMBuilder builder = new StAXOMBuilder(
-                            CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
+                    StAXOMBuilder builder = new StAXOMBuilder(CarbonUtils.replaceSystemVariablesInXml(fileInputStream));
                     OMElement configElement = builder.getDocumentElement();
                     OMElement jmx = configElement.getFirstChildWithName(new QName("jmx"));
                     if (jmx != null) {
-                        isJMXEnabled = Boolean.toString(true).equalsIgnoreCase(
-                                jmx.getAttributeValue(new QName("enabled")));
+                        isJMXEnabled = Boolean.toString(true).equalsIgnoreCase(jmx.getAttributeValue(new QName("enabled")));
                         Iterator services = jmx.getChildrenWithName(new QName("service"));
                         while (services.hasNext()) {
                             OMElement service = (OMElement) services.next();
-                            jmxServices.put(service.getAttributeValue(
-                                    new QName("name")).toLowerCase(),
-                                    Boolean.toString(true).equalsIgnoreCase(
-                                            service.getAttributeValue(new QName("enabled"))));
+                            jmxServices.put(service.getAttributeValue(new QName("name")).toLowerCase(), Boolean.toString(true).equalsIgnoreCase(service.getAttributeValue(new QName("enabled"))));
                         }
                     }
                     return isJMXEnabled;
@@ -157,3 +159,4 @@ public class RegistryJMXServiceComponent {
         return false;
     }
 }
+

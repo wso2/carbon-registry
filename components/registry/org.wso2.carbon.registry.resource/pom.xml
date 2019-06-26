@@ -14,7 +14,6 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
@@ -50,7 +49,6 @@
                             org.wso2.carbon.registry.resource.*,
                         </Export-Package>
                         <Import-Package>
-                            javax.activation.*;version="[0.0.0, 1.0.0)",
                             org.wso2.carbon.registry.common.*;version="0.0.0",
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             !javax.xml.namespace,
@@ -159,6 +157,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+    <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

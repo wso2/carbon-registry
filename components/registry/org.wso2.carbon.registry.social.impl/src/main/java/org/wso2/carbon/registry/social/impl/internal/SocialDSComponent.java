@@ -25,33 +25,40 @@ import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.claim.ClaimManager;
 import org.wso2.carbon.user.core.service.RealmService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="social.component"" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService"
- * unbind="unsetRegistryService"
- * @scr.reference name="user.realmservice.default"
- * interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="1..1" policy="dynamic" bind="setRealmService"
- * unbind="unsetRealmService"
- */
-
-
+@Component(
+         name = "social.component", 
+         immediate = true)
 public class SocialDSComponent {
+
     private static Log log = LogFactory.getLog(SocialDSComponent.class);
+
     private static RealmService realmService = null;
+
     private static RegistryService registryService = null;
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("Social Impl bundle is activated ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Social Impl bundle is deactivated ");
     }
 
+    @Reference(
+             name = "user.realmservice.default", 
+             service = org.wso2.carbon.user.core.service.RealmService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRealmService")
     protected void setRealmService(RealmService realmService) {
         if (log.isDebugEnabled()) {
             log.info("Setting the Realm Service");
@@ -66,6 +73,12 @@ public class SocialDSComponent {
         SocialDSComponent.realmService = null;
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.info("Setting the Registry Service");
@@ -88,19 +101,17 @@ public class SocialDSComponent {
         return registryService;
     }
 
-    //TODO?
-
+    // TODO?
     public static Registry getRegistry() throws RegistryException {
-
         return getRegistryService().getConfigSystemRegistry();
     }
 
-    public static UserStoreManager getUserStoreManager()
-            throws RegistryException, UserStoreException {
+    public static UserStoreManager getUserStoreManager() throws RegistryException, UserStoreException {
         return getRegistryService().getUserRealm(0).getUserStoreManager();
     }
 
-    public static ClaimManager getClaimManager() throws RegistryException,UserStoreException{
-         return getRegistryService().getUserRealm(0).getClaimManager();
+    public static ClaimManager getClaimManager() throws RegistryException, UserStoreException {
+        return getRegistryService().getUserRealm(0).getClaimManager();
     }
 }
+

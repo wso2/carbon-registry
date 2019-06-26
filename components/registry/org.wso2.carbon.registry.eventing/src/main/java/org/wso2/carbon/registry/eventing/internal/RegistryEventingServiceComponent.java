@@ -16,7 +16,6 @@
  *  under the License.
  *
  */
-
 package org.wso2.carbon.registry.eventing.internal;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +55,6 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.NetworkUtils;
 import org.wso2.carbon.email.verification.util.EmailVerifierConfig;
-
 import java.io.File;
 import java.net.SocketException;
 import javax.xml.namespace.QName;
@@ -65,30 +63,16 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.eventing" immediate="true"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="listener.manager.service"
- * interface="org.apache.axis2.engine.ListenerManager" cardinality="1..1" policy="dynamic"
- * bind="setListenerManager" unbind="unsetListenerManager"
- * @scr.reference name="eventbroker.service"
- * interface="org.wso2.carbon.registry.event.core.EventBroker"
- * cardinality="1..1" policy="dynamic"
- * bind="setEventBroker" unbind="unsetEventBroker"
- * @scr.reference name="email.verification.service"
- * interface="org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber"
- * cardinality="1..1" policy="dynamic"
- * bind="setEmailVerificationSubscriber" unbind="unsetEmailVerificationSubscriber"
- * @scr.reference name="registry.events.jmx.service"
- * interface="org.wso2.carbon.registry.extensions.jmx.Events" cardinality="0..1"
- * policy="dynamic" bind="setEvents" unbind="unsetEvents"
- */
+@Component(
+         name = "org.wso2.carbon.registry.eventing", 
+         immediate = true)
 public class RegistryEventingServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryEventingServiceComponent.class);
@@ -106,8 +90,11 @@ public class RegistryEventingServiceComponent {
     private String endpoint = null;
 
     private ServiceRegistration eventingServiceRegistration = null;
+
     private ServiceRegistration notificationServiceRegistration = null;
+
     private ServiceRegistration emailVerificationServiceRegistration = null;
+
     private EventingServiceImpl service = null;
 
     private BundleContext bundleContext = null;
@@ -116,6 +103,7 @@ public class RegistryEventingServiceComponent {
 
     private String defaultClass = "org.wso2.carbon.registry.eventing.template.RegistryNotification";
 
+    @Activate
     protected void activate(ComponentContext context) {
         bundleContext = context.getBundleContext();
         initialize();
@@ -128,8 +116,7 @@ public class RegistryEventingServiceComponent {
             service = new EventingServiceImpl();
             eventingServiceRegistration = bundleContext.registerService(EventingService.class.getName(), service, null);
             notificationServiceRegistration = bundleContext.registerService(NotificationService.class.getName(), service, null);
-            emailVerificationServiceRegistration = bundleContext.registerService(
-                    SubscriptionEmailVerficationService.class.getName(), service, null);
+            emailVerificationServiceRegistration = bundleContext.registerService(SubscriptionEmailVerficationService.class.getName(), service, null);
             EventingDataHolder.getInstance().setRegistryEventingService(service);
             log.debug("Successfully setup the Eventing OGSi Service");
         }
@@ -149,14 +136,21 @@ public class RegistryEventingServiceComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         unregisterEventingService();
         log.debug("Registry Eventing bundle is deactivated ");
     }
 
+    @Reference(
+             name = "configuration.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService configurationContextService) {
         log.debug("The Configuration Context Service was set");
-        this.configurationContextService  = configurationContextService;
+        this.configurationContextService = configurationContextService;
         if (configurationContextService != null) {
             EventingDataHolder.getInstance().setConfigurationContext(configurationContextService.getServerConfigContext());
         }
@@ -166,6 +160,12 @@ public class RegistryEventingServiceComponent {
         EventingDataHolder.getInstance().setConfigurationContext(null);
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         EventingDataHolder.getInstance().setRegistryService(registryService);
     }
@@ -176,8 +176,7 @@ public class RegistryEventingServiceComponent {
         }
         EmailVerifierConfig emailVerifierConfig = EventingDataHolder.getInstance().getEmailVerifierConfig();
         if (emailVerifierConfig == null) {
-            String fileName = CarbonUtils.getCarbonConfigDirPath() + File.separator +
-                    "notifications-email-verification.xml";
+            String fileName = CarbonUtils.getCarbonConfigDirPath() + File.separator + "notifications-email-verification.xml";
             if ((new File(fileName)).exists()) {
                 emailVerifierConfig = Util.loadeMailVerificationConfig(fileName);
             }
@@ -185,20 +184,15 @@ public class RegistryEventingServiceComponent {
                 emailVerifierConfig = new EmailVerifierConfig();
             }
             if (emailVerifierConfig.getEmailBody() == null) {
-                emailVerifierConfig.setEmailBody("To complete your subscription process, please " +
-                        "click on the link below to verify your e-mail address.");
+                emailVerifierConfig.setEmailBody("To complete your subscription process, please " + "click on the link below to verify your e-mail address.");
             }
             if (emailVerifierConfig.getEmailFooter() == null) {
-                emailVerifierConfig.setEmailFooter("This message is automatically generated " +
-                        "by the WSO2 Carbon Registry.");
+                emailVerifierConfig.setEmailFooter("This message is automatically generated " + "by the WSO2 Carbon Registry.");
             }
             if (emailVerifierConfig.getTargetEpr() == null) {
                 String registryURL = EventingDataHolder.getInstance().getDefaultEventingServiceURL();
-                if (registryURL != null && registryURL.indexOf(
-                        "/services/RegistryEventingService") > -1) {
-                    registryURL = registryURL.substring(0, registryURL.length() -
-                            "/services/RegistryEventingService".length()) +
-                            "/carbon";
+                if (registryURL != null && registryURL.indexOf("/services/RegistryEventingService") > -1) {
+                    registryURL = registryURL.substring(0, registryURL.length() - "/services/RegistryEventingService".length()) + "/carbon";
                 }
                 if (registryURL == null) {
                     log.error("Unable to obtain registry URL");
@@ -208,8 +202,7 @@ public class RegistryEventingServiceComponent {
                 if (!registryURL.endsWith("/")) {
                     registryURL = registryURL + "/";
                 }
-                emailVerifierConfig.setTargetEpr(registryURL +
-                        "info/subscription-email-verification.jsp");
+                emailVerifierConfig.setTargetEpr(registryURL + "info/subscription-email-verification.jsp");
             }
             if (emailVerifierConfig.getSubject() == null) {
                 emailVerifierConfig.setSubject("E-mail Address Verification");
@@ -226,38 +219,42 @@ public class RegistryEventingServiceComponent {
         EventingDataHolder.getInstance().setEmailVerificationSubscriber(null);
     }
 
+    @Reference(
+             name = "email.verification.service", 
+             service = org.wso2.carbon.email.verification.util.EmailVerifcationSubscriber.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetEmailVerificationSubscriber")
     protected void setEmailVerificationSubscriber(EmailVerifcationSubscriber emailVerificationSubscriber) {
         EventingDataHolder.getInstance().setEmailVerificationSubscriber(emailVerificationSubscriber);
     }
 
-    private void setSubscriptionConfiguration(){
+    private void setSubscriptionConfiguration() {
         NotificationConfig config = new NotificationConfig();
         String fileName = CarbonUtils.getCarbonConfigDirPath() + File.separator + "registry.xml";
         if ((new File(fileName)).exists()) {
-            config =  loadeNotificationConfig(fileName);
+            config = loadeNotificationConfig(fileName);
         }
         if (config == null) {
             config = new NotificationConfig();
         }
         String serverURL = EventingDataHolder.getInstance().getDefaultEventingServiceURL();
-        if (serverURL != null && serverURL.indexOf(
-                "/services/RegistryEventingService") > -1) {
-            serverURL = serverURL.substring(0, serverURL.length() -"/services/RegistryEventingService".length());
+        if (serverURL != null && serverURL.indexOf("/services/RegistryEventingService") > -1) {
+            serverURL = serverURL.substring(0, serverURL.length() - "/services/RegistryEventingService".length());
         }
         if (config.getConfigurationClass() == null) {
             config.setConfigurationClass(defaultClass);
         }
-        if (config.getStoreURL() == null){
-            config.setStoreURL(serverURL+"/store");
+        if (config.getStoreURL() == null) {
+            config.setStoreURL(serverURL + "/store");
         }
-        if (config.getPublisherURL() == null){
-            config.setPublisherURL(serverURL+"/publisher");
+        if (config.getPublisherURL() == null) {
+            config.setPublisherURL(serverURL + "/publisher");
         }
         if (config.getConsoleURL() == null) {
-            config.setConsoleURL(serverURL+"/carbon");
+            config.setConsoleURL(serverURL + "/carbon");
         }
         EventingDataHolder.getInstance().setNotificationConfig(config);
-
     }
 
     private NotificationConfig loadeNotificationConfig(String configFilename) {
@@ -268,11 +265,12 @@ public class RegistryEventingServiceComponent {
             return null;
         }
         try {
-            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( new FileInputStream(configFile));
+            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(configFile));
             StAXOMBuilder builder = new StAXOMBuilder(parser);
             OMElement documentElement = builder.getDocumentElement();
             OMElement notificationConfig = documentElement.getFirstChildWithName(new QName("notificationConfiguration"));
-            if (notificationConfig != null) { //registry.xml need an <notificationConfiguration> </notificationConfiguration> entry to continue
+            if (notificationConfig != null) {
+                // registry.xml need an <notificationConfiguration> </notificationConfiguration> entry to continue
                 Iterator it = notificationConfig.getChildElements();
                 while (it.hasNext()) {
                     OMElement element = (OMElement) it.next();
@@ -289,8 +287,7 @@ public class RegistryEventingServiceComponent {
             }
             return config;
         } catch (Exception e) {
-            String msg = "Error in loading configuration : " +
-                         configFilename + ".";
+            String msg = "Error in loading configuration : " + configFilename + ".";
             log.error(msg, e);
             return null;
         }
@@ -300,6 +297,12 @@ public class RegistryEventingServiceComponent {
         EventingDataHolder.getInstance().setRegistryService(null);
     }
 
+    @Reference(
+             name = "eventbroker.service", 
+             service = org.wso2.carbon.registry.event.core.EventBroker.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetEventBroker")
     protected void setEventBroker(EventBroker eventBroker) {
         EventingDataHolder.getInstance().setRegistryEventBrokerService(eventBroker);
     }
@@ -308,12 +311,24 @@ public class RegistryEventingServiceComponent {
         EventingDataHolder.getInstance().setRegistryEventBrokerService(null);
     }
 
+    @Reference(
+             name = "listener.manager.service", 
+             service = org.apache.axis2.engine.ListenerManager.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetListenerManager")
     protected void setListenerManager(ListenerManager listenerManager) {
         this.listenerManager = listenerManager;
-        //initialize();
-        //registerEventingService();
+    // initialize();
+    // registerEventingService();
     }
 
+    @Reference(
+             name = "registry.events.jmx.service", 
+             service = org.wso2.carbon.registry.extensions.jmx.Events.class, 
+             cardinality = ReferenceCardinality.OPTIONAL, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetEvents")
     protected void setEvents(Events notifications) {
         JMXEventsBean implBean = new JMXEventsBean();
         notifications.setImplBean(implBean);
@@ -332,8 +347,7 @@ public class RegistryEventingServiceComponent {
 
     private void initialize() {
         ConfigurationContext serverConfigurationContext = configurationContextService.getServerConfigContext();
-        if (!configurationDone && listenerManager != null &&
-            EventingDataHolder.getInstance().getRegistryService() != null) {
+        if (!configurationDone && listenerManager != null && EventingDataHolder.getInstance().getRegistryService() != null) {
             String host;
             try {
                 host = NetworkUtils.getLocalHostname();
@@ -343,31 +357,25 @@ public class RegistryEventingServiceComponent {
             }
             if (host == null) {
                 host = System.getProperty("carbon.local.ip");
-                log.warn("Unable to obtain server host, using the carbon.local.ip system "
-                        + "property to determine the ip address.");
+                log.warn("Unable to obtain server host, using the carbon.local.ip system " + "property to determine the ip address.");
             }
             log.debug("Found Server Host: " + host);
             if (serverConfigurationContext != null) {
                 AxisConfiguration config = serverConfigurationContext.getAxisConfiguration();
-                if (config != null && config.getTransportIn("https") != null &&
-                        config.getTransportIn("https").getReceiver() != null) {
+                if (config != null && config.getTransportIn("https") != null && config.getTransportIn("https").getReceiver() != null) {
                     try {
-                        EndpointReference[] eprArray = config.getTransportIn("https")
-                                .getReceiver().getEPRsForService("RegistryEventingService",
-                                        host);
+                        EndpointReference[] eprArray = config.getTransportIn("https").getReceiver().getEPRsForService("RegistryEventingService", host);
                         if (eprArray != null && eprArray[0] != null) {
                             endpoint = eprArray[0].getAddress();
                             if (endpoint != null && endpoint.endsWith("/")) {
                                 endpoint = endpoint.substring(0, endpoint.length() - 1);
                             }
                         } else {
-                            String msg = "Unable to obtain EPR for service. " +
-                                "Attempting to construct EPR based on known parameters.";
+                            String msg = "Unable to obtain EPR for service. " + "Attempting to construct EPR based on known parameters.";
                             log.warn(msg);
                         }
                     } catch (AxisFault e) {
-                        String msg = "Error occured while obtaining EPR for service. " +
-                                "Attempting to construct EPR based on known parameters.";
+                        String msg = "Error occured while obtaining EPR for service. " + "Attempting to construct EPR based on known parameters.";
                         log.warn(msg, e);
                     }
                 }
@@ -443,21 +451,19 @@ public class RegistryEventingServiceComponent {
     }
 
     // TODO: This is hack to set the Registry Dispatcher. Get rid of this once message formatting is
-    //       available.
+    // available.
     private void setupDispatchers() throws Exception {
         RegistryEventDispatcher dispatcher = new RegistryEventDispatcher();
         dispatcher.init(EventingDataHolder.getInstance().getConfigurationContext());
         if (EventingDataHolder.getInstance().getRegistryEventBrokerService() != null) {
-            EventingDataHolder.getInstance().getRegistryEventBrokerService().registerEventDispatcher(
-                    RegistryEventingConstants.TOPIC_PREFIX, dispatcher);
+            EventingDataHolder.getInstance().getRegistryEventBrokerService().registerEventDispatcher(RegistryEventingConstants.TOPIC_PREFIX, dispatcher);
         }
     }
 
     private void setupHandlers() {
         if (Boolean.toString(Boolean.TRUE).equals(System.getProperty("disable.event.handlers"))) {
             initialized = true;
-            log.debug("Default Eventing Handlers have been disabled. Events will not be " +
-                    "generated unless a custom handler has been configured.");
+            log.debug("Default Eventing Handlers have been disabled. Events will not be " + "generated unless a custom handler has been configured.");
             return;
         }
         RegistryService registryService = EventingDataHolder.getInstance().getRegistryService();
@@ -476,9 +482,7 @@ public class RegistryEventingServiceComponent {
                     return;
                 }
                 registry = systemRegistry;
-                if (registry == null ||
-                        registry.getRegistryContext() == null ||
-                        registry.getRegistryContext().getHandlerManager() == null) {
+                if (registry == null || registry.getRegistryContext() == null || registry.getRegistryContext().getHandlerManager() == null) {
                     String msg = "Error Initializing Registry Eventing Handler";
                     log.error(msg);
                 } else {
@@ -500,12 +504,10 @@ public class RegistryEventingServiceComponent {
                     filter.setRemoveLinkPattern(".*");
                     filter.setRestorePattern(".*");
                     RegistryEventingHandler handler = new RegistryEventingHandler();
-                    registry.getRegistryContext().getHandlerManager().addHandler(null, filter,
-                            handler, HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
+                    registry.getRegistryContext().getHandlerManager().addHandler(null, filter, handler, HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
                     registry.setEventingServiceURL(null, endpoint);
                     EventingDataHolder.getInstance().setDefaultEventingServiceURL(endpoint);
                     log.debug("Successfully Initialized the Registry Eventing Handler");
-
                     /*URLMatcher erbSubManagerMountFilter = new URLMatcher();
                     erbSubManagerMountFilter.setPutPattern(
                             eventingRoot + "/.*");
@@ -515,18 +517,13 @@ public class RegistryEventingServiceComponent {
                             erbSubManagerMountFilter, erbSubManagerMountHanlder);
                     erbSubManagerMountHanlder.init(registry.getRegistryContext(), eventingRoot);
                     log.debug("Successfully Initialized the Subscription Manager Mount Handler");*/
-
-
                     URLMatcher erbSubManagerRRFilter = new URLMatcher();
                     erbSubManagerRRFilter.setCopyPattern(".*");
                     erbSubManagerRRFilter.setRenamePattern(".*");
                     erbSubManagerRRFilter.setMovePattern(".*");
                     erbSubManagerRRFilter.setDeletePattern(".*");
-                    SubscriptionManagerHandler erbSubManagerRRHanlder =
-                            new EmbeddedRegistryBasedSubscriptionManagerResourceRelocateHandler();
-                    registry.getRegistryContext().getHandlerManager().addHandler(null,
-                            erbSubManagerRRFilter, erbSubManagerRRHanlder,
-                            HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
+                    SubscriptionManagerHandler erbSubManagerRRHanlder = new EmbeddedRegistryBasedSubscriptionManagerResourceRelocateHandler();
+                    registry.getRegistryContext().getHandlerManager().addHandler(null, erbSubManagerRRFilter, erbSubManagerRRHanlder, HandlerLifecycleManager.DEFAULT_REPORTING_HANDLER_PHASE);
                     erbSubManagerRRHanlder.init(registry.getRegistryContext(), eventingRoot);
                     log.debug("Successfully Initialized the Subscription Manager Resource Relocate Handler");
                     log.info("Successfully Initialized Eventing on Registry");

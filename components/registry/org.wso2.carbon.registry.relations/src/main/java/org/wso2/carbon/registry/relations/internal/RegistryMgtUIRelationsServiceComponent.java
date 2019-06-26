@@ -13,34 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.registry.relations.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.relations" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
+@Component(
+         name = "org.wso2.carbon.registry.relations", 
+         immediate = true)
 public class RegistryMgtUIRelationsServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIRelationsServiceComponent.class);
 
     private RelationsDataHolder dataHolder = RelationsDataHolder.getInstance();
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("******* Registry Relations UI Management bundle is activated ******* ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("******* Registry Relations UI Management bundle is deactivated ******* ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         dataHolder.setRegistryService(registryService);
     }
@@ -49,3 +59,4 @@ public class RegistryMgtUIRelationsServiceComponent {
         dataHolder.setRegistryService(null);
     }
 }
+

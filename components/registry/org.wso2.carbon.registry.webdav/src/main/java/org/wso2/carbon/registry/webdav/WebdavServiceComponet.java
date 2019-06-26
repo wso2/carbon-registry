@@ -22,35 +22,43 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.webdav.utils.Utils;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.webdav" immediate="true"
- * @scr.reference name="registry.service"
- *                interface="org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
- */
-
+@Component(
+         name = "org.wso2.carbon.registry.webdav", 
+         immediate = true)
 public class WebdavServiceComponet {
 
+    @Activate
+    protected void activate(ComponentContext context) {
+    }
 
-	protected void activate(ComponentContext context) {
-	}
+    @Deactivate
+    protected void deactivate(ComponentContext context) {
+    }
 
-	protected void deactivate(ComponentContext context) {
-	}
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
+    protected void setRegistryService(RegistryService registryService) {
+        Utils.setRegistryService(registryService);
+    }
 
-	protected void setRegistryService(RegistryService registryService) {
-		Utils.setRegistryService(registryService);
-	}
+    protected void unsetRegistryService(RegistryService registryService) {
+        if (registryService != null && registryService.equals(Utils.getRegistryService())) {
+            Utils.setRegistryService(null);
+        }
+    }
 
-	protected void unsetRegistryService(RegistryService registryService) {
-		if (registryService != null && registryService.equals(Utils.getRegistryService())){
-			Utils.setRegistryService(null);
-		}
-	}
-	
-	public static Registry getRegistryInstance(String userName, String password) throws RegistryException{
+    public static Registry getRegistryInstance(String userName, String password) throws RegistryException {
         if (userName != null && password != null) {
             return Utils.getRegistryService().getUserRegistry(userName, password);
         } else if (userName != null) {
@@ -58,6 +66,6 @@ public class WebdavServiceComponet {
         } else {
             return Utils.getRegistryService().getUserRegistry();
         }
-	}
-
+    }
 }
+

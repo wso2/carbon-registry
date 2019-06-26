@@ -13,33 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.registry.indexing.service;
 
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="registry.indexing" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
 @Deprecated
+@Component(
+         name = "registry.indexing", 
+         immediate = true)
 public class ContentBasedSearchServiceComponet {
 
     private static Log log = LogFactory.getLog(ContentBasedSearchServiceComponet.class);
 
+    @Activate
     protected void activate(ComponentContext ctxt) {
         log.debug("registry.mgt.ui.search bundle is activated ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
         log.debug("registry.mgt.ui.search bundle is deactivated ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         Utils.setRegistryService(registryService);
     }
@@ -47,5 +57,5 @@ public class ContentBasedSearchServiceComponet {
     protected void unsetRegistryService(RegistryService registryService) {
         Utils.setRegistryService(null);
     }
-
 }
+
