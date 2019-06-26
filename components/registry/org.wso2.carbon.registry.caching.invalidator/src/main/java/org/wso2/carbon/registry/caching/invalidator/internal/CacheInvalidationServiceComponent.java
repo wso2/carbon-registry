@@ -26,24 +26,31 @@ import org.wso2.carbon.registry.caching.invalidator.impl.CacheInvalidationSubscr
 import org.wso2.carbon.registry.caching.invalidator.impl.ConfigurationManager;
 import org.wso2.carbon.core.clustering.api.CoordinatedActivity;
 import org.wso2.carbon.utils.ConfigurationContextService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="CacheInvalidationServiceComponent" immediate="true"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService" cardinality="1..1"
- * policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
- */
-
+@Component(
+         name = "CacheInvalidationServiceComponent", 
+         immediate = true)
 public class CacheInvalidationServiceComponent {
+
     private static Log log = LogFactory.getLog(CacheInvalidationServiceComponent.class);
+
     ServiceRegistration serviceRegistration;
+
     CacheInvalidationSubscriber subscriber;
+
     CacheInvalidationPublisher publisher;
 
+    @Activate
     protected void activate(ComponentContext ctxt) {
         log.debug("Cache Invalidation Service activation started");
         try {
-            if(ConfigurationManager.init()) {
+            if (ConfigurationManager.init()) {
                 InvalidationConnectionFactory.createMessageBrokerConnection();
                 subscriber = new CacheInvalidationSubscriber();
                 publisher = new CacheInvalidationPublisher();
@@ -56,18 +63,25 @@ public class CacheInvalidationServiceComponent {
         }
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext ctxt) {
         log.debug("Cache Invalidation Service stopped");
-        try{
-            if(serviceRegistration != null) {
+        try {
+            if (serviceRegistration != null) {
                 serviceRegistration.unregister();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             String msg = "Failed to Stop the Cache Invalidation Service";
             log.error(msg, e);
         }
     }
 
+    @Reference(
+             name = "configuration.context.service", 
+             service = org.wso2.carbon.utils.ConfigurationContextService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetConfigurationContextService")
     protected void setConfigurationContextService(ConfigurationContextService contextService) {
         CacheInvalidationDataHolder.setConfigContext(contextService.getServerConfigContext());
     }
@@ -76,3 +90,4 @@ public class CacheInvalidationServiceComponent {
         CacheInvalidationDataHolder.setConfigContext(null);
     }
 }
+

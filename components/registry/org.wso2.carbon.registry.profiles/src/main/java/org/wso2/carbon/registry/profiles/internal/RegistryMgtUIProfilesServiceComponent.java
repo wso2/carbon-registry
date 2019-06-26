@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.registry.profiles.internal;
 
 import org.apache.commons.logging.Log;
@@ -27,30 +26,40 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.profiles.handlers.ProfilesAddHandler;
 import org.wso2.carbon.registry.profiles.utils.CommonUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.profiles" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic"  bind="setRegistryService" unbind="unsetRegistryService"
- */
+@Component(
+         name = "org.wso2.carbon.registry.profiles", 
+         immediate = true)
 public class RegistryMgtUIProfilesServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIProfilesServiceComponent.class);
 
     private Registry registry = null;
 
+    @Activate
     protected void activate(ComponentContext context) {
         log.debug("******* Registry Profiles Management bundle is activated ******* ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         log.debug("Registry Profiles Management bundle is deactivated ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         CommonUtil.setRegistryService(registryService);
-
         if (registryService instanceof RemoteRegistryService) {
             log.warn("Profiles are not available on Remote Registry");
             return;
@@ -64,23 +73,19 @@ public class RegistryMgtUIProfilesServiceComponent {
                 return;
             }
             registry = configSystemRegistry;
-            if (registry == null ||
-                    registry.getRegistryContext() == null ||
-                    registry.getRegistryContext().getHandlerManager() == null) {
+            if (registry == null || registry.getRegistryContext() == null || registry.getRegistryContext().getHandlerManager() == null) {
                 String msg = "Error Initializing Registry Profile Handler";
                 log.error(msg);
             } else {
                 URLMatcher filter = new URLMatcher();
-//                filter.setGetPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-//                        RegistryConstants.CONFIG_REGISTRY_BASE_PATH + RegistryConstants.PROFILES_PATH) +
-//                        ".*/profiles");
-//                filter.setPutPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-//                        RegistryConstants.CONFIG_REGISTRY_BASE_PATH + RegistryConstants.PROFILES_PATH) +
-//                        ".*/profiles");
-                filter.setGetPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                        "/") + ".*" + RegistryConstants.PROFILES_PATH + ".*/profiles");
-                filter.setPutPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
-                        "/") + ".*" + RegistryConstants.PROFILES_PATH + ".*/profiles");
+                // filter.setGetPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                // RegistryConstants.CONFIG_REGISTRY_BASE_PATH + RegistryConstants.PROFILES_PATH) +
+                // ".*/profiles");
+                // filter.setPutPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(),
+                // RegistryConstants.CONFIG_REGISTRY_BASE_PATH + RegistryConstants.PROFILES_PATH) +
+                // ".*/profiles");
+                filter.setGetPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(), "/") + ".*" + RegistryConstants.PROFILES_PATH + ".*/profiles");
+                filter.setPutPattern(RegistryUtils.getAbsolutePath(registry.getRegistryContext(), "/") + ".*" + RegistryConstants.PROFILES_PATH + ".*/profiles");
                 ProfilesAddHandler handler = new ProfilesAddHandler();
                 registry.getRegistryContext().getHandlerManager().addHandler(null, filter, handler);
             }
@@ -95,3 +100,4 @@ public class RegistryMgtUIProfilesServiceComponent {
         CommonUtil.setRegistryService(null);
     }
 }
+

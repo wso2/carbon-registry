@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.wso2.carbon.registry.security.vault.internal;
 
 import org.apache.commons.logging.Log;
@@ -30,118 +29,122 @@ import org.wso2.carbon.registry.security.vault.observers.TenantDeploymentListene
 import org.wso2.carbon.registry.security.vault.service.RegistrySecurityService;
 import org.wso2.carbon.registry.security.vault.util.SecureVaultUtil;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Stack;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="registry.security" immediate="true"
- * @scr.reference name="registry.service"
- *                interface=
- *                "org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
- * @scr.reference name="server.configuration"
- *                interface=
- *                "org.wso2.carbon.base.api.ServerConfigurationService"
- *                cardinality="1..1" policy="dynamic"
- *                bind="setServerConfigurationService"
- *                unbind="unsetServerConfigurationService"
- */
+@Component(
+         name = "registry.security", 
+         immediate = true)
 public class RegistrySecurityServiceComponent {
 
-	private static Log log = LogFactory.getLog(RegistrySecurityServiceComponent.class);
+    private static Log log = LogFactory.getLog(RegistrySecurityServiceComponent.class);
 
     private static Stack<ServiceRegistration> registrations = new Stack<ServiceRegistration>();
 
-	public RegistrySecurityServiceComponent() {
-	}
+    public RegistrySecurityServiceComponent() {
+    }
 
-	protected void activate(ComponentContext ctxt) {
-        registrations.push(ctxt.getBundleContext().registerService(
-                RegistrySecurityService.class.getName(), new RegistrySecurityServiceImpl(), null));
-
+    @Activate
+    protected void activate(ComponentContext ctxt) {
+        registrations.push(ctxt.getBundleContext().registerService(RegistrySecurityService.class.getName(), new RegistrySecurityServiceImpl(), null));
         TenantDeploymentListenerImpl listener = new TenantDeploymentListenerImpl();
-        registrations.push(ctxt.getBundleContext().registerService(
-                Axis2ConfigurationContextObserver.class.getName(), listener, null));
-
+        registrations.push(ctxt.getBundleContext().registerService(Axis2ConfigurationContextObserver.class.getName(), listener, null));
         try {
             SecureVaultUtil.createRegistryResource(-1234);
         } catch (RegistryException ignore) {
         }
         if (log.isDebugEnabled()) {
-			log.debug("Registry security component activated");
-		}
-	}
+            log.debug("Registry security component activated");
+        }
+    }
 
-	protected void deactivate(ComponentContext ctxt) {
+    @Deactivate
+    protected void deactivate(ComponentContext ctxt) {
         while (!registrations.empty()) {
             registrations.pop().unregister();
         }
         log.debug("Registry security component deactivated");
-	}
+    }
 
-	protected void setRegistryService(RegistryService regService) {
-		if (log.isDebugEnabled()) {
-			log.debug("RegistryService bound to the ESB initialization process");
-		}
-		SecurityServiceHolder.getInstance().setRegistryService(regService);
-	}
+    @Reference(
+             name = "registry.service", 
+             service = RegistryService.class,
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
+    protected void setRegistryService(RegistryService regService) {
+        if (log.isDebugEnabled()) {
+            log.debug("RegistryService bound to the ESB initialization process");
+        }
+        SecurityServiceHolder.getInstance().setRegistryService(regService);
+    }
 
-	protected void unsetRegistryService(RegistryService regService) {
-		if (log.isDebugEnabled()) {
-			log.debug("RegistryService unbound from the ESB environment");
-		}
-		SecurityServiceHolder.getInstance().setRegistryService(null);
-	}
+    protected void unsetRegistryService(RegistryService regService) {
+        if (log.isDebugEnabled()) {
+            log.debug("RegistryService unbound from the ESB environment");
+        }
+        SecurityServiceHolder.getInstance().setRegistryService(null);
+    }
 
-	protected void setServerConfigurationService(ServerConfigurationService serverConfiguration) {
-		SecurityServiceHolder.getInstance().setServerConfigurationService(serverConfiguration);
-	}
+    @Reference(
+             name = "server.configuration", 
+             service = ServerConfigurationService.class,
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetServerConfigurationService")
+    protected void setServerConfigurationService(ServerConfigurationService serverConfiguration) {
+        SecurityServiceHolder.getInstance().setServerConfigurationService(serverConfiguration);
+    }
 
-	protected void unsetServerConfigurationService(ServerConfigurationService serverConfiguration) {
-		SecurityServiceHolder.getInstance().setServerConfigurationService(null);
-	}
+    protected void unsetServerConfigurationService(ServerConfigurationService serverConfiguration) {
+        SecurityServiceHolder.getInstance().setServerConfigurationService(null);
+    }
+
 
     private static class RegistrySecurityServiceImpl implements RegistrySecurityService {
 
-		/**
-		 * Method to do the encryption operation.
-		 *
-		 * @param plainTextValue	plain text value.
-		 * @return			encrypted value.
-		 * @throws CryptoException	Throws when an error occurs during encryption.
-		 */
+        /**
+         * Method to do the encryption operation.
+         *
+         * @param plainTextValue	plain text value.
+         * @return			encrypted value.
+         * @throws CryptoException	Throws when an error occurs during encryption.
+         */
         @Override
         public String doEncrypt(String plainTextValue) throws CryptoException {
             return SecureVaultUtil.doEncrypt(plainTextValue);
         }
 
-		/**
-		 * Method to decrypt a property, when key of the property is provided.
-		 *
-		 * @param key			key of the property.
-		 * @return 			decrypted property value.
-		 * @throws RegistryException	Throws when an error occurs during decryption.
-		 */
+        /**
+         * Method to decrypt a property, when key of the property is provided.
+         *
+         * @param key			key of the property.
+         * @return 			decrypted property value.
+         * @throws RegistryException	Throws when an error occurs during decryption.
+         */
         @Override
         public String getDecryptedPropertyValue(String key) throws RegistryException {
             return SecureVaultUtil.getDecryptedPropertyValue(key);
         }
 
-		/**
-		 * Method to decrypt a property, when encrypted value is provided.
-		 *
-		 * @param encryptedValue                encrypted value.
-		 * @return 				decrypted  value.
-		 * @throws CryptoException              Throws when an error occurs during decryption.
-		 * @throws UnsupportedEncodingException Throws when an error occurs during byte array to string conversion.
-		 */
+        /**
+         * Method to decrypt a property, when encrypted value is provided.
+         *
+         * @param encryptedValue                encrypted value.
+         * @return 				decrypted  value.
+         * @throws CryptoException              Throws when an error occurs during decryption.
+         * @throws UnsupportedEncodingException Throws when an error occurs during byte array to string conversion.
+         */
         @Override
         public String doDecrypt(String encryptedValue) throws CryptoException, UnsupportedEncodingException {
             return SecureVaultUtil.doDecrypt(encryptedValue);
         }
-
     }
-
 }
+

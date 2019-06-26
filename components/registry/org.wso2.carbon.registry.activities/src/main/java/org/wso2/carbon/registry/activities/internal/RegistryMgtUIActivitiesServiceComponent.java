@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.registry.activities.internal;
 
 import org.apache.commons.logging.Log;
@@ -22,26 +21,31 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.framework.ServiceRegistration;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.activities.services.utils.CommonUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
-/**
- * @scr.component name="org.wso2.carbon.registry.activities" immediate="true"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
- * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- */
+@Component(
+         name = "org.wso2.carbon.registry.activities", 
+         immediate = true)
 public class RegistryMgtUIActivitiesServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryMgtUIActivitiesServiceComponent.class);
 
     private ServiceRegistration activityServiceRegistration = null;
 
+    @Activate
     protected void activate(ComponentContext context) {
         // TODO: uncomment when the backend-frontend seperation when running in same vm is completed
-        //activityServiceRegistration = context.getBundleContext().registerService(
-        //        IActivityService.class.getName(), new ActivityService(), null);
+        // activityServiceRegistration = context.getBundleContext().registerService(
+        // IActivityService.class.getName(), new ActivityService(), null);
         log.debug("******* Activity UI Management bundle is activated ******* ");
     }
 
+    @Deactivate
     protected void deactivate(ComponentContext context) {
         if (activityServiceRegistration != null) {
             activityServiceRegistration.unregister();
@@ -50,6 +54,12 @@ public class RegistryMgtUIActivitiesServiceComponent {
         log.debug("******* Registry Activity UI Management bundle is deactivated ******* ");
     }
 
+    @Reference(
+             name = "registry.service", 
+             service = org.wso2.carbon.registry.core.service.RegistryService.class, 
+             cardinality = ReferenceCardinality.MANDATORY, 
+             policy = ReferencePolicy.DYNAMIC, 
+             unbind = "unsetRegistryService")
     protected void setRegistryService(RegistryService registryService) {
         CommonUtil.setRegistryService(registryService);
     }
@@ -58,3 +68,4 @@ public class RegistryMgtUIActivitiesServiceComponent {
         CommonUtil.setRegistryService(null);
     }
 }
+

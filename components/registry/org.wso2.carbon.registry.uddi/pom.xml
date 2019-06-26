@@ -137,5 +137,10 @@
             </exclusions>
             <!-- We don't need an orbit bundle, since this is a bundle -->
         </dependency>
+    <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
