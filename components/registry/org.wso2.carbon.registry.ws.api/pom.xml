@@ -72,10 +72,7 @@
     </profiles>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -93,7 +90,7 @@
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
-                            org.apache.commons.logging.*,
+                            org.apache.commons.logging.*; version="${import.package.version.commons.logging}",
                             org.apache.neethi.*,
                             org.apache.rampart.policy.model.*,
                             org.apache.ws.security.*; version="[${wss4j.version}, 2)",
