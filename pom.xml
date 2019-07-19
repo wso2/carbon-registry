@@ -173,9 +173,9 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.logging</artifactId>
-                <version>${carbon.kernel.version}</version>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax.logging.api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -998,11 +998,6 @@
                 <version>${orbit.version.xmlschema}</version>
             </dependency>
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons-logging.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.carbon.commons</groupId>
                 <artifactId>org.wso2.carbon.ntask.core</artifactId>
                 <version>${carbon.commons.version}</version>
@@ -1423,7 +1418,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.2.0</version>
                     <extensions>true</extensions>
                 </plugin>
             <plugin>
@@ -1687,10 +1682,13 @@
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <orbit.version.commons.httpclient>3.1.0.wso2v6</orbit.version.commons.httpclient>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
-        <commons-logging.version>1.1</commons-logging.version>
         <commons-lang.wso2.version>2.6.0.wso2v1</commons-lang.wso2.version>
         <jackson.version>1.9.2</jackson.version>
         <amber.version>0.22.1358727-wso2v2</amber.version>
+        <import.package.version.commons.logging>[1.2.0,2.0.0)</import.package.version.commons.logging>
+
+        <!-- Pax logging -->
+        <pax.logging.api.version>1.10.1</pax.logging.api.version>
 
         <!-- Carbon Commons -->
         <carbon.commons.version>4.7.0</carbon.commons.version>
