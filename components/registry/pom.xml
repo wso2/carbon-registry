@@ -80,7 +80,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    
+
                     <executions>
                         <execution>
                             <id>generate-scr-scrdescriptor</id>
@@ -94,7 +94,7 @@
             </plugins>
         </pluginManagement>
     </build>
-<dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
