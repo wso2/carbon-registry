@@ -342,7 +342,7 @@
                 %>
 
                 <tr>
-                    <td class="lineSeperationRight"><%=permission.getUserName()%>
+                    <td class="lineSeperationRight"><%=Encode.forHtml(permission.getUserName())%>
                     </td>
                     <td><input type="checkbox" id="<%=Encode.forHtml(permission.getUserName())%>^rra"
                                onmouseup="handlePeerCheckbox('<%=Encode.forJavaScript(permission.getUserName())%>^rra', '<%=Encode.forJavaScript(permission.getUserName())%>^rrd')"
@@ -393,10 +393,10 @@
                 <tr>
                     <td colspan="9"><input type="button" class="button"
                                                          value="<fmt:message key="apply.all.permissions"/>"
-                                                         onmouseup="processRolePermissions('<%=permissionBean.getPathWithVersion()%>');"
+                                                         onmouseup="processRolePermissions('<%=Encode.forJavaScript(permissionBean.getPathWithVersion())%>');"
                                                          style="margin-top:5px;"/>&nbsp;<input type="button" class="button"
                                                          value="<fmt:message key="reset"/>"
-                                                         onmouseup="refreshPermissionsSection('<%=permissionBean.getPathWithVersion()%>');"
+                                                         onmouseup="refreshPermissionsSection('<%=Encode.forJavaScript(permissionBean.getPathWithVersion())%>');"
                                                          style="margin-top:5px;"/><span
                             style="clear:both;"/></td>
                 </tr>

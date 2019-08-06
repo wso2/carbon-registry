@@ -251,7 +251,6 @@ TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=Encode.forHt
                             &nbsp;
                             &nbsp;
                             &nbsp;
-                            &nbsp;
                             <%
                             if (metadata.getPutAllowed() && !metadata.getVersionView()) {
                                 if(Boolean.parseBoolean(metadata.getWriteLocked())) {
