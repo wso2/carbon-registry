@@ -26,6 +26,7 @@ import org.apache.xerces.util.SecurityManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -33,6 +34,7 @@ import org.wso2.carbon.registry.core.utils.MediaTypesUtils;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.SolrConstants;
 import org.wso2.carbon.registry.indexing.bean.RxtUnboundedEntryBean;
+import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -216,4 +218,24 @@ public class RxtUnboundedDataLoadUtils {
         dbf.setAttribute(Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY, securityManager);
         return dbf;
     }
+    public static boolean isMultiValueField(String mediaType, String fieldKey) {
+        boolean result = false;
+        Map<Integer, Map<String, List<String>>> allTenantsUnboundedFields = RxtUnboundedFieldManagerService
+                .getInstance().getTenantsUnboundedFields();
+
+        if (allTenantsUnboundedFields.size() > 0) {
+            Map<String, List<String>> rxtDetails = allTenantsUnboundedFields.get(PrivilegedCarbonContext
+                    .getThreadLocalCarbonContext().getTenantId());
+            if (rxtDetails != null) {
+                List<String> fields = rxtDetails.get(mediaType);
+                if (fields != null) {
+                    if (fields.contains(fieldKey)) {
+                        result = true;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 }
