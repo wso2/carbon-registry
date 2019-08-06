@@ -3510,7 +3510,7 @@ function updateMediaType(resourcePath, mediaType) {
                 method:'post',
                 parameters:{resourcePath:resourcePath, mediaType:mediaType},
                 onSuccess:function (transport) {
-                    $('toggleSaveMediaType_view').innerHTML = mediaType;
+                    $('toggleSaveMediaType_view').innerHTML = $('<div/>').text(mediaType);
 			var returnValue = transport.responseText;
             		if (returnValue.search(/----XmlToArtifactChange----/) != -1){
 				window.location.replace("../resources/resource.jsp?region=region3&item=resource_browser_menu&path=/");
