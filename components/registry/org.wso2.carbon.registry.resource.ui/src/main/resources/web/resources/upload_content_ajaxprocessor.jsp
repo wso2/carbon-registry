@@ -57,7 +57,7 @@
       action="../../fileupload/resource?<csrf:tokenname/>=<csrf:tokenvalue/>"
       enctype="multipart/form-data" target="_self">
     <input type="hidden" id="uPath" name="path" value="<%=parentPath%>"/>
-    <input type="hidden" id="uMediaType" name="mediaType" value="<%=mediaType%>"/>
+    <input type="hidden" id="uMediaType" name="mediaType" value="<%=Encode.forHtml(mediaType)%>"/>
     <input type="hidden" id="uDescription" name="description" value="<%=description%>"/>
     <input type="hidden" id="uResourceName" name="filename" value="<%=resourceName%>"/>
     <input type="hidden" id="uRedirect" name="redirect" value="resources/resource.jsp?region=region3&item=resource_browser_menu&path=<%=Encode.forHtml(path.replaceAll("&","%26"))%>&viewType=std"/>

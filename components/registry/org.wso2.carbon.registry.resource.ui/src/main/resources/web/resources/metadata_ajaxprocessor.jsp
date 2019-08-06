@@ -242,10 +242,13 @@
             <td colspan="2">
                      <div style="width:100%">
                     <div id="toggleSaveMediaType_view" style="float:left;line-height: 25px;"><% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { String mediaType = MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(Encode.forHtml(metadata.getMediaType()));
-TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=mediaType%><% } else { %>
+TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=Encode.forHtml(mediaType)%><% } else { %>
                             <fmt:message key="unknown"/><% } %>
                             </div>
-                            <input style="display:none;float:left" id="toggleSaveMediaType_edit" value="<% if (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) { %><%=MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(Encode.forHtml(metadata.getMediaType()))%><% } else { %><fmt:message key="unknown"/><% } %>" />
+                            <input style="display:none;float:left" id="toggleSaveMediaType_edit" value="<% if
+                            (metadata.getMediaType() != null && metadata.getMediaType().length() != 0) {
+                            %><%=Encode.forHtml(MediaTypesUtils.getHumanReadableMediaTypeFromMimeType(metadata.getMediaType()))%><% } else { %><fmt:message key="unknown"/><% } %>" />
+                            &nbsp;
                             &nbsp;
                             &nbsp;
                             &nbsp;
@@ -265,7 +268,11 @@ TempEditMediaTypeProcessor.setMediaTypeBeforeUpdate(mediaType);%><%=mediaType%><
                             <%}
                             }%>
 
-                            <a  class="icon-link" style="background-image:url(../properties/images/save-button.gif);display:none" id="toggleSaveMediaType_saveBtn" onclick="updateMediaType('<%=metadata.getPath()%>' ,document.getElementById('toggleSaveMediaType_edit').value);">
+                            <a  class="icon-link"
+                                style="background-image:url(../properties/images/save-button.gif);display:none"
+                                id="toggleSaveMediaType_saveBtn"
+                                onclick="updateMediaType('<%=Encode.forJavaScript(metadata.getPath())%>'
+                                        ,document.getElementById('toggleSaveMediaType_edit').value);">
                                 Save
                             </a>
                             &nbsp;

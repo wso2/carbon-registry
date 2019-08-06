@@ -70,7 +70,8 @@
         <textarea id="editTextContentID" name="editTextContentID" style="display:none;"><%=Encode.forHtml(textContent)%></textarea>
     </div>
     <br/>
-    <input type='button' class='button' id ="saveContentButtonID" onclick='updateTextContent("<%=path%>","<%=mediaType%>","false")'
+    <input type='button' class='button' id ="saveContentButtonID" onclick='updateTextContent("<%=Encode.forJavaScript(path)%>",
+            "<%=Encode.forJavaScript(mediaType)%>","false")'
            value='<fmt:message key="save.content"/>'/>
     <input type='button' class='button' id ="cancelContentButtonID" onclick='cancelTextContentEdit()'
            value='<fmt:message key="cancel"/>'/>
