@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 @Component(
-         name = "eventbrokerbuilder.component", 
+         name = "registry.event.core.component",
          immediate = true)
 public class EventBrokerBuilderDS {
 
