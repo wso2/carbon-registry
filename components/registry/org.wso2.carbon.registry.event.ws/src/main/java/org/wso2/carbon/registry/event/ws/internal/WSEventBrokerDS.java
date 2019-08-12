@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 @Component(
-         name = "wsevent.component", 
+         name = "registry.wsevent.component",
          immediate = true)
 public class WSEventBrokerDS {
 
