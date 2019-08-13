@@ -41,4 +41,7 @@
     <int name="connTimeout">${connTimeout:0}</int>
   </shardHandlerFactory>
 
+  <logging>
+    <str name="enabled">false</str>
+  </logging>
 </solr>
