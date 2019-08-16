@@ -102,6 +102,7 @@
                             javax.xml.namespace; version=0.0.0,
                             javax.xml.parsers; version=0.0.0,
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

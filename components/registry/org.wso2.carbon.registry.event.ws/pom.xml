@@ -86,6 +86,7 @@
                             org.wso2.registry.event.*,
                             org.wso2.carbon.utils.*,
                             org.osgi.framework,
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
