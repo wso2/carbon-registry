@@ -53,6 +53,7 @@
                             org.apache.lucene.*,
                             org.wso2.carbon.authenticator.stub.*;version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.registry.ws.stub.*;version="${carbon.registry.package.import.version.range}",
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

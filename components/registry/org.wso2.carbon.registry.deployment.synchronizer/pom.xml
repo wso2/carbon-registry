@@ -52,6 +52,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.deployment.synchronizer.*,
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>

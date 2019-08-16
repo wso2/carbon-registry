@@ -74,6 +74,7 @@
                         </Export-Package>
                         <Import-Package>
                             !org.wso2.carbon.registry.caching.invalidator.*,
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             javax.jms.*
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>

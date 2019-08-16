@@ -54,6 +54,7 @@
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.lucene.*,
                             org.apache.commons.logging.*; version="${import.package.version.commons.logging}",
+                            org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
                     </instructions>
