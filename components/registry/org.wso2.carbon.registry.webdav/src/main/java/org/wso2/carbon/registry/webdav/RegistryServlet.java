@@ -18,6 +18,7 @@
 package org.wso2.carbon.registry.webdav;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.jcr.Repository;
 import javax.servlet.ServletException;
@@ -176,8 +177,8 @@ public class RegistryServlet extends SimpleWebdavServlet {
 		String userpassEncoded = auth.substring(6);
 
 		// Decode it, using any base 64 decoder
-		sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
-		String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+		Base64.Decoder dec = Base64.getDecoder();
+		String userpassDecoded = new String(dec.decode(userpassEncoded));
 		return userpassDecoded.split(":");
 	}
 

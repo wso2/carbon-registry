@@ -76,7 +76,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-XX:-UseSplitVerifier ${argLine} -enableassertions -noverify</argLine>
+                    <argLine>${argLine} -enableassertions -noverify</argLine>
                     <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
