@@ -75,7 +75,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.wso2.carbon.registry.core</Fragment-Host>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
@@ -88,8 +87,7 @@
                             org.wso2.carbon.registry.extensions.services.*
                         </Export-Package>
                         <Private-Package>
-                            common.*,
-                            org.wso2.carbon.registry.extensions.*,
+                            org.wso2.carbon.registry.extensions.*
                         </Private-Package>
                         <Import-Package>
                             javax.activation.*;version="[0.0.0, 1.0.0)",
