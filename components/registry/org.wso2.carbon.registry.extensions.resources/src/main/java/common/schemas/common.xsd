@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2005-2011, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ ~ Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  ~
  ~ WSO2 Inc. licenses this file to you under the Apache License,
  ~ Version 2.0 (the "License"); you may not use this file except
@@ -68,117 +68,30 @@
   on whose behalf you are acting, please do not provide any Feedback.
 	
   WS-I members should direct feedback on this document to wsi_testing@lists.ws-i.org; 
-  non-members should direct feedback to wsi-tools@ws-i.org.  
+  non-members should direct feedback to wsi-tools@ws-i.org. 
 -->
-<xs:schema 
-    xmlns:tns="http://www.ws-i.org/testing/2003/03/log/" 
-    elementFormDefault="qualified" 
-    targetNamespace="http://www.ws-i.org/testing/2003/03/log/" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:wsi-monConfig="http://www.ws-i.org/testing/2003/03/monitorConfig/">
-  <xs:import namespace="http://www.ws-i.org/testing/2003/03/monitorConfig/" 
-		schemaLocation=
-		"http://www.ws-i.org/testing/2003/03/monitorConfig/monitorConfig.xsd" />
-  <xs:element name="log" nillable="true" type="tns:log" />
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+   targetNamespace="http://www.ws-i.org/testing/2003/03/common/"
+   xmlns:wsi-common="http://www.ws-i.org/testing/2003/03/common/">
 
-  <xs:complexType name="log">
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="monitor" type="tns:monitor" />
-      <xs:element minOccurs="0" maxOccurs="unbounded" 
-        name="messageEntry" type="tns:messageEntry" >
-        <xs:unique name="ID_PK" >
-           <xs:selector xpath="messageEntry" />
-           <xs:field xpath="@ID" />
-        </xs:unique>
-      </xs:element>
-    </xs:sequence>
-    <xs:attribute name="timestamp" type="xs:dateTime" />
-  </xs:complexType>
-
-  <xs:complexType name="monitor">
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="implementer" type="tns:implementation" />
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="environment" type="tns:environment" />
-      <xs:element minOccurs="1" maxOccurs="1"
-        ref="wsi-monConfig:configuration" />
-    </xs:sequence>
-    <xs:attribute name="version" type="xs:string" />
-    <xs:attribute name="releaseDate" type="xs:date" />
-  </xs:complexType>
-
-  <xs:complexType name="implementation">
-    <xs:attribute name="name" type="xs:string" />
-    <xs:attribute name="location" type="xs:anyURI" />
-  </xs:complexType>
-
-  <xs:complexType name="environment">
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="runtime" type="tns:nameVersionPair" />
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="operatingSystem" type="tns:nameVersionPair" />
-      <xs:element minOccurs="1" maxOccurs="1" 
-        name="xmlParser" type="tns:nameVersionPair" />
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="nameVersionPair">
-    <xs:attribute name="name" type="xs:string" />
-    <xs:attribute name="version" type="xs:string" />
-  </xs:complexType>
-
-  <xs:complexType name="messageEntry" abstract="true">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="1" name="messageContent">
-        <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-              <!--Byte Order Mark -->
-              <xs:attribute name="BOM" type="xs:unsignedInt"
-		                    use="optional" />
-            </xs:extension>
-          </xs:simpleContent>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-    <xs:attribute name="timestamp" type="xs:dateTime" />
-    <xs:attribute name="conversationID" type="xs:NMTOKEN" />
-    <xs:attribute name="ID" type="xs:string" />
-  </xs:complexType>
-
-  <xs:complexType name="tcpLog" abstract="true">
-    <xs:complexContent mixed="false">
-      <xs:extension base="tns:messageEntry">
-        <xs:sequence>
-          <xs:element minOccurs="1" maxOccurs="1" 
-            name="senderHostAndPort" type="xs:string" />
-          <xs:element minOccurs="1" maxOccurs="1" 
-            name="receiverHostAndPort" type="xs:string" />
-        </xs:sequence>
-        <xs:attribute name="type" type="tns:tcpMessageType" />
+  <xs:complexType name="description">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+      <!--
+        <xs:attribute ref="xml:lang"/>
+      -->
       </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
+    </xs:simpleContent>
+  </xs:complexType>    
 
-  <xs:simpleType name="tcpMessageType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="request" />
-      <xs:enumeration value="response" />
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:complexType name="httpMessageEntry">
-    <xs:complexContent mixed="false">
-      <xs:extension base="tns:tcpLog">
-        <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="1" 
-            name="httpHeaders" type="xs:string" />
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
+  <xs:element name="addStyleSheet" type="wsi-common:addStyleSheet" />	
+  <xs:complexType name="addStyleSheet">
+    <xs:attribute name="href" type="xs:anyURI" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="optional" default="text/xsl"/>
+    <xs:attribute name="title" type="xs:string" use="optional"/>
+    <xs:attribute name="media" type="xs:string" use="optional"/>
+    <xs:attribute name="charset" type="xs:string" use="optional"/>
+    <xs:attribute name="alternate" type="xs:boolean" use="optional"/>
   </xs:complexType>
 
 </xs:schema>
