@@ -105,6 +105,10 @@
             <artifactId>pax-logging-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.poi.wso2</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
         </dependency>

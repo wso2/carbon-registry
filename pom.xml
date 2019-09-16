@@ -1282,6 +1282,11 @@
                 <version>${version.httpmime}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.poi.wso2</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${apache.poi.wso2.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents.wso2</groupId>
                 <artifactId>httpcore</artifactId>
                 <version>${version.httpcore}</version>
@@ -1688,6 +1693,7 @@
         <jackson.version>1.9.2</jackson.version>
         <amber.version>0.22.1358727-wso2v2</amber.version>
         <import.package.version.commons.logging>[1.2.0,2.0.0)</import.package.version.commons.logging>
+        <apache.poi.wso2.version>3.9.0.wso2v1</apache.poi.wso2.version>
 
         <!-- Pax logging -->
         <pax.logging.api.version>1.10.1</pax.logging.api.version>
