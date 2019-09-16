@@ -34,7 +34,6 @@ import org.wso2.carbon.registry.extensions.handlers.utils.SchemaValidator;
 import org.wso2.carbon.registry.extensions.utils.CommonConstants;
 import org.wso2.carbon.registry.extensions.utils.CommonUtil;
 import org.wso2.carbon.registry.extensions.utils.WSDLValidationInfo;
-import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 import javax.xml.namespace.QName;
 import java.io.*;

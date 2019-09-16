@@ -26,7 +26,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.utils.AuthorizationUtils;
-import org.wso2.carbon.user.mgt.UserMgtConstants;
 import org.wso2.carbon.utils.CarbonUtils;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -49,6 +48,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 public class RegistryResourcePermissionsServiceComponent {
 
     private static Log log = LogFactory.getLog(RegistryResourcePermissionsServiceComponent.class);
+
+    public static final String EXECUTE_ACTION = "ui.execute";
 
     private Stack<ServiceRegistration> serviceRegistrations = new Stack<ServiceRegistration>();
 
@@ -96,7 +97,7 @@ public class RegistryResourcePermissionsServiceComponent {
                         String resourcePermission = mapping.getAttributeValue(new QName("resourcePermission"));
                         String[] resourcePaths = mapping.getAttributeValue(new QName("resourcePaths")).split(",");
                         for (String resourcePath : resourcePaths) {
-                            AuthorizationUtils.addAuthorizeRoleListener(counter++, resourcePath.trim(), managementPermission, UserMgtConstants.EXECUTE_ACTION, new String[] { resourcePermission });
+                            AuthorizationUtils.addAuthorizeRoleListener(counter++, resourcePath.trim(), managementPermission, EXECUTE_ACTION, new String[] { resourcePermission });
                         }
                     }
                 } catch (XMLStreamException e) {
