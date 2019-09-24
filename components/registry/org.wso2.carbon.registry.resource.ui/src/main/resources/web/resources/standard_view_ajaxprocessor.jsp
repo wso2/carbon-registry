@@ -40,5 +40,5 @@
 </div>
 
 <div id="permissionsDiv">
-    <jsp:include page="permissions_ajaxprocessor.jsp"/>
+    <jsp:include page="retrieve_permission_ajaxprocessor.jsp"/>
 </div>
