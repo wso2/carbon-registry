@@ -275,7 +275,7 @@
         } else {
             hasParameters = true;
         }
-        propertyName = request.getParameter("propertyName");
+        propertyName = Encode.forHtml(request.getParameter("propertyName"));
         if (propertyName == null) {
             propertyName = "";
             lblPropName = "-";
