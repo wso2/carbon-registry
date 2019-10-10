@@ -17,6 +17,7 @@
 */
 package org.wso2.carbon.registry.indexing.solr;
 
+import com.google.gson.Gson;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -299,6 +300,12 @@ public class SolrClient {
             addDynamicFields(fields, solrInputDocument);
             // Add solr input document to server
             server.add(solrInputDocument);
+
+            if (log.isDebugEnabled()) {
+                Gson gson = new Gson();
+                String json = gson.toJson(solrInputDocument);
+                log.debug("Indexing document content: " + json);
+            }
         } catch (SolrServerException e) {
             String message = "Error at indexing.";
             throw new SolrException(ErrorCode.SERVER_ERROR, message, e);
