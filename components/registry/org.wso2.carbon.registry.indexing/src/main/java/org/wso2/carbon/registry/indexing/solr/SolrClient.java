@@ -87,11 +87,13 @@ public class SolrClient {
     private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() + File.separator + "solr";
     private File solrHome, confDir, langDir;
     private String solrCore = null;
+    private String skipRolesByRegex;
 
     protected SolrClient() throws IOException {
         // Get the solr server url from the registry.xml
         RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
         String solrServerUrl = configLoader.getSolrServerUrl();
+        skipRolesByRegex = configLoader.getSkipRolesByRegex();
 
         // Default solr core is set to registry-indexing
         solrCore = IndexingConstants.DEFAULT_SOLR_SERVER_CORE;
@@ -742,7 +744,24 @@ public class SolrClient {
             if (userName == null) {
                 userName = CarbonConstants.REGISTRY_ANONNYMOUS_USERNAME;
             }
+
             String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(userName);
+
+            if (skipRolesByRegex != null) {
+                List<String> filteredUserRoles = new ArrayList<>(Arrays.asList(userRoles));
+                String[] regexList = skipRolesByRegex.split(",");
+                for (int i = 0; i < regexList.length; i++) {
+                    Pattern p = Pattern.compile(regexList[i]);
+                    for (int j = 0; j < filteredUserRoles.size(); j++) {
+                        Matcher m = p.matcher(filteredUserRoles.get(j));
+                        if (m.matches()) {
+                            filteredUserRoles.remove(j);
+                        }
+                    }
+                }
+                userRoles = filteredUserRoles.toArray(new String[0]);
+            }
+
             StringBuilder rolesQuery = new StringBuilder();
             for (String userRole : userRoles) {
                 if (rolesQuery.length() == 0) {
