@@ -54,6 +54,8 @@ public class RegistryConfigLoader {
 
     private String lastAccessTimeLocation;
 
+    private String skipRolesByRegex;
+
     private Map<String, Indexer> indexerMap = new LinkedHashMap<String, Indexer>();
 
     private List<Pattern> exclusionList = new ArrayList<Pattern>();
@@ -145,6 +147,10 @@ public class RegistryConfigLoader {
         return startingDelayInSecs;
     }
 
+    public String getSkipRolesByRegex() {
+        return skipRolesByRegex;
+    }
+
     // Get registry.xml instance.
     private static File getConfigFile() throws RegistryException {
         String configPath = CarbonUtils.getRegistryXMLPath();
@@ -210,6 +216,16 @@ public class RegistryConfigLoader {
         } catch (OMException e) {
             // we can use default value and continue if no OMElement found in indexingConfig
             log.error("Error occurred when retrieving skipCache info, hence using the default value", e);
+        }
+
+        try {
+            OMElement skipRolesByRegexElemet = indexingConfig.getFirstChildWithName(new QName("skipRolesByRegex"));
+            if (skipRolesByRegexElemet != null) {
+                skipRolesByRegex = skipRolesByRegexElemet.getText();
+            }
+        } catch (OMException e) {
+            // we can use default value and continue if no OMElement found in indexingConfig
+            log.error("Error occurred when retrieving skipRolesByRegex, hence using the default value", e);
         }
         
         // solr server url for initiate the solr server	
