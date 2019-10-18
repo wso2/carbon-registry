@@ -143,6 +143,11 @@
                 <version>${carbon.kernel.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.orbit.xalan</groupId>
+                <artifactId>xalan</artifactId>
+                <version>${version.xalan}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.tomcat</artifactId>
                 <version>${carbon.kernel.version}</version>
@@ -1598,6 +1603,7 @@
 
         <!-- Axis2 Version -->
         <axis2.version>1.6.1-wso2v38</axis2.version>
+        <version.xalan>2.7.2.wso2v2</version.xalan>
         <axis2.wso2.version>${axis2.version}</axis2.wso2.version>
         <axis2.osgi.version>${axis2.version}</axis2.osgi.version>
         <orbit.version.axis2>${axis2.version}</orbit.version.axis2>
