@@ -129,6 +129,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.orbit.xalan</groupId>
+            <artifactId>xalan</artifactId>
+        </dependency>
+        <dependency>
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>

@@ -16,7 +16,10 @@
 
 package org.wso2.carbon.registry.jcr.retention;
 
+import org.apache.xalan.xsltc.dom.LoadDocument;
+import org.wso2.carbon.registry.common.CommonConstants;
 import org.wso2.carbon.registry.core.CollectionImpl;
+import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.jcr.RegistrySession;
 import org.wso2.carbon.registry.jcr.util.RegistryJCRSpecificStandardLoderUtil;
