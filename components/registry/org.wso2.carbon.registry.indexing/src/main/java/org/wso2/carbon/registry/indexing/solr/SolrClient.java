@@ -752,7 +752,7 @@ public class SolrClient {
                 String[] regexList = skipRolesByRegex.split(",");
                 for (int i = 0; i < regexList.length; i++) {
                     Pattern p = Pattern.compile(regexList[i]);
-                    for (int j = 0; j < filteredUserRoles.size(); j++) {
+                    for (int j = filteredUserRoles.size() - 1 ; j >= 0; j--) {
                         Matcher m = p.matcher(filteredUserRoles.get(j));
                         if (m.matches()) {
                             filteredUserRoles.remove(j);
