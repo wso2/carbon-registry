@@ -68,6 +68,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -752,10 +753,12 @@ public class SolrClient {
                 String[] regexList = skipRolesByRegex.split(",");
                 for (int i = 0; i < regexList.length; i++) {
                     Pattern p = Pattern.compile(regexList[i]);
-                    for (int j = filteredUserRoles.size() - 1 ; j >= 0; j--) {
-                        Matcher m = p.matcher(filteredUserRoles.get(j));
+                    Iterator<String> itr = filteredUserRoles.iterator();
+                    while(itr.hasNext()) {
+                        String role = itr.next();
+                        Matcher m = p.matcher(role);
                         if (m.matches()) {
-                            filteredUserRoles.remove(j);
+                            itr.remove();
                         }
                     }
                 }
