@@ -1594,20 +1594,20 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.5.1</carbon.kernel.version>
-        <carbon.kernel.feature.version>4.5.1</carbon.kernel.feature.version>
+        <carbon.kernel.version>4.5.2</carbon.kernel.version>
+        <carbon.kernel.feature.version>4.5.2</carbon.kernel.feature.version>
         <carbon.kernel.package.import.version.range>[4.5.0, 4.6.0)</carbon.kernel.package.import.version.range>
 
         <carbon.kernel.registry.imp.pkg.version>[1.0.1, 2.0.0)</carbon.kernel.registry.imp.pkg.version>
         <org.wso2.securevault.version>1.1.3</org.wso2.securevault.version>
 
         <!-- Axis2 Version -->
-        <axis2.version>1.6.1-wso2v38</axis2.version>
+        <axis2.version>1.6.1-wso2v40</axis2.version>
         <version.xalan>2.7.2.wso2v2</version.xalan>
         <axis2.wso2.version>${axis2.version}</axis2.wso2.version>
         <axis2.osgi.version>${axis2.version}</axis2.osgi.version>
         <orbit.version.axis2>${axis2.version}</orbit.version.axis2>
-        <axis2-transports.version>2.0.0-wso2v40</axis2-transports.version>
+        <axis2-transports.version>2.0.0-wso2v41</axis2-transports.version>
         <axis2.osgi.version.range>[1.6.1, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v5</orbit.version.neethi>
@@ -1711,7 +1711,7 @@
         <pax.logging.api.version>1.10.1</pax.logging.api.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.7.13</carbon.commons.version>
+        <carbon.commons.version>4.7.17</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.7.2, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- jms -->
