@@ -78,12 +78,20 @@
                     <forkMode>pertest</forkMode>
                     <argLine>-XX:-UseSplitVerifier ${argLine} -enableassertions -noverify</argLine>
                     <testFailureIgnore>true</testFailureIgnore>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>org.ops4j.pax.logging</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
