@@ -138,6 +138,8 @@
                                 propertyName = "";
                                 lblPropName = "-";
                             }
+                            propertyName = Encode.forHtml(propertyName);
+                            lblPropName = Encode.forHtml(lblPropName);
                         } else if ("leftPropertyValue".equals(array[0])) {
                             leftPropertyValue = array[1];
                             if(leftPropertyValue==null){
@@ -275,11 +277,12 @@
         } else {
             hasParameters = true;
         }
-        propertyName = Encode.forHtml(request.getParameter("propertyName"));
+        propertyName = request.getParameter("propertyName");
         if (propertyName == null) {
             propertyName = "";
             lblPropName = "-";
         } else {
+            propertyName = Encode.forHtml(propertyName);
             hasParameters = true;
             lblPropName = propertyName;
         }
