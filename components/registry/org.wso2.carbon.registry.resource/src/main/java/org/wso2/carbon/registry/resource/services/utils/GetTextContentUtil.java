@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.SQLException;
 
 public class GetTextContentUtil {
@@ -83,8 +84,10 @@ public class GetTextContentUtil {
         if (fetchURL.matches(URL_SOURCE_REGEX)) {
             try {
                 URL sourceURL = new URL(fetchURL);
+                URLConnection connection = sourceURL.openConnection();
+                connection.setRequestProperty("User-Agent", "");
                 in = new BufferedReader(
-                        new InputStreamReader(sourceURL.openConnection().getInputStream()));
+                        new InputStreamReader(connection.getInputStream()));
                 String inputLine;
                 while ((inputLine = in.readLine()) != null) {
                     sb.append(inputLine);
