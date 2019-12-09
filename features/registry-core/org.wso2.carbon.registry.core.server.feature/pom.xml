@@ -73,7 +73,9 @@
                                 <bundleDef>commons-io.wso2:commons-io</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.server:${carbon.kernel.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.core.server:compatible:${carbon.kernel.feature.version}
+                                </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.registry.core.common</importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.registry.contentsearch.server</importFeatureDef>
                             </importFeatures>
