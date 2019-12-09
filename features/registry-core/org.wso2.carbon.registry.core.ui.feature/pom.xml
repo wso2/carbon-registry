@@ -72,7 +72,9 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.resource.stub</bundleDef>
                             </bundles>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.core.ui:${carbon.kernel.feature.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.core.ui:compatible:${carbon.kernel.feature.version}
+                                </importFeatureDef>
                                 <importFeatureDef>org.wso2.carbon.registry.core.common:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
