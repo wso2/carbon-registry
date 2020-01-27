@@ -67,7 +67,7 @@
     </div>
     <textarea id="editTextContentIDPlain" style="<%=(showPlainText) ? "" : "display:none;" %>width:99%;height:200px"><%=Encode.forHtml(textContent)%></textarea>
     <div class="yui-skin-sam" id="editTextContentTextAreaPanel" <%=(showPlainText) ? "style=\"display:none\"" : "" %> >
-        <textarea id="editTextContentID" name="editTextContentID" style="display:none;"><%=Encode.forHtml(textContent)%></textarea>
+        <textarea id="editTextContentID" name="editTextContentID" style="display:none;"><%=Encode.forJavaScript(textContent)%></textarea>
     </div>
     <br/>
     <input type='button' class='button' id ="saveContentButtonID" onclick='updateTextContent("<%=Encode.forJavaScript(path)%>",
