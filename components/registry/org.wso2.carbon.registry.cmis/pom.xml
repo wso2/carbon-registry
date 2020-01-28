@@ -102,12 +102,4 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>maven2-repo</id>
-            <name>Maven Repository for Maven</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-    </repositories>
-
 </project>
