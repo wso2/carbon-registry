@@ -160,7 +160,7 @@
             <%
                 for (int i = 0; i < comments.length; i++) {
                     Comment comment1 = comments[i];
-                    String commentString = Encode.forJava(comment1.getText());
+                    String commentString = comment1.getText();
                     String commentedTime = CommonUtil.formatDate(comment1.getCreatedTime().getTime());
                     String commentedUser = comment1.getUser();
 					String commentPath = comment1.getCommentPath();
@@ -180,8 +180,8 @@
 	                    </fmt:message>
 	                    <br/>
 	                    <fmt:message key="posted.on.by">
-	                        <fmt:param value="<%=commentedTime%>"/>
-	                        <fmt:param value="<%=commentedUser%>"/>
+	                        <fmt:param value="<%=Encode.forHtml(commentedTime)%>"/>
+	                        <fmt:param value="<%=Encode.forHtml(commentedUser)%>"/>
 	                    </fmt:message>
 	                    <div style="clear:both;"></div>
                     </div>

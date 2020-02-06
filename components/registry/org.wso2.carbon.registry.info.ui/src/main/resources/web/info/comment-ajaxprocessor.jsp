@@ -25,6 +25,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.common.beans.CommentBean" %>
 <%@ page import="org.wso2.carbon.registry.common.beans.utils.Comment" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.info.ui.Utils" %>
 <carbon:jsi18n resourceBundle="org.wso2.carbon.registry.info.ui.i18n.JSResources"
 		request="<%=request%>" namespace="org.wso2.carbon.registry.info.ui" />
@@ -92,12 +93,12 @@
                             <a class="closeButton icon-link registryWriteOperation" onclick="delComment('<%=request.getParameter("path")%>','<%=commentPath%>')" id="closeC<%=i%>" title="<fmt:message key="delete"/>" style="background-image: url(../admin/images/delete.gif);position:relative;float:right">&nbsp;</a>
                             <% } %>
                             <fmt:message key="comment">
-                                <fmt:param value="<%=commentString%>"/>
+                                <fmt:param value="<%=Encode.forHtml(commentString)%>"/>
                             </fmt:message>
                             <br/>
                             <fmt:message key="posted.on.by">
-                                <fmt:param value="<%=commentedTime%>"/>
-                                <fmt:param value="<%=commentedUser%>"/>
+                                <fmt:param value="<%=Encode.forHtml(commentedTime)%>"/>
+                                <fmt:param value="<%=Encode.forHtml(commentedUser)%>"/>
                             </fmt:message>
                             <div style="clear:both;"></div>
                         </div>
