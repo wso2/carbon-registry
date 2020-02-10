@@ -26,9 +26,11 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
 import javax.activation.DataHandler;
@@ -40,6 +42,8 @@ public class
 
     private ResourceAdminServiceStub stub;
     private String epr;
+    //for windows environment
+    private String FORWARD_SLASH = "/";
 
     public ResourceServiceClient(
             String cookie, String backendServerURL, ConfigurationContext configContext)
@@ -134,6 +138,12 @@ public class
 
     public boolean deleteExtension(String name) throws Exception {
         try {
+            name = name.trim();
+            if (StringUtils.contains(name, File.separator) || StringUtils.isEmpty(name) ||
+                    StringUtils.contains(name, FORWARD_SLASH)) {
+                String msg = "Wrong extension name";
+                throw new Exception(msg);
+            }
             return stub.removeExtension(name);    
         } catch (Exception e) {
             String msg = "Failed to remove extension.";
