@@ -31,6 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
 import javax.activation.DataHandler;
@@ -44,6 +46,7 @@ public class
     private String epr;
     //for windows environment
     private String FORWARD_SLASH = "/";
+    private String BASE_PATH = "repository" + File.separator + "deployment" + File.separator + "server" + File.separator + "registryextensions";
 
     public ResourceServiceClient(
             String cookie, String backendServerURL, ConfigurationContext configContext)
@@ -139,10 +142,16 @@ public class
     public boolean deleteExtension(String name) throws Exception {
         try {
             name = name.trim();
-            if (StringUtils.contains(name, File.separator) || StringUtils.isEmpty(name) ||
-                    StringUtils.contains(name, FORWARD_SLASH)) {
-                String msg = "Wrong extension name";
-                throw new Exception(msg);
+            if (StringUtils.isEmpty(name)) {
+                throw new IllegalArgumentException("Wrong extension name");
+            }
+            Path baseAbsolutePath = Paths.get(BASE_PATH).toAbsolutePath();
+            Path userPath = Paths.get(name);
+            Path resolvedPath = baseAbsolutePath.resolve(userPath).normalize();
+            boolean isValidPath = resolvedPath.toString().startsWith(baseAbsolutePath.toString());
+
+            if (!isValidPath) {
+                throw new IllegalArgumentException("User path escapes the base path");
             }
             return stub.removeExtension(name);    
         } catch (Exception e) {
