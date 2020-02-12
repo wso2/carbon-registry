@@ -45,8 +45,8 @@ public class
     private ResourceAdminServiceStub stub;
     private String epr;
     //for windows environment
-    private String FORWARD_SLASH = "/";
-    private String BASE_PATH = "repository" + File.separator + "deployment" + File.separator + "server" + File.separator + "registryextensions";
+    private String BASE_PATH = "repository" + File.separator + "deployment" + File.separator + "server" +
+            File.separator + "registryextensions";
 
     public ResourceServiceClient(
             String cookie, String backendServerURL, ConfigurationContext configContext)
@@ -153,7 +153,7 @@ public class
             if (!isValidPath) {
                 throw new IllegalArgumentException("User path escapes the base path");
             }
-            return stub.removeExtension(name);    
+            return stub.removeExtension(name);
         } catch (Exception e) {
             String msg = "Failed to remove extension.";
             log.error(msg, e);
