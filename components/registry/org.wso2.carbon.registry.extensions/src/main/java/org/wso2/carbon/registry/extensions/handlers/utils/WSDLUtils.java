@@ -257,7 +257,7 @@ public class WSDLUtils {
             ResourceBundle rb = ResourceBundle.getBundle("validatewsdl");
             MessageGenerator messagegenerator = new MessageGenerator(rb);
             DocumentBuilder db;
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory dbf = getSecuredDocumentBuilder();
             dbf.setNamespaceAware(true);
 
             try {
