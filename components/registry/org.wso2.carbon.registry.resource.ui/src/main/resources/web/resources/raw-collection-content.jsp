@@ -96,7 +96,6 @@
 		    <td>
 		        <select id="addMethodSelector" onchange="viewAddResourceUI()">
 		            <option value="upload" selected="selected"><fmt:message key="upload.content.from.file"/></option>
-		            <option value="import"><fmt:message key="import.content.from.url"/></option>
 		            <option value="text"><fmt:message key="text.content"/></option>
 		            <option value="custom"><fmt:message key="create.custom.content"/></option>
                         </select>
@@ -160,67 +159,6 @@
                    onclick="whileUpload();submitUploadContentForm();"/>
             <input type="button" class="button" value="<fmt:message key="cancel"/>"
                    onclick="showHide('add-resource-div')"/>
-        </td>
-    </tr>
-    </table>
-
-</form>
-</td>
-</tr>
-
-<!-- import content UI -->
-
-<tr id="importContentUI" style="display:none;">
-<td colspan="2">
-<form method="post" name="resourceImportForm"
-      id="resourceImportForm"
-      action="/wso2registry/system/fetchResource">
-    <input type="hidden" id="irParentPath" name="path" value="<%=ccb.getPathWithVersion()%>"/>
-
-
-    <table class="styledLeft">
-    <tr>
-        <td class="middle-header" colspan="2"><fmt:message key="import.content.from.url1"/></td>
-    </tr>
-    <tr>
-        <td valign="top" style="width:120px;">
-            <span><fmt:message key="url"/> <span class="required">*</span></span></td>
-        <td>
-            <input id="irFetchURL" type="text" name="fetchURL"
-                   onchange="fillResourceImportDetails()"/>
-
-            <div class="helpText" id="urlHelpText" style="color:#9a9a9a;">
-                <fmt:message key="content.url.help.text"/>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td valign="top"><fmt:message key="name"/> <span class="required">*</span></td>
-
-        <td><input id="irResourceName" type="text" name="resourceName"
-                   style="margin-bottom:10px;"/></td>
-    </tr>
-    <tr>
-        <td valign="top"><fmt:message key="media.type"/></td>
-
-        <td>
-            <input id="irMediaType" type="text" name="mediaType"
-                   style="margin-bottom:10px;"/>
-
-        </td>
-    </tr>
-    <tr>
-        <td valign="top"><fmt:message key="description"/></td>
-        <td><textarea id="irDescription" name="description" class="normal-textarea"></textarea></td>
-    </tr>
-    <tr>
-        <td colspan="2" class="buttonRow"><input type="button" class="button"
-                                                 value="<fmt:message key="add"/>"
-                                                 onclick="whileUpload();submitImportContentForm();"/> <input
-                type="button" class="button"
-                value="<fmt:message key="cancel"/>"
-                style="margin-top:10px;"
-                onclick="showHide('add-resource-div')"/>
         </td>
     </tr>
     </table>

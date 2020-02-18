@@ -161,31 +161,6 @@ public interface IResourceService<MetadataBean, CollectionContentBean, ResourceD
                        String targetPath) throws Exception;
 
     /**
-     * Method to import a resource (available on a specified remote URL) in to the repository.
-     *
-     * @param parentPath      the parent path (or the path at which we are adding this resource).
-     * @param resourceName    the name of the resource.
-     * @param mediaType       the media type of the resource.
-     * @param description     the description for the newly added resource.
-     * @param fetchURL        the remote URL at which the resource is available for download.
-     * @param symlinkLocation the location of the symbolic link to be created. This parameter is
-     *                        used when importing WSDL and Schema files, which will optionally
-     *                        create a symbolic link that points to the uploaded WSDL or Schema.
-     * @param properties      list of properties to be added along with the resource.
-     *
-     * @return whether the operation was successful or not.
-     * @throws Exception if the operation failed due to an unexpected error.
-     */
-    boolean importResource(
-            String parentPath,
-            String resourceName,
-            String mediaType,
-            String description,
-            String fetchURL,
-            String symlinkLocation,
-            String[][] properties) throws Exception;
-
-    /**
      * Method to delete a resource (or collection) at the given path.
      *
      * @param pathToDelete the path of the resource (or collection) to delete.
