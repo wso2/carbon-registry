@@ -412,46 +412,6 @@ public class
         }
     }
 
-    public void importResource(
-            String parentPath,
-            String resourceName,
-            String mediaType,
-            String description,
-            String fetchURL,
-            String symlinkLocation,
-            String[][] properties,
-            boolean isAsync) throws Exception {
-
-        try {
-            // This is used by the add wsdl UI. WSDL validation takes long when there are wsdl
-            // imports to prevent this we make a async call.
-            if (isAsync) {
-                stub._getServiceClient().getOptions().setProperty(
-                        MessageContext.CLIENT_API_NON_BLOCKING,Boolean.TRUE);
-                stub.importResource(parentPath, resourceName,
-                        MediaTypesUtils.getMimeTypeFromHumanReadableMediaType(mediaType), description, fetchURL,
-                        symlinkLocation, buildPropertiesArray(properties));
-            } else {
-                /*stub._getServiceClient().engageModule(ADDRESSING_MODULE); // IMPORTANT
-                Options options = stub._getServiceClient().getOptions();
-                options.setUseSeparateListener(true);
-                options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
-                stub.startimportResource(parentPath, resourceName, mediaType, description, fetchURL,
-                        symlinkLocation, callback);
-                callbackData.handleCallback();*/
-                stub.importResource(parentPath, resourceName,
-                        MediaTypesUtils.getMimeTypeFromHumanReadableMediaType(mediaType), description, fetchURL,
-                        symlinkLocation, buildPropertiesArray(properties));
-            }
-
-        } catch (Exception e) {
-            String msg = "Failed to import resource with name " + resourceName +
-                    " to the parent collection " + parentPath + ". " + e.getMessage();
-            log.error(msg, e);
-            throw e;
-        }
-    }
-
     private ArrayOfString[] buildPropertiesArray(String[][] properties) {
         if (properties == null) {
             return new ArrayOfString[0];

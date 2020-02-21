@@ -1402,42 +1402,6 @@ function fillResourceUploadDetails() {
     document.getElementById('uResourceMediaType').value = mediaType;
 }
 
-function fillResourceImportDetails() {
-
-    var filepath = document.getElementById('irFetchURL').value;
-
-    var filename = "";
-    if (filepath.indexOf("\\") != -1) {
-        filename = filepath.substring(filepath.lastIndexOf('\\') + 1, filepath.length);
-		filename = filename.replace("?", ".");
-	} else {
-        filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
-		filename = filename.replace("?", ".");
-    }
-
-    document.getElementById('irResourceName').value = unescape(filename);
-    var extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length);
-
-    var mediaType = "";
-    if (extension.length > 0) {
-        mediaType = getMediaType(extension);
-        if (mediaType == undefined) {
-            mediaType = "";
-        }
-    }
-	else {
-		extension = filename.substring(filename.lastIndexOf("?") + 1, filename.length);
-	    if (extension.length > 0) {
-	        mediaType = getMediaType(extension);
-    	    if (mediaType == undefined) {
-        	    mediaType = "";
-	        }
-    	}
-	}
-
-    document.getElementById('irMediaType').value = mediaType;
-}
-
 function fillResourceDetailsForURLs() {
 
     var filepath = document.getElementById('fetchURLID').value;
@@ -1563,25 +1527,16 @@ function viewAddResourceUI() {
     var selectedValue = addSelector.options[addSelector.selectedIndex].value;
 
     var uploadUI = document.getElementById('uploadContentUI');
-    var importUI = document.getElementById('importContentUI');
     var textUI = document.getElementById('textContentUI');
     var customUI = document.getElementById('customContentUI');
     if (selectedValue == "upload") {
 
         uploadUI.style.display = "";
-        importUI.style.display = "none";
-        textUI.style.display = "none";
-        customUI.style.display = "none";
-    } else if (selectedValue == "import") {
-
-        uploadUI.style.display = "none";
-        importUI.style.display = "";
         textUI.style.display = "none";
         customUI.style.display = "none";
     } else if (selectedValue == "text") {
 
         uploadUI.style.display = "none";
-        importUI.style.display = "none";
         customUI.style.display = "none";
         // text editor
 
@@ -1654,7 +1609,6 @@ function viewAddResourceUI() {
     } else if (selectedValue == "custom") {
 
         uploadUI.style.display = "none";
-        importUI.style.display = "none";
         textUI.style.display = "none";
         customUI.style.display = "";
     }
@@ -1722,7 +1676,6 @@ function resetResourceForms(){
     addSelector.selectedIndex = 0;
 
     document.getElementById('uploadContentUI').style.display = "";
-    document.getElementById('importContentUI').style.display = "none";
     document.getElementById('textContentUI').style.display = "none";
     document.getElementById('customContentUI').style.display = "none";
 
@@ -1750,86 +1703,6 @@ function whileUpload(){
     	document.getElementById('whileUpload').style.display = "";
     }
 
-}
-function submitImportContentForm() {
-
-    sessionAwareFunction(function() {
-        var rForm = document.forms["resourceImportForm"];
-
-        /* Validate the form before submit */
-
-        var reason = "";
-        reason += validateEmpty(rForm.fetchURL, org_wso2_carbon_registry_resource_ui_jsi18n["url"]);
-        if (reason == "") {
-            reason += validateEmpty(rForm.resourceName, org_wso2_carbon_registry_resource_ui_jsi18n["name"]);
-        }
-        if (reason == "") {
-            reason += validateIllegal(rForm.resourceName, org_wso2_carbon_registry_resource_ui_jsi18n["name"]);
-        }
-        if (reason == "") {
-            reason += validateResourcePathAndLength(rForm.resourceName);
-        }
-        if (reason == "") {
-            reason += validateForInput(rForm.mediaType, org_wso2_carbon_registry_resource_ui_jsi18n["media.type"]);
-        }
-        if (reason == "") {
-            reason += validateForInput(rForm.description, org_wso2_carbon_registry_resource_ui_jsi18n["description"]);
-        }
-        if (reason == "") {
-            reason += validateDescriptionLength(rForm.description);
-        }
-        var resourcePath= rForm.path.value + '/' + rForm.resourceName.value;
-        resourcePath = resourcePath.replace("//", "/");
-        if (reason == "") {
-            reason += validateExists(resourcePath);
-        }
-
-        if (reason != "") {
-            CARBON.showWarningDialog(reason);
-            document.getElementById('add-resource-div').style.display = "";
-            document.getElementById('whileUpload').style.display = "none";
-            return false;
-        }
-
-        var parentPath = document.getElementById('irParentPath').value;
-        var resourceName = document.getElementById('irResourceName').value;
-        var mediaType = document.getElementById('irMediaType').value;
-        var description = document.getElementById('irDescription').value;
-        var fetchURL = document.getElementById('irFetchURL').value;
-
-        var isAsync = "false";
-
-        // If this is a wsdl we need to make a async call to make sure we dont timeout cause wsdl
-        // validation takes long.
-        var params;
-        if ((mediaType == "application/wsdl+xml") || (mediaType == "application/x-xsd+xml")  || (mediaType == "application/policy+xml")) {
-            //                    isAsync = "true";
-            params = {parentPath: parentPath, resourceName: resourceName, mediaType: mediaType, description: description, fetchURL: fetchURL, isAsync : isAsync, symlinkLocation: parentPath,random:getRandom()};
-        } else {
-            params = {parentPath: parentPath, resourceName: resourceName, mediaType: mediaType, description: description, fetchURL: fetchURL, isAsync : isAsync,random:getRandom()};
-        }
-
-        new Ajax.Request('../resources/import_resource_ajaxprocessor.jsp',
-        {
-            method:'post',
-            parameters: params,
-
-            onSuccess: function() {
-                refreshMetadataSection(parentPath);
-                refreshContentSection(parentPath);
-                //document.getElementById('add-resource-div').style.display = "";
-                document.getElementById('whileUpload').style.display = "none";
-                CARBON.showInfoDialog(org_wso2_carbon_registry_resource_ui_jsi18n["successfully.uploaded"]);
-            },
-
-            onFailure: function(transport) {
-                //refreshMetadataSection(parentPath);
-                //refreshContentSection(parentPath);
-                document.getElementById('whileUpload').style.display = "none";
-                CARBON.showErrorDialog(org_wso2_carbon_registry_resource_ui_jsi18n["unable.to.upload"] + transport.responseText,loadData);
-            }
-        });
-    }, org_wso2_carbon_registry_resource_ui_jsi18n["session.timed.out"]);
 }
 
 function submitTextContentForm() {

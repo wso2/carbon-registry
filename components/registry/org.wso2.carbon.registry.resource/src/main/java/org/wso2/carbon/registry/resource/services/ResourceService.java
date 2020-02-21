@@ -164,36 +164,6 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
         AddRemoteLinkUtil.addRemoteLink(registry, parentPath, name, instance, targetPath);
     }
 
-    public boolean importResource(
-            String parentPath,
-            String resourceName,
-            String mediaType,
-            String description,
-            String fetchURL,
-            String symlinkLocation,
-            String[][] properties) throws Exception {
-        UserRegistry registry = (UserRegistry) getRootRegistry(ResourceDataHolder.getInstance().getRegistryService());
-        if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
-            return false;
-        }
-
-        // Fix for file importation security verification - FileSystemImportationSecurityHotFixTestCase
-        if (StringUtils.isNotBlank(fetchURL) && fetchURL.toLowerCase().startsWith("file:")) {
-            String msg = "The source URL must not be file in the server's local file system";
-            throw new RegistryException(msg);
-        }
-
-        // Adding Source URL as property to end of the properties array.
-        String[][] newProperties = CommonUtil.setProperties(properties, "sourceURL", fetchURL);
-
-        // Data is directed to below AddResourceUtil.addResource from ImportResourceUtil.importResource
-        // Hence resource upload path will now go through put.
-        AddResourceUtil.addResource(CommonUtil.calculatePath(parentPath, resourceName),
-                mediaType, description, GetTextContentUtil.getByteContent(fetchURL),
-                symlinkLocation, registry, newProperties);
-        return true;
-    }
-
     public boolean delete(String pathToDelete) throws Exception {
         UserRegistry registry = (UserRegistry) getRootRegistry();
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
