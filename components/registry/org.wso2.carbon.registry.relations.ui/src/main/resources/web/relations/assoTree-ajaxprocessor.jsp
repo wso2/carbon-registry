@@ -23,6 +23,7 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="java.util.ResourceBundle" %>
 <%@ page import="org.wso2.carbon.registry.relations.stub.beans.xsd.AssociationTreeBean" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
@@ -90,7 +91,7 @@
     </div>
     <div class="resource-tree-headding" style="height:20px;">
         <ul class="tree-row-object">
-            <li class="first"><%=associationType%>
+            <li class="first"><%=Encode.forHtml(associationType)%>
             </li>
             <% if (!associationTreeViewAction.getAssoType().equals(UIConstants.ASSOCIATION_TYPE01)) { %>
             <li class="second"><fmt:message key="association.type"/></li>
