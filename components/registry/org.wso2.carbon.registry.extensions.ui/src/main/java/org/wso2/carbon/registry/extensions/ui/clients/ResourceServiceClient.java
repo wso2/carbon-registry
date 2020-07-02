@@ -148,7 +148,8 @@ public class
             Path baseAbsolutePath = Paths.get(BASE_PATH).toAbsolutePath();
             Path userPath = Paths.get(name);
             Path resolvedPath = baseAbsolutePath.resolve(userPath).normalize();
-            boolean isValidPath = resolvedPath.toString().startsWith(baseAbsolutePath.toString());
+            boolean isValidPath = !baseAbsolutePath.toString().equals(resolvedPath.toString())
+                    && resolvedPath.toString().startsWith(baseAbsolutePath.toString());
 
             if (!isValidPath) {
                 throw new IllegalArgumentException("User path escapes the base path");
