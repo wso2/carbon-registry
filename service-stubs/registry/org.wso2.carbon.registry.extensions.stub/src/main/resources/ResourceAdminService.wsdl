@@ -419,6 +419,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getProperties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPropertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getPermissions">
                 <xs:complexType>
                     <xs:sequence>
@@ -913,6 +927,12 @@
     <wsdl:message name="getPropertyResponse">
         <wsdl:part name="parameters" element="ns:getPropertyResponse" />
     </wsdl:message>
+    <wsdl:message name="getPropertiesRequest">
+        <wsdl:part name="parameters" element="ns:getProperties"/>
+    </wsdl:message>
+    <wsdl:message name="getPropertiesResponse">
+        <wsdl:part name="parameters" element="ns:getPropertiesResponse"/>
+    </wsdl:message>
     <wsdl:message name="moveResourceRequest">
         <wsdl:part name="parameters" element="ns:moveResource" />
 
@@ -1117,6 +1137,11 @@
             <wsdl:output message="ns:getPropertyResponse" wsaw:Action="urn:getPropertyResponse" />
 
             <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getPropertyException" />
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <wsdl:input message="ns:getPropertiesRequest" wsaw:Action="urn:getProperties"/>
+            <wsdl:output message="ns:getPropertiesResponse" wsaw:Action="urn:getPropertiesResponse"/>
+            <wsdl:fault message="ns:Exception" name="Exception" wsaw:Action="urn:getPropertyException"/>
         </wsdl:operation>
         <wsdl:operation name="moveResource">
             <wsdl:input message="ns:moveResourceRequest" wsaw:Action="urn:moveResource" />
@@ -1531,6 +1556,18 @@
             </wsdl:output>
             <wsdl:fault name="Exception">
                 <soap:fault use="literal" name="Exception" />
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap:operation soapAction="urn:getProperties" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap:fault use="literal" name="Exception"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="setSessionResourcePath">
@@ -2003,6 +2040,18 @@
                 <soap12:fault use="literal" name="Exception" />
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap12:operation soapAction="urn:getProperties" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="Exception">
+                <soap12:fault use="literal" name="Exception"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="setSessionResourcePath">
             <soap12:operation soapAction="urn:setSessionResourcePath" style="document" />
 
@@ -2378,6 +2427,15 @@
 
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <http:operation location="getProperties"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="setSessionResourcePath">

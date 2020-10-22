@@ -18,6 +18,7 @@
  */
 package org.wso2.carbon.registry.admin.api.resource;
 
+import java.util.Properties;
 import javax.activation.DataHandler;
 
 /**
@@ -57,7 +58,7 @@ import javax.activation.DataHandler;
  *                                updated time of the resource.
  */
 public interface IResourceService<MetadataBean, CollectionContentBean, ResourceData, ContentBean,
-        PermissionBean, VersionsBean, ResourceTreeEntryBean, ContentDownloadBean>
+        PermissionBean, VersionsBean, ResourceTreeEntryBean, ContentDownloadBean, PropertiesBean>
         extends ITextResourceManagementService {
 
     /**
@@ -460,6 +461,8 @@ public interface IResourceService<MetadataBean, CollectionContentBean, ResourceD
      * @throws Exception if the operation failed.
      */
     String getProperty(String resourcePath, String key) throws Exception;
+
+    PropertiesBean getProperties(String resourcePath) throws Exception;
 
     /**
      * Method to obtain a bean from with the content of the given resource can be downloaded.
