@@ -23,8 +23,14 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.registry.resource.beans.PermissionEntry;
+import org.wso2.carbon.registry.resource.beans.PropertiesBean;
+import org.wso2.carbon.registry.resource.beans.Property;
 
+import java.awt.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  *
@@ -58,5 +64,41 @@ public class GetPropertyUtil {
         }
 
         return "";
+    }
+
+    public static PropertiesBean getProperties(UserRegistry registry, String resourcePath) throws RegistryException {
+
+        try {
+            if (registry.resourceExists(resourcePath)) {
+
+                Resource resource = registry.get(resourcePath);
+                if (resource != null) {
+                    Properties props = resource.getProperties();
+                    PropertiesBean propertiesBean = new PropertiesBean();
+
+                    java.util.List<Property> p = new ArrayList<>();
+                    props.forEach((k, v) -> {
+                        Property item = new Property();
+                        item.setKey(k.toString());
+                        item.setValue(((ArrayList) v).get(0).toString());
+                        p.add(item);
+                    });
+                    resource.discard();
+                    propertiesBean.setProperties(p.toArray(new Property[p.size()]));
+                    return propertiesBean;
+                }
+            }
+
+        } catch (RegistryException e) {
+
+            String msg = "Failed to get the resource information of resource " + resourcePath +
+                    " for retrieving the properties . Error :" +
+                    ((e.getCause() instanceof SQLException) ?
+                            "" : e.getMessage());
+            log.error(msg, e);
+            throw e;
+        }
+
+        return null;
     }
 }

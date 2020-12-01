@@ -759,6 +759,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getProperties">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="resourcePath" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPropertiesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="delete">
                 <xs:complexType>
                     <xs:sequence>
@@ -935,6 +949,12 @@
     </wsdl:message>
     <wsdl:message name="getPropertyResponse">
         <wsdl:part name="parameters" element="ns:getPropertyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPropertiesRequest">
+        <wsdl:part name="parameters" element="ns:getProperties"/>
+    </wsdl:message>
+    <wsdl:message name="getPropertiesResponse">
+        <wsdl:part name="parameters" element="ns:getPropertiesResponse"/>
     </wsdl:message>
     <wsdl:message name="listExtensionsRequest">
         <wsdl:part name="parameters" element="ns:listExtensions"/>
@@ -1153,6 +1173,11 @@
         <wsdl:operation name="getProperty">
             <wsdl:input message="ns:getPropertyRequest" wsaw:Action="urn:getProperty"/>
             <wsdl:output message="ns:getPropertyResponse" wsaw:Action="urn:getPropertyResponse"/>
+            <wsdl:fault message="ns:ResourceAdminServiceException" name="ResourceAdminServiceException" wsaw:Action="urn:getPropertyResourceAdminServiceException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <wsdl:input message="ns:getPropertiesRequest" wsaw:Action="urn:getProperties"/>
+            <wsdl:output message="ns:getPropertiesResponse" wsaw:Action="urn:getPropertiesResponse"/>
             <wsdl:fault message="ns:ResourceAdminServiceException" name="ResourceAdminServiceException" wsaw:Action="urn:getPropertyResourceAdminServiceException"/>
         </wsdl:operation>
         <wsdl:operation name="listExtensions">
@@ -1522,6 +1547,18 @@
         </wsdl:operation>
         <wsdl:operation name="getProperty">
             <soap:operation soapAction="urn:getProperty" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ResourceAdminServiceException">
+                <soap:fault use="literal" name="ResourceAdminServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap:operation soapAction="urn:getProperties" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -2024,6 +2061,18 @@
                 <soap12:fault use="literal" name="ResourceAdminServiceException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <soap12:operation soapAction="urn:getProperties" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ResourceAdminServiceException">
+                <soap12:fault use="literal" name="ResourceAdminServiceException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="listExtensions">
             <soap12:operation soapAction="urn:listExtensions" style="document"/>
             <wsdl:input>
@@ -2434,6 +2483,15 @@
         </wsdl:operation>
         <wsdl:operation name="getProperty">
             <http:operation location="getProperty"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getProperties">
+            <http:operation location="getProperties"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

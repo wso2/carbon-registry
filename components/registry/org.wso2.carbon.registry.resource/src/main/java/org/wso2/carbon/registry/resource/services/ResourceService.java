@@ -32,6 +32,7 @@ import org.wso2.carbon.registry.resource.beans.ContentBean;
 import org.wso2.carbon.registry.resource.beans.ContentDownloadBean;
 import org.wso2.carbon.registry.resource.beans.MetadataBean;
 import org.wso2.carbon.registry.resource.beans.PermissionBean;
+import org.wso2.carbon.registry.resource.beans.PropertiesBean;
 import org.wso2.carbon.registry.resource.beans.ResourceTreeEntryBean;
 import org.wso2.carbon.registry.resource.beans.VersionsBean;
 import org.wso2.carbon.registry.resource.internal.ResourceDataHolder;
@@ -68,8 +69,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.OutputStream;
+import java.util.Properties;
 
-public class ResourceService extends RegistryAbstractAdmin implements IResourceService<MetadataBean, CollectionContentBean, ResourceData, ContentBean, PermissionBean, VersionsBean, ResourceTreeEntryBean, ContentDownloadBean> {
+public class ResourceService extends RegistryAbstractAdmin implements IResourceService<MetadataBean, CollectionContentBean, ResourceData, ContentBean, PermissionBean, VersionsBean, ResourceTreeEntryBean, ContentDownloadBean, PropertiesBean> {
 
     public MetadataBean getMetadata(String path) throws Exception {
         RegistryUtil.setSessionResourcePath(path);
@@ -390,6 +392,9 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
         return GetPropertyUtil.getProperty((UserRegistry)getRootRegistry(), resourcePath, key);
     }
 
+    public PropertiesBean getProperties(String resourcePath) throws Exception {
+        return GetPropertyUtil.getProperties((UserRegistry)getRootRegistry(), resourcePath);
+    }
 
     public ContentDownloadBean getContentDownloadBean(String path) throws Exception {
         UserRegistry userRegistry = (UserRegistry)getRootRegistry();
