@@ -603,7 +603,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
 	        	 } %>
 	           onclick="loadResourcePage('<%=Encode.forHtml(resourceData.getResourcePath())%>','<%=viewMode%>','<%=resourceConsumer%>','<%=targetDivID%>')"
 	           id="resourceView<%=entryNumber%>"
-	           title="<%=resourceData.getName()%>"><%=resourceData.getName()%>
+	           title="<%=Encode.forHtml(resourceData.getName())%>"><%=Encode.forHtml(resourceData.getName())%>
 	        </a>
 	
 	
@@ -628,7 +628,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
              %>
              onclick="myReg=window.open('<%=url%>')"
              <% }%>
-	           id="resourceView<%=entryNumber%>" title="<%=resourceData.getName()%>"><%=resourceData.getName()%>
+	           id="resourceView<%=entryNumber%>" title="<%=Encode.forHtml(resourceData.getName())%>"><%=Encode.forHtml(resourceData.getName())%>
 	        </a>
 	
 	        <% } %>
@@ -867,7 +867,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             <tr>
                 <td>New <% if (resourceData.getResourceType().equals(UIConstants.COLLECTION)) { %>
                     <fmt:message key="collection"/><% } else {%><fmt:message key="resource"/><% } %>
-                    Name <span class="required">*</span>  <input value="<%=resourceData.getName()%>" type="text"
+                    Name <span class="required">*</span>  <input value="<%=Encode.forHtml(resourceData.getName())%>" type="text"
                                 id="resourceEdit<%=entryNumber%>"/></td>
             </tr>
             <tr>
@@ -897,7 +897,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             <tbody>
             <tr>
                 <td><fmt:message key="confirm.remove.resource.message"/>
-                    <%=resourceData.getResourceType()%> '<%=resourceData.getName()%>'
+                    <%=resourceData.getResourceType()%> '<%=Encode.forHtml(resourceData.getName())%>'
                     <br/><strong><fmt:message key="warning"/>: </strong>
                     <fmt:message key="undo.warning.message"/>
                 </td>
