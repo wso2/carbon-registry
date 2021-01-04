@@ -812,7 +812,10 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             <tr>
                 <td class="buttonRow" colspan="2">
                     <input type="button" class="button" value="<fmt:message key="copy"/>"
-                           onclick="this.disabled = true; copyResource('<%=ccb.getPathWithVersion()%>', '<%=resourceData.getResourcePath()%>','copy_destination_path<%=entryNumber%>','<%=resourceData.getName()%>',<%=pageNumber%>); this.disabled = false;"/>
+                            onclick="this.disabled = true; copyResource('<%=ccb.getPathWithVersion()%>',
+                                '<%=resourceData.getResourcePath()%>','copy_destination_path<%=entryNumber%>',
+                                '<%=Encode.forJavaScript(resourceData.getName())%>',<%=pageNumber%>);
+                                this.disabled = false;"/>
                     <input
                             type="button" style="margin-left:5px;" class="button"
                             value="<fmt:message key="cancel"/>"
@@ -844,7 +847,10 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             <tr>
                 <td class="buttonRow" colspan="2">
                     <input type="button" class="button" value="<fmt:message key="move"/>"
-                           onclick="this.disabled = true; moveResource('<%=ccb.getPathWithVersion()%>', '<%=resourceData.getResourcePath()%>','move_destination_path<%=entryNumber%>','<%=resourceData.getName()%>',<%=pageNumber%>); this.disabled = false;"/>
+                            onclick="this.disabled = true; moveResource('<%=ccb.getPathWithVersion()%>',
+                                '<%=resourceData.getResourcePath()%>','move_destination_path<%=entryNumber%>',
+                                '<%=Encode.forJavaScript(resourceData.getName())%>',<%=pageNumber%>);
+                                this.disabled = false;"/>
                     <input
                             type="button" style="margin-left:5px;" class="button"
                             value="<fmt:message key="cancel"/>"
