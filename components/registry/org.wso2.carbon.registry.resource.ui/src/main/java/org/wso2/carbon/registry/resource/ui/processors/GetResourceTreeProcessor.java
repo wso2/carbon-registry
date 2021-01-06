@@ -138,11 +138,14 @@ public class GetResourceTreeProcessor {
             }
             treeData.appendToTree("<a onclick=\"pickPath('" + resourcePath + "','" + textBoxId + "')\" title=\"" + resourcePath + "\">" +
                     "<img src=\"../resources/images/" + getTreeFolderIcon(resourceEntry) + "\" style=\"margin-right:2px;\" />" +
-                    resourceName +
+                    Encode.forHtml(resourceName) +
                     "</a>");
         } else {
             treeData.appendToTree("<img src=\"../resources/images/spacer.gif\" style=\"width:18px;height:10px;\" />");
-            treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + resourcePath + "','" + textBoxId + "')\" title=\"" + resourcePath + "\">" + "<img src=\"../resources/images/" + getTreeResourceIcon(resourceEntry) + "\" style=\"margin-right:2px;\" />" + resourceName + "</a>");
+            treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + resourcePath + "','" +
+                textBoxId + "')\" title=\"" + resourcePath + "\">" + "<img src=\"../resources/images/" +
+                getTreeResourceIcon(resourceEntry) + "\" style=\"margin-right:2px;\" />" +
+                Encode.forHtml(resourceName) + "</a>");
         }
         treeData.appendToTree("</div>" + "<div class=\"child-objects\" id=\"z_" + treeData.getResourceTreeIndex() + "\">");
         if (!resourceEntry.getCollection()) {
@@ -223,12 +226,16 @@ public class GetResourceTreeProcessor {
                     }
                     treeData.appendToTree("<a onclick=\"pickPath('" + childPaths[i] + "','" + Encode.forJavaScript(textBoxId) + "', '" + Encode.forJavaScript(parentId) + "_" + i + "');\" title=\"" + childPaths[i] + "\">" +
                             "<img src=\"../resources/images/" + getTreeFolderIcon(childResouceEntry) + "\" style=\"margin-right:2px;\" />" +
-                            resourceName +
+                            Encode.forHtml(resourceName) +
                             "</a>");
                     treeData.appendToTree("</div>" + "<div class=\"child-objects\" id=\"" + Encode.forHtml(childId) + "\"></div>");
                 } else {
                     treeData.appendToTree("<img src=\"../resources/images/spacer.gif\" style=\"width:18px;height:10px;\" />");
-                    treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + childPaths[i] + "','" + Encode.forJavaScript(textBoxId) + "', '" + Encode.forJavaScript(parentId) + "_" + i + "');\" title=\"" + childPaths[i] + "\">" + "<img src=\"../resources/images/" + getTreeResourceIcon(childResouceEntry) + "\" style=\"margin-right:2px;\"/>" + resourceName + "</a></div>");
+                    treeData.appendToTree("<a class=\"plane-resource\" onclick=\"pickPath('" + childPaths[i] + "','" +
+                        Encode.forJavaScript(textBoxId) + "', '" + Encode.forJavaScript(parentId) + "_" +
+                        i + "');\" title=\"" + childPaths[i] + "\">" + "<img src=\"../resources/images/" +
+                        getTreeResourceIcon(childResouceEntry) + "\" style=\"margin-right:2px;\"/>" +
+                        Encode.forHtml(resourceName) + "</a></div>");
                 }
             }
         }
