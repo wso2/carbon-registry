@@ -1632,7 +1632,7 @@
         <version.solr>5.5.5.wso2v1</version.solr>
         <version.solr.import.version.range>[5.5.5,5.6.0)</version.solr.import.version.range>
         <version.lucene>5.5.5.wso2v1</version.lucene>
-        <version.httpclient>4.3.6.wso2v2</version.httpclient>
+        <version.httpclient>4.3.6.wso2v3</version.httpclient>
         <version.httpmime>4.3.1.wso2v2</version.httpmime>
         <version.httpcore>4.3.3.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
