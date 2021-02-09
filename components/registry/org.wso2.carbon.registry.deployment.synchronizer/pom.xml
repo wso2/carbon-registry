@@ -19,12 +19,12 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.7.38-SNAPSHOT</version>
+        <version>4.7.38</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>4.7.38-SNAPSHOT</version>
+    <version>4.7.38</version>
     <artifactId>org.wso2.carbon.registry.deployment.synchronizer</artifactId>
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - Registry Deployment Synchronizer</name>
