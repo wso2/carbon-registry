@@ -120,14 +120,14 @@
                 String minusId = "minus_"+rootName;
                 String childId = "child_"+rootName;
         %>
-        <a onclick="loadSubTree('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(rootName)%>',
-                '<%=Encode.forHtml(textBoxId)%>', '<%=(hideResources? "true" : "false")%>');">
+        <a onclick="loadSubTree('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forJavaScript(rootName)%>',
+                '<%=Encode.forJavaScript(textBoxId)%>', '<%=(hideResources? "true" : "false")%>');">
             <img style="margin-right: 5px;" id="<%=Encode.forHtmlAttribute(plusId)%>"
                  src="../resources/images/icon-tree-plus.jpg"/>
             <img style="display:none; margin-right: 5px;" id="<%=Encode.forHtmlAttribute(minusId)%>"
                  src="../resources/images/icon-tree-minus.jpg"/></a>
-        <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
-                '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
+        <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forJavaScript(textBoxId)%>',
+                '<%=Encode.forJavaScript(rootName)%>');"><img style="margin-right: 2px;"
                                                         src="../resources/images/icon-folder-small.gif"/><%=Encode.forHtml(rootPath)%>
         </a>
     </div>
