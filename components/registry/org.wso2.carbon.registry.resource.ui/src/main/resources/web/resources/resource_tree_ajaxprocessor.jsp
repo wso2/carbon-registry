@@ -211,7 +211,7 @@
              src="../resources/images/icon-tree-plus.jpg"/>
         <img style="display:none; margin-right: 5px;" id="<%=Encode.forHtmlAttribute(minusId)%>"
              src="../resources/images/icon-tree-minus.jpg"/></a>
-    <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forHtml(textBoxId)%>',
+    <a onclick="pickPath('<%=Encode.forHtml(rootPath)%>', '<%=Encode.forJavaScript(Encode.forHtml(textBoxId))%>',
             '<%=Encode.forHtml(rootName)%>');"><img style="margin-right: 2px;"
                                                     src="../resources/images/icon-folder-small.gif"/><%=Encode.forHtml(rootPath)%>
     </a>
