@@ -1051,7 +1051,8 @@ public class SolrClient {
                         updatedRangeNegate = field.getValue();
                     } else {
                         // Set the suffix value of the key
-                        if (isMultiValueField(fields.get("mediaType"), field.getKey())) {
+                        if (isMultiValueField(fields.get("mediaType"), field.getKey()) ||
+                                field.getKey().contains("api_meta")) {
                             fieldKeySuffix = SolrConstants.SOLR_MULTIVALUED_STRING_FIELD_KEY_SUFFIX + ":";
                         } else {
                             fieldKeySuffix = SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
