@@ -51,9 +51,11 @@
                                         <plugin>
                                             <groupId>org.apache.maven.plugins</groupId>
                                             <artifactId>maven-javadoc-plugin</artifactId>
-                                            <version>2.9</version>
+                                            <version>3.1.1</version>
                                             <configuration>
-                                                <additionalparam>-Xdoclint:none</additionalparam>
+                                                <source>1.8</source>
+                                                <!--This parameter disables doclint-->
+                                                <doclint>none</doclint>
                                                 <links>
                                                     <link>http://java.sun.com/j2se/1.5/docs/api/</link>
                                                 </links>
@@ -113,8 +115,10 @@
                                 <plugin>
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <artifactId>maven-javadoc-plugin</artifactId>
-                                    <version>2.9</version>
+                                    <version>3.1.1</version>
                                     <configuration>
+                                        <!--This parameter disables doclint-->
+                                        <doclint>none</doclint>
                                         <links>
                                             <link>http://java.sun.com/j2se/1.5/docs/api/</link>
                                         </links>

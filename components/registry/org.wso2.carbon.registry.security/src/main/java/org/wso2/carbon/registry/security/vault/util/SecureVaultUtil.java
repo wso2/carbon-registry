@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Properties;
 
 import org.apache.axis2.AxisFault;
@@ -37,7 +38,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.security.vault.CipherInitializer;
 import org.wso2.carbon.registry.security.vault.internal.SecurityServiceHolder;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -98,8 +98,8 @@ public class SecureVaultUtil {
                 }
             }
             byte[] encryptedPassword = cipher.doFinal(plainTextPassByte);
-            BASE64Encoder encoder = new BASE64Encoder();
-            String encodedValue = encoder.encode(encryptedPassword);
+            Base64.Encoder encoder = Base64.getEncoder();
+            String encodedValue = new String(encoder.encode(encryptedPassword));
             return encodedValue;
         } catch (IllegalBlockSizeException e) {
             handleException(log, "Error encrypting password ", e);
