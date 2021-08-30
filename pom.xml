@@ -1634,7 +1634,7 @@
         <version.lucene>5.5.5.wso2v1</version.lucene>
         <version.httpclient>4.5.13.wso2v1</version.httpclient>
         <version.httpmime>4.5.13.wso2v1</version.httpmime>
-        <version.httpcore>4.4.14</version.httpcore>
+        <version.httpcore>4.4.14.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
         <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
