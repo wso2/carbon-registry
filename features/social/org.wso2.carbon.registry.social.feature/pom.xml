@@ -70,6 +70,7 @@
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <bundles>
                                 <bundleDef>com.google.guava:guava</bundleDef>
+                                <bundleDef>com.google.guava:failureaccess</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.api</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.social.impl</bundleDef>
                             </bundles>

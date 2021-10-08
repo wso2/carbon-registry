@@ -103,6 +103,7 @@
                                 <bundleDef>org.apache.zookeeper:zookeeper</bundleDef>
                                 <bundleDef>com.wso2.spatial4j:spatial4j</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
+                                <bundleDef>com.google.guava:failureaccess</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}
