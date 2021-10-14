@@ -68,6 +68,11 @@ public final class IndexingConstants {
     public static final String FIELD_ASSOCIATION_DESTINATIONS = "associationDest";
     public static final String FIELD_LAST_UPDATED_BY = "updater";
     public static final String FIELD_CREATED_BY = "author";
+    public static final String FIELD_GROUP = "group";
+    public static final String FIELD_GROUP_FIELD = "group.field";
+    public static final String FIELD_GROUP_SORT = "group.sort";
+    public static final String FIELD_GROUP_NGROUPS = "group.ngroups";
+    public static final String FIELD_GROUP_FORMAT = "group.format";
     public static final String FIELD_RESOURCE_NAME = "resourceName";
     public static final String FIELD_PROPERTY_VALUES = "propertyValues";
     public static final String ADVANCE_SEARCH = "AdvanceSearch";

@@ -27,6 +27,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.Group;
+import org.apache.solr.client.solrj.response.GroupCommand;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
@@ -646,7 +648,18 @@ public class SolrClient {
                         PaginationUtils.setRowCount(messageContext,
                                 Long.toString(queryresponse.getResults().getNumFound()));
                     } else {
-                        paginationContext.setLength((int) queryresponse.getResults().getNumFound());
+                        if (null != queryresponse.getResults()) {
+                            paginationContext.setLength((int) queryresponse.getResults().getNumFound());
+                        } else if (queryresponse.getGroupResponse() != null && queryresponse.getGroupResponse().getValues().size() > 0) {
+                            for (GroupCommand groupCmd : queryresponse.getGroupResponse().getValues()) {
+                                paginationContext.setLength(groupCmd.getNGroups());
+                                SolrDocumentList solrDocumentsList = new SolrDocumentList();
+                                for (Group group : groupCmd.getValues()) { //This loop traverses through each group
+                                    solrDocumentsList.addAll(group.getResult());
+                                }
+                                return solrDocumentsList;
+                            }
+                        }
                     }
                 } finally {
                     if (messageContext != null) {
@@ -803,6 +816,18 @@ public class SolrClient {
         }
     }
 
+    private void addGroupingQuery(SolrQuery query, String groupKey, String groupVal) {
+
+        if (IndexingConstants.FIELD_GROUP.equals(groupKey) ||
+                IndexingConstants.FIELD_GROUP_FIELD.equals(groupKey) ||
+                IndexingConstants.FIELD_GROUP_SORT.equals(groupKey) ||
+                IndexingConstants.FIELD_GROUP_NGROUPS.equals(groupKey) ||
+                IndexingConstants.FIELD_GROUP_FORMAT.equals(groupKey)
+        ) {
+            query.set(groupKey, groupVal);
+        }
+
+    }
     public List<FacetField.Count> facetQuery(String keywords, String facetField, int tenantId) throws SolrException {
         Map<String, String> fields = new HashMap<>();
         fields.put(IndexingConstants.FACET_FIELD_NAME, facetField);
@@ -974,7 +999,8 @@ public class SolrClient {
             String propertyName = "", leftPropertyValue = "", rightPropertyValue = "", leftOp = "", rightOp = "",
                     createdBefore = "", createdAfter = "", updatedBefore = "", updatedAfter = "", mediaType = "",
                     mediaTypeNegate = "", createdBy = "", createdByNegate = "", updatedBy = "", updatedByNegate = "",
-                    createdRangeNegate = "", updatedRangeNegate = "", resourceName = "";
+                    createdRangeNegate = "", updatedRangeNegate = "", resourceName = "", group = "", groupNGroups = "",
+                    groupField = "", groupSort = "", groupFormat = "";
             for (Map.Entry<String, String> field : fields.entrySet()) {
                 // Query for multivalued fields
                 if (field.getValue() != null && StringUtils.isNotEmpty(field.getValue())) {
@@ -1031,6 +1057,28 @@ public class SolrClient {
                     } else if (IndexingConstants.FIELD_MEDIA_TYPE_NEGATE.equals(field.getKey())) {
                         // Get the value of resource mediaType negation
                         mediaTypeNegate = field.getValue();
+                    } else if (IndexingConstants.FIELD_GROUP.equals(field.getKey())) {
+                        // Get the value of resource group
+                        group = field.getValue();
+                    } else if (IndexingConstants.FIELD_GROUP_NGROUPS.equals(field.getKey())) {
+                        // Get the value of resource group.ngroups
+                        groupNGroups = field.getValue();
+                    } else if (IndexingConstants.FIELD_GROUP_FORMAT.equals(field.getKey())) {
+                        // Get the value of resource group.format
+                        groupFormat = field.getValue();
+                    } else if (IndexingConstants.FIELD_GROUP_FIELD.equals(field.getKey())) {
+                        // Get the value of group.field
+                        groupField = field.getValue() + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX;
+                    } else if (IndexingConstants.FIELD_GROUP_SORT.equals(field.getKey())) {
+                        // Get the value of group.sort
+                        String[] grpsort = field.getValue().split(" ");
+                        if (grpsort.length > 1) {
+                            groupSort = grpsort[0] + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + " "
+                                    + grpsort[1];
+                        } else if (grpsort.length > 0) {
+                            groupSort = grpsort[0] + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + " "
+                                    + SolrQuery.ORDER.desc;
+                        }
                     } else if (IndexingConstants.FIELD_CREATED_BY.equals(field.getKey())) {
                         // Get the value of resource author
                         createdBy = field.getValue();
@@ -1072,6 +1120,31 @@ public class SolrClient {
                 String fieldKey = IndexingConstants.FIELD_CREATED_BY + SolrConstants.SOLR_STRING_FIELD_KEY_SUFFIX + ":";
                 String createdByValue = getWildcardSearchQueryValue(createdBy);
                 setQueryFilterSingleValue(query, fieldKey, createdByValue, createdByNegate);
+            }
+            // Set query filter for group
+            if (StringUtils.isNotEmpty(group)) {
+                // Set the value of the key
+                addGroupingQuery(query, IndexingConstants.FIELD_GROUP, group);
+            }
+            // Set query filter for group.field
+            if (StringUtils.isNotEmpty(groupField)) {
+                // Set the value of the key
+                addGroupingQuery(query, IndexingConstants.FIELD_GROUP_FIELD, groupField);
+            }
+            // Set query filter for group.sort
+            if (StringUtils.isNotEmpty(groupSort)) {
+                // Set the value of the key
+                addGroupingQuery(query, IndexingConstants.FIELD_GROUP_SORT, groupSort);
+            }
+            // Set query filter for group.ngroups
+            if (StringUtils.isNotEmpty(groupNGroups)) {
+                // Set the value of the key
+                addGroupingQuery(query, IndexingConstants.FIELD_GROUP_NGROUPS, groupNGroups);
+            }
+            // Set query filter for group.ngroups
+            if (StringUtils.isNotEmpty(groupFormat)) {
+                // Set the value of the key
+                addGroupingQuery(query, IndexingConstants.FIELD_GROUP_FORMAT, groupFormat);
             }
             // Set query filter for updater
             if (StringUtils.isNotEmpty(updatedBy)) {
