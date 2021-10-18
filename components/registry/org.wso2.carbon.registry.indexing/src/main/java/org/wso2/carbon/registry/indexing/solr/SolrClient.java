@@ -826,7 +826,6 @@ public class SolrClient {
         ) {
             query.set(groupKey, groupVal);
         }
-
     }
     public List<FacetField.Count> facetQuery(String keywords, String facetField, int tenantId) throws SolrException {
         Map<String, String> fields = new HashMap<>();
