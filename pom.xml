@@ -1323,8 +1323,8 @@
                 <version>${version.spatial4j}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
+                <groupId>org.wso2.orbit.org.apache.zookeeper</groupId>
+                <artifactId>apache-zookeeper</artifactId>
                 <version>${version.zookeeper}</version>
             </dependency>
             <dependency>
@@ -1644,7 +1644,7 @@
         <version.noggit>0.6.wso2v1</version.noggit>
         <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
-        <version.zookeeper>3.4.14</version.zookeeper>
+        <version.zookeeper>3.7.0.wso2v1</version.zookeeper>
         <derby.version>10.4.2.0</derby.version>
         <javamail.version>1.4</javamail.version>
         <wss4j.version>1.5.11.wso2v11</wss4j.version>
