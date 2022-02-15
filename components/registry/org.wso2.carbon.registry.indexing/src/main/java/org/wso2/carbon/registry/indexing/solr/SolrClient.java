@@ -36,6 +36,7 @@ import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.NodeConfig;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -61,6 +62,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -129,10 +131,12 @@ public class SolrClient {
         System.setProperty(SolrConstants.SOLR_HOME_SYSTEM_PROPERTY, solrHome.getPath());
 
         if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
-            this.server = new HttpSolrClient(solrServerUrl);
-            log.info("Http Sorl server initiated at: " + solrServerUrl);
+            HttpSolrClient.Builder builder = new HttpSolrClient.Builder(solrServerUrl);
+            this.server = builder.build();
+            log.info("Http Solr server initiated at: " + solrServerUrl);
         } else {
-            CoreContainer coreContainer = new CoreContainer(solrHome.getPath());
+            NodeConfig nodeConfig = new NodeConfig.NodeConfigBuilder("registry-indexing", Paths.get(solrHome.getPath())).build();
+            CoreContainer coreContainer = new CoreContainer(nodeConfig);
             coreContainer.load();
             this.server = new EmbeddedSolrServer(coreContainer, solrCore);
             log.info("Default Embedded Solr Server Initialized");
@@ -486,7 +490,7 @@ public class SolrClient {
      */
     private void addRawContent(String rawContent, SolrInputDocument solrInputDocument) {
         if (rawContent != null && StringUtils.isNotEmpty(rawContent)) {
-            solrInputDocument.addField(IndexingConstants.FIELD_TEXT, rawContent, 1.0f);
+            solrInputDocument.addField(IndexingConstants.FIELD_TEXT, rawContent);
         }
     }
 
@@ -503,7 +507,7 @@ public class SolrClient {
         if (id == null) {
             id = IndexingConstants.FIELD_ID + rawContent.hashCode();
         }
-        solrInputDocument.addField(IndexingConstants.FIELD_ID, id, 1.0f);
+        solrInputDocument.addField(IndexingConstants.FIELD_ID, id);
     }
 
     /**
