@@ -129,8 +129,8 @@
 
 
     <!-- Hidden fields to pass variables to advancedSearch.jsp -->
-    <input type="hidden" name="sortOrder" id="sortOrder" value="<%=sortOrder%>" />
-    <input type="hidden" name="sortBy" id="sortBy" value="<%=sortBy%>" />
+    <input type="hidden" name="sortOrder" id="sortOrder" value="<%=Encode.forHtml(sortOrder)%>" />
+    <input type="hidden" name="sortBy" id="sortBy" value="<%=Encode.forHtml(sortBy)%>" />
     <h3 style="margin-top:20px;margin-bottom:20px;"> <fmt:message key="search.results"/> </h3>
 
     <table cellpadding="0" id = "searchTable" cellspacing="0" border="0" style="width:100%" class="styledLeft">
