@@ -403,7 +403,7 @@
             <dependency>
                 <groupId>org.apache.tika</groupId>
                 <artifactId>tika-core</artifactId>
-                <version>0.6</version>
+                <version>1.22</version>
             </dependency>
             <dependency>
                 <!-- temporarily added dependency, needed as long as JCR2 interfaces are contained in jackrabbit-api -->
