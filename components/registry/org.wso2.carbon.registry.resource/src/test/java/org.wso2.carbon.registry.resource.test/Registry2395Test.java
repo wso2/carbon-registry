@@ -29,12 +29,12 @@ public class Registry2395Test extends TestCase {
     private static final String MOCK_FOLDER_2 = "trunk";
     private static final String MOCK_RESOURCE_NAME = "ResourceName";
 
-    private static final String WSDL_URL = "https://svn.wso2.org/repos/wso2/carbon/platform/" +
-            "trunk/platform-integration/platform-automated-test-suite/org.wso2.carbon.automation." +
-            "test.repo/src/main/resources/artifacts/GREG/wsdl/Imports_with_imports.wsdl";
-    private static final String XSD_URL = "https://svn.wso2.org/repos/wso2/carbon/platform/trunk/" +
-            "platform-integration/platform-automated-test-suite/org.wso2.carbon.automation.test.repo/" +
-            "src/main/resources/artifacts/GREG/xsd/purchasing.xsd";
+    private static final String WSDL_URL = "https://raw.githubusercontent.com/wso2/product-greg/v5.4.0/" +
+            "modules/integration/tests-integration/tests-permissions/tests-permissions-resource/" +
+            "src/test/resources/artifacts/GREG/wsdl/Imports_with_imports.wsdl";
+    private static final String XSD_URL = "https://raw.githubusercontent.com/wso2/product-greg/v5.4.0/" +
+            "modules/integration/tests-integration/tests-permissions/tests-permissions-resource/" +
+            "src/test/resources/artifacts/GREG/xsd/purchasing.xsd";
     private static final String INVALID_URL = "invalid.url.test.string";
     private static final String RESOURCE_DOES_NOT_EXIST = "https://svn.wso2.org/repos/wso2/carbon/platform/" +
             "trunk/platform-integration/platform-automated-test-suite/org.wso2.carbon.automation.test.repo/src/" +
