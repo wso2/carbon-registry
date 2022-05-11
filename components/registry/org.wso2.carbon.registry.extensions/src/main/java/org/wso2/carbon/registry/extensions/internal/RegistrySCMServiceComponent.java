@@ -149,7 +149,6 @@ public class RegistrySCMServiceComponent {
                             RegistryContext registryContext = registry.getRegistryContext();
                             registryContext.registerNoCachePath(mountPoint);
                             registryContext.getHandlerManager().addHandler(null, urlMatcher, externalContentHandler, HandlerLifecycleManager.TENANT_SPECIFIC_SYSTEM_HANDLER_PHASE);
-                            executorService.scheduleWithFixedDelay(new SCMUpdateTask(directory, checkOutURL, checkInURL, readOnly, externalContentHandler, username, CommonUtil.getResolvedPassword(secretResolver, "scm", password)), 0, updateFrequency, TimeUnit.MINUTES);
                         }
                     }
                 } catch (XMLStreamException e) {

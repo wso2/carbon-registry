@@ -302,10 +302,6 @@
             <artifactId>infinispan-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.maven.scm.wso2</groupId>
-            <artifactId>maven-scm</artifactId>
-        </dependency>
     <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>

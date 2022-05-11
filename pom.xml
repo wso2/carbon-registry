@@ -1166,11 +1166,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.maven.scm.wso2</groupId>
-                <artifactId>maven-scm</artifactId>
-                <version>${orbit.version.maven-scm}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.rampart</groupId>
                 <artifactId>rampart-core</artifactId>
                 <version>${rampart.wso2.version}</version>
@@ -1678,9 +1673,6 @@
 
         <!--OpenJPA -->
         <openjpa.version>2.2.0-wso2v1</openjpa.version>
-
-        <!--SCM-->
-        <orbit.version.maven-scm>1.7.0.wso2v1</orbit.version.maven-scm>
 
         <!-- Rampart -->
         <rampart.mar.version>1.6.1-wso2v40</rampart.mar.version>
