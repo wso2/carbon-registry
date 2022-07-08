@@ -1672,7 +1672,7 @@
         <version.geronimo.specs.geronimo-jpa_2.0_spec>1.0</version.geronimo.specs.geronimo-jpa_2.0_spec>
 
         <!--OpenJPA -->
-        <openjpa.version>2.2.0-wso2v1</openjpa.version>
+        <openjpa.version>2.2.2</openjpa.version>
 
         <!-- Rampart -->
         <rampart.mar.version>1.6.1-wso2v40</rampart.mar.version>
