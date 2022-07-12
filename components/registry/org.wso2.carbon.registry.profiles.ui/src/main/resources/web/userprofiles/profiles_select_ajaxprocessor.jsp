@@ -17,6 +17,7 @@
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage"%>
 <%@ page import="org.wso2.carbon.registry.profiles.ui.clients.ProfilesAdminServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.profiles.stub.beans.xsd.ProfilesBean" %>
@@ -29,8 +30,8 @@
 <%@ page import="java.util.Set" %>
 
 <%
-    String path =request.getParameter("path");
-    String selectedProfile = request.getParameter("profile_menu");
+    String path = Encode.forHtml(request.getParameter("path"));
+    String selectedProfile = Encode.forHtml(request.getParameter("profile_menu"));
     if (selectedProfile == null) {
         selectedProfile = "default";
     }

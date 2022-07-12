@@ -16,10 +16,11 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.common.utils.RegistryUtil" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 <%
-    String esPath = request.getParameter("path");
+    String esPath = Encode.forHtml(request.getParameter("path"));
     String profilesMainPath = "profiles_main_ajaxprocessor.jsp?path=" + esPath;
  %>
 <jsp:forward page="<%=profilesMainPath%>"/>

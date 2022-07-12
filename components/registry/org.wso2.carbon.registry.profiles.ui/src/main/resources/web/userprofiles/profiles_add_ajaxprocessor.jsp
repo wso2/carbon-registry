@@ -18,8 +18,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="carbon" uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
-    String parentPath = request.getParameter("parentPath");
+    String parentPath = Encode.forHtml(request.getParameter("parentPath"));
 %>
 <br/>
 <fmt:bundle basename="org.wso2.carbon.registry.profiles.ui.i18n.Resources">
