@@ -16,6 +16,7 @@
  ~ under the License.
  -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.common.ui.UIException" %>
 <%@ page import="org.wso2.carbon.registry.profiles.stub.beans.xsd.ProfilesBean" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
@@ -23,7 +24,7 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%
-    String username = request.getParameter("username");
+    String username = Encode.forHtml(request.getParameter("username"));
     String error = "This profile is already stored in the registry or a profile does not exist for the given username or you don't have sufficient privileges to configure user profiles.";
 //    bean.setUserName(username);
     if (username != null) {
