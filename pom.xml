@@ -991,6 +991,12 @@
                 <groupId>commons-digester</groupId>
                 <artifactId>commons-digester</artifactId>
                 <version>${commons-digester.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.ws.commons.schema.wso2</groupId>
@@ -1685,7 +1691,7 @@
 
         <!-- Commons -->
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
-        <commons-collections.version>3.2</commons-collections.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
         <commons-io.wso2.version>2.7.0.wso2v1</commons-io.wso2.version>
