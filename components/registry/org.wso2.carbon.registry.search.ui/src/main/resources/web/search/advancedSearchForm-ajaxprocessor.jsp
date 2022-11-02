@@ -290,7 +290,10 @@
         rightPropertyValue = request.getParameter("rightPropertyValue");
         if (leftPropertyValue == null) {
             leftPropertyValue = "";
+        } else {
+            leftPropertyValue = Encode.forHtml(leftPropertyValue);
         }
+
         if (rightPropertyValue == null) {
             rightPropertyValue = "";
         } else {
