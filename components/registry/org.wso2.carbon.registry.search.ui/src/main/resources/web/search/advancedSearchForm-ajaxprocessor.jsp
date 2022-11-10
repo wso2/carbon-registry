@@ -290,9 +290,14 @@
         rightPropertyValue = request.getParameter("rightPropertyValue");
         if (leftPropertyValue == null) {
             leftPropertyValue = "";
+        } else {
+            leftPropertyValue = Encode.forHtml(leftPropertyValue);
         }
+
         if (rightPropertyValue == null) {
             rightPropertyValue = "";
+        } else {
+            rightPropertyValue = Encode.forHtml(rightPropertyValue);
         }
         
         authorNameNegate = request.getParameter("authorNameNegate"); 
@@ -308,6 +313,7 @@
         if (mediaType == null) {
             mediaType = "";
         } else {
+            mediaType = Encode.forHtml(mediaType);
             hasParameters = true;
         }
         
@@ -317,8 +323,18 @@
         
         leftOp = request.getParameter("leftOp");
         rightOp = request.getParameter("rightOp");
-        if(rightOp == null) rightOp = "";
-        if(leftOp == null) leftOp = "";
+
+        if (rightOp == null) {
+            rightOp = "";
+        } else {
+            rightOp = Encode.forHtml(rightOp);
+        }
+
+        if (leftOp == null) {
+            leftOp = "";
+        } else {
+            leftOp = Encode.forHtml(leftOp);
+        }
     }
 %>
 
