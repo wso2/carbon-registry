@@ -100,7 +100,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
 
     private static SSLContext createEasySSLContext() {
         try {
-            SSLContext context = SSLContext.getInstance("SSL");
+            SSLContext context = SSLContext.getInstance("TLSv1.2");
             context.init(
               null, 
               new TrustManager[] {new EasyX509TrustManager(null)}, 
