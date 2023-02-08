@@ -59,7 +59,9 @@
                             <id>org.wso2.carbon.registry.contentsearch</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <importFeatures>
-                                <importFeatureDef>org.wso2.carbon.registry.core:${carbon.registry.version}
+                                <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}
+                                </importFeatureDef>
+                                <importFeatureDef>org.wso2.carbon.registry.core.common:${carbon.registry.version}
                                 </importFeatureDef>
                             </importFeatures>
                             <includedFeatures>
