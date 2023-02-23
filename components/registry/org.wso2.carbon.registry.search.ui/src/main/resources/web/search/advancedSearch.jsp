@@ -17,6 +17,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
 
@@ -297,6 +298,9 @@
 <div id="middle">
 
 <h2><fmt:message key="search"/></h2>
+<%
+    if (CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/search/advanced-search")) {
+%>
 
 <div id="workArea">
 
@@ -377,6 +381,9 @@
 
 
 </div>
+<%
+    }
+%>
 
 </div>
 
