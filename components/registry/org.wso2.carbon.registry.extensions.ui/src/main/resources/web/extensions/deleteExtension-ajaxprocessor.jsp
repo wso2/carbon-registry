@@ -24,6 +24,12 @@
 
 
 <%
+    String httpMethod = request.getMethod().toLowerCase();
+    if (!"post".equals(httpMethod)) {
+        response.sendError(405);
+        return;
+    }
+
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     try {
         ResourceServiceClient client = new ResourceServiceClient(cookie, config, session);
@@ -32,7 +38,7 @@
         response.setStatus(500);
 %>
 <script type="text/javascript">
-    CARBON.showErrorDialog("<%=e.getMessage()%>");
+    CARBON.showErrorDialog("Error occurred while deleting the extension.");
 </script>
 <%
         return;
