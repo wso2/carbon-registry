@@ -62,6 +62,8 @@ import org.wso2.carbon.registry.ws.stub.xsd.WSResource;
 import org.wso2.carbon.registry.ws.stub.xsd.WSTag;
 import org.wso2.carbon.registry.ws.stub.xsd.WSTaggedResourcePath;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.security.KeystoreUtils;
+
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -238,7 +240,8 @@ public class WSRegistryServiceClient implements Registry {
 		Policy policy = loadPolicy(policyPath);
 
 		Properties merlinProp = new Properties();
-		merlinProp.put("org.apache.ws.security.crypto.merlin.keystore.type", "JKS");
+		merlinProp.put("org.apache.ws.security.crypto.merlin.keystore.type",
+                KeystoreUtils.StoreFileType.defaultFileType());
 		merlinProp.put("org.apache.ws.security.crypto.merlin.file",
 		               keyStore);
 
