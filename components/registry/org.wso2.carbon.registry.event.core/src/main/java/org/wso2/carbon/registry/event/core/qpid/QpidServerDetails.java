@@ -17,6 +17,7 @@
 package org.wso2.carbon.registry.event.core.qpid;
 
 import org.wso2.carbon.utils.ServerConstants;
+import org.wso2.carbon.utils.security.KeystoreUtils;
 
 public class QpidServerDetails {
 
@@ -24,8 +25,8 @@ public class QpidServerDetails {
     private static final String DOMAIN_NAME_SEPARATOR_INTERNAL = "!";
 
     private static final String SECURITY_RESOURCES_DIR = "/repository/resources/security/";
-    private static final String KEYSTORE_FILE = "wso2carbon.jks";
-    private static final String TRUSTSTORE_FILE = "client-truststore.jks";
+    private static final String KEYSTORE_FILE = KeystoreUtils.StoreFileType.defaultFileType();
+    private static final String TRUSTSTORE_FILE = KeystoreUtils.getTrustStoreFileType();
 
     private String accessKey;
     private String clientID;
