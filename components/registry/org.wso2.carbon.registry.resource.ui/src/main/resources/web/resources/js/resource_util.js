@@ -1638,6 +1638,9 @@ function submitUploadContentForm() {
             reason += validateForInput(rForm.mediaType, org_wso2_carbon_registry_resource_ui_jsi18n["media.type"]);
         }
         if (reason == "") {
+            reason += validateIllegal(rForm.description, org_wso2_carbon_registry_resource_ui_jsi18n["description"]);
+        }
+        if (reason == "") {
             reason += validateForInput(rForm.description, org_wso2_carbon_registry_resource_ui_jsi18n["description"]);
         }
         if (reason == "") {

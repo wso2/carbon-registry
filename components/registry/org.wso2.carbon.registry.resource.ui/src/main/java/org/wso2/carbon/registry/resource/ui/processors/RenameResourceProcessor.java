@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.registry.resource.ui.processors;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.ui.UIException;
@@ -36,7 +37,7 @@ public class RenameResourceProcessor {
 
         String parentPath = request.getParameter("parentPath");
         String oldResourcePath = request.getParameter("oldResourcePath");
-        String newName = request.getParameter("newName");
+        String newName = StringEscapeUtils.escapeHtml(request.getParameter("newName"));
 
         String cookie = (String) request.
                 getSession().getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
