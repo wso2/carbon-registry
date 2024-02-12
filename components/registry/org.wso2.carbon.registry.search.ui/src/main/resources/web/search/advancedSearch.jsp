@@ -302,6 +302,9 @@
     if (CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/search/advanced-search")) {
 %>
 
+<%
+    if (CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/search/advanced-search")) {
+%>
 <div id="workArea">
 
 <!-- start: load search filter -->
