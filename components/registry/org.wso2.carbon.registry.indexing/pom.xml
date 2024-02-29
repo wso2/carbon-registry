@@ -73,10 +73,31 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-XX:-UseSplitVerifier ${argLine} -enableassertions -noverify</argLine>
+                    <argLine>
+                        -XX:-UseSplitVerifier ${argLine} -enableassertions -noverify
+                        --add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED
+                        --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.io=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.time=ALL-UNNAMED
+                        --add-opens java.base/java.net=ALL-UNNAMED
+                        --add-opens java.base/sun.reflect.misc=ALL-UNNAMED
+                        --add-opens java.base/java.util.stream=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.base/java.math=ALL-UNNAMED
+                        --add-opens java.base/java.security=ALL-UNNAMED
+                        --add-opens java.base/java.nio.charset=ALL-UNNAMED
+                        --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+                        --add-opens java.base/java.text=ALL-UNNAMED
+                        --add-opens java.base/sun.security.x509=ALL-UNNAMED
+                        --add-opens java.base/java.security.cert=ALL-UNNAMED
+                        --add-exports java.base/sun.security.x509=ALL-UNNAMED
+                    </argLine>
                     <testFailureIgnore>true</testFailureIgnore>
                     <classpathDependencyExcludes>
                         <classpathDependencyExclude>org.ops4j.pax.logging</classpathDependencyExclude>
@@ -153,16 +174,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.lucene</groupId>
-            <artifactId>lucene</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.noggit</groupId>
             <artifactId>noggit</artifactId>
             <scope>test</scope>
         </dependency>
-    <dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
             <scope>provided</scope>

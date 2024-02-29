@@ -99,7 +99,6 @@
                                 <bundleDef>org.wso2.orbit.org.apache.httpcomponents:httpclient</bundleDef>
                                 <bundleDef>org.wso2.noggit:noggit</bundleDef>
                                 <bundleDef>org.wso2.orbit.org.restlet.jee:org.restlet</bundleDef>
-                                <bundleDef>org.wso2.orbit.org.apache.lucene:lucene</bundleDef>
                                 <bundleDef>com.wso2.spatial4j:spatial4j</bundleDef>
                                 <bundleDef>com.google.guava:guava</bundleDef>
                                 <bundleDef>com.google.guava:failureaccess</bundleDef>
