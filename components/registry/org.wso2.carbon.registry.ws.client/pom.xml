@@ -49,7 +49,6 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-
                             org.wso2.carbon.authenticator.stub.*;version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.registry.ws.stub.*;version="${carbon.registry.package.import.version.range}",
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",

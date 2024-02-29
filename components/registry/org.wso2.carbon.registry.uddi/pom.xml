@@ -42,7 +42,8 @@
                         <Private-Package>
                             org.wso2.carbon.registry.uddi.internal.*,
                         </Private-Package>
-                        <Export-Package>org.wso2.carbon.registry.uddi.persistance.*,
+                        <Export-Package>
+                            org.wso2.carbon.registry.uddi.persistance.*,
                             org.wso2.carbon.registry.uddi.servlet.*,
                             org.wso2.carbon.registry.uddi.utils.*,
                             org.wso2.carbon.registry.uddi.uddiversionmodule.*,
