@@ -1669,7 +1669,7 @@
         <google.guava.wso2.version>33.0.0-jre</google.guava.wso2.version>
         <google.guava.failureaccess.version>1.0.2</google.guava.failureaccess.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>9.5.0.wso2v1</version.solr>
+        <version.solr>9.5.0.wso2v2</version.solr>
         <version.solr.import.version.range>[9.0.0,10.0.0)</version.solr.import.version.range>
         <version.httpclient>4.5.13.wso2v1</version.httpclient>
         <version.httpmime>4.5.13.wso2v1</version.httpmime>
