@@ -53,6 +53,7 @@
                                             <configuration>
                                                 <additionalparam>-Xdoclint:none</additionalparam>
                                                 <doclint>none</doclint>
+                                                <source>1.8</source>
                                             </configuration>
                                             <reports>
                                                 <report>javadoc</report>
@@ -124,6 +125,7 @@
                                     <artifactId>maven-javadoc-plugin</artifactId>
                                     <configuration>
                                         <doclint>none</doclint>
+                                        <source>1.8</source>
                                     </configuration>
                                     <reports>
                                         <report>javadoc</report>
