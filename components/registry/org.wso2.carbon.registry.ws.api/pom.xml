@@ -50,7 +50,6 @@
                                         <plugin>
                                             <groupId>org.apache.maven.plugins</groupId>
                                             <artifactId>maven-javadoc-plugin</artifactId>
-                                            <version>2.9</version>
                                             <configuration>
                                                 <additionalparam>-Xdoclint:none</additionalparam>
                                                 <links>
@@ -125,7 +124,6 @@
                                 <plugin>
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <artifactId>maven-javadoc-plugin</artifactId>
-                                    <version>2.9</version>
                                     <configuration>
                                         <links>
                                             <link>http://java.sun.com/j2se/1.5/docs/api/</link>
