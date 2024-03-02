@@ -1322,8 +1322,13 @@
                 <version>${version.httpmime}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.poi.wso2</groupId>
+                <groupId>org.wso2.orbit.org.apache.poi</groupId>
                 <artifactId>poi-scratchpad</artifactId>
+                <version>${apache.poi.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
                 <version>${apache.poi.wso2.version}</version>
             </dependency>
             <dependency>
@@ -1731,7 +1736,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
-        <commons-io.wso2.version>2.7.0.wso2v1</commons-io.wso2.version>
+        <commons-io.wso2.version>2.15.1.wso2v1</commons-io.wso2.version>
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <orbit.version.commons.httpclient>3.1.0.wso2v6</orbit.version.commons.httpclient>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
@@ -1739,7 +1744,7 @@
         <jackson.version>1.9.13</jackson.version>
         <amber.version>0.22.1358727-wso2v2</amber.version>
         <import.package.version.commons.logging>[1.2.0,2.0.0)</import.package.version.commons.logging>
-        <apache.poi.wso2.version>3.9.0.wso2v1</apache.poi.wso2.version>
+        <apache.poi.wso2.version>5.2.5.wso2v1</apache.poi.wso2.version>
 
         <!-- Pax logging -->
         <pax.logging.api.version>1.10.1</pax.logging.api.version>
