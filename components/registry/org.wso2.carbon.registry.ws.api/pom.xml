@@ -81,7 +81,6 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            !org.apache.lucene.*,
                             !javax.servlet,
                             !javax.servlet.http,
                             org.wso2.carbon.registry.ws.api.*;

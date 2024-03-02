@@ -17,14 +17,6 @@
 */
 package org.wso2.carbon.registry.webdav;
 
-import java.io.IOException;
-
-import javax.jcr.Repository;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.server.BasicCredentialsProvider;
@@ -42,6 +34,14 @@ import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 import org.wso2.carbon.registry.core.CollectionImpl;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+
+import javax.jcr.Repository;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Base64;
 
 public class RegistryServlet extends SimpleWebdavServlet {
     public static final Log log = LogFactory.getLog(SimpleWebdavServlet.class);
@@ -176,8 +176,9 @@ public class RegistryServlet extends SimpleWebdavServlet {
 		String userpassEncoded = auth.substring(6);
 
 		// Decode it, using any base 64 decoder
-		sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
-		String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+		Base64.Decoder dec = Base64.getDecoder();;
+
+		String userpassDecoded = new String(dec.decode(userpassEncoded));
 		return userpassDecoded.split(":");
 	}
 

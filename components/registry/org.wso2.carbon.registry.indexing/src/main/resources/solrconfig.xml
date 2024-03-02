@@ -492,14 +492,14 @@
 
     <!-- Solr Internal Query Caches
 
-         There are two implementations of cache available for Solr,
-         LRUCache, based on a synchronized LinkedHashMap, and
-         FastLRUCache, based on a ConcurrentHashMap.
+         Solr’s caches provide an essential way to improve query performance.
+         Caches can store documents, filters used in queries, and results from previous queries.
+         Caches are cleared after a commit and usually need to be re-populated before their benefit can be seen again.
+         To counteract this, caches can be "warmed" before a new searcher is considered opened by automatically
+         populating the new cache with values from the old cache.
 
-         FastLRUCache has faster gets and slower puts in single
-         threaded operation and thus is generally faster than LRUCache
-         when the hit ratio of the cache is high (> 75%), and may be
-         faster under other scenarios on multi-cpu systems.
+         Cache management is critical to a successful Solr implementation,
+         so it should be noted that caches will need to be fine-tuned as your application grows.
     -->
 
     <!-- Filter Cache
@@ -509,7 +509,7 @@
          new searcher is opened, its caches may be prepopulated or
          "autowarmed" using data from caches in the old searcher.
          autowarmCount is the number of items to prepopulate.  For
-         LRUCache, the autowarmed items will be the most recently
+         CaffeineCache, the autowarmed items will be the most recently
          accessed items.
 
          Parameters:
@@ -520,8 +520,10 @@
                the cache.  (see java.util.HashMap)
            autowarmCount - the number of entries to prepopulate from
                and old cache.
+           async - determines whether the cache stores direct results or
+               whether it will store indirect references to the computation
       -->
-    <filterCache class="solr.FastLRUCache"
+    <filterCache class="solr.CaffeineCache"
                  size="512"
                  initialSize="512"
                  autowarmCount="0"/>
@@ -531,7 +533,7 @@
          Caches results of searches - ordered lists of document ids
          (DocList) based on a query, a sort, and the range of documents requested.
       -->
-    <queryResultCache class="solr.LRUCache"
+    <queryResultCache class="solr.CaffeineCache"
                       size="512"
                       initialSize="512"
                       autowarmCount="0"/>
@@ -542,31 +544,18 @@
          document).  Since Lucene internal document ids are transient,
          this cache will not be autowarmed.
       -->
-    <documentCache class="solr.LRUCache"
+    <documentCache class="solr.CaffeineCache"
                    size="512"
                    initialSize="512"
                    autowarmCount="0"/>
 
     <!-- custom cache currently used by block join -->
     <cache name="perSegFilter"
-           class="solr.search.LRUCache"
+           class="solr.search.CaffeineCache"
            size="10"
            initialSize="0"
            autowarmCount="10"
            regenerator="solr.NoOpRegenerator" />
-
-    <!-- Field Value Cache
-
-         Cache used to hold field values that are quickly accessible
-         by document id.  The fieldValueCache is created by default
-         even if not configured here.
-      -->
-    <!--
-       <fieldValueCache class="solr.FastLRUCache"
-                        size="512"
-                        autowarmCount="128"
-                        showItems="32" />
-      -->
 
     <!-- Custom Cache
 
@@ -579,7 +568,7 @@
       -->
     <!--
        <cache name="myUserCache"
-              class="solr.LRUCache"
+              class="solr.CaffeineCache"
               size="4096"
               initialSize="1024"
               autowarmCount="1024"
@@ -1831,7 +1820,7 @@
        in Solr's conf/xslt directory.  Changes to xslt files are checked for
        every xsltCacheLifetimeSeconds.  
     -->
-  <queryResponseWriter name="xslt" class="solr.XSLTResponseWriter">
+  <queryResponseWriter name="xslt" class="solr.scripting.xslt.XSLTResponseWriter">
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
 
