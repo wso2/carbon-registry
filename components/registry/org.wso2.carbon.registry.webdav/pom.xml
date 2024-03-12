@@ -53,7 +53,7 @@
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                         <Embed-Dependency>
-                            jcr|tika-core|jackrabbit-api|jackrabbit-webdav|slf4j-api|jackrabbit-jcr-commons|jackrabbit-jcr-server|slf4j-log4j12;scope=compile|runtime;inline=false
+                            jcr|tika-core|jackrabbit-api|jackrabbit-webdav|jackrabbit-jcr-commons|jackrabbit-jcr-server;scope=compile|runtime;inline=false
                         </Embed-Dependency>
                     </instructions>
                 </configuration>
