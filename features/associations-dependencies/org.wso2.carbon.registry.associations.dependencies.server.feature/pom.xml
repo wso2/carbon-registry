@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>associations.dependencies-feature</artifactId>
-        <version>4.8.27</version>
+        <version>4.8.28-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
