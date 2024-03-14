@@ -1683,7 +1683,7 @@
         <version.geronimo.specs.geronimo-jpa_2.0_spec>1.0</version.geronimo.specs.geronimo-jpa_2.0_spec>
 
         <!--OpenJPA -->
-        <openjpa.version>2.2.0-wso2v1</openjpa.version>
+        <openjpa.version>2.2.2</openjpa.version>
 
         <!-- Equinox -->
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
