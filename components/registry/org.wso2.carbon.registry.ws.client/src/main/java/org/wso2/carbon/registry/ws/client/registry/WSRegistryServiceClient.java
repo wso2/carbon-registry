@@ -27,10 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyEngine;
-import org.apache.rampart.RampartMessageData;
-import org.apache.rampart.policy.model.CryptoConfig;
-import org.apache.rampart.policy.model.RampartConfig;
-import org.apache.ws.security.components.crypto.Merlin;
 import org.wso2.carbon.authenticator.stub.AuthenticationAdminStub;
 import org.wso2.carbon.authenticator.stub.LogoutAuthenticationExceptionException;
 import org.wso2.carbon.core.common.AuthenticationException;
@@ -232,42 +228,7 @@ public class WSRegistryServiceClient implements Registry {
 		return PolicyEngine.getPolicy(builder.getDocumentElement());
 	}
 
-	public void addSecurityOptions ( String policyPath, String keyStore,String userName, String password) throws AxisFault, FileNotFoundException, XMLStreamException {
-		ServiceClient client = stub._getServiceClient();
 
-		Policy policy = loadPolicy(policyPath);
-
-		Properties merlinProp = new Properties();
-		merlinProp.put("org.apache.ws.security.crypto.merlin.keystore.type", "JKS");
-		merlinProp.put("org.apache.ws.security.crypto.merlin.file",
-		               keyStore);
-
-		merlinProp.put("org.apache.ws.security.crypto.merlin.keystore.password", "wso2carbon");
-
-		CryptoConfig sigCryptoConfig = new CryptoConfig();
-		sigCryptoConfig.setProvider(Merlin.class.getName());
-		sigCryptoConfig.setProp(merlinProp);
-
-		CryptoConfig encCryptoConfig = new CryptoConfig();
-		encCryptoConfig.setProvider(Merlin.class.getName());
-		encCryptoConfig.setProp(merlinProp);
-
-		RampartConfig rampartConfig = new RampartConfig();
-		rampartConfig.setEncryptionUser("wso2carbon");
-		rampartConfig.setUserCertAlias("wso2carbon");
-		rampartConfig.setPwCbClass(PWCBHandler.class.getName());
-		rampartConfig.setSigCryptoConfig(sigCryptoConfig);
-		rampartConfig.setEncrCryptoConfig(encCryptoConfig);
-
-		policy.addAssertion(rampartConfig);
-
-		Options options = client.getOptions();
-		options.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-		options.setUserName(userName);
-		options.setPassword(password);
-
-		client.engageModule("rampart");
-	}
 
 	public Resource newResource() {
 		return new ResourceImpl();

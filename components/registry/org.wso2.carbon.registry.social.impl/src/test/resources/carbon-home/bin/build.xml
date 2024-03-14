@@ -48,9 +48,6 @@
                 <include name="commons-httpclient*.jar"/>
                 <include name="commons-codec*.jar"/>
                 <include name="commons-fileupload*.jar"/>
-                <include name="rampart-policy*.jar"/>
-                <include name="rampart-core*.jar"/>
-                <include name="wss4j*.jar"/>
                 <include name="infinispan-core*.jar"/>
                 <include name="httpcore*.jar"/>
                 <include name="org.wso2.carbon.core*.jar"/>
@@ -76,7 +73,6 @@
                 <include name="commons-io*.jar"/>
                 <include name="compass*.jar"/>
                 <include name="org.wso2.carbon.rm*.jar"/>
-                <include name="rampart-trust*.jar"/>
                 <include name="org.wso2.carbon.security.mgt*.jar"/>
                 <include name="org.wso2.carbon.addressing*.jar"/>
                 <include name="org.wso2.carbon.xfer*.jar"/>
