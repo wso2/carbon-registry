@@ -75,7 +75,6 @@
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.ws.api</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.ws.client</bundleDef>
                                 <bundleDef>org.wso2.carbon.registry:org.wso2.carbon.registry.ws.stub</bundleDef>
-                                 <!--bundleDef>org.apache.rampart:rampart-policy</bundleDef-->
 			     </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.registry.core.server:${carbon.registry.version}</importFeatureDef>
