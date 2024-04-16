@@ -3125,7 +3125,7 @@ function handleUpdateRichText(){
 	if(selected=="rich"){
 		trPlainContent.style.display = "none";
 		textAreaPanel.style.display = "";
-		textContentUpdator.setEditorHTML(trPlainContent.value);
+        textContentUpdator.setEditorHTML(DOMPurify.sanitize(trPlainContent.value));
 		textContentUpdator.saveHTML();
 		textContentUpdator.render();
 	}
