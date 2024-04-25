@@ -40,4 +40,4 @@ jobs:
         with:
           flags: unit_tests
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: wso2/carbon-analytics-common
+          slug: wso2/carbon-registry
