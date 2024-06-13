@@ -23,6 +23,7 @@
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.CustomUIHandler" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ContentBean" %>
+<script type="text/javascript" src="../resources/js/purify.js"></script>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
 
 <%
