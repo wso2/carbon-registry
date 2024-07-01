@@ -24,6 +24,7 @@ import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.registry.extensions.ui.clients.ResourceServiceClient;
 import org.wso2.carbon.ui.CarbonUIMessage;
+import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.ui.transports.fileupload.AbstractFileUploadExecutor;
 import org.wso2.carbon.utils.FileItemData;
 import org.wso2.carbon.utils.ServerConstants;
@@ -53,8 +54,8 @@ public class AddExtensionProcessor extends AbstractFileUploadExecutor {
             log.error(msg);
 
             CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
-            response.sendRedirect(
-                    getContextRoot(request) + "/" + webContext + "/admin/error.jsp");
+            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                    webContext + "/admin/error.jsp", request));
 
             return false;
         }
@@ -89,9 +90,11 @@ public class AddExtensionProcessor extends AbstractFileUploadExecutor {
             String msg = "Successfully uploaded extension.";
             if (redirect == null) {
                 CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.INFO, request);
-                response.sendRedirect(getContextRoot(request) + "/" + webContext + "/admin/index.jsp");
+                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                        webContext + "/admin/index.jsp", request));
             } else {
-                response.sendRedirect(getContextRoot(request) + "/" + webContext + "/" + redirect);
+                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                        webContext + "/" + redirect, request));
             }
             return true;
 
@@ -102,12 +105,12 @@ public class AddExtensionProcessor extends AbstractFileUploadExecutor {
 
             if (errorRedirect == null) {
                 CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
-                response.sendRedirect(
-                        getContextRoot(request) + "/" + webContext + "/admin/error.jsp");
+                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                        webContext + "/admin/error.jsp", request));
             } else {
-                response.sendRedirect(
-                        getContextRoot(request) + "/" + webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
-                                == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"));
+                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                        webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
+                                == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"), request));
             }
             return false;
         } catch (RuntimeException e) {
@@ -132,12 +135,12 @@ public class AddExtensionProcessor extends AbstractFileUploadExecutor {
             throws IOException {
         CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
         if (errorRedirect == null) {
-            response.sendRedirect(
-                    getContextRoot(request) + "/" + webContext + "/admin/error.jsp");
+            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                    webContext + "/admin/error.jsp", request));
         } else {
-            response.sendRedirect(
-                    getContextRoot(request) + "/" + webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
-                            == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"));
+            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
+                    webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
+                            == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"), request));
         }
     }
 }
