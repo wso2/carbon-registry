@@ -1,20 +1,20 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.wso2.carbon.registry.social.impl.test.people.userprofile;
 
 import org.wso2.carbon.user.core.claim.Claim;
@@ -34,6 +34,8 @@ public class ClaimTestUtil {
     public static final String CLAIM_URI6 = "http://wso2.org/claims/lastname";
     public static final String CLAIM_URI7 = "http://wso2.org/claims/nickname";
     public static final String CLAIM_URI8 = "http://wso2.org/claims/displayname";
+    public static final String CLAIM_URI9 = "http://wso2.org/claims/userid";
+    public static final String CLAIM_URI10 = "http://wso2.org/claims/username";
     public static final String HOME_PROFILE_NAME = "HomeProfile";
 
     public static Map<String, ClaimMapping> getClaimTestData() {
@@ -141,6 +143,30 @@ public class ClaimTestUtil {
         cm8.setClaim(claim8);
         cm8.setMappedAttribute("attr8");
         claims.put(CLAIM_URI8, cm8);
+
+        Claim claim9 = new Claim();
+        claim9.setClaimUri(CLAIM_URI9);
+        claim9.setDescription("Unique ID of the user");
+        claim9.setDialectURI("http://wso2.org/");
+        claim9.setDisplayTag("User ID");
+        claim9.setRequired(true);
+        claim9.setSupportedByDefault(true);
+        ClaimMapping cm9 = new ClaimMapping();
+        cm9.setClaim(claim9);
+        cm9.setMappedAttribute("scimId");
+        claims.put(CLAIM_URI9, cm9);
+
+        Claim claim10 = new Claim();
+        claim10.setClaimUri(CLAIM_URI10);
+        claim10.setDescription("Unique ID of the user");
+        claim10.setDialectURI("http://wso2.org/");
+        claim10.setDisplayTag("User ID");
+        claim10.setRequired(true);
+        claim10.setSupportedByDefault(true);
+        ClaimMapping cm10 = new ClaimMapping();
+        cm10.setClaim(claim10);
+        cm10.setMappedAttribute("scimId");
+        claims.put(CLAIM_URI10, cm10);
 
         return claims;
 
