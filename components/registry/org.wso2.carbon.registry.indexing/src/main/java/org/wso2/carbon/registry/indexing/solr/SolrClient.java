@@ -58,6 +58,7 @@ import org.wso2.carbon.registry.indexing.service.RxtUnboundedFieldManagerService
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -764,7 +765,7 @@ public class SolrClient {
                 userName = CarbonConstants.REGISTRY_ANONNYMOUS_USERNAME;
             }
 
-            String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(userName);
+            String[] userRoles = realm.getUserStoreManager().getRoleListOfUser(MultitenantUtils.getTenantAwareUsername(userName));
 
             if (skipRolesByRegex != null) {
                 List<String> filteredUserRoles = new ArrayList<>(Arrays.asList(userRoles));
