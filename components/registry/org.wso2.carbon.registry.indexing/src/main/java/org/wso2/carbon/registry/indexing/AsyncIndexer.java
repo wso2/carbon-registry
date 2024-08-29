@@ -26,6 +26,7 @@ import org.wso2.carbon.registry.core.config.RegistryContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.indexing.indexer.IndexDocumentCreator;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
+import org.wso2.carbon.registry.indexing.indexer.IndexerPreProcessor;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
 
@@ -240,6 +241,12 @@ public class AsyncIndexer implements Runnable {
                     Resource resource;
                     //Check whether resource exists before indexing the resource
                     if (registry.resourceExists(resourcePath) && (resource = registry.get(resourcePath)) != null) {
+                        
+                        // Process resource before index document is created
+                        if (Utils.getIndexerPreprocessor() != null) {
+                            IndexerPreProcessor preprocessor = Utils.getIndexerPreprocessor();
+                            preprocessor.processResource(resource);
+                        }
                         // Create the IndexDocument
                         IndexDocumentCreator indexDocumentCreator = new IndexDocumentCreator(file2Index, resource);
                         indexDocumentCreator.createIndexDocument();
