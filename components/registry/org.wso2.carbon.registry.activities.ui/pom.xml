@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -50,7 +50,6 @@
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.registry.activities.stub.*;version="${carbon.registry.package.import.version.range}",
-                            org.apache.lucene.*,
                             *;resolution:=optional
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>

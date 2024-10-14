@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -118,6 +118,18 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
         </dependency>
     </dependencies>
     <build>

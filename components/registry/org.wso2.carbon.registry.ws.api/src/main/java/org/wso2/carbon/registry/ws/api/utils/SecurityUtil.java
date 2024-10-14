@@ -25,8 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyEngine;
-import org.apache.rampart.policy.model.CryptoConfig;
-import org.apache.rampart.policy.model.RampartConfig;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.base.ServerConfiguration;
 
@@ -90,51 +88,7 @@ public class SecurityUtil {
 	            "            </wsp:ExactlyOne>" +
 	            "        </wsp:Policy>";
 
-	    @Deprecated
-	    public static Policy getDefaultRampartConfig() {
-
-	        //Extract the primary keystore information from server configuration
-	        ServerConfiguration serverConfig = ServerConfiguration.getInstance();
-	        String keyStore = serverConfig.getFirstProperty("Security.KeyStore.Location");
-	        String keyStoreType = serverConfig.getFirstProperty("Security.KeyStore.Type");
-	        String keyStorePassword = serverConfig.getFirstProperty("Security.KeyStore.Password");
-	        String privateKeyAlias = serverConfig.getFirstProperty("Security.KeyStore.KeyAlias");
-	        String privateKeyPassword = serverConfig.getFirstProperty("Security.KeyStore.KeyPassword");
-
-	        //Populate Rampart Configuration
-	        RampartConfig rampartConfig = new RampartConfig();
-	        rampartConfig.setUser(privateKeyAlias);
-	        //TODO use a registry based callback handler
-	        rampartConfig.setPwCbClass("org.wso2.carbon.registry.ws.api.utils.InMemoryPasswordCallbackHandler");
-
-	        //Set the private key alias and private key password in the password callback handler
-	        InMemoryPasswordCallbackHandler.addUser(privateKeyAlias, privateKeyPassword);
-
-	        CryptoConfig sigCrypto = new CryptoConfig();
-	        Properties props = new Properties();
-	        sigCrypto.setProvider("org.apache.ws.security.components.crypto.Merlin");
-	        props.setProperty("org.apache.ws.security.crypto.merlin.keystore.type", keyStoreType);
-	        props.setProperty("org.apache.ws.security.crypto.merlin.file", keyStore);
-	        props.setProperty("org.apache.ws.security.crypto.merlin.keystore.password", keyStorePassword);
-	        sigCrypto.setProp(props);
-
-	        rampartConfig.setSigCryptoConfig(sigCrypto);
-	        Policy policy = new Policy();
-	        policy.addAssertion(rampartConfig);
-	        return policy;
-
-	    }
-	    
-	    public static void addUser() {
-	    	//Extract the primary keystore information from server configuration
-	        ServerConfiguration serverConfig = ServerConfiguration.getInstance();
-	        String privateKeyAlias = serverConfig.getFirstProperty("Security.KeyStore.KeyAlias");
-	        String privateKeyPassword = serverConfig.getFirstProperty("Security.KeyStore.KeyPassword");
-	    	//Set the private key alias and private key password in the password callback handler
-	        InMemoryPasswordCallbackHandler.addUser(privateKeyAlias, privateKeyPassword);
-	    }
-
-	    public static Policy getSignOnlyPolicy() throws RegistryException {
+	public static Policy getSignOnlyPolicy() throws RegistryException {
 
 	        Policy policy;
 

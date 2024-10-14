@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry.core-feature</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -95,8 +95,6 @@
                                 <includedFeatureDef>org.wso2.carbon.registry:org.wso2.carbon.registry.core.server.feature
                                 </includedFeatureDef>
                                 <includedFeatureDef>org.wso2.carbon.registry:org.wso2.carbon.registry.core.ui.feature
-                                </includedFeatureDef>
-                                <includedFeatureDef>org.wso2.carbon.registry:org.wso2.carbon.registry.search.ui.feature
                                 </includedFeatureDef>
                             </includedFeatures>
                         </configuration>

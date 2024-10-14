@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,7 +49,6 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.lucene.*,
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>

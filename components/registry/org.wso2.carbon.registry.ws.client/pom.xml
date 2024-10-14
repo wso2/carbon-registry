@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,7 +49,6 @@
                             javax.servlet;version="${imp.pkg.version.javax.servlet}",
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
-                            org.apache.lucene.*,
                             org.wso2.carbon.authenticator.stub.*;version="${carbon.kernel.package.import.version.range}",
                             org.wso2.carbon.registry.ws.stub.*;version="${carbon.registry.package.import.version.range}",
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
@@ -65,36 +64,6 @@
 	<dependency>
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
-        </dependency>
-	<dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-core</artifactId>
-        <exclusions>
-            <exclusion>
-                <groupId>org.slf4j</groupId>
-                <artifactId>log4j-over-slf4j</artifactId>
-            </exclusion>
-        </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-policy</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-trust</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -153,10 +122,6 @@
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.security.wso2</groupId>
-            <artifactId>wss4j</artifactId>
         </dependency>
     <dependency>
             <groupId>org.apache.felix</groupId>

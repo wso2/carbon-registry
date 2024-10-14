@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -73,11 +73,14 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <argLine>-XX:-UseSplitVerifier ${argLine} -enableassertions -noverify</argLine>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <argLine>
+                        --add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED
+                        --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED
+                    </argLine>
                     <classpathDependencyExcludes>
                         <classpathDependencyExclude>org.ops4j.pax.logging</classpathDependencyExclude>
                     </classpathDependencyExcludes>
@@ -113,8 +116,12 @@
             <artifactId>pax-logging-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.poi.wso2</groupId>
+            <groupId>org.wso2.orbit.org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -153,16 +160,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.orbit.org.apache.lucene</groupId>
-            <artifactId>lucene</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.noggit</groupId>
             <artifactId>noggit</artifactId>
             <scope>test</scope>
         </dependency>
-    <dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
             <scope>provided</scope>

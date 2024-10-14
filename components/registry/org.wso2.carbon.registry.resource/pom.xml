@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -55,7 +55,6 @@
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.commons.io.*,
-                            org.apache.lucene.*,
                             org.apache.commons.logging.*; version="${import.package.version.commons.logging}",
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional

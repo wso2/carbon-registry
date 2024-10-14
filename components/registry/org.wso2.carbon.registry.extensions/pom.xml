@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -159,7 +159,11 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.wso2.carbon.registry</groupId>
             <artifactId>org.wso2.carbon.registry.common</artifactId>

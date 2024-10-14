@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -50,12 +50,10 @@
                                         <plugin>
                                             <groupId>org.apache.maven.plugins</groupId>
                                             <artifactId>maven-javadoc-plugin</artifactId>
-                                            <version>2.9</version>
                                             <configuration>
                                                 <additionalparam>-Xdoclint:none</additionalparam>
-                                                <links>
-                                                    <link>http://java.sun.com/j2se/1.5/docs/api/</link>
-                                                </links>
+                                                <doclint>none</doclint>
+                                                <source>1.8</source>
                                             </configuration>
                                             <reports>
                                                 <report>javadoc</report>
@@ -81,7 +79,6 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            !org.apache.lucene.*,
                             !javax.servlet,
                             !javax.servlet.http,
                             org.wso2.carbon.registry.ws.api.*;
@@ -91,8 +88,6 @@
                             org.apache.axis2.*; version="${axis2.osgi.version.range}",
                             org.apache.commons.logging.*; version="${import.package.version.commons.logging}",
                             org.apache.neethi.*,
-                            org.apache.rampart.policy.model.*,
-                            org.apache.ws.security.*; version="[${wss4j.version}, 2)",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.wso2.carbon.utils.*; version="${carbon.kernel.package.import.version.range}",
                             !javax.xml.namespace,
@@ -126,11 +121,9 @@
                                 <plugin>
                                     <groupId>org.apache.maven.plugins</groupId>
                                     <artifactId>maven-javadoc-plugin</artifactId>
-                                    <version>2.9</version>
                                     <configuration>
-                                        <links>
-                                            <link>http://java.sun.com/j2se/1.5/docs/api/</link>
-                                        </links>
+                                        <doclint>none</doclint>
+                                        <source>1.8</source>
                                     </configuration>
                                     <reports>
                                         <report>javadoc</report>
@@ -195,20 +188,7 @@
     </reporting>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.ws.security.wso2</groupId>
-            <artifactId>wss4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>log4j-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.core</artifactId>

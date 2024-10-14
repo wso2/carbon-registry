@@ -3093,7 +3093,7 @@ function handleRichText(){
 	if(selected=="rich"){
 		trPlainContent.style.display = "none";
 		textAreaPanel.style.display = "";
-		textContentEditor.setEditorHTML(trPlainContent.value);
+		textContentEditor.setEditorHTML(DOMPurify.sanitize(trPlainContent.value));
 		textContentEditor.saveHTML();
 		textContentEditor.render();
 	}

@@ -20,14 +20,14 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>1.2</version>
+        <version>1.3</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.registry</groupId>
     <artifactId>carbon-registry</artifactId>
     <packaging>pom</packaging>
-    <version>4.8.25-SNAPSHOT</version>
+    <version>4.8.37-SNAPSHOT</version>
     <name>WSO2 Carbon - Platform Aggregator Pom</name>
     <url>http://wso2.org</url>
 
@@ -232,6 +232,16 @@
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.core.common</artifactId>
                 <version>${carbon.kernel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-log4j2</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -367,6 +377,10 @@
                         <groupId>org.apache.abdera.wso2</groupId>
                         <artifactId>abdera</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -446,6 +460,10 @@
                 <artifactId>org.wso2.carbon.registry.extensions</artifactId>
                 <version>${carbon.registry.version}</version>
                 <exclusions>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
                     <exclusion>
                         <groupId>org.apache.ant</groupId>
                         <artifactId>ant</artifactId>
@@ -591,6 +609,16 @@
                 <groupId>org.wso2.carbon.registry</groupId>
                 <artifactId>org.wso2.carbon.registry.common</artifactId>
                 <version>${carbon.registry.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-log4j2</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.registry</groupId>
@@ -1171,44 +1199,8 @@
                 <version>${orbit.version.infinispan}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.rampart</groupId>
-                <artifactId>rampart-core</artifactId>
-                <version>${rampart.wso2.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>log4j-over-slf4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.rampart</groupId>
-                <artifactId>rampart-policy</artifactId>
-                <version>${rampart.wso2.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>log4j-over-slf4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.rampart</groupId>
-                <artifactId>rampart-trust</artifactId>
-                <version>${rampart.wso2.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>log4j-over-slf4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.ws.security.wso2</groupId>
-                <artifactId>wss4j</artifactId>
-                <version>${wss4j.version}</version>
-            </dependency>
+
+
 
             <!-- Email verification dependencies -->
             <dependency>
@@ -1284,11 +1276,6 @@
                 <version>${version.solr}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.org.apache.lucene</groupId>
-                <artifactId>lucene</artifactId>
-                <version>${version.lucene}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.wso2.orbit.org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${version.httpclient}</version>
@@ -1299,8 +1286,13 @@
                 <version>${version.httpmime}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.poi.wso2</groupId>
+                <groupId>org.wso2.orbit.org.apache.poi</groupId>
                 <artifactId>poi-scratchpad</artifactId>
+                <version>${apache.poi.wso2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.orbit.org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
                 <version>${apache.poi.wso2.version}</version>
             </dependency>
             <dependency>
@@ -1392,6 +1384,21 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
                 <version>${apache.felix.scr.ds.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -1583,6 +1590,7 @@
                         <configuration>
                             <!--This parameter disables doclint-->
                             <doclint>none</doclint>
+                            <source>1.8</source>
                         </configuration>
                     </execution>
                 </executions>
@@ -1611,7 +1619,6 @@
         <axis2.osgi.version.range>[1.6.1, 1.7.0)</axis2.osgi.version.range>
         <orbit.version.wsdl4j>1.6.2.wso2v4</orbit.version.wsdl4j>
         <orbit.version.neethi>2.0.4.wso2v5</orbit.version.neethi>
-        <rampart.wso2.version>1.6.1-wso2v41</rampart.wso2.version>
 
         <!-- Axiom Version -->
         <axiom.version>1.2.11-wso2v16</axiom.version>
@@ -1631,9 +1638,8 @@
         <google.guava.wso2.version>33.0.0-jre</google.guava.wso2.version>
         <google.guava.failureaccess.version>1.0.2</google.guava.failureaccess.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>8.11.1.wso2v11</version.solr>
-        <version.solr.import.version.range>[8.11.0,8.12.0)</version.solr.import.version.range>
-        <version.lucene>8.11.1.wso2v1</version.lucene>
+        <version.solr>9.5.0.wso2v7</version.solr>
+        <version.solr.import.version.range>[9.0.0,10.0.0)</version.solr.import.version.range>
         <version.httpclient>4.5.13.wso2v1</version.httpclient>
         <version.httpmime>4.5.13.wso2v1</version.httpmime>
         <version.httpcore>4.4.14.wso2v1</version.httpcore>
@@ -1642,8 +1648,7 @@
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
         <derby.version>10.4.2.0</derby.version>
         <javamail.version>1.4</javamail.version>
-        <wss4j.version>1.5.11.wso2v11</wss4j.version>
-        <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
+        <com.google.code.gson.version>2.10.1</com.google.code.gson.version>
         <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
         <jetty.version>6.1.5</jetty.version>
         <xml-apis.version>1.3.04</xml-apis.version>
@@ -1680,11 +1685,6 @@
         <!--OpenJPA -->
         <openjpa.version>2.2.0-wso2v1</openjpa.version>
 
-        <!-- Rampart -->
-        <rampart.mar.version>1.6.1-wso2v40</rampart.mar.version>
-        <rampart.osgi.version>1.6.1-wso2v40</rampart.osgi.version>
-        <orbit.version.rampart>1.6.1-wso2v40</orbit.version.rampart>
-
         <!-- Equinox -->
         <version.equinox.osgi.services>3.3.100.v20120522-1822</version.equinox.osgi.services>
         <version.equinox.osgi>3.8.1.v20120830-144521</version.equinox.osgi>
@@ -1694,7 +1694,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
-        <commons-io.wso2.version>2.7.0.wso2v1</commons-io.wso2.version>
+        <commons-io.wso2.version>2.15.1.wso2v1</commons-io.wso2.version>
         <commons-fileupload.version>1.1.1</commons-fileupload.version>
         <orbit.version.commons.httpclient>3.1.0.wso2v6</orbit.version.commons.httpclient>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
@@ -1702,7 +1702,7 @@
         <jackson.version>1.9.13</jackson.version>
         <amber.version>0.22.1358727-wso2v2</amber.version>
         <import.package.version.commons.logging>[1.2.0,2.0.0)</import.package.version.commons.logging>
-        <apache.poi.wso2.version>3.9.0.wso2v1</apache.poi.wso2.version>
+        <apache.poi.wso2.version>5.2.5.wso2v1</apache.poi.wso2.version>
 
         <!-- Pax logging -->
         <pax.logging.api.version>1.10.1</pax.logging.api.version>
@@ -1715,19 +1715,20 @@
         <orbit.version.geronimo-jms_1.1_spec>1.1.0.wso2v1</orbit.version.geronimo-jms_1.1_spec>
 
         <!-- Carbon Registry -->
-        <carbon.registry.version>4.8.25-SNAPSHOT</carbon.registry.version>
+        <carbon.registry.version>4.8.37-SNAPSHOT</carbon.registry.version>
         <carbon.registry.metadata.version>1.0.1</carbon.registry.metadata.version>
         <carbon.registry.package.import.version.range>[4.7.0, 5.0.0)
         </carbon.registry.package.import.version.range>
         <carbon.registry.package.export.version>${carbon.registry.version}</carbon.registry.package.export.version>
         <encoder.wso2.version>1.2.0.wso2v1</encoder.wso2.version>
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>2.0.12</slf4j.version>
         <mockito.version>2.4.2</mockito.version>
 
         <project.scm.id>wso2-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <surefire.version>2.16</surefire.version>
+        <jaxb.version>2.3.0</jaxb.version>
         <test.framework.version>4.4.3</test.framework.version>
         <jacoco.agent.version>0.8.2</jacoco.agent.version>
         <testng.verson>6.1.1</testng.verson>

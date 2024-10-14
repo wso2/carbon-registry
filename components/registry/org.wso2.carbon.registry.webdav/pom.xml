@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.registry</groupId>
         <artifactId>registry</artifactId>
-        <version>4.8.25-SNAPSHOT</version>
+        <version>4.8.37-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -53,7 +53,7 @@
                         </Import-Package>
                         <Carbon-Component>UIBundle</Carbon-Component>
                         <Embed-Dependency>
-                            jcr|tika-core|jackrabbit-api|jackrabbit-webdav|slf4j-api|jackrabbit-jcr-commons|jackrabbit-jcr-server|slf4j-log4j12;scope=compile|runtime;inline=false
+                            jcr|tika-core|jackrabbit-api|jackrabbit-webdav|jackrabbit-jcr-commons|jackrabbit-jcr-server;scope=compile|runtime;inline=false
                         </Embed-Dependency>
                     </instructions>
                 </configuration>
