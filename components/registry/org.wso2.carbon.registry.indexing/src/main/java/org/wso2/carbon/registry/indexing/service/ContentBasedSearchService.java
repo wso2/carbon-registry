@@ -164,8 +164,12 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
         }
         SolrDocumentList results = new SolrDocumentList();
         try {
-            results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes) :
-                    client.query(searchQuery, registry.getTenantId());
+            if (searchQuery != null && attributes.size() > 0) {
+                results = client.query(searchQuery, attributes, registry.getTenantId());
+            } else {
+                results = attributes.size() > 0 ? client.query(registry.getTenantId(), attributes)
+                        : client.query(searchQuery, registry.getTenantId());
+            }
         } catch (SolrException e) {
             // catching the solr exception to avoid blank pages for invalid solr query,
             // so that it will return empty list and log the error message.
@@ -278,6 +282,11 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
     public SearchResultsBean searchByAttribute(Map<String, String> attributes,
                                            UserRegistry registry) throws IndexerException, RegistryException {
         return searchContentInternal(null, attributes, registry);
+    }
+    
+    public SearchResultsBean searchByAttribute(String searchQuery, Map<String, String> attributes,
+            UserRegistry registry) throws IndexerException, RegistryException {
+        return searchContentInternal(searchQuery, attributes, registry);
     }
 
     public void restartIndexing() throws RegistryException {
