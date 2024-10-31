@@ -22,6 +22,8 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ResourceTreeEntryBean" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+
 <%
     String treeNavigationPath = request.getParameter("treeNavigationPath");
     String reference = request.getParameter("reference");
@@ -60,7 +62,7 @@
     </jsp:include>
     <% if (treeNavigationPath != null && !treeNavigationPath.equals("") && reference != null) {
                 Stack<String> pathStack = new Stack<String>();
-                String path = treeNavigationPath;
+                String path = Encode.forJavaScript(Encode.forHtml(treeNavigationPath));
                 if (!path.equals("/")) {
                     boolean isCollection = false;
                     try {
