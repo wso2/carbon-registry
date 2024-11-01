@@ -190,11 +190,11 @@
                         <div class="tabview">
                             <a id="treeView" title="<fmt:message key="tree.view"/>"
                                class="treeView-<% if(viewType.equals("std")){ %>not<% }%>Selected"
-                               onclick="showHideTreeView('<%=(request.getParameter("path") == null) ? "" : request.getParameter("path")%>',this)">Tree
+                               onclick="showHideTreeView('<%=(request.getParameter("path") == null) ? "" : Encode.forJavaScript(Encode.forHtml(request.getParameter("path")))%>',this)">Tree
                                 view</a>
                             <a id="stdView" title="<fmt:message key="detail.view"/>"
                                class="stdView-<% if(viewType.equals("tree")){ %>not<% }%>Selected"
-                               onclick="showHideTreeView('<%=(request.getParameter("path") == null) ? "" : request.getParameter("path")%>',this)">Detail
+                               onclick="showHideTreeView('<%=(request.getParameter("path") == null) ? "" : Encode.forJavaScript(Encode.forHtml(request.getParameter("path")))%>',this)">Detail
                                 view</a>
 
                         </div>
