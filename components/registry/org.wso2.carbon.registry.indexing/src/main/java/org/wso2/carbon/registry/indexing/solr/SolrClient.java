@@ -562,6 +562,10 @@ public class SolrClient {
     public SolrDocumentList query(int tenantId, Map<String, String> fields) throws SolrException {
         return query("[* TO *]", tenantId, fields);
     }
+    
+    public SolrDocumentList query(String keywords, Map<String, String> fields, int tenantId) throws SolrException {
+        return query(keywords, tenantId, fields);
+    }
 
     /**
      * Method to create the solr query for indexing.
@@ -586,6 +590,23 @@ public class SolrClient {
                 fields.remove(IndexingConstants.FIELD_CONTENT);
             } else if (keywords.equals("[* TO *]")) {
                 query = new SolrQuery("* TO *");
+            } else if (keywords.contains("q=") && keywords.contains("fq=")){
+                String q = null;
+                List<String> fqList = new ArrayList<String>();
+                String[] splitQueryArray = keywords.split("&");
+                for (int i = 0; i < splitQueryArray.length; i++) {
+                    String splitQuery = splitQueryArray[i];
+                    String[] extractedQuery = splitQuery.split("=");
+                    if ("q".equals(extractedQuery[0])) {
+                        q = extractedQuery[1];
+                    } else if ("fq".equals(extractedQuery[0])) {
+                        fqList.add(extractedQuery[1]);
+                    }
+                }
+                query = new SolrQuery(q);
+                for (String fq : fqList) {
+                    query.addFilterQuery(fq);
+                }
             } else {
                 //convert the search query to solr readable fields
                 String solrQuery = convertFieldNames(keywords);
