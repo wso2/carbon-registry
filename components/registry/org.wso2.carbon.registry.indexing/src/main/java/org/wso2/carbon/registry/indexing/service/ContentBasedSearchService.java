@@ -180,11 +180,14 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
             log.debug("result received " + results);
 
         List<ResourceData> filteredResults = new ArrayList<ResourceData>();
-        // check the authorization again for the filtered results
-        for (SolrDocument solrDocument : results) {
-            String path = getPathFromId((String) solrDocument.getFirstValue("id"));
-            if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
-                filteredResults.add(loadResourceByPath(registry, path));
+
+        if (results != null) {
+            // check the authorization again for the filtered results
+            for (SolrDocument solrDocument : results) {
+                String path = getPathFromId((String) solrDocument.getFirstValue("id"));
+                if ((isAuthorized(registry, path, ActionConstants.GET)) && (registry.resourceExists(path))) {
+                    filteredResults.add(loadResourceByPath(registry, path));
+                }
             }
         }
 
