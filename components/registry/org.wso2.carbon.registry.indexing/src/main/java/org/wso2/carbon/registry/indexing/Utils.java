@@ -30,6 +30,7 @@ import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.config.RegistryConfigurationProcessor;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.indexing.indexer.IndexerPreProcessor;
 import org.wso2.carbon.registry.indexing.internal.IndexingServiceComponent;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
@@ -57,6 +58,8 @@ public class Utils {
     private static String remoteTopicHeaderNS;
 
     private static String remoteSubscriptionStoreContext;
+    
+    private static IndexerPreProcessor preprocessor;
 
     public static void setRegistryService(RegistryService service) {
         registryService = service;
@@ -179,5 +182,13 @@ public class Utils {
             throw new RegistryException(msg);
         }
         return false;
+    }
+
+    public static IndexerPreProcessor getIndexerPreprocessor() {
+        return preprocessor;
+    }
+
+    public static void setIndexerPreprocessor(IndexerPreProcessor preprocessor) {
+        Utils.preprocessor = preprocessor;
     }
 }
