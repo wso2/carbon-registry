@@ -43,7 +43,6 @@ import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.*;
 
@@ -304,7 +303,7 @@ public class ContentBasedSearchService extends RegistryAbstractAdmin
 		String userName = getLoggedInUserName();
 
 		try {
-			if (!userRealm.getAuthorizationManager().isUserAuthorized(MultitenantUtils.getTenantAwareUsername(userName),
+			if (!userRealm.getAuthorizationManager().isUserAuthorized(userName,
 					resourcePath, action)) {
 				return false;
 			}
