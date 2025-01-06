@@ -34,6 +34,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
+import org.wso2.carbon.registry.indexing.indexer.IndexerPreProcessor;
 import org.wso2.carbon.registry.indexing.service.*;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
@@ -310,6 +311,21 @@ public class IndexingServiceComponent {
 
     public static boolean canIndexTenant(int tenantId) {
         return tenantId == MultitenantConstants.SUPER_TENANT_ID || initializedTenants.containsKey(tenantId);
+    }
+    
+    @Reference(
+            name = "registry.indexer.preprocessor", 
+            service = org.wso2.carbon.registry.indexing.indexer.IndexerPreProcessor.class, 
+            cardinality = ReferenceCardinality.OPTIONAL, 
+            policy = ReferencePolicy.DYNAMIC, 
+            unbind = "unsetIndexerPreProcessor")
+    protected void setIndexerPreProcessor(IndexerPreProcessor preprocesor) {
+        Utils.setIndexerPreprocessor(preprocesor);
+    }
+
+    protected void unsetIndexerPreProcessor(IndexerPreProcessor preprocesor) {
+        stopIndexing();
+        Utils.setIndexerPreprocessor(null);
     }
 }
 
