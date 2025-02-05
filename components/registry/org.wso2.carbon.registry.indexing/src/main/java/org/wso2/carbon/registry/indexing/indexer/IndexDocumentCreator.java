@@ -160,7 +160,15 @@ public class IndexDocumentCreator {
             }
         }
         if (propertyList.size() > 0) {
-            attributes.put(IndexingConstants.FIELD_PROPERTY_VALUES, propertyList);
+            if (attributes.containsKey(IndexingConstants.FIELD_PROPERTY_VALUES)) {
+                List<String> existingList = attributes.get(IndexingConstants.FIELD_PROPERTY_VALUES);
+                List<String> combinedList = new ArrayList<>();
+                combinedList.addAll(existingList);
+                combinedList.addAll(propertyList);
+                attributes.put(IndexingConstants.FIELD_PROPERTY_VALUES, combinedList);
+            } else {
+                attributes.put(IndexingConstants.FIELD_PROPERTY_VALUES, propertyList);
+            } 
         }
     }
 
