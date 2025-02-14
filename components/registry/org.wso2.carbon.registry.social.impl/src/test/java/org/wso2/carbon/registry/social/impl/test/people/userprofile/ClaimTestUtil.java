@@ -34,8 +34,6 @@ public class ClaimTestUtil {
     public static final String CLAIM_URI6 = "http://wso2.org/claims/lastname";
     public static final String CLAIM_URI7 = "http://wso2.org/claims/nickname";
     public static final String CLAIM_URI8 = "http://wso2.org/claims/displayname";
-    public static final String CLAIM_URI9 = "http://wso2.org/claims/userid";
-    public static final String CLAIM_URI10 = "http://wso2.org/claims/username";
     public static final String HOME_PROFILE_NAME = "HomeProfile";
 
     public static Map<String, ClaimMapping> getClaimTestData() {
@@ -143,30 +141,6 @@ public class ClaimTestUtil {
         cm8.setClaim(claim8);
         cm8.setMappedAttribute("attr8");
         claims.put(CLAIM_URI8, cm8);
-
-        Claim claim9 = new Claim();
-        claim9.setClaimUri(CLAIM_URI9);
-        claim9.setDescription("Unique ID of the user");
-        claim9.setDialectURI("http://wso2.org/");
-        claim9.setDisplayTag("User ID");
-        claim9.setRequired(true);
-        claim9.setSupportedByDefault(true);
-        ClaimMapping cm9 = new ClaimMapping();
-        cm9.setClaim(claim9);
-        cm9.setMappedAttribute("scimId");
-        claims.put(CLAIM_URI9, cm9);
-
-        Claim claim10 = new Claim();
-        claim10.setClaimUri(CLAIM_URI10);
-        claim10.setDescription("Unique ID of the user");
-        claim10.setDialectURI("http://wso2.org/");
-        claim10.setDisplayTag("User ID");
-        claim10.setRequired(true);
-        claim10.setSupportedByDefault(true);
-        ClaimMapping cm10 = new ClaimMapping();
-        cm10.setClaim(claim10);
-        cm10.setMappedAttribute("scimId");
-        claims.put(CLAIM_URI10, cm10);
 
         return claims;
 

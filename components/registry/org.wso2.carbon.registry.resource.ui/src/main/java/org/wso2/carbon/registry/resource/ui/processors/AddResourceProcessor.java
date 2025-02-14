@@ -27,7 +27,6 @@ import org.wso2.carbon.server.admin.common.ServerData;
 import org.wso2.carbon.server.admin.ui.ServerAdminClient;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient;
-import org.wso2.carbon.ui.CarbonUIUtil;
 import org.wso2.carbon.ui.transports.fileupload.AbstractFileUploadExecutor;
 import org.wso2.carbon.ui.CarbonUIMessage;
 import org.wso2.carbon.ui.transports.fileupload.FileSizeLimitExceededException;
@@ -63,9 +62,8 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
             log.error(msg);
 
             CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
-            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                    webContext + "/resources/resource.jsp?region=region3&item=resource_browser" +
-                    "_menu&errorMsg=" + msg, request));
+            response.sendRedirect(
+                    getContextRoot(request) + "/" + webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&errorMsg=" + msg);
 
             return false;
         }
@@ -82,15 +80,14 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
                     String msg = "File upload failed. " + errorAttribute;
                     if (errorRedirect == null) {
                         CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
-                        response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request),
-                                "/" + webContext + "/resources/resource.jsp?region=region3&item" +
-                                "=resource_browser_menu&errorMsg=" + msg, request));
+                        response.sendRedirect(
+                                getContextRoot(request) + "/" + webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&errorMsg=" + msg);
                     } else {
-                        response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request),
-                                "/" + webContext + "/" + errorRedirect +
+                        response.sendRedirect(
+                                getContextRoot(request) + "/" + webContext + "/" + errorRedirect +
                                         (errorRedirect.indexOf("?")
                                                 == -1 ? "?" : "&") + "msg=" +
-                                        URLEncoder.encode(msg, "UTF-8"), request));
+                                        URLEncoder.encode(msg, "UTF-8"));
                     }
                     return false;
                 }
@@ -188,12 +185,10 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
                 } else {
                     parentPath = URLEncoder.encode(parentPath, "UTF-8");
                 }
-                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                        webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&path=" +
-                        parentPath, request));
+                response.sendRedirect(getContextRoot(request) + "/" + webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&path=" +
+                        parentPath);
             } else {
-                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                        webContext + "/" + redirect, request));
+                response.sendRedirect(getContextRoot(request) + "/" + webContext + "/" + redirect);
             }
             return true;
 
@@ -203,13 +198,12 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
             log.error("File upload failed. ", e);
             if (errorRedirect == null) {
                 CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
-                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                        webContext + "/resources/resource.jsp?region=region3&item=resource_browser_" +
-                        "menu&errorMsg=" + msg, request));
+                response.sendRedirect(
+                        getContextRoot(request) + "/" + webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&errorMsg=" + msg);
             } else {
-                response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                        webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
-                        == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"), request));
+                response.sendRedirect(
+                        getContextRoot(request) + "/" + webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
+                                == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"));
             }
             return false;
         } catch (RuntimeException e) {
@@ -244,13 +238,12 @@ public class AddResourceProcessor extends AbstractFileUploadExecutor {
             throws IOException {
         CarbonUIMessage.sendCarbonUIMessage(msg, CarbonUIMessage.ERROR, request);
         if (errorRedirect == null) {
-            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                    webContext + "/resources/resource.jsp?region=region3&item=resource_browser" +
-                    "_menu&errorMsg=" + msg, request));
+            response.sendRedirect(
+                    getContextRoot(request) + "/" + webContext + "/resources/resource.jsp?region=region3&item=resource_browser_menu&errorMsg=" + msg);
         } else {
-            response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL(getContextRoot(request), "/" +
-                    webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
-                            == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"), request));
+            response.sendRedirect(
+                    getContextRoot(request) + "/" + webContext + "/" + errorRedirect + (errorRedirect.indexOf("?")
+                            == -1 ? "?" : "&")  + "msg=" + URLEncoder.encode(msg, "UTF-8"));
         }
     }
 }
