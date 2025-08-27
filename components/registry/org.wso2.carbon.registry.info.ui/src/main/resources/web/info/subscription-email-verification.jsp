@@ -34,5 +34,5 @@
     }
 %>
 <script type="text/javascript">
-    window.location = '<%=location%>';
+    window.location = '<%=Encode.forJavaScript(location)%>';
 </script>
