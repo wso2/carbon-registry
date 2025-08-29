@@ -16,8 +16,9 @@
  ~ under the License.
  --%>
 <%@ page contentType="application/xml;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <?xml-stylesheet type="text/xsl"
-    href="../resources/xslt/annotated-<%=request.getParameter("type")%>.xsl"?>
+    href="../resources/xslt/annotated-<%=Encode.forHtmlAttribute(request.getParameter("type"))%>.xsl"?>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.registry.core.utils.RegistryUtils" %>
