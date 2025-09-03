@@ -16,6 +16,7 @@
  ~ under the License.
  --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.info.ui.clients.InfoServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %><%
     String location = "../admin/index.jsp";
@@ -34,5 +35,5 @@
     }
 %>
 <script type="text/javascript">
-    window.location = '<%=location%>';
+    window.location = '<%=Encode.forJavaScript(location)%>';
 </script>
