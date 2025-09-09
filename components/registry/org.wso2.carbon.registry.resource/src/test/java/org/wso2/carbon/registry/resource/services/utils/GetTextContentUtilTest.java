@@ -59,7 +59,7 @@ public class GetTextContentUtilTest extends BaseTestCase {
     }
 
     public void testGetByteContent() throws Exception {
-        DataHandler dataHandler = GetTextContentUtil.getByteContent("http://blog.napagoda.com");
+        DataHandler dataHandler = GetTextContentUtil.getByteContent("http://google.com");
         assertNotNull(dataHandler);
     }
 
