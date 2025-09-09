@@ -47,7 +47,7 @@ public class ImportResourceUtilTest extends BaseTestCase {
 
 
         String path = ImportResourceUtil.importResource("/test/2017/10", "25", "application/xml", "Sample description",
-                                                        "http://blog.napagoda.com/", "test", (UserRegistry) registry,
+                                                        "http://google.com/", "test", (UserRegistry) registry,
                                                         properties);
 
         assertEquals("/test/2017/10/25", path);
