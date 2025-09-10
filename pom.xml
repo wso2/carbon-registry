@@ -1602,7 +1602,7 @@
     <properties>
         <!-- Carbon platform version comes here-->
 
-        <carbon.kernel.version>4.5.3</carbon.kernel.version>
+        <carbon.kernel.version>4.9.29</carbon.kernel.version>
         <carbon.kernel.feature.version>${carbon.kernel.version}</carbon.kernel.feature.version>
         <carbon.kernel.package.import.version.range>[4.5.0, 5.0.0)</carbon.kernel.package.import.version.range>
 
@@ -1640,7 +1640,7 @@
         <google.guava.wso2.version>33.0.0-jre</google.guava.wso2.version>
         <google.guava.failureaccess.version>1.0.2</google.guava.failureaccess.version>
         <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
-        <version.solr>9.5.0.wso2v8</version.solr>
+        <version.solr>9.9.0.wso2v1</version.solr>
         <version.solr.import.version.range>[9.0.0,10.0.0)</version.solr.import.version.range>
         <version.httpclient>4.5.13.wso2v1</version.httpclient>
         <version.httpmime>4.5.13.wso2v1</version.httpmime>
@@ -1697,7 +1697,7 @@
         <commons-digester.version>1.8</commons-digester.version>
         <orbit.version.commons.beanutils>1.8.0.wso2v1</orbit.version.commons.beanutils>
         <commons-io.wso2.version>2.17.0.wso2v1</commons-io.wso2.version>
-        <commons-fileupload.version>1.1.1</commons-fileupload.version>
+        <commons-fileupload.version>1.6.0</commons-fileupload.version>
         <orbit.version.commons.httpclient>3.1.0.wso2v6</orbit.version.commons.httpclient>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
         <commons-lang.wso2.version>2.6.0.wso2v1</commons-lang.wso2.version>
