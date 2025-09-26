@@ -34,7 +34,7 @@
     ProfilesAdminServiceClient client = new ProfilesAdminServiceClient(config,session);
     if(username != null && client.putUserProfile(username)){
         String resourcePagePath = "../resources/resource.jsp?region=region3&item=resource_browser_menu&viewType=std&path=/_system/config/users";
-        response.sendRedirect(CarbonUIUtil.resolveAdminConsoleBaseURL("", resourcePagePath, request));
+        response.sendRedirect(resourcePagePath);
         return;
     }
     else{
