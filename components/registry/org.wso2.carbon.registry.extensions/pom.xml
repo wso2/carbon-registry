@@ -93,8 +93,6 @@
                             !org.wso2.carbon.registry.extensions.utils.*,
                             org.wso2.carbon.registry.core.*;version="${carbon.kernel.registry.imp.pkg.version}",
                             org.wso2.carbon.ui.*;version="${carbon.kernel.package.import.version.range}",
-                            org.apache.maven.scm.*,
-                            org.codehaus.plexus.*,
                             !javax.xml.namespace,
                             javax.xml.namespace; version=0.0.0,
                             javax.xml.parsers; version=0.0.0,
