@@ -21,6 +21,7 @@ package org.wso2.carbon.registry.indexing.internal;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.annotation.bundle.Capability;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.CarbonConstants;
@@ -128,6 +129,13 @@ public class IndexingServiceComponent {
         IndexingManager.getInstance().stopIndexing();
     }
 
+    @Capability(
+            namespace = "osgi.service",
+            attribute = {
+                    "objectClass=org.wso2.carbon.registry.indexing.service.ContentSearchService",
+                    "service.scope=singleton"
+            }
+    )
     private static class ContentSearchServiceImpl implements ContentSearchService {
 
         public ResourceData[] search(UserRegistry registry, String query) throws RegistryException {
@@ -152,6 +160,14 @@ public class IndexingServiceComponent {
             return search(MultitenantConstants.SUPER_TENANT_ID, query);
         }
     }
+
+    @Capability(
+            namespace = "osgi.service",
+            attribute = {
+                    "objectClass=org.wso2.carbon.registry.common.AttributeSearchService",
+                    "service.scope=singleton"
+            }
+    )
     private static class AttributeSearchServiceImpl implements AttributeSearchService {
 
         public ResourceData[] search(UserRegistry registry, Map<String, String> query) throws RegistryException {
