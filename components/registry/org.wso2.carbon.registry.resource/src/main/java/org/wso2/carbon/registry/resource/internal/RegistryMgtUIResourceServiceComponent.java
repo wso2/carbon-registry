@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.http.HttpService;
 import org.wso2.carbon.registry.common.eventing.NotificationService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.resource.download.DownloadManagerService;
@@ -47,8 +46,6 @@ public class RegistryMgtUIResourceServiceComponent {
 
     private RegistryService registryService = null;
 
-    private HttpService httpService = null;
-
     private ServiceRegistration serviceRegistration = null;
 
     @Activate
@@ -72,17 +69,30 @@ public class RegistryMgtUIResourceServiceComponent {
             log.error(msg);
             throw new Exception(msg);
         }
-        Dictionary servletParam = new Hashtable(2);
-        servletParam.put("org.apache.abdera.protocol.server.Provider", "org.wso2.carbon.registry.app.RegistryProvider");
-        Dictionary servletAttributes = new Hashtable(2);
-        servletAttributes.put("registry", registryService);
-        Dictionary params = new Hashtable(2);
-        params.put("servlet-params", servletParam);
-        params.put("url-pattern", "/registry/resources");
-        params.put("servlet-attributes", servletAttributes);
+        
+        // Using HTTP Whiteboard pattern for servlet registration
+        Dictionary<String, Object> properties = new Hashtable<>();
+        
+        // HTTP Whiteboard servlet pattern - URL mapping
+        properties.put("osgi.http.whiteboard.servlet.pattern", "/registry/resources");
+        
+        // Servlet init parameters using whiteboard pattern
+        // The init parameter key format: osgi.http.whiteboard.servlet.init.<param-name>
+        properties.put("osgi.http.whiteboard.servlet.init.org.apache.abdera.protocol.server.Provider", 
+                      "org.wso2.carbon.registry.app.RegistryProvider");
+        
+        // Use default context for the servlet
+        properties.put("osgi.http.whiteboard.context.select", "(osgi.http.whiteboard.context.name=default)");
+        
+        // Create servlet instance
         ResourceServlet resourceServlet = new ResourceServlet();
-        // The HTTP Service must be available for this operation
-        serviceRegistration = bundleContext.registerService(Servlet.class.getName(), resourceServlet, params);
+        
+        // Register servlet using whiteboard pattern
+        serviceRegistration = bundleContext.registerService(Servlet.class.getName(), resourceServlet, properties);
+        
+        // Store registry service in ResourceDataHolder so servlet can access it
+        // This replaces the servlet-attributes behavior from the old HTTP Service API
+        dataHolder.setRegistryService(registryService);
     }
 
     @Reference(
@@ -117,20 +127,6 @@ public class RegistryMgtUIResourceServiceComponent {
 
     protected void unsetRegistryNotificationService(NotificationService notificationService) {
         dataHolder.setRegistryNotificationService(null);
-    }
-
-    @Reference(
-             name = "http.service", 
-             service = org.osgi.service.http.HttpService.class, 
-             cardinality = ReferenceCardinality.MANDATORY, 
-             policy = ReferencePolicy.DYNAMIC, 
-             unbind = "unsetHttpService")
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
     }
 
     @Reference(
