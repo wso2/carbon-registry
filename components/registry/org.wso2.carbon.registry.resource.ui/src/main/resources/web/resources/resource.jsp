@@ -24,7 +24,7 @@
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ResourceTreeEntryBean" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 
-<jsp:include page="../dialog/display_messages.jsp"/>
+<jsp:include page="/carbon/dialog/display_messages.jsp"/>
 
 <!-- YUI inculudes for rich text editor -->
 <link rel="stylesheet" type="text/css"
@@ -35,15 +35,15 @@
 <script type="text/javascript" src="../yui/build/editor/simpleeditor-min.js"></script>
 
 <!-- other includes -->
-<jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
-<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/resources/resources-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="js/resource_util.js"></script>
 <script type="text/javascript" src="js/resource_media_type_loader.js"></script>
 <!-- including the JS for properties, since JS can't be loaded via async calls. -->
-<jsp:include page="../properties/properties-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/properties/properties-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../properties/js/properties.js"></script>
 <link rel="stylesheet" type="text/css" href="css/registry.css"/>
 
@@ -172,7 +172,7 @@
 
         <div id="workArea">
             <div class="resource-path">
-                <jsp:include page="metadata_resourcepath.jsp"/>
+                <jsp:include page="/carbon/resources/metadata_resourcepath.jsp"/>
             </div>
             <table width="100%">
 
@@ -219,26 +219,26 @@
                     <td class="resource-right" id="resourceInfo" nowrap="nowrap" <% if (contraction.equals("exp")){ %>style="display:none;"<% } %>>
 
                         <% if (searchFound && CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/search/resources")) {
-                            String searchPath = "../search/simpleSearch.jsp";
+                            String searchPath = "/carbon/search/simpleSearch.jsp";
                         %>
                         <jsp:include page="<%=searchPath%>"/>
                         <% } %>
 
                         <% if (relationsFound) {
-                        String relationsPath = "../relations/relations.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                        String relationsPath = "/carbon/relations/relations.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
                         %>
                         <jsp:include page="<%=relationsPath%>"/>
                         <% } %>
 
                         <% if (retentionFound && !resourceTreeEntryBean.getCollection()) {
-                            String retentionPath = "../properties/retention_ajaxprocessor.jsp?path="
+                            String retentionPath = "/carbon/properties/retention_ajaxprocessor.jsp?path="
                                     + RegistryUtil.getPath(request).replaceAll("&","%26");
                         %>
                         <jsp:include page="<%=retentionPath%>"/>
                         <% } %>
 
                         <% if (lifecyclesFound && CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/resources/govern/lifecycles")) {
-                        String lifecyclesPath = "../lifecycles/lifecycles_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                        String lifecyclesPath = "/carbon/lifecycles/lifecycles_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
                         %>
                         <div id="lifecyclesDiv">
                             <jsp:include page="<%=lifecyclesPath%>"/>
@@ -248,7 +248,7 @@
                         <%-- Lifecycle History UI --%>
                         <% if (lifecyclesFound && CarbonUIUtil.isUserAuthorized(request, "/permission/admin/manage/resources/govern/lifecycles")) {
                             String resourcePath =
-                                    "../history/lifecyclesHistory_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                                    "/carbon/history/lifecyclesHistory_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
                         %>
                         <div id="lifecyclesHistoryDiv">
                             <jsp:include page="<%=resourcePath%>"/>
@@ -257,7 +257,7 @@
                         <%-- end of Lifecycle History UI--%>
 
                         <% if (infoFound) {
-                            String infoPath = "../info/info_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                            String infoPath = "/carbon/info/info_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
                         %>
                         <div id="infoDiv">
                             <jsp:include page="<%=infoPath%>"/>

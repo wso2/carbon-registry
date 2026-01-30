@@ -74,11 +74,11 @@
 %>
 <!-- other includes -->
 <div style="display:none">&nbsp;</div><!-- This div is to fix a ie issue. please dont remove it-->
-<jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
-<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/resources/resources-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
 <script src="../global-params.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="../resources/css/registry.css"/>
