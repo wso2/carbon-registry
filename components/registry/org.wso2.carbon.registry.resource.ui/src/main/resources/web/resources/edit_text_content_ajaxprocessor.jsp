@@ -23,6 +23,10 @@
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 
     <%
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
         String path = request.getParameter("path");

@@ -19,6 +19,10 @@
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.RenameResourceProcessor" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     try {
         RenameResourceProcessor.process(request, response, config);
 

@@ -21,6 +21,10 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     PropertiesServiceClient client = new PropertiesServiceClient(config, session);
 
     try {

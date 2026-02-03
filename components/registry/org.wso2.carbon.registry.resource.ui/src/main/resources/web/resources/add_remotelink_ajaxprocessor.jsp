@@ -19,6 +19,10 @@
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.AddRemoteLinkProcessor" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String errorMessage = null;
     try {
         AddRemoteLinkProcessor.process(request, response, config);

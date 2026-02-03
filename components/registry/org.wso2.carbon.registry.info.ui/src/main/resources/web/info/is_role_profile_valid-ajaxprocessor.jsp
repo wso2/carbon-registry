@@ -19,6 +19,10 @@
 <%@ page import="org.wso2.carbon.registry.info.ui.clients.InfoServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     InfoServiceClient client;
     boolean roleProfileExists = false;

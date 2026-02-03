@@ -77,7 +77,7 @@ function showHideTreeView(path,obj) {
 
             YAHOO.util.Dom.removeClass(treeView,"treeView-Selected");
             YAHOO.util.Dom.addClass(treeView,"treeView-notSelected");
-            new Ajax.Updater('viewPanel', '../resources/standard_view_ajaxprocessor.jsp', { method: 'get', parameters: {path: path,random:random}, evalScripts:true });
+            new Ajax.Updater('viewPanel', '../resources/standard_view_ajaxprocessor.jsp', { method: 'post', parameters: {path: path,random:random}, evalScripts:true });
 
         } else if(treeView && YAHOO.util.Dom.hasClass(treeView,"treeView-notSelected") && clickedon=="treeView") {
             YAHOO.util.Dom.removeClass(treeView,"treeView-notSelected");
@@ -85,7 +85,7 @@ function showHideTreeView(path,obj) {
 
             YAHOO.util.Dom.removeClass(stdView,"stdView-Selected");
             YAHOO.util.Dom.addClass(stdView,"stdView-notSelected");
-            new Ajax.Updater('viewPanel', '../resources/tree_view_ajaxprocessor.jsp', { method: 'get', parameters: {path: path, treeNavigationPath: path, reference: "compute",random:random}, evalScripts:true });
+            new Ajax.Updater('viewPanel', '../resources/tree_view_ajaxprocessor.jsp', { method: 'post', parameters: {path: path, treeNavigationPath: path, reference: "compute",random:random}, evalScripts:true });
         }
     },org_wso2_carbon_registry_resource_ui_jsi18n["session.timed.out"]);
 }
@@ -93,7 +93,7 @@ function showHideTreeView(path,obj) {
 function setTreeNavigationPath(treeNavigationPath, reference) {
     new Ajax.Request('../resources/tree_view_ajaxprocessor.jsp',
     {
-        method:'get',
+        method:'post',
         parameters: {treeNavigationPath: treeNavigationPath, reference: reference, random:getRandom()},
 
         onSuccess: function() {
@@ -119,7 +119,7 @@ function showHideResources(cont) {
         truncateResourceNames();
         new Ajax.Request('../resources/set_contraction_ajaxprocessor.jsp',
         {
-            method:'get',
+            method:'post',
             parameters: {contraction: contraction,random:random},
 
             onSuccess: function() {
@@ -138,7 +138,7 @@ function showHideResources(cont) {
         YAHOO.util.Dom.addClass(pointA,"hiddenToShow");
         new Ajax.Request('../resources/set_contraction_ajaxprocessor.jsp',
         {
-            method:'get',
+            method:'post',
             parameters: {contraction: contraction,random:random},
 
             onSuccess: function() {
@@ -2143,7 +2143,7 @@ function refreshPermissionsSection(path) {
     sessionAwareFunction(function() {
         var random = getRandom();
         new Ajax.Request('../resources/permissions_ajaxprocessor.jsp', {
-            method: 'get',
+            method: 'post',
             parameters: {path: path,random:random},
             onSuccess: function(transport) {
                 var perDiv = $('permissionsDiv');
@@ -2269,7 +2269,7 @@ function generateNewUI(parentPath) {
                }
             mediaType = document.getElementById('customMediaTypeIDOtherValue').value;
         }
-        new Ajax.Updater('customAddUIDiv', '../resources/custom_add_ajaxprocessor.jsp', { method: 'get', evalScripts:true, parameters: {mediaType:mediaType, parentPath:parentPath,random:getRandom()} });
+        new Ajax.Updater('customAddUIDiv', '../resources/custom_add_ajaxprocessor.jsp', { method: 'post', evalScripts:true, parameters: {mediaType:mediaType, parentPath:parentPath,random:getRandom()} });
     }, org_wso2_carbon_registry_resource_ui_jsi18n["session.timed.out"]);
     loadData();
 }
@@ -2373,7 +2373,7 @@ function setResourceTreeExpansionPath(path, onSuccessCallback) {
         return;
     }
     new Ajax.Request('../resources/set_resource_tree_expansion_path_ajaxprocessor.jsp', {
-        method: 'get',
+        method: 'post',
         parameters: {path:path,random:getRandom()},
         onSuccess: function(transport) {
             if (onSuccessCallback) {

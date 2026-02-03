@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
+import java.net.URLDecoder;
 
 public class RestoreVersionProcessor {
 
@@ -40,6 +41,13 @@ public class RestoreVersionProcessor {
             throws UIException {
 
         String versionPath = request.getParameter("versionPath");
+        if (versionPath != null) {
+            try {
+                versionPath = URLDecoder.decode(versionPath, "UTF-8");
+            } catch (Exception e) {
+                log.warn("Failed to decode versionPath parameter: " + versionPath, e);
+            }
+        }
 
         String cookie = (String) request.
                 getSession().getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);

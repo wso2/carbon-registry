@@ -25,6 +25,10 @@
 <fmt:bundle basename="org.wso2.carbon.registry.resource.ui.i18n.Resources">
 
     <%
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
         String errorMessage = null;
         try {
             ChangeUserPermissionsProcessor.process(request, response, config);          

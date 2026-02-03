@@ -26,6 +26,12 @@
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
 
 <%
+    if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
+    }
     PropertiesBean propertiesBean;
     try {
         PropertiesServiceClient client = new PropertiesServiceClient(config, session);

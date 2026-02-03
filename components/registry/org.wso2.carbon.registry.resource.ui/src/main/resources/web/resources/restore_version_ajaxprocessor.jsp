@@ -20,12 +20,14 @@
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.RestoreVersionProcessor" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
-<%@ page import="java.net.URLEncoder" %>
 <%
+    if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
+    }
     String resourcePath = request.getParameter("path");
-    try {
-        resourcePath = URLEncoder.encode(resourcePath, "UTF-8");
-    } catch (Exception ignore) {}
     String resourceConsumer = Utils.getResourceConsumer(request);
     String viewMode = Utils.getResourceViewMode(request);
     String targetDivID = Utils.getTargetDivID(request);       
