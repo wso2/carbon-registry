@@ -1245,7 +1245,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.abdera.wso2</groupId>
-                <artifactId>abdera</artifactId>
+                <artifactId>abdera-jdk21</artifactId>
                 <version>${orbit.version.abdera}</version>
                 <exclusions>
                     <exclusion>
@@ -1676,9 +1676,9 @@
 
         <!-- Abdera -->
         <version.abdera>1.0-wso2v2</version.abdera>
-        <orbit.version.abdera>1.0.0.wso2v2</orbit.version.abdera>
-        <exp.pkg.version.abdera>1.0.0.wso2v2</exp.pkg.version.abdera>
-        <imp.pkg.version.abdera>[1.0.0.wso2v2, 2)</imp.pkg.version.abdera>
+        <orbit.version.abdera>1.0.0.wso2v1</orbit.version.abdera>
+        <exp.pkg.version.abdera>1.0.0.wso2v1</exp.pkg.version.abdera>
+        <imp.pkg.version.abdera>[1.0.0.wso2v1, 2)</imp.pkg.version.abdera>
 
         <!--Apache Geronimo-->
         <version.geronimo.specs.geronimo-jpa_2.0_spec>1.0</version.geronimo.specs.geronimo-jpa_2.0_spec>
