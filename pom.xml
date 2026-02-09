@@ -1418,8 +1418,8 @@
                     <version>2.3.1</version>
                     <inherited>true</inherited>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>21</source>
+                        <target>21</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -1662,7 +1662,7 @@
         <xercesImpl.version>2.8.1</xercesImpl.version>
         <juddi.wso2.version>3.1.5.wso2v1</juddi.wso2.version>
         <junit.version>4.11</junit.version>
-        <mockito-core.version>1.9.0</mockito-core.version>
+        <mockito-core.version>5.3.1</mockito-core.version>
         <powermock.version>1.4.12</powermock.version>
         <xmlschema.version>1.4.3</xmlschema.version>
         <version.javax.servlet>3.0.0.v201112011016</version.javax.servlet>
@@ -1728,10 +1728,10 @@
         <project.scm.id>wso2-scm-server</project.scm.id>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <surefire.version>2.16</surefire.version>
+        <surefire.version>3.1.2</surefire.version>
         <jaxb.version>2.3.0</jaxb.version>
         <test.framework.version>4.4.3</test.framework.version>
-        <jacoco.agent.version>0.8.2</jacoco.agent.version>
+        <jacoco.agent.version>0.8.12</jacoco.agent.version>
         <testng.verson>6.1.1</testng.verson>
         <apache.felix.scr.ds.annotations.version>1.2.4</apache.felix.scr.ds.annotations.version>
         <maven.scr.plugin.version>1.26.0</maven.scr.plugin.version>
