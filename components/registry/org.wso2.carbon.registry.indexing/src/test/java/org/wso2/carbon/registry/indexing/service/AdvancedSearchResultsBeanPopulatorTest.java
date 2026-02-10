@@ -17,7 +17,7 @@
  */
 package org.wso2.carbon.registry.indexing.service;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
 import org.wso2.carbon.registry.core.ResourceImpl;
@@ -25,15 +25,15 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.Properties;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AdvancedSearchResultsBeanPopulatorTest extends TestCase {
+public class AdvancedSearchResultsBeanPopulatorTest {
+    @Test
     public void testPopulate() throws Exception {
 
         ResourceImpl resource = mock(ResourceImpl.class);
@@ -54,7 +54,7 @@ public class AdvancedSearchResultsBeanPopulatorTest extends TestCase {
 
         Collection collection = mock(Collection.class);
         when(collection.getContent()).thenReturn(new String[]{"/_system/local/temp"});
-        when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(collection);
+        when(registry.executeQuery(any(),any())).thenReturn(collection);
         when(registry.get("/_system/local/temp")).thenReturn(resource);
         CollectionImpl coll = new CollectionImpl();
         coll.setAuthorUserName("admin");
@@ -69,6 +69,7 @@ public class AdvancedSearchResultsBeanPopulatorTest extends TestCase {
 
     }
 
+    @Test
     public void testPopulateWithoutQuery() {
         UserRegistry registry = mock(UserRegistry.class);
         AdvancedSearchResultsBean resultsBean = AdvancedSearchResultsBeanPopulator.populate(registry, null,

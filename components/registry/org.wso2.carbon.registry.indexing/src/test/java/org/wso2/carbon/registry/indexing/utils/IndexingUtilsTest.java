@@ -18,7 +18,6 @@
 package org.wso2.carbon.registry.indexing.utils;
 
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -38,7 +37,7 @@ public class IndexingUtilsTest {
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
         when(registryRealm.getAuthorizationManager()).thenReturn(authManager);
         when(registry.getUserRealm()).thenReturn(registryRealm);
         when(registry.getUserName()).thenReturn("admin");

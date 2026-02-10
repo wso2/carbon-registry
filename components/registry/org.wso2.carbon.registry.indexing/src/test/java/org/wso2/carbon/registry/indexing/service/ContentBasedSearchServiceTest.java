@@ -24,9 +24,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Field;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.common.ResourceData;
 import org.wso2.carbon.registry.common.TermData;
@@ -46,14 +44,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@PrepareForTest({SolrClient.class})
 public class ContentBasedSearchServiceTest {
 
     private ContentBasedSearchService service;
@@ -69,8 +69,9 @@ public class ContentBasedSearchServiceTest {
         Path resourcePath = IndexingTestUtils.getResourcePath("conf");
         System.setProperty("carbon.config.dir.path", resourcePath.toString());
         client = mock(SolrClient.class);
-        PowerMockito.mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         registry = mock(UserRegistry.class);
         when(registry.resourceExists(anyString())).thenReturn(Boolean.TRUE);
         when(service.getRootRegistry()).thenReturn(registry);
@@ -91,7 +92,7 @@ public class ContentBasedSearchServiceTest {
         resultList.add(document);
         when(client.query(anyString(),anyInt())).thenReturn(resultList);
         when(service.getContentSearchResults(anyString())).thenCallRealMethod();
-        when(service.searchContent(anyString(), (UserRegistry) anyObject())).thenCallRealMethod();
+        when(service.searchContent(anyString(), any(UserRegistry.class))).thenCallRealMethod();
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
@@ -131,7 +132,7 @@ public class ContentBasedSearchServiceTest {
         resultList.add(document);
         when(client.query(anyString(),anyInt())).thenReturn(resultList);
         when(service.getContentSearchResults(anyString())).thenCallRealMethod();
-        when(service.searchContent(anyString(), (UserRegistry) anyObject())).thenThrow(new IndexerException
+        when(service.searchContent(anyString(), any(UserRegistry.class))).thenThrow(new IndexerException
                 ("Test Exception"));
 
         SearchResultsBean resultsBean = service.getContentSearchResults("testing");
@@ -146,8 +147,8 @@ public class ContentBasedSearchServiceTest {
         document.setField("id", "/_system/governance/trunk/api/testtenantId=-1234");
         resultList.add(document);
         when(client.query(anyInt(), anyMap())).thenReturn(resultList);
-        when(service.getAttributeSearchResults((String[][]) anyObject())).thenCallRealMethod();
-        when(service.searchByAttribute(anyMap(), (UserRegistry) anyObject())).thenCallRealMethod();
+        when(service.getAttributeSearchResults(any(String[][].class))).thenCallRealMethod();
+        when(service.searchByAttribute(anyMap(), any(UserRegistry.class))).thenCallRealMethod();
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
@@ -192,8 +193,8 @@ public class ContentBasedSearchServiceTest {
         document.setField("id", "/_system/governance/trunk/api/testtenantId=-1234");
         resultList.add(document);
         when(client.query(anyInt(), anyMap())).thenReturn(resultList);
-        when(service.getAttributeSearchResults((String[][]) anyObject())).thenCallRealMethod();
-        when(service.searchByAttribute(anyMap(), (UserRegistry) anyObject())).thenThrow(new IndexerException
+        when(service.getAttributeSearchResults(any(String[][].class))).thenCallRealMethod();
+        when(service.searchByAttribute(anyMap(), any(UserRegistry.class))).thenThrow(new IndexerException
                 ("Test Exception", new Exception()));
 
         String[][] searchAttributes = new String[2][2];
@@ -211,14 +212,14 @@ public class ContentBasedSearchServiceTest {
         List<FacetField.Count> resultList = new ArrayList<>();
         FacetField.Count count = new FacetField.Count(new FacetField("tags_ss"), "tag1", 2);
         resultList.add(count);
-        when(client.facetQuery(anyInt(), (Map)anyObject())).thenReturn(resultList);
-        when(service.getTermSearchResults((String[][]) anyObject())).thenCallRealMethod();
-        when(service.searchTerms((Map)anyObject(), (UserRegistry)anyObject()))
+        when(client.facetQuery(anyInt(), any(Map.class))).thenReturn(resultList);
+        when(service.getTermSearchResults(any(String[][].class))).thenCallRealMethod();
+        when(service.searchTerms(any(Map.class), any(UserRegistry.class)))
                 .thenCallRealMethod();
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -247,9 +248,9 @@ public class ContentBasedSearchServiceTest {
         List<FacetField.Count> resultList = new ArrayList<>();
         FacetField.Count count = new FacetField.Count(new FacetField("tags_ss"), "tag1", 2);
         resultList.add(count);
-        when(client.facetQuery(anyInt(), (Map)anyObject())).thenReturn(resultList);
-        when(service.getTermSearchResults((String[][]) anyObject())).thenCallRealMethod();
-        when(service.searchTerms((Map)anyObject(), (UserRegistry)anyObject())).thenThrow(new IndexerException
+        when(client.facetQuery(anyInt(), any(Map.class))).thenReturn(resultList);
+        when(service.getTermSearchResults(any(String[][].class))).thenCallRealMethod();
+        when(service.searchTerms(any(Map.class), any(UserRegistry.class))).thenThrow(new IndexerException
                 ("Test Exception", new Exception()));
 
             String[][] searchAttributes = new String[2][2];
@@ -281,13 +282,13 @@ public class ContentBasedSearchServiceTest {
         List<FacetField.Count> resultList = new ArrayList<>();
         FacetField.Count count = new FacetField.Count(new FacetField("overview_name_s"), "tag1", 2);
         resultList.add(count);
-        when(client.facetQuery(anyInt(), (Map)anyObject())).thenReturn(resultList);
-        when(service.searchTerms((Map)anyObject(), (UserRegistry)anyObject()))
+        when(client.facetQuery(anyInt(), any(Map.class))).thenReturn(resultList);
+        when(service.searchTerms(any(Map.class), any(UserRegistry.class)))
                 .thenCallRealMethod();
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -318,12 +319,12 @@ public class ContentBasedSearchServiceTest {
         FacetField.Count count = new FacetField.Count(new FacetField("tags_ss"), "tag1", 2);
         resultList.add(count);
         when(client.facetQuery(anyString(), anyString(), anyInt())).thenReturn(resultList);
-        when(service.searchTermsByQuery(anyString(), anyString(), (UserRegistry)anyObject()))
+        when(service.searchTermsByQuery(anyString(), anyString(), any(UserRegistry.class)))
                 .thenCallRealMethod();
         AuthorizationManager authManager = mock(AuthorizationManager.class);
         when(authManager.isUserAuthorized("admin", "/_system/governance/trunk/api/test", ActionConstants
                 .GET)).thenReturn(Boolean.TRUE);
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
