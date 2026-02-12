@@ -19,7 +19,6 @@ package org.wso2.carbon.registry.activities.services.utils;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 import org.wso2.carbon.registry.activities.services.TestUtils;
 import org.wso2.carbon.registry.common.beans.ActivityBean;
 import org.wso2.carbon.registry.core.LogEntry;
@@ -33,14 +32,13 @@ import org.wso2.carbon.user.core.UserStoreManager;
 import java.io.IOException;
 import java.util.Date;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -54,8 +52,8 @@ public class ActivityBeanPopulatorTest {
     public void setup() throws UserStoreException, IOException, RegistryException {
         userRegistry = mock(UserRegistry.class);
         when(userRegistry.getUserName()).thenReturn("admin");
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
-        UserStoreManager userStoreManager = PowerMockito.mock(UserStoreManager.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
+        UserStoreManager userStoreManager = mock(UserStoreManager.class);
         when(userStoreManager.getRoleListOfUser("admin"))
                 .thenReturn(new String[]{"admin", "internal/everyone", "internal/publisher"});
         when(userStoreManager.getRoleListOfUser("danesh"))
@@ -69,10 +67,10 @@ public class ActivityBeanPopulatorTest {
 
     @Test
     public void testPopulateWithoutFilters() throws Exception {
-        doReturn(true).when(userRegistry).resourceExists(anyString());
+        doReturn(true).when(userRegistry).resourceExists(nullable(String.class));
         LogEntry[] resultEntries = TestUtils.readLogEntries("all-log-entry.csv");
-        doReturn(resultEntries).when(userRegistry).getLogs(anyString(), eq(-1),
-                anyString(), (Date)anyObject(), (Date)anyObject(), anyBoolean());
+        doReturn(resultEntries).when(userRegistry).getLogs(nullable(String.class), eq(-1),
+                nullable(String.class), nullable(Date.class), nullable(Date.class), anyBoolean());
         String resourcePath = "";
         String username = "admin";
         String fromDate = "10/10/2016";
@@ -90,10 +88,10 @@ public class ActivityBeanPopulatorTest {
     @Test
     public void testPopulateWithNormalUser() throws Exception {
         when(userRegistry.getUserName()).thenReturn("danesh");
-        doReturn(true).when(userRegistry).resourceExists(anyString());
+        doReturn(true).when(userRegistry).resourceExists(nullable(String.class));
         LogEntry[] resultEntries = TestUtils.readLogEntries("all-log-entry.csv");
-        doReturn(resultEntries).when(userRegistry).getLogs(anyString(), eq(-1),
-                anyString(), (Date)anyObject(), (Date)anyObject(), anyBoolean());
+        doReturn(resultEntries).when(userRegistry).getLogs(nullable(String.class), eq(-1),
+                nullable(String.class), nullable(Date.class), nullable(Date.class), anyBoolean());
         String resourcePath = "";
         String username = "admin";
         String fromDate = "10/10/2016";
@@ -110,10 +108,10 @@ public class ActivityBeanPopulatorTest {
     @Test
     public void testPopulateWithAddFilter() throws Exception {
         when(userRegistry.getUserName()).thenReturn("admin");
-        doReturn(true).when(userRegistry).resourceExists(anyString());
+        doReturn(true).when(userRegistry).resourceExists(nullable(String.class));
         LogEntry[] resultEntries = TestUtils.readLogEntries("add-log-entry.csv");
-        doReturn(resultEntries).when(userRegistry).getLogs(anyString(), eq(0),
-                anyString(), (Date)anyObject(), (Date)anyObject(), anyBoolean());
+        doReturn(resultEntries).when(userRegistry).getLogs(nullable(String.class), eq(0),
+                nullable(String.class), nullable(Date.class), nullable(Date.class), anyBoolean());
         String resourcePath = "";
         String username = "";
         String fromDate = "";
@@ -130,10 +128,10 @@ public class ActivityBeanPopulatorTest {
     @Test
     public void testPopulateWithInvalidDate() throws Exception {
         when(userRegistry.getUserName()).thenReturn("admin");
-        doReturn(true).when(userRegistry).resourceExists(anyString());
+        doReturn(true).when(userRegistry).resourceExists(nullable(String.class));
         LogEntry[] resultEntries = TestUtils.readLogEntries("add-log-entry.csv");
-        doReturn(resultEntries).when(userRegistry).getLogs(anyString(), eq(0),
-                anyString(), (Date)anyObject(), (Date)anyObject(), anyBoolean());
+        doReturn(resultEntries).when(userRegistry).getLogs(nullable(String.class), eq(0),
+                nullable(String.class), nullable(Date.class), nullable(Date.class), anyBoolean());
         String resourcePath = "";
         String username = "";
         String fromDate = "10/152016";
@@ -151,11 +149,11 @@ public class ActivityBeanPopulatorTest {
     @Test
     public void testPopulateWithRegistryError() throws Exception {
         when(userRegistry.getUserName()).thenReturn("admin");
-        doThrow(new RegistryException("Error while checking the resource")).when(userRegistry).resourceExists(anyString
-                ());
+        doThrow(new RegistryException("Error while checking the resource")).when(userRegistry).resourceExists(nullable(String.class
+                ));
         LogEntry[] resultEntries = TestUtils.readLogEntries("add-log-entry.csv");
-        doReturn(resultEntries).when(userRegistry).getLogs(anyString(), eq(0),
-                anyString(), (Date)anyObject(), (Date)anyObject(), anyBoolean());
+        doReturn(resultEntries).when(userRegistry).getLogs(nullable(String.class), eq(0),
+                nullable(String.class), nullable(Date.class), nullable(Date.class), anyBoolean());
         String resourcePath = "";
         String username = "";
         String fromDate = "";

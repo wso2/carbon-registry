@@ -20,10 +20,6 @@ package org.wso2.carbon.registry.indexing;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.ResourceImpl;
@@ -36,14 +32,14 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.registry.indexing.util.IndexingTestUtils;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Calendar;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
-@PrepareForTest({AsyncIndexerTest.class})
 public class AsyncIndexerTest {
 
     private SolrClient client = null;
@@ -56,11 +52,13 @@ public class AsyncIndexerTest {
         Path resourcePath = IndexingTestUtils.getResourcePath("conf");
         System.setProperty("carbon.config.dir.path", resourcePath.toString());
         client = mock(SolrClient.class);
-        PowerMockito.mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
 
-        RegistryService registryService = Mockito.mock(RegistryService.class);
-        UserRegistry userRegistry = Mockito.mock(UserRegistry.class);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
+
+        RegistryService registryService = mock(RegistryService.class);
+        UserRegistry userRegistry = mock(UserRegistry.class);
         when(userRegistry.resourceExists("/_system/local/index")).thenReturn(true);
         ResourceImpl resource = new ResourceImpl();
         resource.setPath("/_system/local/index");

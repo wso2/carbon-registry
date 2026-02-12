@@ -17,7 +17,6 @@
  */
 package org.wso2.carbon.registry.indexing.solr;
 
-import junit.framework.TestCase;
 import org.apache.axis2.context.MessageContext;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -28,17 +27,13 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.core.CoreContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.jdbc.realm.RegistryRealm;
@@ -65,15 +60,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @Ignore
-public class SolrClientTest extends TestCase {
+public class SolrClientTest {
     SolrClient client;
     EmbeddedSolrServer server;
 
@@ -88,13 +82,14 @@ public class SolrClientTest extends TestCase {
         Path resourcePath = IndexingTestUtils.getResourcePath("conf");
         System.setProperty("carbon.config.dir.path", resourcePath.toString());
 
-        CoreContainer coreContainer = mock(CoreContainer.class);
-        whenNew(CoreContainer.class).withParameterTypes(String.class).withArguments(anyString())
-                .thenReturn(coreContainer);
         server = mock(EmbeddedSolrServer.class);
-        whenNew(EmbeddedSolrServer.class).withParameterTypes(CoreContainer.class, String.class).withArguments
-                (anyObject(), anyString()).thenReturn(server);
-        client = SolrClient.getInstance();
+        client = Mockito.mock(SolrClient.class, Mockito.CALLS_REAL_METHODS);
+        Field serverField = SolrClient.class.getDeclaredField("server");
+        serverField.setAccessible(true);
+        serverField.set(client, server);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         MessageContext.currentMessageContext.remove();
     }
 
@@ -131,7 +126,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setTenantId(-12345);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -153,7 +148,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setTenantId(-12345);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -182,7 +177,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setFields(fields);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -219,7 +214,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setFields(fields);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -249,7 +244,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setFields(fields);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -281,7 +276,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setFields(fields);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -315,7 +310,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setFields(fields);
 
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -338,7 +333,7 @@ public class SolrClientTest extends TestCase {
         indexDocument.setTenantId(-12345);
 
         try {
-            when(server.add((SolrInputDocument) anyObject())).thenThrow(new SolrServerException( "Testing..."));
+            when(server.add(any(SolrInputDocument.class))).thenThrow(new SolrServerException( "Testing..."));
             SolrClient.getInstance().addDocument(indexDocument);
             fail("Exception is missing when server fail to execute");
         } catch (SolrException e) {
@@ -360,7 +355,7 @@ public class SolrClientTest extends TestCase {
                 path, tenantID, tenantDomain);
         JSONIndexer jsonIndexer = new JSONIndexer();
         final SolrInputDocument[] document = {null};
-        when(server.add((SolrInputDocument) anyObject())).thenAnswer(new Answer<UpdateResponse>() {
+        when(server.add(any(SolrInputDocument.class))).thenAnswer(new Answer<UpdateResponse>() {
             @Override
             public UpdateResponse answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -393,10 +388,12 @@ public class SolrClientTest extends TestCase {
             when(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, -1234)).thenReturn
                     (registry);
             when(registry.getUserRealm()).thenReturn(registryRealm);
-            Whitebox.setInternalState(Utils.class, "registryService", registryService);
+            Field regServiceField = Utils.class.getDeclaredField("registryService");
+            regServiceField.setAccessible(true);
+            regServiceField.set(null, registryService);
 
             final SolrQuery[] query = new SolrQuery[1];
-            when(server.query((SolrQuery) anyObject())).thenAnswer(new Answer<QueryResponse>() {
+            when(server.query(any(SolrQuery.class))).thenAnswer(new Answer<QueryResponse>() {
                 @Override
                 public QueryResponse answer(InvocationOnMock invocation) throws Throwable {
                     Object[] args = invocation.getArguments();
@@ -430,10 +427,12 @@ public class SolrClientTest extends TestCase {
             when(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, -1234)).thenReturn
                     (registry);
             when(registry.getUserRealm()).thenReturn(registryRealm);
-            Whitebox.setInternalState(Utils.class, "registryService", registryService);
+            Field regServiceField = Utils.class.getDeclaredField("registryService");
+            regServiceField.setAccessible(true);
+            regServiceField.set(null, registryService);
 
             final SolrQuery[] query = new SolrQuery[1];
-            when(server.query((SolrQuery) anyObject())).thenAnswer(new Answer<QueryResponse>() {
+            when(server.query(any(SolrQuery.class))).thenAnswer(new Answer<QueryResponse>() {
                 @Override
                 public QueryResponse answer(InvocationOnMock invocation) throws Throwable {
                     Object[] args = invocation.getArguments();
@@ -466,10 +465,12 @@ public class SolrClientTest extends TestCase {
             when(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, -1234)).thenReturn
                     (registry);
             when(registry.getUserRealm()).thenReturn(registryRealm);
-            Whitebox.setInternalState(Utils.class, "registryService", registryService);
+            Field regServiceField = Utils.class.getDeclaredField("registryService");
+            regServiceField.setAccessible(true);
+            regServiceField.set(null, registryService);
 
             final SolrQuery[] query = new SolrQuery[1];
-            when(server.query((SolrQuery) anyObject())).thenAnswer(new Answer<QueryResponse>() {
+            when(server.query(any(SolrQuery.class))).thenAnswer(new Answer<QueryResponse>() {
                 @Override
                 public QueryResponse answer(InvocationOnMock invocation) throws Throwable {
                     Object[] args = invocation.getArguments();
@@ -503,10 +504,12 @@ public class SolrClientTest extends TestCase {
             when(registryService.getRegistry(CarbonConstants.REGISTRY_SYSTEM_USERNAME, -1234)).thenReturn
                     (registry);
             when(registry.getUserRealm()).thenReturn(registryRealm);
-            Whitebox.setInternalState(Utils.class, "registryService", registryService);
+            Field regServiceField = Utils.class.getDeclaredField("registryService");
+            regServiceField.setAccessible(true);
+            regServiceField.set(null, registryService);
 
             final SolrQuery[] query = new SolrQuery[1];
-            when(server.query((SolrQuery) anyObject())).thenAnswer(new Answer<QueryResponse>() {
+            when(server.query(any(SolrQuery.class))).thenAnswer(new Answer<QueryResponse>() {
                 @Override
                 public QueryResponse answer(InvocationOnMock invocation) throws Throwable {
                     Object[] args = invocation.getArguments();
