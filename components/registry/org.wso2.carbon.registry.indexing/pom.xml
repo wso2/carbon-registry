@@ -59,7 +59,7 @@
                         <Provide-Capability>
                             osgi.service;objectClass=org.wso2.carbon.registry.indexing.service.TenantIndexingLoader,
                             osgi.service;objectClass=org.wso2.carbon.registry.indexing.service.TermsQuerySearchService,
-                            osgi.service;objectClass=org.wso2.carbon.registry.indexing.service.TermsSearchService,
+                            osgi.service;objectClass=org.wso2.carbon.registry.indexing.service.TermsSearchService
                         </Provide-Capability>
                     </instructions>
                 </configuration>
