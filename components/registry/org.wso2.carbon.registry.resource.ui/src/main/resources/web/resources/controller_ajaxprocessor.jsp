@@ -19,6 +19,10 @@
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.CommandHandler" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String content = null;
     try {
         content = CommandHandler.process(request, response, config);

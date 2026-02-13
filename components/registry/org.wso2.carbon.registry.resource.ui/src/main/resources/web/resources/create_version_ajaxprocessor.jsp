@@ -20,6 +20,10 @@
 <%@ page import="org.wso2.carbon.registry.resource.ui.processors.CreateVersionProcessor" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     try {
         CreateVersionProcessor.process(request, response, config);
 

@@ -30,6 +30,12 @@
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
 
 <%
+    if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
+    }
     RatingBean ratingBean;
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     try{

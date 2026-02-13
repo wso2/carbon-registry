@@ -19,6 +19,10 @@
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.CustomUIHandler" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String mediaType = request.getParameter("mediaType");
     String parentPath = request.getParameter("parentPath");
     String uiPath = CustomUIHandler.getCustomAddUI(mediaType, request.getSession());

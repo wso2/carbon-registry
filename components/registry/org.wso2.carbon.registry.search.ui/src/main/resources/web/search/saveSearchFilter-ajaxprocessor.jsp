@@ -24,6 +24,10 @@
 
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     try {
         SearchServiceClient client = new SearchServiceClient(cookie, config, session);

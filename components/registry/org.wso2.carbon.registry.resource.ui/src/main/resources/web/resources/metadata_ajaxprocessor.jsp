@@ -17,6 +17,7 @@
  --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
@@ -86,6 +87,20 @@
    function retentionError(){
        CARBON.showWarningDialog('<fmt:message key="retention.warn"/>' );
        return;
+   }
+
+   function restoreVersionPost(versionPath, path){
+       var form = document.createElement('form');
+       form.method = 'POST';
+       form.action = './restore_version_ajaxprocessor.jsp?versionPath=' + encodeURIComponent(versionPath, "UTF-8") + '&path=' + encodeURIComponent(path, "UTF-8");
+       var csrfInput = document.createElement('input');
+       csrfInput.type = 'hidden';
+       csrfInput.name = '<csrf:tokenname/>';
+       csrfInput.value = '<csrf:tokenvalue/>';
+       form.appendChild(csrfInput);
+
+       document.body.appendChild(form);
+       form.submit();
    }
 </script>
 
@@ -191,8 +206,8 @@
             <a
                     style="background-image:url(../resources/images/icon-restore.gif)"
                     class="icon-link registryWriteOperation"
-                    href="./restore_version_ajaxprocessor.jsp?versionPath=<%=versionRestoreFullpath%>&path=<%=encodedActivePath%>"
-                    >
+                    onclick="restoreVersionPost('<%=versionRestoreFullpath%>', '<%=encodedActivePath%>'); return false;"
+                    href="#">
                 <fmt:message key="restore.to.this.version"/> (<span style="text-decoration:italic"><%=decodedPath%></span>) </a>
            </td>
             <% } %>

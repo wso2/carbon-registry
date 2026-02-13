@@ -718,7 +718,7 @@ function saveSearchFilter(customParameterList, saveFilterName) {
         onSuccess: function() {
             CARBON.showInfoDialog(org_wso2_carbon_registry_search_ui_jsi18n["successfully.saved.search.filter"]);
             $('#_saveFilterName').value = "";
-            new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+            new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{method:'post', evalScripts:true});
             //showSaveSearch();
         },
 
@@ -767,12 +767,12 @@ function deleteSearchFilter(filterName) {
         function() {
             new Ajax.Request('../search/deleteSearchFilter-ajaxprocessor.jsp',
             {
-                method:'get',
+                method:'post',
                 parameters: {filterName:filterName},
 
                 onSuccess: function(transport) {
                 document.getElementById('advancedSearchFormDiv').innerHTML = transport.responseText;
-                new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+                new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{method:'post', evalScripts:true});
                 new Ajax.Updater('advancedSearchFormDiv', '../search/advancedSearchForm-ajaxprocessor.jsp');
                 initDatePickers();
                 $('#_0').fcocus();
