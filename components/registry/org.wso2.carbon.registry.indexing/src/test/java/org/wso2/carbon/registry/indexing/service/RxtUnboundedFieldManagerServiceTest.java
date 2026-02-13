@@ -43,8 +43,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class RxtUnboundedFieldManagerServiceTest {
@@ -61,7 +60,7 @@ public class RxtUnboundedFieldManagerServiceTest {
         Collection resultCollection = new CollectionImpl();
         resultCollection.setContent(new String[]
                 {"/_system/config/repository/components/org.wso2.carbon.governance/configuration/restservice"});
-        when(userRegistry.executeQuery(anyString(), (Map) anyObject())).thenReturn(resultCollection);
+        when(userRegistry.executeQuery(any(), any())).thenReturn(resultCollection);
         Resource rxtResource = new ResourceImpl();
         rxtResource.setMediaType("application/xml");
         InputStream is = null;

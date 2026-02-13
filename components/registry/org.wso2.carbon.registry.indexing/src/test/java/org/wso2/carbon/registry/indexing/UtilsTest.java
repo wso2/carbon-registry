@@ -38,8 +38,8 @@ import java.nio.file.Path;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -153,7 +153,7 @@ public class UtilsTest {
                 registries[0] = (Registry) args[1];
                 return null;
             }
-        }).when(session).setAttribute(eq(RegistryConstants.USER_REGISTRY), (Registry)anyObject());
+        }).when(session).setAttribute(eq(RegistryConstants.USER_REGISTRY), any(Registry.class));
         Utils.setRegistryService(service);
 
         Registry registry1 = Utils.getRegistry();

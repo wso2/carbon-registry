@@ -17,8 +17,7 @@
  */
 package org.wso2.carbon.registry.indexing.service;
 
-import junit.framework.TestCase;
-import org.powermock.api.mockito.PowerMockito;
+import org.junit.Test;
 import org.wso2.carbon.registry.common.utils.CommonUtil;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.CollectionImpl;
@@ -30,16 +29,17 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AdvancedResourceQueryTest extends TestCase {
+public class AdvancedResourceQueryTest {
 
+    @Test
     public void testExecute() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setResourceName("testResource");
@@ -55,8 +55,8 @@ public class AdvancedResourceQueryTest extends TestCase {
         query.setPropertyValue("propval1");
         query.setContent(null);
 
-        Collection resource = PowerMockito.mock(Collection.class);
-        UserRegistry registry = PowerMockito.mock(UserRegistry.class);
+        Collection resource = mock(Collection.class);
+        UserRegistry registry = mock(UserRegistry.class);
         when(resource.getAspects()).thenReturn(Arrays.asList("ServiceLifecycle"));
         when(resource.getAuthorUserName()).thenReturn("admin");
         when(resource.getCreatedTime()).thenReturn(Calendar.getInstance().getTime());
@@ -71,7 +71,7 @@ public class AdvancedResourceQueryTest extends TestCase {
         properties.put("key2", Arrays.asList("val12"));
         when(resource.getProperties()).thenReturn(properties);
 
-        when(registry.executeQuery(anyString(),(Map) anyObject())).thenReturn(resource);
+        when(registry.executeQuery(any(), any())).thenReturn(resource);
         CollectionImpl coll = new CollectionImpl();
         coll.setAuthorUserName("admin");
         when(registry.newCollection()).thenReturn(coll);
@@ -83,10 +83,11 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertEquals("/_system/local/temp", results[0]);
     }
 
+    @Test
     public void testExecuteWithoutQuery() throws RegistryException {
         try {
             AdvancedResourceQuery query = new AdvancedResourceQuery();
-            UserRegistry registry = PowerMockito.mock(UserRegistry.class);
+            UserRegistry registry = mock(UserRegistry.class);
             query.execute(registry);
             fail("Operation invalid exception is missing");
         } catch (RegistryException e) {
@@ -94,6 +95,7 @@ public class AdvancedResourceQueryTest extends TestCase {
         }
     }
 
+    @Test
     public void testParseTags() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         String tags = "tag1,tag2,tag3";
@@ -105,24 +107,28 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertNull(tagsSet2);
     }
 
+    @Test
     public void testGetResourceName() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setResourceName("test");
         assertEquals("test", query.getResourceName());
     }
 
+    @Test
     public void testGetAuthorName() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setAuthorName("admin");
         assertEquals("admin", query.getAuthorName());
     }
 
+    @Test
     public void testGetUpdaterName() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setUpdaterName("admin");
         assertEquals("admin", query.getUpdaterName());
     }
 
+    @Test
     public void testGetCreatedAfter() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         Date createdAfter = Calendar.getInstance().getTime();
@@ -130,6 +136,7 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertEquals(createdAfter, query.getCreatedAfter());
     }
 
+    @Test
     public void testGetCreatedBefore() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         Date createdBefore = Calendar.getInstance().getTime();
@@ -137,6 +144,7 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertEquals(createdBefore, query.getCreatedBefore());
     }
 
+    @Test
     public void testGetUpdatedAfter() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         Date updatedAfter = Calendar.getInstance().getTime();
@@ -144,6 +152,7 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertEquals(updatedAfter, query.getUpdatedAfter());
     }
 
+    @Test
     public void testGetUpdatedBefore() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         Date updatedBefore = Calendar.getInstance().getTime();
@@ -151,12 +160,14 @@ public class AdvancedResourceQueryTest extends TestCase {
         assertEquals(updatedBefore, query.getUpdatedBefore());
     }
 
+    @Test
     public void testGetCommentWords() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setCommentWords("testiug...");
         assertEquals("testiug...", query.getCommentWords());
     }
 
+    @Test
     public void testGetContent() throws Exception {
         AdvancedResourceQuery query = new AdvancedResourceQuery();
         query.setContent("testing....");

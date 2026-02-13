@@ -17,13 +17,10 @@
  */
 package org.wso2.carbon.registry.indexing.indexer;
 
-import junit.framework.TestCase;
 import org.junit.After;
+import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.ResourceImpl;
 import org.wso2.carbon.registry.core.Tag;
@@ -36,22 +33,25 @@ import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.solr.IndexDocument;
 import org.wso2.carbon.registry.indexing.solr.SolrClient;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Properties;
 
-import static org.mockito.Matchers.anyObject;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@PrepareForTest({IndexingManager.class, SolrClient.class})
-public class IndexDocumentCreatorTest extends TestCase {
+public class IndexDocumentCreatorTest {
 
+    @Test
     public void testCreateIndexDocument() throws Exception {
         IndexingManager manager = mock(IndexingManager.class);
-        PowerMockito.mockStatic(IndexingManager.class);
-        Whitebox.setInternalState(IndexingManager.class, "instance", manager);
+        Field instanceField = IndexingManager.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, manager);
 
         ResourceImpl resource = mock(ResourceImpl.class);
         UserRegistry registry = mock(UserRegistry.class);
@@ -68,8 +68,8 @@ public class IndexDocumentCreatorTest extends TestCase {
         properties.put("key2", Arrays.asList("val12"));
         when(resource.getProperties()).thenReturn(properties);
 
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
-        RegistryAuthorizationManager authorizationManager = PowerMockito.mock(RegistryAuthorizationManager.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
+        RegistryAuthorizationManager authorizationManager = mock(RegistryAuthorizationManager.class);
         when(authorizationManager.getAllowedRolesForResource("/_system/local/temp", ActionConstants.GET))
                 .thenReturn(new String[]{"admin"});
         when(registryRealm.getAuthorizationManager()).thenReturn(authorizationManager);
@@ -82,9 +82,10 @@ public class IndexDocumentCreatorTest extends TestCase {
         when(manager.getRegistry(-1234)).thenReturn(registry);
 
         System.setProperty("carbon.home", "temp");
-        SolrClient client = PowerMockito.mock(SolrClient.class);
-        PowerMockito.mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        SolrClient client = mock(SolrClient.class);
+        Field solrField = SolrClient.class.getDeclaredField("instance");
+        solrField.setAccessible(true);
+        solrField.set(null, client);
 
 
         final IndexDocument[] document = {null};
@@ -94,7 +95,7 @@ public class IndexDocumentCreatorTest extends TestCase {
                 document[0] = (IndexDocument) args[0];
                 return null;
             }
-        }).when(client).addDocument((IndexDocument) anyObject());
+        }).when(client).addDocument(any(IndexDocument.class));
 
         String path = "/_system/local/temp";
         String textContent = "testing";
@@ -111,6 +112,7 @@ public class IndexDocumentCreatorTest extends TestCase {
         assertEquals("/_system/local/temp", document[0].getPath());
     }
 
+    @Test
     public void testInitiazeIndexDocument() {
         String path = "/_system/governance/trunk/test";
         String contentAsText = "testing";

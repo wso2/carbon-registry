@@ -25,8 +25,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.*;
@@ -45,6 +43,7 @@ import org.wso2.carbon.registry.indexing.util.IndexingTestUtils;
 import org.wso2.carbon.user.core.service.RealmService;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Calendar;
 
@@ -52,14 +51,13 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class IndexingHandlerTest {
 
@@ -92,8 +90,8 @@ public class IndexingHandlerTest {
         when(registry.get(regResourcePath)).thenReturn(resource);
         when(registry.resourceExists(regResourcePath)).thenReturn(true);
 
-        RegistryRealm registryRealm = PowerMockito.mock(RegistryRealm.class);
-        RegistryAuthorizationManager authorizationManager = PowerMockito.mock(RegistryAuthorizationManager.class);
+        RegistryRealm registryRealm = mock(RegistryRealm.class);
+        RegistryAuthorizationManager authorizationManager = mock(RegistryAuthorizationManager.class);
         when(authorizationManager.getAllowedRolesForResource
                 (regResourcePath, ActionConstants.GET)).thenReturn(new String[]{"admin"});
         when(authorizationManager.getAllowedRolesForResource
@@ -127,9 +125,10 @@ public class IndexingHandlerTest {
         RequestContext requestContext = new RequestContext(registry, repository, versionRepository);
         requestContext.setResource(resource);
         IndexingHandler indexingHandler = new IndexingHandler();
-        SolrClient client = PowerMockito.mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        SolrClient client = mock(SolrClient.class);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         final IndexDocument[] documents = new IndexDocument[1];
         doAnswer(new Answer() {
             @Override
@@ -138,7 +137,7 @@ public class IndexingHandlerTest {
                 documents[0] = (IndexDocument) args[0];
                 return null;
             }
-        }).when(client).addDocument((IndexDocument) anyObject());
+        }).when(client).addDocument(any(IndexDocument.class));
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -158,8 +157,9 @@ public class IndexingHandlerTest {
         requestContext.setResource(collection);
         IndexingHandler indexingHandler = new IndexingHandler();
         SolrClient client = mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         final IndexDocument[] documents = new IndexDocument[1];
         doAnswer(new Answer() {
             @Override
@@ -168,7 +168,7 @@ public class IndexingHandlerTest {
                 documents[0] = (IndexDocument) args[0];
                 return null;
             }
-        }).when(client).addDocument((IndexDocument) anyObject());
+        }).when(client).addDocument(any(IndexDocument.class));
 
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -186,9 +186,10 @@ public class IndexingHandlerTest {
         requestContext.setResource(resource);
         requestContext.setResourcePath(new ResourcePath(regResourcePath));
         IndexingHandler indexingHandler = new IndexingHandler();
-        SolrClient client = PowerMockito.mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        SolrClient client = mock(SolrClient.class);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         final String[] deletePath = new String[1];
         Mockito.doAnswer(new Answer() {
             @Override
@@ -199,7 +200,9 @@ public class IndexingHandlerTest {
             }
         }).when(client).deleteFromIndex(anyString(), anyInt());
         AsyncIndexer indexer = new AsyncIndexer();
-        Whitebox.setInternalState(IndexingHandler.class, "asyncIndexer", indexer);
+        Field asyncIndexerField = IndexingHandler.class.getDeclaredField("asyncIndexer");
+        asyncIndexerField.setAccessible(true);
+        asyncIndexerField.set(null, indexer);
         CurrentSession.setTenantId(-1234);
         indexingHandler.delete(requestContext);
         long timeDifference = 5000;
@@ -219,9 +222,10 @@ public class IndexingHandlerTest {
         CurrentSession.setUserRegistry(registry);
 
         IndexingHandler indexingHandler = new IndexingHandler();
-        SolrClient client = PowerMockito.mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        SolrClient client = mock(SolrClient.class);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         CurrentSession.setTenantId(-1234);
         SolrDocumentList documentList = new SolrDocumentList();
         SolrDocument document = new SolrDocument();
@@ -249,9 +253,10 @@ public class IndexingHandlerTest {
         RequestContext requestContext = new RequestContext(registry, repository, versionRepository);
         requestContext.setResource(resource);
         IndexingHandler indexingHandler = new IndexingHandler();
-        SolrClient client = PowerMockito.mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        SolrClient client = mock(SolrClient.class);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         final IndexDocument[] documents = new IndexDocument[1];
         Mockito.doAnswer(new Answer() {
             @Override
@@ -260,7 +265,7 @@ public class IndexingHandlerTest {
                 documents[0] = (IndexDocument) args[0];
                 return null;
             }
-        }).when(client).addDocument((IndexDocument) anyObject());
+        }).when(client).addDocument(any(IndexDocument.class));
 
         try {
             PrivilegedCarbonContext.startTenantFlow();

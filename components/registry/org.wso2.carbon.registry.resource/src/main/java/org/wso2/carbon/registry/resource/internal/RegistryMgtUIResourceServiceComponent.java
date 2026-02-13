@@ -69,6 +69,7 @@ public class RegistryMgtUIResourceServiceComponent {
             log.error(msg);
             throw new Exception(msg);
         }
+        
         // Using HTTP Whiteboard pattern for servlet registration
         Dictionary<String, Object> properties = new Hashtable<>();
         

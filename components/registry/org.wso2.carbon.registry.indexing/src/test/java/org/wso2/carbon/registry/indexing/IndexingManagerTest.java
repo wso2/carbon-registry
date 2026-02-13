@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.reflect.Whitebox;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.ResourceImpl;
@@ -44,14 +43,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class IndexingManagerTest {
 
@@ -59,7 +57,7 @@ public class IndexingManagerTest {
             ".registry/indexing/lastaccesstime";
 
     @Before
-    public void setup() throws RegistryException {
+    public void setup() throws Exception {
         Path registryPath = IndexingTestUtils.getResourcePath("registry-indexing.xml");
         assert registryPath != null;
         System.setProperty("wso2.registry.xml", registryPath.toString());
@@ -68,8 +66,9 @@ public class IndexingManagerTest {
         assert resourcePath != null;
         System.setProperty("carbon.config.dir.path", resourcePath.toString());
         SolrClient client = mock(SolrClient.class);
-        mockStatic(SolrClient.class);
-        Whitebox.setInternalState(SolrClient.class, "instance", client);
+        Field instanceField = SolrClient.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, client);
         doNothing().when(client).deleteFromIndex(anyString(), anyInt());
     }
 
@@ -132,7 +131,7 @@ public class IndexingManagerTest {
                 finalResources[0] = (Resource)args[1];
                 return null;
             }
-        }).when(userRegistry).put(anyString(), (Resource)anyObject());
+        }).when(userRegistry).put(anyString(), any(Resource.class));
 
         IndexingManager manager = IndexingManager.getInstance();
         Date currentDate = Calendar.getInstance().getTime();
