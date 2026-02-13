@@ -32,11 +32,11 @@
 <script type="text/javascript" src="../yui/build/editor/simpleeditor-min.js"></script>
 
 <!-- other includes -->
-<jsp:include page="../registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/registry_common/registry_common-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../registry_common/js/registry_validation.js"></script>
 <script type="text/javascript" src="../registry_common/js/registry_common.js"></script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
-<jsp:include page="../resources/resources-i18n-ajaxprocessor.jsp"/>
+<jsp:include page="/carbon/resources/resources-i18n-ajaxprocessor.jsp"/>
 <script type="text/javascript" src="../resources/js/resource_util.js"></script>
 <script src="../global-params.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="../resources/css/registry.css"/>
@@ -99,7 +99,7 @@
 
                     <div id="workArea">
                         <div class="resource-path">
-                            <jsp:include page="metadata_resourcepath.jsp"/>
+                            <jsp:include page="/carbon/resources/metadata_resourcepath.jsp"/>
                         </div>
                         <table width="100%">
                             <tbody>
@@ -110,20 +110,18 @@
                                             <jsp:include page="metadata_ajaxprocessor.jsp"/>
                                         </div>
 
-                                        <% if (propertiesFound) {
-                                            String propertiesPath = "../properties/properties-main-ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
-                                        %>
-                                        <div id="propertiesDiv">
-                                            <jsp:include page="<%=propertiesPath%>"/>
-                                        </div>
-                                        <% } %>
-
-                                            <%--<div id="permissionsDiv">--%>
+                        <% if (propertiesFound) {
+                            String propertiesPath = "/carbon/properties/properties-main-ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                        %>
+                        <div id="propertiesDiv">
+                            <jsp:include page="<%=propertiesPath%>"/>
+                        </div>
+                        <% } %>                                            <%--<div id="permissionsDiv">--%>
                                             <%--<jsp:include page="permissions_ajaxprocessor.jsp"/>--%>
                                             <%--</div>--%>
 
                                         <div id="contentDiv">
-                                            <jsp:include page="content_ajaxprocessor.jsp"/>
+                                            <jsp:include page="/carbon/resources/content_ajaxprocessor.jsp"/>
                                         </div>
 
 
@@ -143,7 +141,7 @@
                                             <%--<% } %>--%>
 
                                         <% if (infoFound) {
-                                            String infoPath = "../info/info_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+                                            String infoPath = "/carbon/info/info_ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
                                         %>
                                         <div id="infoDiv">
                                             <jsp:include page="<%=infoPath%>"/>

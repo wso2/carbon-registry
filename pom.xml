@@ -1245,7 +1245,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.abdera.wso2</groupId>
-                <artifactId>abdera</artifactId>
+                <artifactId>abdera-jdk21</artifactId>
                 <version>${orbit.version.abdera}</version>
                 <exclusions>
                     <exclusion>
@@ -1701,7 +1701,7 @@
         <pax.logging.api.version>1.10.1</pax.logging.api.version>
 
         <!-- Carbon Commons -->
-        <carbon.commons.version>4.7.19</carbon.commons.version>
+        <carbon.commons.version>4.9.20-SNAPSHOT</carbon.commons.version>
         <carbon.commons.imp.pkg.version>[4.7.2, 5.0.0)</carbon.commons.imp.pkg.version>
 
         <!-- jms -->
