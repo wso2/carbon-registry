@@ -24,11 +24,11 @@
     session.setAttribute( "viewType", "std" );
 %>
 <div id="metadataDiv">
-    <jsp:include page="metadata_ajaxprocessor.jsp"/>
+    <jsp:include page="/carbon/resources/metadata_ajaxprocessor.jsp"/>
 </div>
 
 <% if (propertiesFound) {
-    String propertiesPath = "../properties/properties-main-ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
+    String propertiesPath = "/carbon/properties/properties-main-ajaxprocessor.jsp?path=" + RegistryUtil.getPath(request).replaceAll("&","%26");
 %>
 <div id="propertiesDiv">
     <jsp:include page="<%=propertiesPath%>"/>
@@ -36,9 +36,9 @@
 <% } %>
 
 <div id="contentDiv">
-    <jsp:include page="content_ajaxprocessor.jsp"/>
+    <jsp:include page="/carbon/resources/content_ajaxprocessor.jsp"/>
 </div>
 
 <div id="permissionsDiv">
-    <jsp:include page="retrieve_permission_ajaxprocessor.jsp"/>
+    <jsp:include page="/carbon/resources/retrieve_permission_ajaxprocessor.jsp"/>
 </div>

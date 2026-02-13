@@ -541,7 +541,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
         resourceDataSet = client.getResourceData(allChildNodes);
     } catch(Exception e) {
         %>
-<jsp:include page="../admin/error.jsp"/>
+<jsp:include page="/carbon/admin/error.jsp"/>
 <%
         return;
     }
@@ -576,7 +576,7 @@ if (CarbonUIUtil.isSuperTenant(request)) {
             }
         } catch(Exception e) {
 %>
-<jsp:include page="../admin/error.jsp"/>
+<jsp:include page="/carbon/admin/error.jsp"/>
 <%
         return;
     }

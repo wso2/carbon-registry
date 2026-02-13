@@ -100,6 +100,9 @@
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
                         </Import-Package>
+                        <Provide-Capability>
+                            osgi.service;objectClass=org.wso2.carbon.registry.extensions.services.RXTStoragePathService
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
