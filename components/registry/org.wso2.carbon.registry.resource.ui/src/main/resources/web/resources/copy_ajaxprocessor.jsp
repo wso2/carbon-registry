@@ -21,6 +21,10 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="org.wso2.carbon.registry.core.RegistryConstants" %>
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String errorMessage = null;
     try {
         CopyProcessor.process(request, response, config);

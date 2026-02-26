@@ -28,6 +28,12 @@
 
 
 <%
+    if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
+    }
     PropertiesServiceClient client_ = new PropertiesServiceClient(config, session);
     try {
     if (request.getParameter("name") != null) {

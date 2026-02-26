@@ -25,6 +25,10 @@
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.PermissionEntry" %>
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
     PermissionBean permissionBean;

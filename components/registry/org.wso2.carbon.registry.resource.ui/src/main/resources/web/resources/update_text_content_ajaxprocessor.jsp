@@ -24,6 +24,10 @@
 
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     try {
         UpdateTextContentProcessor.process(request, response, config);
     } catch (UIException e) {

@@ -57,7 +57,7 @@
     }
     jQuery(document).ready(function(){
         initDatePickers();
-        new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{evalScripts:true});
+        new Ajax.Updater('savedSearchFilterListDiv', '../search/getSavedSearchFilters-ajaxprocessor.jsp',{method:'post', evalScripts:true});
     });
 </script>
 <fmt:bundle basename="org.wso2.carbon.registry.search.ui.i18n.Resources">

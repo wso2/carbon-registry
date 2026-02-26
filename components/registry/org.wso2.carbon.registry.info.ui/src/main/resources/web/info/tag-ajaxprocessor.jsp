@@ -25,6 +25,10 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <fmt:bundle basename="org.wso2.carbon.registry.info.ui.i18n.Resources">
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     InfoServiceClient client = new InfoServiceClient(cookie, config, session);
     TagBean tag;

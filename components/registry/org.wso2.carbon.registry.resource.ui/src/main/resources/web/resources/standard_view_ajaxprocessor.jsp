@@ -19,6 +19,12 @@
 <%@ page import="org.wso2.carbon.ui.CarbonUIUtil" %>
 <%@ page import="org.wso2.carbon.registry.common.utils.RegistryUtil" %>
 <%
+    if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
+    }
     boolean propertiesFound = CarbonUIUtil.isContextRegistered(config, "/properties/");
     //set the tree view session
     session.setAttribute( "viewType", "std" );

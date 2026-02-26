@@ -30,6 +30,10 @@
 <script type="text/javascript" src="../relations/js/relations.js"></script>
 
 <%
+    if (!"post".equalsIgnoreCase(request.getMethod())) {
+        response.sendError(405);
+        return;
+    }
     String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
     RelationServiceClient client = new RelationServiceClient(cookie, config, session);
     DependenciesBean bean;

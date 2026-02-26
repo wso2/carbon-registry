@@ -18,6 +18,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://wso2.org/projects/carbon/taglibs/carbontags.jar" prefix="carbon" %>
+<%@ taglib uri="http://www.owasp.org/index.php/Category:OWASP_CSRFGuard_Project/Owasp.CsrfGuard.tld" prefix="csrf" %>
 
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
@@ -53,7 +54,7 @@ function setAndGo(fullpath,activepath){
 	var random = Math.floor(Math.random() * 2000);
 	new Ajax.Request('../resources/set_version_restore_ajaxprocessor.jsp',
 	{
-	    method:'get',
+	    method:'post',
 	    parameters: {fullpath: fullpath,activepath:activepath,random:random},
 	
 	    onSuccess: function() {
@@ -73,7 +74,7 @@ function submitDelete(path, snapshotId, screenWidth){
 
                    new Ajax.Request('../resources/delete_version_ajaxprocessor.jsp',
                    	{
-                   	    method:'get',
+                   	    method:'post',
                    	    parameters: {path: path,snapshotId:snapshotId},
 
                    	    onSuccess: function() {
@@ -95,6 +96,21 @@ function submitDelete(path, snapshotId, screenWidth){
     function retentionError() {
         CARBON.showWarningDialog("This resource currently under retention");
         return;
+    }
+
+    function restoreVersionPost(versionPath, path){
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = './restore_version_ajaxprocessor.jsp?versionPath=' + encodeURIComponent(versionPath, "UTF-8") + '&path=' + encodeURIComponent(path, "UTF-8");
+
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '<csrf:tokenname/>';
+        csrfInput.value = '<csrf:tokenvalue/>';
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
 <script type="text/javascript" src="../ajax/js/prototype.js"></script>
@@ -193,7 +209,8 @@ function submitDelete(path, snapshotId, screenWidth){
                     <td>
                         <a class="details-icon-link" onclick="setAndGo('<%=vpath%>','<%=path%>')"><fmt:message key="details"/></a>
                         <% if (versionBean.getLoggedIn() && versionBean.getPutAllowed() && !Boolean.parseBoolean(versionBean.getWriteLocked())) { %>
-                        <a href="./restore_version_ajaxprocessor.jsp?versionPath=<%=vpath%>&path=<%=path%>"
+                        <a onclick="restoreVersionPost('<%=vpath%>', '<%=path%>'); return false;"
+                           href="#"
                            class="restore-icon-link registryWriteOperation"><fmt:message key="restore"/></a>
                         <% } %>
                         <%

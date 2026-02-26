@@ -26,6 +26,10 @@
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.MetadataBean" %>
 
 <%
+        if (!"post".equalsIgnoreCase(request.getMethod())) {
+            response.sendError(405);
+            return;
+        }
         String cookie = (String) session.getAttribute(ServerConstants.ADMIN_SERVICE_COOKIE);
 
         String path = request.getParameter("path");
