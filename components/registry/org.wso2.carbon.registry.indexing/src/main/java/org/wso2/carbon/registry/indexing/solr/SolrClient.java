@@ -134,6 +134,7 @@ public class SolrClient {
 
         if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
             HttpJdkSolrClient.Builder builder = new HttpJdkSolrClient.Builder(solrServerUrl);
+            builder.withDefaultCollection(solrCore);
             this.server = builder.build();
             log.info("Http Solr server initiated at: " + solrServerUrl);
         } else {
