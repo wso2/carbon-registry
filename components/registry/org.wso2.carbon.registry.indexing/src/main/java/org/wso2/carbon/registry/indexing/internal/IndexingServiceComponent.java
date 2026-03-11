@@ -77,7 +77,9 @@ public class IndexingServiceComponent {
 
             public void startingShutdown() {
                 try {
-                    IndexingManager.getInstance().stopIndexing();
+                    if (IndexingManager.isInitialized()) {
+                        IndexingManager.getInstance().stopIndexing();
+                    }
                 } finally {
                     status = true;
                 }
@@ -126,7 +128,9 @@ public class IndexingServiceComponent {
     }
 
     private void stopIndexing() {
-        IndexingManager.getInstance().stopIndexing();
+        if (IndexingManager.isInitialized()) {
+            IndexingManager.getInstance().stopIndexing();
+        }
     }
 
     @Capability(

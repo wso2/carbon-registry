@@ -75,6 +75,10 @@ public class IndexingManager {
         return instance;
     }
 
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
     public synchronized void startIndexing() {
         stopIndexing(); //stop executors if they are already running, otherwise they will never stop
         if (registryConfig.IsStartIndexing()) {

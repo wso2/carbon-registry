@@ -22,10 +22,10 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupCommand;
@@ -133,7 +133,8 @@ public class SolrClient {
         System.setProperty(SolrConstants.SOLR_HOME_SYSTEM_PROPERTY, solrHome.getPath());
 
         if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
-            HttpSolrClient.Builder builder = new HttpSolrClient.Builder(solrServerUrl);
+            HttpJdkSolrClient.Builder builder = new HttpJdkSolrClient.Builder(solrServerUrl);
+            builder.withDefaultCollection(solrCore);
             this.server = builder.build();
             log.info("Http Solr server initiated at: " + solrServerUrl);
         } else {
