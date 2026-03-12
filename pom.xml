@@ -1640,7 +1640,7 @@
         <version.noggit>0.6.wso2v1</version.noggit>
         <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
-        <derby.version>10.4.2.0</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <javamail.version>1.4</javamail.version>
         <com.google.code.gson.version>2.10.1</com.google.code.gson.version>
         <wsdl4j.wso2.version>1.6.2.wso2v2</wsdl4j.wso2.version>
