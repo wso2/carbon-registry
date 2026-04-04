@@ -64,6 +64,10 @@ public class IndexingManager {
         }
     }
 
+    public static boolean isInitialized() {
+        return instance != null;
+    }
+
     public static IndexingManager getInstance() {
         if (instance == null) {
             synchronized (IndexingManager.class) {
