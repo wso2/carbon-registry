@@ -18,7 +18,7 @@
 package org.wso2.carbon.registry.indexing.solr;
 
 import org.apache.axis2.context.MessageContext;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;

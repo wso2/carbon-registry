@@ -22,10 +22,9 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.Group;
 import org.apache.solr.client.solrj.response.GroupCommand;
@@ -95,9 +94,7 @@ public class SolrClient {
     private String skipRolesByRegex;
 
     protected SolrClient() throws IOException {
-        // Get the solr server url from the registry.xml
         RegistryConfigLoader configLoader = RegistryConfigLoader.getInstance();
-        String solrServerUrl = configLoader.getSolrServerUrl();
         skipRolesByRegex = configLoader.getSkipRolesByRegex();
 
         // Default solr core is set to registry-indexing
@@ -131,19 +128,15 @@ public class SolrClient {
         copyConfigurationFiles();
         // Set the solr home path
         System.setProperty(SolrConstants.SOLR_HOME_SYSTEM_PROPERTY, solrHome.getPath());
+        // Disable OpenTelemetry SDK to prevent Prometheus exporter class loading (not needed for embedded Solr)
+        System.setProperty("otel.sdk.disabled", "true");
 
-        if (solrServerUrl != null && !solrServerUrl.isEmpty()) {
-            HttpSolrClient.Builder builder = new HttpSolrClient.Builder(solrServerUrl);
-            this.server = builder.build();
-            log.info("Http Solr server initiated at: " + solrServerUrl);
-        } else {
-            NodeConfig nodeConfig = new NodeConfig.NodeConfigBuilder("registry-indexing", Paths.get(solrHome.getPath()))
-                    .build();
-            CoreContainer coreContainer = new CoreContainer(nodeConfig);
-            coreContainer.load();
-            this.server = new EmbeddedSolrServer(coreContainer, solrCore);
-            log.info("Default Embedded Solr Server Initialized");
-        }
+        NodeConfig nodeConfig = new NodeConfig.NodeConfigBuilder("registry-indexing", Paths.get(solrHome.getPath()))
+                .build();
+        CoreContainer coreContainer = new CoreContainer(nodeConfig);
+        coreContainer.load();
+        this.server = new EmbeddedSolrServer(coreContainer, solrCore);
+        log.info("Embedded Solr Server Initialized");
     }
 
     public static SolrClient getInstance() throws IndexerException {
