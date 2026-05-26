@@ -632,7 +632,18 @@
   <!-- Shared parameters for multiple Request Handlers -->
   <initParams path="/update/**,/query,/select,/spell">
     <lst name="defaults">
-      <str name="df">_text_</str>
+      <!-- Default search field. Set to 'text' (not the modern '_text_'
+           convention) because WSO2 writes content directly to a 'text' field
+           and queries against it with the default field assumption. The
+           wildcard copyFields also route *_s and *_ss into 'text', so this
+           field is the most complete catch-all for this deployment. -->
+      <str name="df">text</str>
+      <!-- Default boolean operator for the standard query parser.
+           Modern Solr defaults to AND in some configurations, which breaks
+           legacy clients (e.g. WSO2) that were written against Solr 4 where
+           the implicit default was OR. Setting OR here restores the expected
+           behavior without requiring client code changes. -->
+      <str name="q.op">OR</str>
     </lst>
   </initParams>
 

@@ -87,6 +87,10 @@
     <copyField source="content"     dest="_text_"/>
     <copyField source="word"        dest="_text_"/>
 
+    <copyField source="*_s"  dest="text"/>
+    <copyField source="*_ss" dest="text"/>
+    <copyField source="*_s"  dest="_text_"/>
+    <copyField source="*_ss" dest="_text_"/>
 
     <!-- =====================================================================
          UNIQUE KEY
