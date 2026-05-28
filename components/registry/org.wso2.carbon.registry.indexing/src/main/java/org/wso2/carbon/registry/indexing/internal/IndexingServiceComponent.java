@@ -36,6 +36,7 @@ import org.wso2.carbon.registry.indexing.IndexingManager;
 import org.wso2.carbon.registry.indexing.Utils;
 import org.wso2.carbon.registry.indexing.indexer.IndexerException;
 import org.wso2.carbon.registry.indexing.service.*;
+import org.wso2.carbon.registry.indexing.solr.SolrClient;
 import org.wso2.carbon.utils.AbstractAxis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.Axis2ConfigurationContextObserver;
 import org.wso2.carbon.utils.WaitBeforeShutdownObserver;
@@ -107,6 +108,8 @@ public class IndexingServiceComponent {
         while (!registrations.empty()) {
             registrations.pop().unregister();
         }
+        // Shutdown embedded Solr server and release resources
+        SolrClient.shutdownInstance();
         log.debug("Registry Indexing bundle is deactivated");
     }
 
