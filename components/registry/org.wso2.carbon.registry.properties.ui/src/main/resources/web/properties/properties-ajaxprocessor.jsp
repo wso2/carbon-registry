@@ -47,8 +47,12 @@
     }
     } catch (Exception e) {
         response.setStatus(500);
+        String errorMessage = e.getMessage();
+        if (errorMessage == null || errorMessage.isEmpty()) {
+            errorMessage = e.getClass().getSimpleName();
+        }
 %>
-<%=e.getMessage()%>
+<%=Encode.forHtml(errorMessage)%>
 <%
         return;
     }

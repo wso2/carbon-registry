@@ -18,11 +18,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ page import="org.wso2.carbon.registry.core.utils.RegistryUtils" %>
 <%@ page import="java.util.Stack" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%@ page import="org.wso2.carbon.utils.ServerConstants" %>
 <%@ page import="org.wso2.carbon.registry.resource.stub.beans.xsd.ResourceTreeEntryBean" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.Utils" %>
 <%@ page import="org.owasp.encoder.Encode" %>
+
+<%!
+    private static final Pattern TREE_REFERENCE_PATTERN = Pattern.compile("[a-zA-Z0-9_]+");
+
+    private String sanitizeTreeReference(String reference) {
+        if (reference != null && TREE_REFERENCE_PATTERN.matcher(reference).matches()) {
+            return reference;
+        }
+        return "treeViewRoot";
+    }
+%>
 
 <%
     if (request.getMethod() != null && request.getAttribute("javax.servlet.include.request_uri") == null) {
@@ -45,15 +57,15 @@
             // We won't expand the collection, if an error occurs.
         }
         session.setAttribute("treeNavigationPath", treeNavigationPath);
-        session.setAttribute("reference", reference);
+        session.setAttribute("reference", sanitizeTreeReference(reference));
     } else if (treeNavigationPath != null) {
         session.setAttribute("treeNavigationPath", treeNavigationPath);
-        session.setAttribute("reference", reference);
+        session.setAttribute("reference", sanitizeTreeReference(reference));
         session.setAttribute( "viewType", "std" );
         return;
     } else if (session.getAttribute("treeNavigationPath") != null) {
         treeNavigationPath = (String)session.getAttribute("treeNavigationPath");
-        reference = (String)session.getAttribute("reference");
+        reference = sanitizeTreeReference((String) session.getAttribute("reference"));
     } else {
         treeNavigationPath = "/";
         reference = "treeViewRoot";
@@ -111,7 +123,7 @@
                             temp = "treeViewRoot";
                         }
                     }
-                    sb.append(temp);
+                    sb.append(Encode.forJavaScript(temp));
                     sb.append("', 'null', 'false'");
                     if (pathStack.empty()) {
                         sb.append(")");
