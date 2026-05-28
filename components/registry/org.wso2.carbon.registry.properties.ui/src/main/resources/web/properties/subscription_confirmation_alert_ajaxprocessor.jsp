@@ -23,6 +23,7 @@
 <%@ page import="org.wso2.carbon.registry.properties.ui.clients.PropertiesServiceClient" %>
 <%@ page import="org.wso2.carbon.ui.CarbonUIMessage" %>
 <%@ page import="java.util.HashMap" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 
 <%
@@ -42,8 +43,12 @@
         }
     } catch (Exception e) {
         response.setStatus(500);
+        String errorMessage = e.getMessage();
+        if (errorMessage == null || errorMessage.isEmpty()) {
+            errorMessage = e.getClass().getSimpleName();
+        }
 %>
-<%=e.getMessage()%>
+<%=Encode.forHtml(errorMessage)%>
 <%
         return;
     }
