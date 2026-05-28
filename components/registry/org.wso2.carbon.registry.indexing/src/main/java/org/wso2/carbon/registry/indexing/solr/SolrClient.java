@@ -86,6 +86,7 @@ public class SolrClient {
 
     private static volatile SolrClient instance;
     private org.apache.solr.client.solrj.SolrClient server;
+    private CoreContainer coreContainer;
     private Map<String, String> filePathMap = new HashMap<String, String>();
     // solr home directory path
     private static final String SOLR_HOME_FILE_PATH = CarbonUtils.getCarbonConfigDirPath() + File.separator + "solr";
@@ -133,9 +134,9 @@ public class SolrClient {
 
         NodeConfig nodeConfig = new NodeConfig.NodeConfigBuilder("registry-indexing", Paths.get(solrHome.getPath()))
                 .build();
-        CoreContainer coreContainer = new CoreContainer(nodeConfig);
-        coreContainer.load();
-        this.server = new EmbeddedSolrServer(coreContainer, solrCore);
+        this.coreContainer = new CoreContainer(nodeConfig);
+        this.coreContainer.load();
+        this.server = new EmbeddedSolrServer(this.coreContainer, solrCore);
         log.info("Embedded Solr Server Initialized");
     }
 
@@ -1527,5 +1528,44 @@ public class SolrClient {
             }
         }
         return result;
+    }
+
+    /**
+     * Shutdown the embedded Solr server and release resources.
+     * This should be called during OSGi component deactivation.
+     */
+    public synchronized void shutdown() {
+        if (server != null) {
+            try {
+                server.close();
+                log.info("Embedded Solr Server closed");
+            } catch (IOException e) {
+                log.error("Error closing Solr server", e);
+            } finally {
+                server = null;
+            }
+        }
+        if (coreContainer != null) {
+            try {
+                coreContainer.shutdown();
+                log.info("Solr CoreContainer shutdown");
+            } catch (Exception e) {
+                log.error("Error shutting down CoreContainer", e);
+            } finally {
+                coreContainer = null;
+            }
+        }
+    }
+
+    /**
+     * Shutdown the singleton instance and release all resources.
+     * This should be called during OSGi bundle deactivation.
+     */
+    public static synchronized void shutdownInstance() {
+        if (instance != null) {
+            instance.shutdown();
+            instance = null;
+            log.info("SolrClient instance shutdown and cleared");
+        }
     }
 }
