@@ -51,6 +51,7 @@
                             javax.servlet.http;version="${imp.pkg.version.javax.servlet}",
                             org.apache.axiom.*; version="${axiom.osgi.version.range}",
                             org.apache.solr.*;version="${version.solr.import.version.range}",
+                            org.noggit.*;version="[0.6.0,1.0.0)",
                             org.tartarus.*;version="[5.0.0,5.1.0)",
                             org.osgi.service.component.*;version="${imp.package.version.osgi.services}",
                             *;resolution:=optional
@@ -157,7 +158,6 @@
         <dependency>
             <groupId>org.wso2.noggit</groupId>
             <artifactId>noggit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>

@@ -18,7 +18,7 @@
 package org.wso2.carbon.registry.indexing.solr;
 
 import org.apache.axis2.context.MessageContext;
-import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -27,6 +27,7 @@ import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.CoreContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -70,6 +71,7 @@ import static org.mockito.Mockito.when;
 public class SolrClientTest {
     SolrClient client;
     EmbeddedSolrServer server;
+    CoreContainer coreContainer;
 
 
     @Before
@@ -83,10 +85,14 @@ public class SolrClientTest {
         System.setProperty("carbon.config.dir.path", resourcePath.toString());
 
         server = mock(EmbeddedSolrServer.class);
+        coreContainer = mock(CoreContainer.class);
         client = Mockito.mock(SolrClient.class, Mockito.CALLS_REAL_METHODS);
         Field serverField = SolrClient.class.getDeclaredField("server");
         serverField.setAccessible(true);
         serverField.set(client, server);
+        Field coreContainerField = SolrClient.class.getDeclaredField("coreContainer");
+        coreContainerField.setAccessible(true);
+        coreContainerField.set(client, coreContainer);
         Field instanceField = SolrClient.class.getDeclaredField("instance");
         instanceField.setAccessible(true);
         instanceField.set(null, client);
@@ -102,6 +108,7 @@ public class SolrClientTest {
         field.setAccessible(true);
         field.set(client, null);
         server = null;
+        coreContainer = null;
         client = null;
     }
 
