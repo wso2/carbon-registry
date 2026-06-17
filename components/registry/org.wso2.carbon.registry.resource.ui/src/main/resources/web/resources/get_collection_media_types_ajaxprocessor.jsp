@@ -16,13 +16,14 @@
  ~ under the License.
  --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.registry.resource.ui.clients.ResourceServiceClient" %>
 <%
     try {
         ResourceServiceClient client = new ResourceServiceClient(config, session);
         String mimeMappings = client.getCollectionMediatypeDefinitions();
 %>
-<%=mimeMappings%>
+<%=Encode.forHtml(mimeMappings == null ? "" : mimeMappings)%>
 <%
     } catch (Exception e) {
         response.setStatus(500);
