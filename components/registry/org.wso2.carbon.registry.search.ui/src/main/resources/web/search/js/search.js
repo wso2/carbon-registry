@@ -542,10 +542,11 @@ function setPropertyName() {
     var propName = document.getElementById("#_propertyName");
     var propLabel = document.getElementById("lblPropName");
 
+    propLabel.innerHTML = "";
     if(propName.value != "") {
-        propLabel.innerHTML = propName.value;
+        propLabel.textContent = propName.value;
     } else {
-        propLabel.innerHTML = "-";
+        propLabel.textContent = "-";
     }
 }
 
