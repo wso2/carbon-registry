@@ -62,6 +62,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -123,6 +124,16 @@ public class CommonUtil {
 			if (content != null) {
 				InputStream in = new ByteArrayInputStream((byte[]) content);
 				ObjectInputStream ois = new ObjectInputStream(in);
+				ois.setObjectInputFilter(filterInfo -> {
+					Class<?> clazz = filterInfo.serialClass();
+					if (clazz == null) {
+						return ObjectInputFilter.Status.UNDECIDED;
+					}
+					if (clazz == String[].class || clazz == String.class) {
+						return ObjectInputFilter.Status.ALLOWED;
+					}
+					return ObjectInputFilter.Status.REJECTED;
+				});
 				Object object = ois.readObject();
 				if (object instanceof String[]) {
 					String[] strArray = (String[]) object;
