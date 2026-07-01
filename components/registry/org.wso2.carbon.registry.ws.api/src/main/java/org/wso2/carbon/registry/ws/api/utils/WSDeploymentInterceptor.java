@@ -45,13 +45,9 @@ public class WSDeploymentInterceptor implements AxisObserver {
     }
 
     public void moduleUpdate(AxisEvent arg0, AxisModule arg1) {
-        // TODO Auto-generated method stub
-
     }
 
     public void serviceGroupUpdate(AxisEvent arg0, AxisServiceGroup arg1) {
-        // TODO Auto-generated method stub
-
     }
 
     public void serviceUpdate(AxisEvent event, AxisService service) {
@@ -59,33 +55,24 @@ public class WSDeploymentInterceptor implements AxisObserver {
     }
 
     public void addParameter(Parameter arg0) throws AxisFault {
-        // TODO Auto-generated method stub
-
     }
 
     public void deserializeParameters(OMElement arg0) throws AxisFault {
-        // TODO Auto-generated method stub
-
     }
 
     public Parameter getParameter(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ArrayList<Parameter> getParameters() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean isParameterLocked(String arg0) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void removeParameter(Parameter arg0) throws AxisFault {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -31,7 +31,6 @@ public class UserSecurityTest extends TestSetup {
 	
 	@Override
 	protected void setUp() throws Exception {
-		// TODO Auto-generated method stub
 		super.setUp();
 		try {
 			everyOneRegistry = new WSRegistryServiceClient(serverURL, "testuser1", "testuser1", configContext);
@@ -51,7 +50,6 @@ public class UserSecurityTest extends TestSetup {
 			registry.put("/testuser1/adminresource", onlyAdminAcessResource);
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			
 		}
 		
