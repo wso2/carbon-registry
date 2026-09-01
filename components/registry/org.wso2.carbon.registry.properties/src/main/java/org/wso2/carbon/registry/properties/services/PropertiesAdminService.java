@@ -132,6 +132,11 @@ public class PropertiesAdminService extends RegistryAbstractAdmin implements
      * @throws RegistryException throws if there is an error.
      */
     public void removeProperty(String path, String name) throws RegistryException {
+        // replicate the setProperty/updateProperty guard - control properties
+        // (registry.*) must not be removable by a generic resources/browse caller.
+        if (name != null && name.startsWith("registry.")) {
+            throw new RegistryException("Property cannot start with the \"registry.\" prefix. " + name);
+        }
         UserRegistry registry = (UserRegistry) getRootRegistry();
         if (RegistryUtils.isRegistryReadOnly(registry.getRegistryContext())) {
             return;

@@ -325,8 +325,12 @@ public class ResourceService extends RegistryAbstractAdmin implements IResourceS
     }
 
     public boolean removeExtension(String name) throws Exception {
-        File extension = new File(RegistryUtils.getExtensionLibDirectoryPath() + File.separator +
-                name);
+        // canonicalize and containment-check before delete (CWE-22)
+        File baseDir = new File(RegistryUtils.getExtensionLibDirectoryPath()).getCanonicalFile();
+        File extension = new File(baseDir, name).getCanonicalFile();
+        if (!extension.toPath().startsWith(baseDir.toPath())) {
+            throw new RegistryException("Extension name resolves outside the extension directory");
+        }
         FileUtils.forceDelete(extension);
         return true;
     }
