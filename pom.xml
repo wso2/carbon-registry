@@ -1306,11 +1306,6 @@
                 <version>${version.noggit}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.orbit.org.restlet.jee</groupId>
-                <artifactId>org.restlet</artifactId>
-                <version>${version.org.restlet}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.wso2.spatial4j</groupId>
                 <artifactId>spatial4j</artifactId>
                 <version>${version.spatial4j}</version>
@@ -1638,7 +1633,6 @@
         <version.httpmime>4.5.13.wso2v1</version.httpmime>
         <version.httpcore>4.4.16.wso2v1</version.httpcore>
         <version.noggit>0.6.wso2v1</version.noggit>
-        <version.org.restlet>2.3.0.wso2v1</version.org.restlet>
         <version.spatial4j>0.4.1.wso2v1</version.spatial4j>
         <derby.version>10.4.2.0</derby.version>
         <javamail.version>1.4</javamail.version>
